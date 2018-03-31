@@ -1,0 +1,55 @@
+{
+    "name": "doz",
+    "version": "0.0.0",
+    "description": "Build UI, so simple",
+    "main": "index.js",
+    "scripts": {
+        "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
+        "release:major": "npm run-script release:before && webpack --env.major && npm run-script release:publish",
+        "release:minor": "npm run-script release:before && webpack --env.minor && npm run-script release:publish",
+        "release:patch": "npm run-script release:before && webpack --env.patch && npm run-script release:publish",
+        "release:publish": "echo git commit -a -m BUILD && version-to-tag.sh && npm publish",
+        "build": "webpack --progress",
+        "test": "npm run-script build && mocha test",
+        "doc": "jsdoc2md --template README.hbs --no-gfm --files src/Component.js src/DOM.js > README.md"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fabioricali/doz.git"
+    },
+    "keywords": [
+        "html",
+        "dom",
+        "javascript",
+        "framework",
+        "ui"
+    ],
+    "author": "Fabio Ricali",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/fabioricali/doz/issues"
+    },
+    "homepage": "https://github.com/fabioricali/doz#readme",
+    "dependencies": {
+        "arrayme": "^1.0.3",
+        "deep-copy": "^1.4.2",
+        "defaulty": "^2.1.0",
+        "dohtml": "^0.1.0",
+        "fast-deep-equal": "^1.1.0",
+        "flak": "^1.0.0",
+        "typis": "^1.1.1"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-env": "^1.6.1",
+        "bejs": "^2.0.1",
+        "jsdoc-to-markdown": "^4.0.1",
+        "jsdom": "^11.6.2",
+        "jsdom-global": "^3.0.2",
+        "mocha": "^5.0.4",
+        "unminified-webpack-plugin": "^1.4.2",
+        "webpack": "^3.10.0",
+        "webpack-auto-inject-version": "^1.0.0"
+    }
+}

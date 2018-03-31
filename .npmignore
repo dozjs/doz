@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/
+node_modules/
+test/
+extra/
+version-to-tag.sh
+webpack.config.js
+.gitignore
+.travis.yml
