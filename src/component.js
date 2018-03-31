@@ -1,7 +1,7 @@
 const extend = require('defaulty');
 const {register} = require('./collection');
 const html = require('./html');
-const {INSTANCE, PARSER} = require('./constants');
+const {INSTANCE, PARSER, SIGN} = require('./constants');
 
 function Component(tag, cfg = {}) {
 
@@ -22,9 +22,16 @@ function Component(tag, cfg = {}) {
 }
 
 function createInstance(cmp, cfg) {
-    const element = html.create(cmp.cfg.tpl);
-    const nodes = html.getAllNodes(element);
+    const textNodes = [];
+
     const props = {};
+    const element = html.create(cmp.cfg.tpl);
+
+    textToTag(element);
+
+    const nodes = html.getAllNodes(element);
+
+    const propsMap = {};
 
     Array.from(cfg.props).forEach(prop => {
         props[prop.name] = prop.value;
@@ -34,18 +41,99 @@ function createInstance(cmp, cfg) {
     nodes.forEach(child => {
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(attr => {
-                if (attr.nodeType === 1) {
+                const key = attr.value.match(PARSER.REGEX.ATTR);
 
+                if (key) {
+                    const name = key[1];
+                    let component;
+
+                    if (child.nodeName.toLowerCase() === PARSER.TAG.TEXT) {
+                        component = document.createTextNode('');
+                        textNodes.push({
+                            old: child,
+                            new: component
+                        });
+                    } else {
+                        component = attr;
+                    }
+
+                    // Sign component
+                    component[SIGN] = true;
+
+                    createProp(name, propsMap, component);
                 }
-            })
+            });
         }
     });
 
-    console.log(props);
+    tagToText(textNodes);
 
-    element[INSTANCE] = {};
+    //console.log(props);
+    //console.log(propsMap);
+
+    setProps(props, propsMap);
+
+    element[INSTANCE] = {
+        propsMap
+    };
+
     return element;
 }
 
-module.exports = Component;
-module.exports.createInstance = createInstance;
+function createProp(name, props, component) {
+    name.split('.').reduce((o, i, y, m) => {
+        const isLast = m[m.length - 1] === i;
+        if (isLast) {
+            if (o.hasOwnProperty(i)) {
+                if (!o[i].length)
+                    o[i] = [component];
+                else {
+                    if (!Array.isArray(o[i]))
+                        o[i] = [o[i]];
+                    o[i].push(component)
+                }
+            } else {
+                o[i] = component;
+            }
+        } else if (!o.hasOwnProperty(i)) {
+            o[i] = [];
+        }
+
+        return o[i]
+
+    }, props);
+}
+
+function setProps(props = {}, propsMap = {}) {
+    const find = (props, targetProps) => {
+        for (let p in props) {
+            if (props.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+                targetProps[p].nodeValue = props[p];
+            }
+        }
+    };
+    find(props, propsMap);
+}
+
+function textToTag(el) {
+    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
+        // Remove spaces
+        match = sanitize(match);
+        return `<${PARSER.TAG.TEXT} value=${match}></${PARSER.TAG.TEXT}>`;
+    });
+}
+
+function tagToText(textNodes) {
+    textNodes.forEach(item => {
+        item.old.parentNode.replaceChild(item.new, item.old)
+    });
+}
+
+function sanitize(field) {
+    return field.replace(/[ "=]/g, '');
+}
+
+module.exports = {
+    Component,
+    createInstance
+};

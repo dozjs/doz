@@ -50,7 +50,7 @@ describe('Doz', function () {
                 el: '#app'
             });
 
-            console.log(view);
+            //console.log(view);
             console.log(document.body.innerHTML);
 
             be.err.not.null(view);

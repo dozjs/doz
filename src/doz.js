@@ -3,8 +3,8 @@ const collection = require('./collection');
 const {createInstance} = require('./component');
 const html = require('./html');
 
-function createComponentInstance(element) {
-    const nodes = html.getAllNodes(element); //element.getElementsByTagName('*');
+function componentInstances(element) {
+    const nodes = html.getAllNodes(element);
     const components = [];
 
     nodes.forEach(child => {
@@ -33,7 +33,7 @@ class Doz {
         this.cfg = extend.copy(cfg, {});
 
         this.dom = document.querySelector(this.cfg.el);
-        this.components = createComponentInstance(this.dom);
+        this.components = componentInstances(this.dom);
 
     }
 

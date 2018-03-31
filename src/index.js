@@ -1,2 +1,2 @@
 module.exports = require('./doz');
-module.exports.Component = require('./component');
+module.exports.Component = require('./component').Component;
