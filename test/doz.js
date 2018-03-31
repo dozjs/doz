@@ -61,5 +61,37 @@ describe('Doz', function () {
             be.err.true(/Jason/g.test(html));
             be.err.true(/INNESTATO/g.test(html));
         });
+        it('should be ok, a component with more tags', function () {
+            Doz.Component('my-component-nested', {
+                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
+            });
+
+            Doz.Component('my-component', {
+                tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested name="INNESTATO"></my-component-nested></div>`
+            });
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <my-component name="Doz"></my-component>
+                    <my-component name="Mike"></my-component>
+                    <my-component name="Jason"></my-component>
+                </div>
+            `;
+
+            const view = new Doz({
+                el: '#app'
+            });
+
+            const html = document.body.innerHTML;
+            //console.log(view);
+            console.log(html);
+
+            be.err.true(/Doz/g.test(html));
+            be.err.true(/Mike/g.test(html));
+            be.err.true(/Jason/g.test(html));
+            be.err.true(/INNESTATO/g.test(html));
+
+            //console.log(document.querySelectorAll('div'));
+        });
     });
 });

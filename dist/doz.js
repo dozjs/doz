@@ -388,6 +388,8 @@ function getInstances(element) {
                 child.parentNode.replaceChild(newChild, child);
                 components.push(newChild);
 
+                //console.log(newChild);
+
                 if (newChild.querySelectorAll('*').length) components = components.concat(getInstances(newChild));
             }
         }
@@ -409,10 +411,12 @@ function createInstance(cmp, cfg) {
 
     var propsMap = {};
 
+    var allNodes = [];
+
     Array.from(cfg.props).forEach(function (prop) {
         props[prop.name] = prop.value;
     });
-
+    //console.log('bbbbb', element.nodeName);
     // Now need to mapping all placeholder in html and convert them in node
     nodes.forEach(function (child) {
         if (child.nodeType === 1) {
@@ -433,10 +437,11 @@ function createInstance(cmp, cfg) {
                         component = attr;
                     }
 
+                    //console.log(component.nodeValue)
                     // Sign component
                     component[SIGN] = true;
-
                     createProp(name, propsMap, component);
+                    //allNodes.push({name, component});
                 }
             });
         }
@@ -448,12 +453,17 @@ function createInstance(cmp, cfg) {
     //console.log(props);
     //console.log(propsMap);
 
+    /*allNodes.forEach(node => {
+        createProp(node.name, propsMap, node.component);
+    });*/
+
     setProps(props, propsMap);
 
     element[INSTANCE] = {
+        owner: cmp.tag,
         propsMap: propsMap
     };
-
+    //console.log('AAAAA', element);
     return element;
 }
 
@@ -646,7 +656,7 @@ var Doz = function () {
         this.dom = document.querySelector(this.cfg.el);
         this.components = component.getInstances(this.dom);
 
-        //console.log(this.components.length);
+        //console.log(this.components);
     }
 
     _createClass(Doz, [{

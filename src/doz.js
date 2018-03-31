@@ -13,7 +13,7 @@ class Doz {
         this.dom = document.querySelector(this.cfg.el);
         this.components = component.getInstances(this.dom);
 
-        //console.log(this.components.length);
+        //console.log(this.components);
 
     }
 
