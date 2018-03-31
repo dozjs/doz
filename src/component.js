@@ -2,6 +2,7 @@ const extend = require('defaulty');
 const {register} = require('./collection');
 const html = require('./html');
 const {INSTANCE, PARSER, SIGN} = require('./constants');
+const collection = require('./collection');
 
 function Component(tag, cfg = {}) {
 
@@ -19,6 +20,32 @@ function Component(tag, cfg = {}) {
     });
 
     register(cmp);
+}
+
+function getInstances(element) {
+    const nodes = html.getAllNodes(element);
+    let components = [];
+
+    nodes.forEach(child => {
+        if (child.nodeType === 1 && child.parentNode) {
+
+            const cmp = collection.get(child.nodeName);
+            if (cmp) {
+
+                const newChild = createInstance(cmp, {
+                    props: child.attributes
+                });
+
+                child.parentNode.replaceChild(newChild, child);
+                components.push(newChild);
+
+                if (newChild.querySelectorAll('*').length)
+                    components = components.concat(getInstances(newChild));
+            }
+        }
+    });
+
+    return components;
 }
 
 function createInstance(cmp, cfg) {
@@ -135,5 +162,7 @@ function sanitize(field) {
 
 module.exports = {
     Component,
-    createInstance
+    getInstances,
+    setProps,
+    createProp
 };

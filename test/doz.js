@@ -32,9 +32,12 @@ describe('Doz', function () {
             be.err.not.null(view);
         });
         it('should be ok with a component', function () {
+            Doz.Component('my-component-nested', {
+                tpl: `<div>Ciao nestend: {{name}} component</div>`
+            });
 
             Doz.Component('my-component', {
-                tpl: `<div>hello I'm a {{name}} component</div>`
+                tpl: `<div>hello I'm a {{name}} component <my-component-nested name="INNESTATO"></my-component-nested></div>`
             });
 
             // language=HTML
