@@ -54,6 +54,7 @@ function createInstance(cmp, cfg) {
     const props = {};
     const element = html.create(cmp.cfg.tpl);
 
+    // Find placeholder into text
     textToTag(element);
 
     const nodes = html.getAllNodes(element);
@@ -93,6 +94,7 @@ function createInstance(cmp, cfg) {
         }
     });
 
+    // Remove tag text added above
     tagToText(textNodes);
 
     //console.log(props);

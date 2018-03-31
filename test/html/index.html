@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../dist/doz.js"></script>
+</head>
+<body>
+<div id="app">
+    <my-component firstname="Fabio" counter="0"></my-component>
+</div>
+<script>
+    Doz.Component('my-component', {
+        tpl: `<div><button onclick="console.log(this.__DOZ_INSTANCE__)">click</button><span>{{counter}}</span></div>`
+    });
+
+    new Doz({
+        el: '#app'
+    })
+
+</script>
+</body>
+</html>

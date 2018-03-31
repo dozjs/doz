@@ -33,14 +33,13 @@ describe('Doz', function () {
         });
         it('should be ok with a component', function () {
             Doz.Component('my-component-nested', {
-                tpl: `<div>Ciao nestend: {{name}} component</div>`
+                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
             Doz.Component('my-component', {
                 tpl: `<div>hello I'm a {{name}} component <my-component-nested name="INNESTATO"></my-component-nested></div>`
             });
 
-            // language=HTML
             document.body.innerHTML = `
                 <div id="app">
                     <my-component name="Doz"></my-component>
@@ -53,10 +52,14 @@ describe('Doz', function () {
                 el: '#app'
             });
 
+            const html = document.body.innerHTML;
             //console.log(view);
-            console.log(document.body.innerHTML);
+            console.log(html);
 
-            be.err.not.null(view);
+            be.err.true(/Doz/g.test(html));
+            be.err.true(/Mike/g.test(html));
+            be.err.true(/Jason/g.test(html));
+            be.err.true(/INNESTATO/g.test(html));
         });
     });
 });

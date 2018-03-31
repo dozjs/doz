@@ -6,7 +6,7 @@ module.exports = {
     entry: './index.js',
     output: {
         filename: './dist/doz.min.js',
-        library: 'doz',
+        library: 'Doz',
         umdNamedDefine: true,
         libraryTarget: 'umd'
     },
