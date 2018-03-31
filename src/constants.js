@@ -1,6 +1,7 @@
 module.exports = {
     ROOT: '__DOZ__',
     SIGN: '__DOZ_SIGN__',
+    INSTANCE: '__DOZ_INSTANCE__',
     EVENTS: [
         'show',
         'hide',

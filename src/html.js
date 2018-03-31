@@ -49,6 +49,24 @@ const html = {
             target.appendChild(el);
         });
         return target;
+    },
+
+    getAllNodes: function (el) {
+        const nodes = [];
+
+        function scanner(n) {
+            do {
+                nodes.push(n);
+                if (n.hasChildNodes()) {
+                    scanner(n.firstChild)
+                }
+
+            } while (n = n.nextSibling)
+        }
+
+        scanner(el);
+
+        return nodes;
     }
 };
 

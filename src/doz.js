@@ -1,20 +1,26 @@
 const extend = require('defaulty');
 const collection = require('./collection');
+const {createInstance} = require('./component');
 const html = require('./html');
 
-function createComponentInstances(element) {
-    const nodes = element.getElementsByTagName('*');
-    for (let i = nodes.length - 1; i >= 0; i--) {
-        let node = nodes[i];
-        if (node.nodeType === 1) {
-            const cmp = collection.get(node.nodeName);
+function createComponentInstance(element) {
+    const nodes = html.getAllNodes(element); //element.getElementsByTagName('*');
+    const components = [];
+
+    nodes.forEach(child => {
+        if (child.nodeType === 1) {
+            const cmp = collection.get(child.nodeName);
             if (cmp) {
-                const newNode = html.create(cmp.cfg.tpl);
-                node.parentNode.replaceChild(newNode, node);
+                const newChild = createInstance(cmp, {
+                    props: child.attributes
+                });
+                child.parentNode.replaceChild(newChild, child);
+                components.push(newChild);
             }
         }
+    });
 
-    }
+    return components;
 }
 
 class Doz {
@@ -24,13 +30,10 @@ class Doz {
             throw new TypeError('el must be a string selector and is required');
         }
 
-        this.cfg = extend.copy(cfg, {
-
-        });
+        this.cfg = extend.copy(cfg, {});
 
         this.dom = document.querySelector(this.cfg.el);
-
-        createComponentInstances(this.dom);
+        this.components = createComponentInstance(this.dom);
 
     }
 

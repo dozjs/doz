@@ -40,9 +40,7 @@ describe('Doz', function () {
             // language=HTML
             document.body.innerHTML = `
                 <div id="app">
-                    <my-component name="Doz">
-                        <my-component name="Child of Doz"></my-component>
-                    </my-component>
+                    <my-component name="Doz"></my-component>
                     <my-component name="Mike"></my-component>
                     <my-component name="Jason"></my-component>
                 </div>
