@@ -68,6 +68,7 @@ describe('Doz', function () {
 
             Doz.Component('my-component', {
                 tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested name="INNESTATO"></my-component-nested></div>`
+                //tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component</div>`
             });
 
             document.body.innerHTML = `

@@ -13,8 +13,8 @@
 <script>
 
     function updateCounter() {
-        let counter = parseInt(this.parentNode.__DOZ_INSTANCE__.propsMap.counter.nodeValue);
-        this.parentNode.__DOZ_INSTANCE__.propsMap.counter.nodeValue = counter + 1;
+        let counter = parseInt(this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue);
+        this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue = counter + 1;
     }
 
     Doz.Component('my-component', {

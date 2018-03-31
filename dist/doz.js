@@ -337,6 +337,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var extend = __webpack_require__(0);
 
 var _require = __webpack_require__(2),
@@ -437,7 +439,7 @@ function createInstance(cmp, cfg) {
                         component = attr;
                     }
 
-                    //console.log(component.nodeValue)
+                    //console.log(name, component);
                     // Sign component
                     component[SIGN] = true;
                     createProp(name, propsMap, component);
@@ -457,6 +459,8 @@ function createInstance(cmp, cfg) {
         createProp(node.name, propsMap, node.component);
     });*/
 
+    //console.log(propsMap);
+
     setProps(props, propsMap);
 
     element[INSTANCE] = {
@@ -472,14 +476,20 @@ function createProp(name, props, component) {
         var isLast = m[m.length - 1] === i;
         if (isLast) {
             if (o.hasOwnProperty(i)) {
-                if (!o[i].length) o[i] = [component];else {
-                    if (!Array.isArray(o[i])) o[i] = [o[i]];
-                    o[i].push(component);
-                }
+                /*if (!o[i].length) {
+                    console.log('a', o[i])
+                    o[i] = [component];
+                } else {*/
+                //console.log('b')
+                if (!Array.isArray(o[i])) o[i] = [o[i]];
+                o[i].push(component);
+                //}
             } else {
+                //console.log('c')
                 o[i] = component;
             }
         } else if (!o.hasOwnProperty(i)) {
+            //console.log('d')
             o[i] = [];
         }
 
@@ -492,13 +502,29 @@ function setProps() {
     var propsMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var find = function find(props, targetProps) {
-        for (var p in props) {
+        var _loop = function _loop(p) {
             if (props.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
-                targetProps[p].nodeValue = props[p];
+                if (isSigned(targetProps[p])) {
+                    targetProps[p].nodeValue = props[p];
+                } else if (_typeof(props[p]) === 'object') {
+                    find(props[p], targetProps[p]);
+                } else if (Array.isArray(targetProps[p])) {
+                    targetProps[p].forEach(function (prop) {
+                        prop.nodeValue = props[p];
+                    });
+                }
             }
+        };
+
+        for (var p in props) {
+            _loop(p);
         }
     };
     find(props, propsMap);
+}
+
+function isSigned(n) {
+    return n.hasOwnProperty(SIGN);
 }
 
 function textToTag(el) {

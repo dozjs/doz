@@ -89,7 +89,7 @@ function createInstance(cmp, cfg) {
                         component = attr;
                     }
 
-                    //console.log(component.nodeValue)
+                    //console.log(name, component);
                     // Sign component
                     component[SIGN] = true;
                     createProp(name, propsMap, component);
@@ -109,9 +109,9 @@ function createInstance(cmp, cfg) {
         createProp(node.name, propsMap, node.component);
     });*/
 
+    //console.log(propsMap);
 
     setProps(props, propsMap);
-
 
 
     element[INSTANCE] = {
@@ -127,17 +127,21 @@ function createProp(name, props, component) {
         const isLast = m[m.length - 1] === i;
         if (isLast) {
             if (o.hasOwnProperty(i)) {
-                if (!o[i].length)
+                /*if (!o[i].length) {
+                    console.log('a', o[i])
                     o[i] = [component];
-                else {
-                    if (!Array.isArray(o[i]))
-                        o[i] = [o[i]];
-                    o[i].push(component)
-                }
+                } else {*/
+                //console.log('b')
+                if (!Array.isArray(o[i]))
+                    o[i] = [o[i]];
+                o[i].push(component)
+                //}
             } else {
+                //console.log('c')
                 o[i] = component;
             }
         } else if (!o.hasOwnProperty(i)) {
+            //console.log('d')
             o[i] = [];
         }
 
@@ -150,11 +154,23 @@ function setProps(props = {}, propsMap = {}) {
     const find = (props, targetProps) => {
         for (let p in props) {
             if (props.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
-                targetProps[p].nodeValue = props[p];
+                if (isSigned(targetProps[p])) {
+                    targetProps[p].nodeValue = props[p];
+                } else if (typeof props[p] === 'object') {
+                    find(props[p], targetProps[p]);
+                } else if (Array.isArray(targetProps[p])) {
+                    targetProps[p].forEach(prop => {
+                        prop.nodeValue = props[p];
+                    })
+                }
             }
         }
     };
     find(props, propsMap);
+}
+
+function isSigned(n) {
+    return n.hasOwnProperty(SIGN);
 }
 
 function textToTag(el) {
