@@ -19,14 +19,14 @@ function Component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        data: {},
+        props: {},
         tpl: '<div></div>'
     });
 
     register(cmp);
 }
 
-function getInstances(element, parentOwner) {
+function getInstances(element) {
     const nodes = html.getAllNodes(element);
     let components = [];
 
@@ -36,28 +36,18 @@ function getInstances(element, parentOwner) {
             const cmp = collection.get(child.nodeName);
 
             if (cmp) {
-                const newChild = createInstance(cmp, {
+                const newElement = createInstance(cmp, {
                     props: child.attributes
                 });
 
-                //console.log('newChild.innerHTML',child);
-                child.parentNode.replaceChild(newChild, child);
-                //console.log('parente', newChild.parentNode, 'io', newChild)
-                components.push(newChild);
+                child.parentNode.replaceChild(newElement.element, child);
+                components.push(newElement);
 
-                /*if (parentOwner) {
-                    console.log('---->',parentOwner, '\n\t====>', newChild);
-                    //parentOwner.child.push(newChild);
-                }*/
-
-                if (newChild.querySelectorAll('*').length) {
-                    //console.log(newChild.firstChild);
-                    const nestedChild = getInstances(newChild.firstChild);
-                    //console.log('nestedChild', nestedChild.length);
+                if (newElement.element.querySelectorAll('*').length) {
+                    const nestedChild = getInstances(newElement.element.firstChild);
+                    //console.log(nestedChild);
                     if (nestedChild.length) {
-                        //console.log(nestedChild)
-                        newChild[INSTANCE].child.push(nestedChild);
-                        components = components.concat(nestedChild);
+                        newElement.child = newElement.child.concat(nestedChild);
                     }
                 }
             }
@@ -103,11 +93,9 @@ function createInstance(cmp, cfg) {
                         component = attr;
                     }
 
-                    //console.log(name, component);
                     // Sign component
                     component[SIGN] = true;
                     createProp(name, propsMap, component);
-                    //allNodes.push({name, component});
                 }
             });
         }
@@ -116,26 +104,24 @@ function createInstance(cmp, cfg) {
     // Remove tag text added above
     tagToText(textNodes);
 
-    //console.log(props);
-    //console.log(propsMap);
+    //Set default data
+    setProps(cmp.cfg.props, propsMap);
+    //setProps(props, propsMap);
 
-    /*allNodes.forEach(node => {
-        createProp(node.name, propsMap, node.component);
-    });*/
-
-    //console.log(propsMap);
-
-    setProps(props, propsMap);
-
-    element[INSTANCE] = {
+    /*element[INSTANCE] = {
         tag: cmp.tag,
         propsMap,
-        child: []
-    };
+        child: [],
+        element
+    };*/
 
-    //console.log('PARENT NODE',element.childNodes);
-    //console.log('AAAAA', element);
-    return element;
+    return {
+        tag: cmp.tag,
+        props,
+        propsMap,
+        child: [],
+        element
+    };
 }
 
 function createProp(name, props, component) {
@@ -143,21 +129,13 @@ function createProp(name, props, component) {
         const isLast = m[m.length - 1] === i;
         if (isLast) {
             if (o.hasOwnProperty(i)) {
-                /*if (!o[i].length) {
-                    console.log('a', o[i])
-                    o[i] = [component];
-                } else {*/
-                //console.log('b')
                 if (!Array.isArray(o[i]))
                     o[i] = [o[i]];
                 o[i].push(component)
-                //}
             } else {
-                //console.log('c')
                 o[i] = component;
             }
         } else if (!o.hasOwnProperty(i)) {
-            //console.log('d')
             o[i] = [];
         }
 
