@@ -21,7 +21,7 @@ class Doz {
 
     setProps(props) {
         this.components.forEach(cmp => {
-            component.setProps(props || cmp.props, cmp.propsMap);
+            component.setProps(props || cmp.props, cmp.propsMap, {});
         })
     }
 

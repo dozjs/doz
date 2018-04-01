@@ -13,6 +13,7 @@
 <script>
 
     function updateCounter() {
+        console.log(this.parentNode.__DOZ_INSTANCE__.props);
         let counter = parseInt(this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue);
         this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue = counter + 1;
     }

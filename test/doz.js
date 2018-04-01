@@ -137,7 +137,7 @@ describe('Doz', function () {
 
             //console.log(view.components[0].__DOZ_INSTANCE__.child[0].__DOZ_INSTANCE__.propsMap.name);
             //console.log(view.components[0].__DOZ_INSTANCE__.propsMap);
-            //console.log(view.components[0].__DOZ_INSTANCE__);
+            console.log(view.components);
         });
     });
 });

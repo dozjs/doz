@@ -370,7 +370,7 @@ function Component(tag) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        data: {},
+        props: {},
         tpl: '<div></div>'
     });
 
@@ -385,18 +385,24 @@ function getInstances(element) {
         if (child.nodeType === 1 && child.parentNode) {
 
             var cmp = collection.get(child.nodeName);
-            if (cmp) {
 
-                var newChild = createInstance(cmp, {
+            if (cmp) {
+                var newElement = createInstance(cmp, {
                     props: child.attributes
                 });
 
-                child.parentNode.replaceChild(newChild, child);
-                components.push(newChild);
+                newElement.element[INSTANCE] = newElement;
 
-                //console.log(newChild);
+                child.parentNode.replaceChild(newElement.element, child);
+                components.push(newElement);
 
-                if (newChild.querySelectorAll('*').length) components = components.concat(getInstances(newChild));
+                if (newElement.element.querySelectorAll('*').length) {
+                    var nestedChild = getInstances(newElement.element.firstChild);
+                    //console.log(nestedChild);
+                    if (nestedChild.length) {
+                        newElement.child = newElement.child.concat(nestedChild);
+                    }
+                }
             }
         }
     });
@@ -440,11 +446,9 @@ function createInstance(cmp, cfg) {
                         component = attr;
                     }
 
-                    //console.log(name, component);
                     // Sign component
                     component[SIGN] = true;
                     createProp(name, propsMap, component);
-                    //allNodes.push({name, component});
                 }
             });
         }
@@ -453,23 +457,26 @@ function createInstance(cmp, cfg) {
     // Remove tag text added above
     tagToText(textNodes);
 
-    //console.log(props);
-    //console.log(propsMap);
+    //Set default data
+    _setProps(cmp.cfg.props, propsMap, props);
 
-    /*allNodes.forEach(node => {
-        createProp(node.name, propsMap, node.component);
-    });*/
+    /*element[INSTANCE] = {
+        tag: cmp.tag,
+        propsMap,
+        child: [],
+        element
+    };*/
 
-    //console.log(propsMap);
-
-    setProps(props, propsMap);
-
-    element[INSTANCE] = {
-        owner: cmp.tag,
-        propsMap: propsMap
+    return {
+        tag: cmp.tag,
+        props: props,
+        propsMap: propsMap,
+        child: [],
+        element: element,
+        setProps: function setProps(newProps) {
+            _setProps(newProps, propsMap, props);
+        }
     };
-    //console.log('AAAAA', element);
-    return element;
 }
 
 function createProp(name, props, component) {
@@ -477,20 +484,12 @@ function createProp(name, props, component) {
         var isLast = m[m.length - 1] === i;
         if (isLast) {
             if (o.hasOwnProperty(i)) {
-                /*if (!o[i].length) {
-                    console.log('a', o[i])
-                    o[i] = [component];
-                } else {*/
-                //console.log('b')
                 if (!Array.isArray(o[i])) o[i] = [o[i]];
                 o[i].push(component);
-                //}
             } else {
-                //console.log('c')
                 o[i] = component;
             }
         } else if (!o.hasOwnProperty(i)) {
-            //console.log('d')
             o[i] = [];
         }
 
@@ -498,30 +497,34 @@ function createProp(name, props, component) {
     }, props);
 }
 
-function setProps() {
-    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+function _setProps() {
+    var newProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var propsMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var props = arguments[2];
 
-    var find = function find(props, targetProps) {
+    var find = function find(newProps, targetProps) {
         var _loop = function _loop(p) {
-            if (props.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+            if (newProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    targetProps[p].nodeValue = props[p];
-                } else if (_typeof(props[p]) === 'object') {
-                    find(props[p], targetProps[p]);
+                    props[p] = newProps[p];
+                    targetProps[p].nodeValue = newProps[p];
+                } else if (_typeof(newProps[p]) === 'object') {
+                    find(newProps[p], targetProps[p], props[p]);
                 } else if (Array.isArray(targetProps[p])) {
-                    targetProps[p].forEach(function (prop) {
-                        prop.nodeValue = props[p];
+                    targetProps[p].forEach(function (prop, i) {
+                        //console.log(props)
+                        props[i] = newProps[p];
+                        prop.nodeValue = newProps[p];
                     });
                 }
             }
         };
 
-        for (var p in props) {
+        for (var p in newProps) {
             _loop(p);
         }
     };
-    find(props, propsMap);
+    find(newProps, propsMap);
 }
 
 function isSigned(n) {
@@ -549,7 +552,7 @@ function sanitize(field) {
 module.exports = {
     Component: Component,
     getInstances: getInstances,
-    setProps: setProps,
+    setProps: _setProps,
     createProp: createProp
 };
 
@@ -623,7 +626,7 @@ module.exports = {
     EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
     PARSER: {
         REGEX: {
-            TAG: /^\w+-\w+$/,
+            TAG: /^\w+-[\w-]+$/,
             ATTR: /{{([\w.]+)}}/,
             TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
         },
@@ -682,15 +685,18 @@ var Doz = function () {
         this.cfg = extend.copy(cfg, {});
 
         this.dom = document.querySelector(this.cfg.el);
-        this.components = component.getInstances(this.dom);
+        this.components = component.getInstances(this.dom) || [];
 
-        //console.log(this.components);
+        // Set initial props
+        this.setProps();
     }
 
     _createClass(Doz, [{
-        key: 'setData',
-        value: function setData() {
-            var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        key: 'setProps',
+        value: function setProps(props) {
+            this.components.forEach(function (cmp) {
+                component.setProps(props || cmp.props, cmp.propsMap, {});
+            });
         }
     }]);
 

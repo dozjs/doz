@@ -40,6 +40,8 @@ function getInstances(element) {
                     props: child.attributes
                 });
 
+                newElement.element[INSTANCE] = newElement;
+
                 child.parentNode.replaceChild(newElement.element, child);
                 components.push(newElement);
 
@@ -105,8 +107,7 @@ function createInstance(cmp, cfg) {
     tagToText(textNodes);
 
     //Set default data
-    setProps(cmp.cfg.props, propsMap);
-    //setProps(props, propsMap);
+    setProps(cmp.cfg.props, propsMap, props);
 
     /*element[INSTANCE] = {
         tag: cmp.tag,
@@ -120,7 +121,10 @@ function createInstance(cmp, cfg) {
         props,
         propsMap,
         child: [],
-        element
+        element,
+        setProps: function (newProps) {
+            setProps(newProps, propsMap, props);
+        }
     };
 }
 
@@ -144,23 +148,26 @@ function createProp(name, props, component) {
     }, props);
 }
 
-function setProps(props = {}, propsMap = {}) {
-    const find = (props, targetProps) => {
-        for (let p in props) {
-            if (props.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+function setProps(newProps = {}, propsMap = {}, props) {
+    const find = (newProps, targetProps) => {
+        for (let p in newProps) {
+            if (newProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    targetProps[p].nodeValue = props[p];
-                } else if (typeof props[p] === 'object') {
-                    find(props[p], targetProps[p]);
+                    props[p] = newProps[p];
+                    targetProps[p].nodeValue = newProps[p];
+                } else if (typeof newProps[p] === 'object') {
+                    find(newProps[p], targetProps[p], props[p]);
                 } else if (Array.isArray(targetProps[p])) {
-                    targetProps[p].forEach(prop => {
-                        prop.nodeValue = props[p];
-                    })
+                    targetProps[p].forEach((prop, i) => {
+                        //console.log(props)
+                        props[i] = newProps[p];
+                        prop.nodeValue = newProps[p];
+                    });
                 }
             }
         }
     };
-    find(props, propsMap);
+    find(newProps, propsMap);
 }
 
 function isSigned(n) {
