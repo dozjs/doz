@@ -34,11 +34,8 @@ function getInstances(element, parentOwner) {
         if (child.nodeType === 1 && child.parentNode) {
 
             const cmp = collection.get(child.nodeName);
+
             if (cmp) {
-                /*if (parentOwner) {
-                    console.log('---->',parentOwner, '\n====>', child);
-                    //parentOwner.child.push(newChild);
-                }*/
                 const newChild = createInstance(cmp, {
                     props: child.attributes
                 });
@@ -49,12 +46,20 @@ function getInstances(element, parentOwner) {
                 components.push(newChild);
 
                 /*if (parentOwner) {
-                    console.log('---->',parentOwner, '\n====>', newChild);
+                    console.log('---->',parentOwner, '\n\t====>', newChild);
                     //parentOwner.child.push(newChild);
                 }*/
 
-                if (newChild.querySelectorAll('*').length)
-                    components = components.concat(getInstances(newChild, newChild[INSTANCE]));
+                if (newChild.querySelectorAll('*').length) {
+                    //console.log(newChild.firstChild);
+                    const nestedChild = getInstances(newChild.firstChild);
+                    //console.log('nestedChild', nestedChild.length);
+                    if (nestedChild.length) {
+                        //console.log(nestedChild)
+                        newChild[INSTANCE].child.push(nestedChild);
+                        components = components.concat(nestedChild);
+                    }
+                }
             }
         }
     });

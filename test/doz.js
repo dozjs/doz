@@ -116,6 +116,7 @@ describe('Doz', function () {
                 <div id="app">
                     <my-component name="Doz"></my-component>
                     <my-component name="Mike"></my-component>
+                    <my-component name="Red"></my-component>
                 </div>
             `;
 
@@ -125,7 +126,7 @@ describe('Doz', function () {
 
             const html = document.body.innerHTML;
             //console.log(view);
-            console.log(html);
+            //console.log(html);
 
             be.err.true(/Doz/g.test(html));
             /*be.err.true(/Mike/g.test(html));
@@ -133,7 +134,7 @@ describe('Doz', function () {
             be.err.true(/INNESTATO/g.test(html));*/
 
             //console.log(view.components);
-            //console.log(view.components[0].__DOZ_INSTANCE__);
+            console.log(view.components[0].__DOZ_INSTANCE__);
         });
     });
 });
