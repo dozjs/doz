@@ -94,5 +94,46 @@ describe('Doz', function () {
 
             //console.log(document.querySelectorAll('div'));
         });
+        it('should be ok, update nested', function () {
+            Doz.Component('my-component-nested', {
+                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
+            });
+
+            Doz.Component('my-component', {
+                tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested name="INNESTATO"></my-component-nested></div>`
+                //tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component</div>`
+            });
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <my-component name="Doz"></my-component>
+                    <my-component name="Mike"></my-component>
+                    <my-component name="Jason"></my-component>
+                </div>
+            `;
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <my-component name="Doz"></my-component>
+                    <my-component name="Mike"></my-component>
+                </div>
+            `;
+
+            const view = new Doz({
+                el: '#app'
+            });
+
+            const html = document.body.innerHTML;
+            //console.log(view);
+            console.log(html);
+
+            be.err.true(/Doz/g.test(html));
+            /*be.err.true(/Mike/g.test(html));
+            be.err.true(/Jason/g.test(html));
+            be.err.true(/INNESTATO/g.test(html));*/
+
+            //console.log(view.components);
+            //console.log(view.components[0].__DOZ_INSTANCE__);
+        });
     });
 });

@@ -10,6 +10,10 @@ function Component(tag, cfg = {}) {
         throw new TypeError('Tag must be a string');
     }
 
+    if (!PARSER.REGEX.TAG.test(tag)){
+        throw new TypeError('Tag must contain a dash (-): my-component');
+    }
+
     const cmp = {};
 
     cmp.tag = tag;
@@ -22,7 +26,7 @@ function Component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(element) {
+function getInstances(element, parentOwner) {
     const nodes = html.getAllNodes(element);
     let components = [];
 
@@ -31,18 +35,26 @@ function getInstances(element) {
 
             const cmp = collection.get(child.nodeName);
             if (cmp) {
-
+                /*if (parentOwner) {
+                    console.log('---->',parentOwner, '\n====>', child);
+                    //parentOwner.child.push(newChild);
+                }*/
                 const newChild = createInstance(cmp, {
                     props: child.attributes
                 });
 
+                //console.log('newChild.innerHTML',child);
                 child.parentNode.replaceChild(newChild, child);
+                //console.log('parente', newChild.parentNode, 'io', newChild)
                 components.push(newChild);
 
-                //console.log(newChild);
+                /*if (parentOwner) {
+                    console.log('---->',parentOwner, '\n====>', newChild);
+                    //parentOwner.child.push(newChild);
+                }*/
 
                 if (newChild.querySelectorAll('*').length)
-                    components = components.concat(getInstances(newChild));
+                    components = components.concat(getInstances(newChild, newChild[INSTANCE]));
             }
         }
     });
@@ -63,13 +75,10 @@ function createInstance(cmp, cfg) {
 
     const propsMap = {};
 
-    const allNodes = [];
-
     Array.from(cfg.props).forEach(prop => {
         props[prop.name] = prop.value;
     });
-    //console.log('bbbbb', element.nodeName);
-    // Now need to mapping all placeholder in html and convert them in node
+
     nodes.forEach(child => {
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(attr => {
@@ -113,11 +122,13 @@ function createInstance(cmp, cfg) {
 
     setProps(props, propsMap);
 
-
     element[INSTANCE] = {
-        owner: cmp.tag,
-        propsMap
+        tag: cmp.tag,
+        propsMap,
+        child: []
     };
+
+    //console.log('PARENT NODE',element.childNodes);
     //console.log('AAAAA', element);
     return element;
 }

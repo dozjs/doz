@@ -12,6 +12,7 @@ module.exports = {
     ],
     PARSER: {
         REGEX: {
+            TAG: /^\w+-[\w-]+$/,
             ATTR: /{{([\w.]+)}}/,
             TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
         },

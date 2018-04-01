@@ -26,5 +26,15 @@ describe('component', function () {
             console.log(result);
             be.err.not.undefined(result);
         });
+
+        it('wrong tag name', function () {
+            const tag = 'mycomponent';
+            try {
+                Component(tag);
+            } catch (e) {
+                be.err.equal(e.message, 'Tag must contain a dash (-): my-component');
+            }
+        });
+
     });
 });

@@ -361,6 +361,10 @@ function Component(tag) {
         throw new TypeError('Tag must be a string');
     }
 
+    if (!PARSER.REGEX.TAG.test(tag)) {
+        throw new TypeError('Tag must contain a dash (-): my-component');
+    }
+
     var cmp = {};
 
     cmp.tag = tag;
@@ -413,13 +417,10 @@ function createInstance(cmp, cfg) {
 
     var propsMap = {};
 
-    var allNodes = [];
-
     Array.from(cfg.props).forEach(function (prop) {
         props[prop.name] = prop.value;
     });
-    //console.log('bbbbb', element.nodeName);
-    // Now need to mapping all placeholder in html and convert them in node
+
     nodes.forEach(function (child) {
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(function (attr) {
@@ -622,6 +623,7 @@ module.exports = {
     EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
     PARSER: {
         REGEX: {
+            TAG: /^\w+-\w+$/,
             ATTR: /{{([\w.]+)}}/,
             TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
         },
