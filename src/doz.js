@@ -14,14 +14,14 @@ class Doz {
         this.dom = document.querySelector(this.cfg.el);
         this.components = component.getInstances(this.dom) || [];
 
-        // Set initial props
+        // Set initial defaultProps
         this.setProps();
 
     }
 
     setProps(props) {
         this.components.forEach(cmp => {
-            component.setProps(props || cmp.props, cmp.propsMap, {});
+            component.setProps(props || cmp.defaultProps, cmp.propsMap);
         })
     }
 

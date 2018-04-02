@@ -3,6 +3,7 @@ const {register} = require('./collection');
 const html = require('./html');
 const {INSTANCE, PARSER, SIGN} = require('./constants');
 const collection = require('./collection');
+const copy = require('deep-copy');
 
 function Component(tag, cfg = {}) {
 
@@ -19,7 +20,7 @@ function Component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        props: {},
+        defaultProps: {},
         tpl: '<div></div>'
     });
 
@@ -72,6 +73,7 @@ function createInstance(cmp, cfg) {
 
     const propsMap = {};
 
+    // Iterate props by HTMLElement attributes
     Array.from(cfg.props).forEach(prop => {
         props[prop.name] = prop.value;
     });
@@ -97,7 +99,7 @@ function createInstance(cmp, cfg) {
 
                     // Sign component
                     component[SIGN] = true;
-                    createProp(name, propsMap, component);
+                    createPropMap(name, propsMap, component);
                 }
             });
         }
@@ -107,7 +109,8 @@ function createInstance(cmp, cfg) {
     tagToText(textNodes);
 
     //Set default data
-    setProps(cmp.cfg.props, propsMap, props);
+    setProps(cmp.cfg.defaultProps, propsMap);
+    setProps(props, propsMap);
 
     /*element[INSTANCE] = {
         tag: cmp.tag,
@@ -128,7 +131,7 @@ function createInstance(cmp, cfg) {
     };
 }
 
-function createProp(name, props, component) {
+function createPropMap(name, props, component) {
     name.split('.').reduce((o, i, y, m) => {
         const isLast = m[m.length - 1] === i;
         if (isLast) {
@@ -153,14 +156,14 @@ function setProps(newProps = {}, propsMap = {}, props) {
         for (let p in newProps) {
             if (newProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    props[p] = newProps[p];
+                    //defaultProps[p] = newProps[p];
                     targetProps[p].nodeValue = newProps[p];
                 } else if (typeof newProps[p] === 'object') {
-                    find(newProps[p], targetProps[p], props[p]);
+                    find(newProps[p], targetProps[p]/*, defaultProps[p]*/);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach((prop, i) => {
-                        //console.log(props)
-                        props[i] = newProps[p];
+                        //console.log(defaultProps)
+                        //defaultProps[i] = newProps[p];
                         prop.nodeValue = newProps[p];
                     });
                 }
@@ -196,5 +199,5 @@ module.exports = {
     Component,
     getInstances,
     setProps,
-    createProp
+    createProp: createPropMap
 };

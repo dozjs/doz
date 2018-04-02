@@ -97,7 +97,7 @@ describe('Doz', function () {
         });
         it('should be ok, update nested', function () {
             Doz.Component('my-component-nested', {
-                props: {
+                defaultProps: {
                     name: 'sono default name'
                 },
                 tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`

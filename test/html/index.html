@@ -13,13 +13,13 @@
 <script>
 
     function updateCounter() {
-        console.log(this.parentNode.__DOZ_INSTANCE__.props);
+        console.log(this.parentNode.__DOZ_INSTANCE__.defaultProps);
         let counter = parseInt(this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue);
         this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue = counter + 1;
     }
 
     Doz.Component('my-component', {
-        tpl: `<div><button onclick="updateCounter.call(this)">{{title}} {{counter}}</button>{{counter}}</div>`
+        tpl: `<div><button onclick="updateCounter()">{{title}} {{counter}}</button>{{counter}}</div>`
     });
 
     new Doz({

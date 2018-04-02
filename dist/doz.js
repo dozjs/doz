@@ -370,7 +370,7 @@ function Component(tag) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        props: {},
+        defaultProps: {},
         tpl: '<div></div>'
     });
 
@@ -388,7 +388,7 @@ function getInstances(element) {
 
             if (cmp) {
                 var newElement = createInstance(cmp, {
-                    props: child.attributes
+                    defaultProps: child.attributes
                 });
 
                 newElement.element[INSTANCE] = newElement;
@@ -423,7 +423,7 @@ function createInstance(cmp, cfg) {
 
     var propsMap = {};
 
-    Array.from(cfg.props).forEach(function (prop) {
+    Array.from(cfg.defaultProps).forEach(function (prop) {
         props[prop.name] = prop.value;
     });
 
@@ -458,7 +458,7 @@ function createInstance(cmp, cfg) {
     tagToText(textNodes);
 
     //Set default data
-    _setProps(cmp.cfg.props, propsMap, props);
+    _setProps(cmp.cfg.defaultProps, propsMap, props);
 
     /*element[INSTANCE] = {
         tag: cmp.tag,
@@ -512,7 +512,7 @@ function _setProps() {
                     find(newProps[p], targetProps[p], props[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach(function (prop, i) {
-                        //console.log(props)
+                        //console.log(defaultProps)
                         props[i] = newProps[p];
                         prop.nodeValue = newProps[p];
                     });
@@ -687,7 +687,7 @@ var Doz = function () {
         this.dom = document.querySelector(this.cfg.el);
         this.components = component.getInstances(this.dom) || [];
 
-        // Set initial props
+        // Set initial defaultProps
         this.setProps();
     }
 
@@ -695,7 +695,7 @@ var Doz = function () {
         key: 'setProps',
         value: function setProps(props) {
             this.components.forEach(function (cmp) {
-                component.setProps(props || cmp.props, cmp.propsMap, {});
+                component.setProps(props || cmp.defaultProps, cmp.propsMap, {});
             });
         }
     }]);
