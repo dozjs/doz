@@ -372,7 +372,8 @@ function Component(tag) {
 
     cmp.cfg = extend.copy(cfg, {
         defaultProps: {},
-        tpl: '<div></div>'
+        template: '<div></div>',
+        methods: {}
     });
 
     register(cmp);
@@ -415,7 +416,7 @@ function createInstance(cmp, cfg) {
     var textNodes = [];
 
     var props = {};
-    var element = html.create(cmp.cfg.tpl);
+    var element = html.create(cmp.cfg.template);
 
     // Find placeholder into text
     textToTag(element);
@@ -430,12 +431,13 @@ function createInstance(cmp, cfg) {
     });
 
     nodes.forEach(function (child) {
+        //console.log(child.nodeName);
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(function (attr) {
-                var key = attr.value.match(PARSER.REGEX.ATTR);
+                var placeholder = attr.value.match(PARSER.REGEX.ATTR);
 
-                if (key) {
-                    var name = key[1];
+                if (placeholder) {
+                    var name = placeholder[1];
                     var component = void 0;
 
                     if (child.nodeName.toLowerCase() === PARSER.TAG.TEXT) {
@@ -467,11 +469,9 @@ function createInstance(cmp, cfg) {
         props: props,
         propsMap: propsMap,
         child: [],
+        methods: cmp.cfg.methods,
         element: element,
         setProps: function setProps(newProps) {
-            //console.log('this.props', this.props);
-            //console.log('newProps', newProps);
-            // this.props = extend.copy(newProps);
             _setProps(this.props, copy(newProps), this.propsMap);
         },
         getProps: function getProps() {
@@ -511,12 +511,12 @@ function _setProps(currentProps) {
         var _loop = function _loop(p) {
             if (nextProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    currentProps[p] = update(currentProps[p], nextProps[p], targetProps[p]);
+                    currentProps[p] = updateProp(currentProps[p], nextProps[p], targetProps[p], initialState);
                 } else if (_typeof(nextProps[p]) === 'object') {
                     find(nextProps[p], targetProps[p], currentProps[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach(function (prop, i) {
-                        currentProps[p] = update(currentProps[p], nextProps[p], prop);
+                        currentProps[p] = updateProp(currentProps[p], nextProps[p], prop, initialState);
                     });
                 }
             }
@@ -527,16 +527,15 @@ function _setProps(currentProps) {
         }
     };
 
-    var update = function update(current, next, map) {
-        if (next !== current || initialState) {
-            current = next;
-            map.nodeValue = current;
-        }
+    find(nextProps, propsMap);
+}
 
-        return current;
-    };
-
-    find(nextProps, propsMap, currentProps);
+function updateProp(current, next, map, disableEqualCheck) {
+    if (next !== current || disableEqualCheck) {
+        current = next;
+        map.nodeValue = current;
+    }
+    return current;
 }
 
 function isSigned(n) {
@@ -565,7 +564,8 @@ module.exports = {
     Component: Component,
     getInstances: getInstances,
     setProps: _setProps,
-    createProp: createPropMap
+    createPropMap: createPropMap,
+    updateProp: updateProp
 };
 
 /***/ }),
@@ -640,7 +640,8 @@ module.exports = {
         REGEX: {
             TAG: /^\w+-[\w-]+$/,
             ATTR: /{{([\w.]+)}}/,
-            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
+            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
+            LISTENER: /<.+ on-(.*)="?(.*)"?.*>/g
         },
         TAG: {
             TEXT: 'doz-text-node'

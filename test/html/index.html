@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="../../dist/doz.js"></script>
+    <script src="../../dist/doz.js?22"></script>
 </head>
 <body>
 <div id="app">
@@ -13,15 +13,21 @@
 <script>
 
     function updateCounter() {
-        const ctx = this.__DOZ_INSTANCE__;
+        //console.log(this.parentNode.parentNode.__DOZ_INSTANCE__);
+        const ctx = this.parentNode.parentNode.__DOZ_INSTANCE__;
         const props = ctx.getProps();
-        console.log(props.counter);
+        //console.log(props.counter);
         props.counter = parseInt(props.counter) + 1;
         ctx.setProps(props);
     }
 
     Doz.Component('my-component', {
-        tpl: `<div><button onclick="updateCounter.call(this.parentNode)">{{title}}</button> {{counter}}</div>`
+        template: `<div><div><button onclick="updateCounter.call(this);">{{title}}</button> {{counter}}</div></div>`,
+        methods: {
+            myCustom() {
+                console.log('cliccato', this)
+            }
+        }
     });
 
     new Doz({

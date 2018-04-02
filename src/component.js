@@ -21,7 +21,8 @@ function Component(tag, cfg = {}) {
 
     cmp.cfg = extend.copy(cfg, {
         defaultProps: {},
-        tpl: '<div></div>'
+        template: '<div></div>',
+        methods: {}
     });
 
     register(cmp);
@@ -64,7 +65,7 @@ function createInstance(cmp, cfg) {
     const textNodes = [];
 
     const props = {};
-    const element = html.create(cmp.cfg.tpl);
+    const element = html.create(cmp.cfg.template);
 
     // Find placeholder into text
     textToTag(element);
@@ -79,12 +80,13 @@ function createInstance(cmp, cfg) {
     });
 
     nodes.forEach(child => {
+        //console.log(child.nodeName);
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(attr => {
-                const key = attr.value.match(PARSER.REGEX.ATTR);
+                const placeholder = attr.value.match(PARSER.REGEX.ATTR);
 
-                if (key) {
-                    const name = key[1];
+                if (placeholder) {
+                    const name = placeholder[1];
                     let component;
 
                     if (child.nodeName.toLowerCase() === PARSER.TAG.TEXT) {
@@ -121,11 +123,9 @@ function createInstance(cmp, cfg) {
         props,
         propsMap,
         child: [],
+        methods: cmp.cfg.methods,
         element,
         setProps: function (newProps) {
-            //console.log('this.props', this.props);
-            //console.log('newProps', newProps);
-            // this.props = extend.copy(newProps);
             setProps(
                 this.props,
                 copy(newProps),
@@ -167,28 +167,27 @@ function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = fa
         for (let p in nextProps) {
             if (nextProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    currentProps[p] = update(currentProps[p], nextProps[p], targetProps[p])
+                    currentProps[p] = updateProp(currentProps[p], nextProps[p], targetProps[p], initialState)
                 } else if (typeof nextProps[p] === 'object') {
                     find(nextProps[p], targetProps[p], currentProps[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach((prop, i) => {
-                        currentProps[p] = update(currentProps[p], nextProps[p], prop)
+                        currentProps[p] = updateProp(currentProps[p], nextProps[p], prop, initialState)
                     });
                 }
             }
         }
     };
 
-    const update = (current, next, map) => {
-        if (next !== current || initialState) {
-            current = next;
-            map.nodeValue = current;
-        }
+    find(nextProps, propsMap);
+}
 
-        return current;
-    };
-
-    find(nextProps, propsMap, currentProps);
+function updateProp(current, next, map, disableEqualCheck) {
+    if (next !== current || disableEqualCheck) {
+        current = next;
+        map.nodeValue = current;
+    }
+    return current;
 }
 
 function isSigned(n) {
@@ -217,5 +216,6 @@ module.exports = {
     Component,
     getInstances,
     setProps,
-    createProp: createPropMap
+    createPropMap,
+    updateProp
 };

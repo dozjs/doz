@@ -21,8 +21,7 @@ describe('Doz', function () {
         it('should be ok', function () {
 
             // language=HTML
-            document.body.innerHTML = `
-                <div id="app"></div>`;
+            document.body.innerHTML = `<div id="app"></div>`;
 
             const view = new Doz({
                 el: '#app'
@@ -32,20 +31,21 @@ describe('Doz', function () {
 
             be.err.not.null(view);
         });
+
         it('should be ok with a component', function () {
-            Doz.Component('my-component-nested', {
-                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
+            Doz.Component('my-component-nested-a', {
+                template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component', {
-                tpl: `<div>hello I'm a {{name}} component <my-component-nested name="INNESTATO"></my-component-nested></div>`
+            Doz.Component('my-component-a', {
+                template: `<div>hello I'm a {{name}} component <my-component-nested-a name="INNESTATO"></my-component-nested-a></div>`
             });
 
             document.body.innerHTML = `
                 <div id="app">
-                    <my-component name="Doz"></my-component>
-                    <my-component name="Mike"></my-component>
-                    <my-component name="Jason"></my-component>
+                    <my-component-a name="Doz"></my-component-a>
+                    <my-component-a name="Mike"></my-component-a>
+                    <my-component-a name="Jason"></my-component-a>
                 </div>
             `;
 
@@ -62,21 +62,21 @@ describe('Doz', function () {
             be.err.true(/Jason/g.test(html));
             be.err.true(/INNESTATO/g.test(html));
         });
+
         it('should be ok, a component with more tags', function () {
-            Doz.Component('my-component-nested', {
-                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
+            Doz.Component('my-component-nested-b', {
+                template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component', {
-                tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested name="INNESTATO"></my-component-nested></div>`
-                //tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component</div>`
+            Doz.Component('my-component-b', {
+                template: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested-b name="INNESTATO"></my-component-nested-b></div>`
             });
 
             document.body.innerHTML = `
                 <div id="app">
-                    <my-component name="Doz"></my-component>
-                    <my-component name="Mike"></my-component>
-                    <my-component name="Jason"></my-component>
+                    <my-component-b name="Doz"></my-component-b>
+                    <my-component-b name="Mike"></my-component-b>
+                    <my-component-b name="Jason"></my-component-b>
                 </div>
             `;
 
@@ -95,29 +95,30 @@ describe('Doz', function () {
 
             //console.log(document.querySelectorAll('div'));
         });
+
         it('should be ok, update nested', function () {
-            Doz.Component('my-component-nested', {
+            Doz.Component('my-component-nested-c', {
                 defaultProps: {
                     name: 'sono default name'
                 },
-                tpl: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
+                template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component', {
-                tpl: `
+            Doz.Component('my-component-c', {
+                template: `
                     <div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component
-                        <my-component-nested name="{{nested1}}"></my-component-nested>
-                        <my-component-nested name="{{nested2}}"></my-component-nested>
+                        <my-component-nested-c name="{{nested1}}"></my-component-nested-c>
+                        <my-component-nested-c name="{{nested2}}"></my-component-nested-c>
                     </div>
                     `
-                //tpl: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component</div>`
+                //template: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component</div>`
             });
 
             document.body.innerHTML = `
                 <div id="app">
-                    <my-component name="Doz" nested1="sono nested1 e tu?"></my-component>
-                    <my-component name="Mike"></my-component>
-                    <my-component name="Jason"></my-component>
+                    <my-component-c name="Doz" nested1="sono nested1 e tu?"></my-component-c>
+                    <my-component-c name="Mike"></my-component-c>
+                    <my-component-c name="Jason"></my-component-c>
                 </div>
             `;
 
@@ -137,7 +138,36 @@ describe('Doz', function () {
 
             //console.log(view.components[0].__DOZ_INSTANCE__.child[0].__DOZ_INSTANCE__.propsMap.name);
             //console.log(view.components[0].__DOZ_INSTANCE__.propsMap);
-            console.log(view.components);
+            //console.log(view.components);
+        });
+
+        it('should be ok with a component and self listener', function () {
+
+            Doz.Component('my-component-button-a', {
+                template: `<button onclick="myFunction()">{{title}}</button>`
+            });
+
+            function myFunction() {
+                console.log('sssssss');
+            }
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <my-component-button-a title="Click Me"></my-component-button-a>
+                </div>
+            `;
+
+            const view = new Doz({
+                el: '#app'
+            });
+
+            const html = document.body.innerHTML;
+            //console.log(view);
+            console.log(html);
+
+            document.querySelector('button').click();
+
+            be.err.true(/Click Me/g.test(html));
         });
     });
 });
