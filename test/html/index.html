@@ -7,19 +7,21 @@
 </head>
 <body>
 <div id="app">
-    <my-component title="Click A" counter="0"></my-component>
-    <my-component title="Click B" counter="0"></my-component>
+    <my-component title="Increment A" counter="0"></my-component>
+    <my-component title="Increment B" counter="0"></my-component>
 </div>
 <script>
 
     function updateCounter() {
-        console.log(this.parentNode.__DOZ_INSTANCE__.defaultProps);
-        let counter = parseInt(this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue);
-        this.parentNode.__DOZ_INSTANCE__.propsMap.counter[0].nodeValue = counter + 1;
+        const ctx = this.__DOZ_INSTANCE__;
+        const props = ctx.getProps();
+        console.log(props.counter);
+        props.counter = parseInt(props.counter) + 1;
+        ctx.setProps(props);
     }
 
     Doz.Component('my-component', {
-        tpl: `<div><button onclick="updateCounter()">{{title}} {{counter}}</button>{{counter}}</div>`
+        tpl: `<div><button onclick="updateCounter.call(this.parentNode)">{{title}}</button> {{counter}}</div>`
     });
 
     new Doz({

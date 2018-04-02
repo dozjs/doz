@@ -11,7 +11,7 @@ function Component(tag, cfg = {}) {
         throw new TypeError('Tag must be a string');
     }
 
-    if (!PARSER.REGEX.TAG.test(tag)){
+    if (!PARSER.REGEX.TAG.test(tag)) {
         throw new TypeError('Tag must contain a dash (-): my-component');
     }
 
@@ -109,15 +109,12 @@ function createInstance(cmp, cfg) {
     tagToText(textNodes);
 
     //Set default data
-    setProps(cmp.cfg.defaultProps, propsMap);
-    setProps(props, propsMap);
-
-    /*element[INSTANCE] = {
-        tag: cmp.tag,
+    setProps(
+        props,
+        cmp.cfg.defaultProps,
         propsMap,
-        child: [],
-        element
-    };*/
+        true
+    );
 
     return {
         tag: cmp.tag,
@@ -126,7 +123,17 @@ function createInstance(cmp, cfg) {
         child: [],
         element,
         setProps: function (newProps) {
-            setProps(newProps, propsMap, props);
+            //console.log('this.props', this.props);
+            //console.log('newProps', newProps);
+            // this.props = extend.copy(newProps);
+            setProps(
+                this.props,
+                copy(newProps),
+                this.propsMap
+            );
+        },
+        getProps: function () {
+            return copy(this.props);
         }
     };
 }
@@ -151,26 +158,37 @@ function createPropMap(name, props, component) {
     }, props);
 }
 
-function setProps(newProps = {}, propsMap = {}, props) {
-    const find = (newProps, targetProps) => {
-        for (let p in newProps) {
-            if (newProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = false) {
+    if (initialState) {
+        nextProps = extend.copy(nextProps, currentProps);
+    }
+
+    const find = (nextProps, targetProps) => {
+        for (let p in nextProps) {
+            if (nextProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    //defaultProps[p] = newProps[p];
-                    targetProps[p].nodeValue = newProps[p];
-                } else if (typeof newProps[p] === 'object') {
-                    find(newProps[p], targetProps[p]/*, defaultProps[p]*/);
+                    currentProps[p] = update(currentProps[p], nextProps[p], targetProps[p])
+                } else if (typeof nextProps[p] === 'object') {
+                    find(nextProps[p], targetProps[p], currentProps[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach((prop, i) => {
-                        //console.log(defaultProps)
-                        //defaultProps[i] = newProps[p];
-                        prop.nodeValue = newProps[p];
+                        currentProps[p] = update(currentProps[p], nextProps[p], prop)
                     });
                 }
             }
         }
     };
-    find(newProps, propsMap);
+
+    const update = (current, next, map) => {
+        if (next !== current || initialState) {
+            current = next;
+            map.nodeValue = current;
+        }
+
+        return current;
+    };
+
+    find(nextProps, propsMap, currentProps);
 }
 
 function isSigned(n) {

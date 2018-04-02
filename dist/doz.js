@@ -352,6 +352,7 @@ var _require2 = __webpack_require__(3),
     SIGN = _require2.SIGN;
 
 var collection = __webpack_require__(2);
+var copy = __webpack_require__(9);
 
 function Component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -388,7 +389,7 @@ function getInstances(element) {
 
             if (cmp) {
                 var newElement = createInstance(cmp, {
-                    defaultProps: child.attributes
+                    props: child.attributes
                 });
 
                 newElement.element[INSTANCE] = newElement;
@@ -423,7 +424,8 @@ function createInstance(cmp, cfg) {
 
     var propsMap = {};
 
-    Array.from(cfg.defaultProps).forEach(function (prop) {
+    // Iterate props by HTMLElement attributes
+    Array.from(cfg.props).forEach(function (prop) {
         props[prop.name] = prop.value;
     });
 
@@ -448,7 +450,7 @@ function createInstance(cmp, cfg) {
 
                     // Sign component
                     component[SIGN] = true;
-                    createProp(name, propsMap, component);
+                    createPropMap(name, propsMap, component);
                 }
             });
         }
@@ -458,14 +460,7 @@ function createInstance(cmp, cfg) {
     tagToText(textNodes);
 
     //Set default data
-    _setProps(cmp.cfg.defaultProps, propsMap, props);
-
-    /*element[INSTANCE] = {
-        tag: cmp.tag,
-        propsMap,
-        child: [],
-        element
-    };*/
+    _setProps(props, cmp.cfg.defaultProps, propsMap, true);
 
     return {
         tag: cmp.tag,
@@ -474,12 +469,18 @@ function createInstance(cmp, cfg) {
         child: [],
         element: element,
         setProps: function setProps(newProps) {
-            _setProps(newProps, propsMap, props);
+            //console.log('this.props', this.props);
+            //console.log('newProps', newProps);
+            // this.props = extend.copy(newProps);
+            _setProps(this.props, copy(newProps), this.propsMap);
+        },
+        getProps: function getProps() {
+            return copy(this.props);
         }
     };
 }
 
-function createProp(name, props, component) {
+function createPropMap(name, props, component) {
     name.split('.').reduce(function (o, i, y, m) {
         var isLast = m[m.length - 1] === i;
         if (isLast) {
@@ -497,34 +498,45 @@ function createProp(name, props, component) {
     }, props);
 }
 
-function _setProps() {
-    var newProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var propsMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var props = arguments[2];
+function _setProps(currentProps) {
+    var nextProps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var propsMap = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var initialState = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-    var find = function find(newProps, targetProps) {
+    if (initialState) {
+        nextProps = extend.copy(nextProps, currentProps);
+    }
+
+    var find = function find(nextProps, targetProps) {
         var _loop = function _loop(p) {
-            if (newProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+            if (nextProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
-                    props[p] = newProps[p];
-                    targetProps[p].nodeValue = newProps[p];
-                } else if (_typeof(newProps[p]) === 'object') {
-                    find(newProps[p], targetProps[p], props[p]);
+                    currentProps[p] = update(currentProps[p], nextProps[p], targetProps[p]);
+                } else if (_typeof(nextProps[p]) === 'object') {
+                    find(nextProps[p], targetProps[p], currentProps[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach(function (prop, i) {
-                        //console.log(defaultProps)
-                        props[i] = newProps[p];
-                        prop.nodeValue = newProps[p];
+                        currentProps[p] = update(currentProps[p], nextProps[p], prop);
                     });
                 }
             }
         };
 
-        for (var p in newProps) {
+        for (var p in nextProps) {
             _loop(p);
         }
     };
-    find(newProps, propsMap);
+
+    var update = function update(current, next, map) {
+        if (next !== current || initialState) {
+            current = next;
+            map.nodeValue = current;
+        }
+
+        return current;
+    };
+
+    find(nextProps, propsMap, currentProps);
 }
 
 function isSigned(n) {
@@ -553,7 +565,7 @@ module.exports = {
     Component: Component,
     getInstances: getInstances,
     setProps: _setProps,
-    createProp: createProp
+    createProp: createPropMap
 };
 
 /***/ }),
@@ -695,7 +707,7 @@ var Doz = function () {
         key: 'setProps',
         value: function setProps(props) {
             this.components.forEach(function (cmp) {
-                component.setProps(props || cmp.defaultProps, cmp.propsMap, {});
+                component.setProps(props || {}, cmp.defaultProps, cmp.propsMap);
             });
         }
     }]);
@@ -812,6 +824,92 @@ var html = {
 };
 
 module.exports = html;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+;(function (name, root, factory) {
+  if (( false ? 'undefined' : _typeof(exports)) === 'object') {
+    module.exports = factory();
+  }
+  /* istanbul ignore next */
+  else if (true) {
+      !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {
+      root[name] = factory();
+    }
+})('dcopy', undefined, function () {
+  /**
+   * Deep copy objects and arrays
+   *
+   * @param {Object/Array} target
+   * @return {Object/Array} copy
+   * @api public
+   */
+
+  return function (target) {
+    if (/number|string|boolean/.test(typeof target === 'undefined' ? 'undefined' : _typeof(target))) {
+      return target;
+    }
+    if (target instanceof Date) {
+      return new Date(target.getTime());
+    }
+
+    var copy = target instanceof Array ? [] : {};
+    walk(target, copy);
+    return copy;
+
+    function walk(target, copy) {
+      for (var key in target) {
+        var obj = target[key];
+        if (obj instanceof Date) {
+          var value = new Date(obj.getTime());
+          add(copy, key, value);
+        } else if (obj instanceof Function) {
+          var value = obj;
+          add(copy, key, value);
+        } else if (obj instanceof Array) {
+          var value = [];
+          var last = add(copy, key, value);
+          walk(obj, last);
+        } else if (obj instanceof Object) {
+          var value = {};
+          var last = add(copy, key, value);
+          walk(obj, last);
+        } else {
+          var value = obj;
+          add(copy, key, value);
+        }
+      }
+    }
+  };
+
+  /**
+   * Adds a value to the copy object based on its type
+   *
+   * @api private
+   */
+
+  function add(copy, key, value) {
+    if (copy instanceof Array) {
+      copy.push(value);
+      return copy[copy.length - 1];
+    } else if (copy instanceof Object) {
+      copy[key] = value;
+      return copy[key];
+    }
+  }
+});
 
 /***/ })
 /******/ ]);
