@@ -21,7 +21,6 @@ function Component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        data: {},
         template: '<div></div>',
         context: {}
     });
@@ -123,43 +122,61 @@ function createInstance(cmp, cfg) {
     // Remove tag text added above
     tagToText(textNodes);
 
-    //Set default data
-    setProps(
-        props,
-        cmp.cfg.context,
-        propsMap,
-        true
-    );
+    const contextProto = Object.defineProperties({}, {
+        element: {
+            enumerable: true,
+            value: fragment
+        },
+        child: {
+            enumerable: true,
+            value: [],
+            writable: true
+        }
+    });
 
+    const context = Object.assign(contextProto, cmp.cfg.context);
+    //console.log(context.hasOwnProperty('title'))
     const instance = {
         tag: cmp.tag,
-        cfg: cmp.cfg,
         props,
         propsMap,
         child: [],
         element: fragment,
-        setProps: function (newProps) {
-            setProps(
-                this.props,
-                copy(newProps),
-                this.propsMap
-            );
-        },
-        getProps: function () {
-            return copy(this.props);
-        },
-        context: createContext(cmp.cfg.context, (value, old, isNew, path) => {
-            console.log('canciuao', value, old, isNew, path)
+        context: observer(context, (value, old, isNew, path) => {
+            console.log('canciau', path)
+            const node = propsMap[path.join('.')];
+            console.log(node);
+            if (node)
+                node.nodeValue = value;
         })
     };
 
-    instance.context.myFunction();
+    //console.log(instance.context.hasOwnProperty('title'))
+    //instance.context.myFunction();
+
+    //instance.context.title = props.title;
+
+    //console.log(props, instance.context)
+//console.log(props);
+    //setProps(instance.context, props);
+
+    instance.context.title = props.title;
 
     return instance;
 }
 
-function createContext(context, onChange) {
-    return observer(context, onChange);
+function setProps(targetObj, defaultObj) {
+    //console.log(defaultObj);
+    //for (let i in defaultObj) {
+    for (let i = 0; i < Object.keys(defaultObj).length; i++) {
+        //console.log(defaultObj[i])
+        if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
+            setProps(targetObj[i], defaultObj[i]);
+        } else {
+            targetObj[i] = defaultObj[i];
+        }
+    }
+    return targetObj;
 }
 
 function createPropMap(name, props, component) {
@@ -182,6 +199,7 @@ function createPropMap(name, props, component) {
     }, props);
 }
 
+/*
 function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = false) {
     if (initialState) {
         nextProps = extend.copy(nextProps, currentProps);
@@ -190,22 +208,23 @@ function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = fa
     const find = (nextProps, targetProps) => {
         for (let p in nextProps) {
             if (nextProps.hasOwnProperty(p) && typeof nextProps[p] !== 'function' && targetProps.hasOwnProperty(p)) {
-                if (isSigned(targetProps[p])) {
-                    currentProps[p] = updateProp(currentProps[p], nextProps[p], targetProps[p], initialState)
-                } else if (typeof nextProps[p] === 'object') {
+                if (typeof nextProps[p] === 'object') {
                     find(nextProps[p], targetProps[p], currentProps[p]);
                 } else if (Array.isArray(targetProps[p])) {
                     targetProps[p].forEach((prop, i) => {
-                        currentProps[p] = updateProp(currentProps[p], nextProps[p], prop, initialState)
+                        currentProps[p][i] = nextProps[p][i]
                     });
+                } else {
+                    currentProps[p] = nextProps[p];
                 }
             }
         }
     };
 
     find(nextProps, propsMap);
-}
+}*/
 
+/*
 function updateProp(current, next, map, disableEqualCheck) {
     if (next !== current || disableEqualCheck) {
         current = next;
@@ -217,7 +236,7 @@ function updateProp(current, next, map, disableEqualCheck) {
 function isSigned(n) {
     return n.hasOwnProperty(SIGN);
 }
-
+*/
 function textToTag(el) {
     el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
         // Remove spaces
@@ -239,7 +258,7 @@ function sanitize(field) {
 module.exports = {
     Component,
     getInstances,
-    setProps,
+    //setProps,
     createPropMap,
-    updateProp
+    //updateProp
 };

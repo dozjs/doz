@@ -156,7 +156,6 @@ describe('Doz', function () {
                     title: 'ciao',
                     myFunction: function () {
                         this.title = 'altra cosa';
-                        //console.log(this);
                     }
                 }
             });

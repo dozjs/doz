@@ -15,15 +15,15 @@ class Doz {
         this.components = component.getInstances(this.dom) || [];
 
         // Set initial defaultProps
-        this.setProps();
+        //this.setProps();
 
     }
 
-    setProps(props) {
+    /*setProps(props) {
         this.components.forEach(cmp => {
             component.setProps(props || {},  cmp.defaultProps, cmp.propsMap);
         })
-    }
+    }*/
 
 }
 
