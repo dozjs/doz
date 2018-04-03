@@ -4,6 +4,7 @@ const html = require('./html');
 const {INSTANCE, PARSER, SIGN} = require('./constants');
 const collection = require('./collection');
 const copy = require('deep-copy');
+const observer = require('./observer');
 
 function Component(tag, cfg = {}) {
 
@@ -20,10 +21,9 @@ function Component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        defaultProps: {},
+        data: {},
         template: '<div></div>',
-        context: {},
-        events: {}
+        context: {}
     });
 
     register(cmp);
@@ -126,17 +126,17 @@ function createInstance(cmp, cfg) {
     //Set default data
     setProps(
         props,
-        cmp.cfg.defaultProps,
+        cmp.cfg.context,
         propsMap,
         true
     );
 
-    return {
+    const instance = {
         tag: cmp.tag,
+        cfg: cmp.cfg,
         props,
         propsMap,
         child: [],
-        context: cmp.cfg.context,
         element: fragment,
         setProps: function (newProps) {
             setProps(
@@ -147,8 +147,19 @@ function createInstance(cmp, cfg) {
         },
         getProps: function () {
             return copy(this.props);
-        }
+        },
+        context: createContext(cmp.cfg.context, (value, old, isNew, path) => {
+            console.log('canciuao', value, old, isNew, path)
+        })
     };
+
+    instance.context.myFunction();
+
+    return instance;
+}
+
+function createContext(context, onChange) {
+    return observer(context, onChange);
 }
 
 function createPropMap(name, props, component) {
@@ -178,7 +189,7 @@ function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = fa
 
     const find = (nextProps, targetProps) => {
         for (let p in nextProps) {
-            if (nextProps.hasOwnProperty(p) && targetProps.hasOwnProperty(p)) {
+            if (nextProps.hasOwnProperty(p) && typeof nextProps[p] !== 'function' && targetProps.hasOwnProperty(p)) {
                 if (isSigned(targetProps[p])) {
                     currentProps[p] = updateProp(currentProps[p], nextProps[p], targetProps[p], initialState)
                 } else if (typeof nextProps[p] === 'object') {

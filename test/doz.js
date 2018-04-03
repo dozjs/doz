@@ -99,7 +99,7 @@ describe('Doz', function () {
 
         it('should be ok, update nested', function () {
             Doz.Component('my-component-nested-c', {
-                defaultProps: {
+                context: {
                     name: 'sono default name'
                 },
                 template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
@@ -153,16 +153,13 @@ describe('Doz', function () {
                     </div>
                 `,
                 context: {
-                    myData: {},
+                    title: 'ciao',
                     myFunction: function () {
-
+                        this.title = 'altra cosa';
+                        //console.log(this);
                     }
                 }
             });
-
-            function myFunction() {
-                console.log('sssssss');
-            }
 
             document.body.innerHTML = `
                 <div id="app">
@@ -182,7 +179,7 @@ describe('Doz', function () {
 
             //document.querySelector('button').click();
 
-            be.err.true(/Click Me/g.test(html));
+            //be.err.true(/Click Me/g.test(html));
         });
     });
 });

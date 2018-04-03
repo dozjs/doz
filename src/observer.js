@@ -4,14 +4,24 @@
  * @param object
  * @param onChange
  * @returns {*}
- * @link https://github.com/sindresorhus/on-change
+ * @link https://github.com/sindresorhus/on-change Inspired
  */
 module.exports = (object, onChange) => {
+
+    const path = [];
+
     const handler = {
         get(target, property, receiver) {
             try {
+                if (!target.hasOwnProperty(property))
+                    target[property] = {};
+
+                if (typeof target[property] !== 'function')
+                    path.push(property);
+
                 return new Proxy(target[property], handler);
             } catch (err) {
+
                 return Reflect.get(target, property, receiver);
             }
         },
@@ -19,13 +29,16 @@ module.exports = (object, onChange) => {
             const isNew = !target.hasOwnProperty(property);
             const current = target[property];
             const next = descriptor.value;
-            console.log('ddddd')
-            if(current !== next)
-                onChange(next, current, isNew);
+
+            path.push(property);
+
+            if (current !== next)
+                onChange(next, current, isNew, path);
+
             return Reflect.defineProperty(target, property, descriptor);
         },
         deleteProperty(target, property) {
-            onChange(undefined, target[property], false);
+            onChange(undefined, target[property], false, path);
             return Reflect.deleteProperty(target, property);
         }
     };

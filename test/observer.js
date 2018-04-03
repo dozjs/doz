@@ -45,6 +45,7 @@ describe('Observer', function () {
             context.c.d = 'sopra';
 
         });
+
         it('should changed, new property', function (done) {
             const t = {
                 template: '<div>hello</div>',
@@ -65,11 +66,14 @@ describe('Observer', function () {
 
             const context = observer(t.context, (value, old, isNew) => {
                 console.log('Object new property:', value, 'before:', old, 'isNew:', isNew);
-                if (value === 'sopra' && old === undefined && isNew)
-                    done();
+                be.err.equal(value, 'sopra');
+                be.err.undefined(old);
+                be.err.true(isNew);
+                done();
             });
             //console.log(context);
             context.y = 'sopra';
+            console.log(context.y);
 
         });
         it('should changed, new property nested', function (done) {
@@ -90,13 +94,17 @@ describe('Observer', function () {
                 }
             };
 
-            const context = observer(t.context, (value, old, isNew) => {
-                console.log('Object new property:', value, 'before:', old, 'isNew:', isNew);
-                if (value === 'sopra' && old === undefined && isNew)
-                    done();
+            const context = observer(t.context, (value, old, isNew, path) => {
+                console.log('Object new property:', value, 'before:', old, 'isNew:', isNew, 'path:', path);
+                be.err.equal(value, 'sopra');
+                be.err.undefined(old);
+                be.err.true(isNew);
+                be.err.equal(path, ['c', 'e', 'x']);
+                done();
             });
-            //console.log(context);
-            context.c.d.x = 'sopra';
+
+            context.c.e.x = 'sopra';
+            console.log(context.c.e.x);
 
         });
         it('should changed, deep array', function (done) {
@@ -119,10 +127,13 @@ describe('Observer', function () {
                 }
             };
 
-            const context = observer(t.context, (value, old) => {
-                console.log('Object changed:', value, 'before:', old);
-                if (value === 'sopra' && old === 'sono array')
-                    done();
+            const context = observer(t.context, (value, old, isNew, path) => {
+                console.log('Object changed:', value, 'before:', old, path);
+                be.err.equal(value, 'sopra');
+                be.err.equal(old, 'sono array');
+                be.err.false(isNew);
+                be.err.equal(path, ['c', 'd', '0']);
+                done();
             });
             //console.log(context);
             context.c.d[0] = 'sopra';
