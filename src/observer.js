@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Observe object changes,
  * This new implementation trigger change only if is really changed and returns new value and old
@@ -8,7 +9,7 @@
  */
 module.exports = (object, onChange) => {
 
-    const path = [];
+    let path = [];
 
     const handler = {
         get(target, property, receiver) {
@@ -21,7 +22,6 @@ module.exports = (object, onChange) => {
 
                 return new Proxy(target[property], handler);
             } catch (err) {
-
                 return Reflect.get(target, property, receiver);
             }
         },
@@ -30,15 +30,19 @@ module.exports = (object, onChange) => {
             const current = target[property];
             const next = descriptor.value;
 
+            //console.log('PROPERTY', target[property]);
             path.push(property);
 
-            if (current !== next)
+            if (current !== next) {
                 onChange(next, current, isNew, path);
+                path = [];
+            }
 
             return Reflect.defineProperty(target, property, descriptor);
         },
         deleteProperty(target, property) {
             onChange(undefined, target[property], false, path);
+            path = [];
             return Reflect.deleteProperty(target, property);
         }
     };

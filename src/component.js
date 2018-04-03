@@ -4,7 +4,7 @@ const html = require('./html');
 const {INSTANCE, PARSER, SIGN} = require('./constants');
 const collection = require('./collection');
 const copy = require('deep-copy');
-const observer = require('./observer');
+const observer = require('./helper/observer');
 
 function Component(tag, cfg = {}) {
 
@@ -134,47 +134,50 @@ function createInstance(cmp, cfg) {
         }
     });
 
-    const context = Object.assign(contextProto, cmp.cfg.context);
-    //console.log(context.hasOwnProperty('title'))
+    let context = Object.assign(contextProto, {});
+
     const instance = {
         tag: cmp.tag,
         props,
         propsMap,
         child: [],
         element: fragment,
-        context: observer(context, (value, old, isNew, path) => {
-            console.log('canciau', path)
-            const node = propsMap[path.join('.')];
-            console.log(node);
-            if (node)
-                node.nodeValue = value;
+        context: observer.create(context, false, change => {
+            change.forEach(item => {
+                const node = propsMap[item.currentPath];
+                //console.log(node);
+                if (node) {
+                    if (Array.isArray(node)) {
+                        node.forEach(n => {
+                            n.nodeValue = item.newValue;
+                        });
+                    } else {
+                        node.nodeValue = item.newValue;
+                    }
+                }
+            });
+
         })
     };
 
-    //console.log(instance.context.hasOwnProperty('title'))
-    //instance.context.myFunction();
+    //console.log(props);
 
-    //instance.context.title = props.title;
-
-    //console.log(props, instance.context)
-//console.log(props);
-    //setProps(instance.context, props);
-
-    instance.context.title = props.title;
+    // Set default
+    setProps(instance.context, cmp.cfg.context);
+    // Set props if exists
+    setProps(instance.context, props);
 
     return instance;
 }
 
 function setProps(targetObj, defaultObj) {
-    //console.log(defaultObj);
-    //for (let i in defaultObj) {
-    for (let i = 0; i < Object.keys(defaultObj).length; i++) {
-        //console.log(defaultObj[i])
-        if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
-            setProps(targetObj[i], defaultObj[i]);
-        } else {
-            targetObj[i] = defaultObj[i];
-        }
+    for (let i in defaultObj) {
+        if(defaultObj.hasOwnProperty(i))
+            if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
+                setProps(targetObj[i], defaultObj[i]);
+            } else {
+                targetObj[i] = defaultObj[i];
+            }
     }
     return targetObj;
 }
@@ -199,44 +202,6 @@ function createPropMap(name, props, component) {
     }, props);
 }
 
-/*
-function setProps(currentProps, nextProps = {}, propsMap = {}, initialState = false) {
-    if (initialState) {
-        nextProps = extend.copy(nextProps, currentProps);
-    }
-
-    const find = (nextProps, targetProps) => {
-        for (let p in nextProps) {
-            if (nextProps.hasOwnProperty(p) && typeof nextProps[p] !== 'function' && targetProps.hasOwnProperty(p)) {
-                if (typeof nextProps[p] === 'object') {
-                    find(nextProps[p], targetProps[p], currentProps[p]);
-                } else if (Array.isArray(targetProps[p])) {
-                    targetProps[p].forEach((prop, i) => {
-                        currentProps[p][i] = nextProps[p][i]
-                    });
-                } else {
-                    currentProps[p] = nextProps[p];
-                }
-            }
-        }
-    };
-
-    find(nextProps, propsMap);
-}*/
-
-/*
-function updateProp(current, next, map, disableEqualCheck) {
-    if (next !== current || disableEqualCheck) {
-        current = next;
-        map.nodeValue = current;
-    }
-    return current;
-}
-
-function isSigned(n) {
-    return n.hasOwnProperty(SIGN);
-}
-*/
 function textToTag(el) {
     el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
         // Remove spaces

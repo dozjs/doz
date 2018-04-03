@@ -137,6 +137,7 @@ describe('Observer', function () {
             });
             //console.log(context);
             context.c.d[0] = 'sopra';
+            context.c.d[1] = 'sopra1';
 
         });
 
