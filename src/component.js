@@ -22,7 +22,8 @@ function Component(tag, cfg = {}) {
     cmp.cfg = extend.copy(cfg, {
         defaultProps: {},
         template: '<div></div>',
-        methods: {}
+        context: {},
+        events: {}
     });
 
     register(cmp);
@@ -63,16 +64,15 @@ function getInstances(element) {
 
 function createInstance(cmp, cfg) {
     const textNodes = [];
-
     const props = {};
-    const element = html.create(cmp.cfg.template);
+    const propsMap = {};
+    const events = [];
+    const fragment = html.create(cmp.cfg.template);
 
     // Find placeholder into text
-    textToTag(element);
+    textToTag(fragment);
 
-    const nodes = html.getAllNodes(element);
-
-    const propsMap = {};
+    const nodes = html.getAllNodes(fragment);
 
     // Iterate props by HTMLElement attributes
     Array.from(cfg.props).forEach(prop => {
@@ -80,28 +80,41 @@ function createInstance(cmp, cfg) {
     });
 
     nodes.forEach(child => {
-        //console.log(child.nodeName);
+
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(attr => {
-                const placeholder = attr.value.match(PARSER.REGEX.ATTR);
+                const placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
+                const listenerMatch = attr.name.match(PARSER.REGEX.LISTENER);
 
-                if (placeholder) {
-                    const name = placeholder[1];
-                    let component;
+                // Found listener
+                if (listenerMatch) {
+                    const event = listenerMatch[1];
+                    const listener = attr.value;
+
+                    events.push({
+                        event,
+                        listener,
+                        element: child
+                    });
+
+                    // Found placeholder
+                } else if (placeholderMatch) {
+                    const placeholder = placeholderMatch[1];
+                    let element;
 
                     if (child.nodeName.toLowerCase() === PARSER.TAG.TEXT) {
-                        component = document.createTextNode('');
+                        element = document.createTextNode('');
                         textNodes.push({
                             old: child,
-                            new: component
+                            new: element
                         });
                     } else {
-                        component = attr;
+                        element = attr;
                     }
 
                     // Sign component
-                    component[SIGN] = true;
-                    createPropMap(name, propsMap, component);
+                    element[SIGN] = true;
+                    createPropMap(placeholder, propsMap, element);
                 }
             });
         }
@@ -123,8 +136,8 @@ function createInstance(cmp, cfg) {
         props,
         propsMap,
         child: [],
-        methods: cmp.cfg.methods,
-        element,
+        context: cmp.cfg.context,
+        element: fragment,
         setProps: function (newProps) {
             setProps(
                 this.props,

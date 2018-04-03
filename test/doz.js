@@ -21,7 +21,8 @@ describe('Doz', function () {
         it('should be ok', function () {
 
             // language=HTML
-            document.body.innerHTML = `<div id="app"></div>`;
+            document.body.innerHTML = `
+                <div id="app"></div>`;
 
             const view = new Doz({
                 el: '#app'
@@ -144,7 +145,19 @@ describe('Doz', function () {
         it('should be ok with a component and self listener', function () {
 
             Doz.Component('my-component-button-a', {
-                template: `<button onclick="myFunction()">{{title}}</button>`
+                template: `
+                    <div>
+                        <div>
+                            <button on-click="myFunction()">{{title}}</button>
+                        </div>
+                    </div>
+                `,
+                context: {
+                    myData: {},
+                    myFunction: function () {
+
+                    }
+                }
             });
 
             function myFunction() {
@@ -165,7 +178,9 @@ describe('Doz', function () {
             //console.log(view);
             console.log(html);
 
-            document.querySelector('button').click();
+            //console.log(context);
+
+            //document.querySelector('button').click();
 
             be.err.true(/Click Me/g.test(html));
         });
