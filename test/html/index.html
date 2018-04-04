@@ -3,30 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="../../dist/doz.js?22"></script>
+    <script src="../../dist/doz.js?589654"></script>
 </head>
 <body>
 <div id="app">
-    <my-component title="Increment A" counter="0"></my-component>
-    <my-component title="Increment B" counter="0"></my-component>
+    <my-component title="Increment A"></my-component>
+    <my-component title="Increment B"></my-component>
 </div>
 <script>
 
-    function updateCounter() {
-        //console.log(this.parentNode.parentNode.__DOZ_INSTANCE__);
-        const ctx = this.parentNode.parentNode.__DOZ_INSTANCE__;
-        const props = ctx.getProps();
-        //console.log(props.counter);
-        props.counter = parseInt(props.counter) + 1;
-        ctx.setProps(props);
-    }
-
     Doz.Component('my-component', {
-        template: `<div><div><button onclick="updateCounter.call(this);">{{title}}</button> {{counter}}</div></div>`,
-        methods: {
-            myCustom() {
-                console.log('cliccato', this)
-            }
+        template: `<div><div><button on-click="this.counter += 1">{{title}}</button> {{counter}}</div></div>`,
+        context: {
+            counter: 0/*,
+            updateCounter(e) {
+                this.counter += 1;
+                console.log(this.element);
+            }*/
         }
     });
 

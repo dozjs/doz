@@ -65,7 +65,7 @@ function createInstance(cmp, cfg) {
     const textNodes = [];
     const props = {};
     const propsMap = {};
-    const events = [];
+    const handlers = [];
     const fragment = html.create(cmp.cfg.template);
 
     // Find placeholder into text
@@ -90,7 +90,7 @@ function createInstance(cmp, cfg) {
                     const event = listenerMatch[1];
                     const listener = attr.value;
 
-                    events.push({
+                    handlers.push({
                         event,
                         listener,
                         element: child
@@ -125,7 +125,8 @@ function createInstance(cmp, cfg) {
     const contextProto = Object.defineProperties({}, {
         element: {
             enumerable: true,
-            value: fragment
+            value: fragment,
+            configurable: true
         },
         child: {
             enumerable: true,
@@ -160,14 +161,26 @@ function createInstance(cmp, cfg) {
         })
     };
 
-    //console.log(props);
-
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
     setProps(instance.context, props);
+    // Create eventual handlers
+    createHandlers(instance.context, handlers);
 
     return instance;
+}
+
+function createHandlers(context, handlers) {
+    handlers.forEach(h => {
+        if (h.listener in context && typeof context[h.listener] === 'function') {
+            h.element.addEventListener(h.event, context[h.listener].bind(context));
+        } else {
+            h.element.addEventListener(h.event, function () {
+                eval(h.listener);
+            }.bind(context));
+        }
+    });
 }
 
 function setProps(targetObj, defaultObj) {

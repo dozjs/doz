@@ -142,20 +142,21 @@ describe('Doz', function () {
             //console.log(view.components);
         });
 
-        it('should be ok with a component and self listener', function () {
+        it('should be ok with a component and an handler', function () {
 
             Doz.Component('my-component-button-a', {
                 template: `
                     <div>
                         <div>
-                            <button on-click="myFunction()">{{title}}</button>
+                            <button on-click="myFunction">{{title}}</button>
                         </div>
                     </div>
                 `,
                 context: {
                     title: 'ciao',
-                    myFunction: function () {
+                    myFunction() {
                         this.title = 'altra cosa';
+                        console.log(this.element);
                     }
                 }
             });
@@ -170,15 +171,47 @@ describe('Doz', function () {
                 el: '#app'
             });
 
-            const html = document.body.innerHTML;
-            //console.log(view);
-            console.log(html);
+            const button = document.querySelector('button');
 
-            //console.log(context);
+            console.log(document.body.innerHTML);
+            be.err.true(/Click Me/g.test(button.innerHTML));
+            button.click();
+            console.log(document.body.innerHTML);
+            be.err.true(/altra cosa/g.test(button.innerHTML));
+        });
 
-            //document.querySelector('button').click();
+        it('should be ok with a component and anonymous function', function () {
 
-            //be.err.true(/Click Me/g.test(html));
+            Doz.Component('my-component-button-b', {
+                template: `
+                    <div>
+                        <div>
+                            <button on-click="this.counter += 1">{{title}} - {{counter}}</button>
+                        </div>
+                    </div>
+                `,
+                context: {
+                    counter: 0
+                }
+            });
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <my-component-button-b title="Click Me"></my-component-button-b>
+                </div>
+            `;
+
+            const view = new Doz({
+                el: '#app'
+            });
+
+            const button = document.querySelector('button');
+
+            console.log(document.body.innerHTML);
+            be.err.true(/Click Me/g.test(button.innerHTML));
+            button.click();
+            console.log(document.body.innerHTML);
+            be.err.true(/Click Me - 1/g.test(button.innerHTML));
         });
     });
 });

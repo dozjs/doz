@@ -416,7 +416,7 @@ function createInstance(cmp, cfg) {
     var textNodes = [];
     var props = {};
     var propsMap = {};
-    var events = [];
+    var handlers = [];
     var fragment = html.create(cmp.cfg.template);
 
     // Find placeholder into text
@@ -441,7 +441,7 @@ function createInstance(cmp, cfg) {
                     var event = listenerMatch[1];
                     var listener = attr.value;
 
-                    events.push({
+                    handlers.push({
                         event: event,
                         listener: listener,
                         element: child
@@ -476,7 +476,8 @@ function createInstance(cmp, cfg) {
     var contextProto = Object.defineProperties({}, {
         element: {
             enumerable: true,
-            value: fragment
+            value: fragment,
+            configurable: true
         },
         child: {
             enumerable: true,
@@ -496,7 +497,16 @@ function createInstance(cmp, cfg) {
         context: observer.create(context, false, function (change) {
             change.forEach(function (item) {
                 var node = propsMap[item.currentPath];
-                if (node) node.nodeValue = item.newValue;
+                //console.log(node);
+                if (node) {
+                    if (Array.isArray(node)) {
+                        node.forEach(function (n) {
+                            n.nodeValue = item.newValue;
+                        });
+                    } else {
+                        node.nodeValue = item.newValue;
+                    }
+                }
             });
         })
     };
@@ -505,8 +515,22 @@ function createInstance(cmp, cfg) {
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
     setProps(instance.context, props);
+    // Create eventual handlers
+    createHandlers(instance.context, handlers);
 
     return instance;
+}
+
+function createHandlers(context, handlers) {
+    handlers.forEach(function (h) {
+        if (h.listener in context && typeof context[h.listener] === 'function') {
+            h.element.addEventListener(h.event, context[h.listener].bind(context));
+        } else {
+            h.element.addEventListener(h.event, function () {
+                eval(h.listener);
+            }.bind(context));
+        }
+    });
 }
 
 function setProps(targetObj, defaultObj) {
