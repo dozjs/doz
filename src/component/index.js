@@ -1,10 +1,11 @@
 const extend = require('defaulty');
-const {register} = require('./collection');
-const html = require('./html');
-const {INSTANCE, PARSER, SIGN} = require('./constants');
-const collection = require('./collection');
+const {register} = require('../collection');
+const html = require('../html');
+const {INSTANCE, PARSER, SIGN} = require('../constants');
+const collection = require('../collection');
 const copy = require('deep-copy');
-const observer = require('./helper/observer');
+const observer = require('./observer');
+const events = require('./events');
 
 function Component(tag, cfg = {}) {
 
@@ -47,11 +48,14 @@ function getInstances(element) {
                 child.parentNode.replaceChild(newElement.element, child);
                 components.push(newElement);
 
+                events.callRender(newElement.context);
+
                 if (newElement.element.querySelectorAll('*').length) {
                     const nestedChild = getInstances(newElement.element.firstChild);
                     //console.log(nestedChild);
                     if (nestedChild.length) {
                         newElement.child = newElement.child.concat(nestedChild);
+                        newElement.context.child = newElement.child;
                     }
                 }
             }
@@ -136,6 +140,7 @@ function createInstance(cmp, cfg) {
     });
 
     let context = Object.assign(contextProto, {});
+    let isCreated = false;
 
     const instance = {
         tag: cmp.tag,
@@ -144,6 +149,7 @@ function createInstance(cmp, cfg) {
         child: [],
         element: fragment,
         context: observer.create(context, false, change => {
+
             change.forEach(item => {
                 const node = propsMap[item.currentPath];
                 //console.log(node);
@@ -158,6 +164,9 @@ function createInstance(cmp, cfg) {
                 }
             });
 
+            if (isCreated) {
+                events.callUpdate(context);
+            }
         })
     };
 
@@ -167,6 +176,9 @@ function createInstance(cmp, cfg) {
     setProps(instance.context, props);
     // Create eventual handlers
     createHandlers(instance.context, handlers);
+
+    events.callCreate(instance.context);
+    isCreated = true;
 
     return instance;
 }
@@ -187,7 +199,7 @@ function createHandlers(context, handlers) {
 
 function setProps(targetObj, defaultObj) {
     for (let i in defaultObj) {
-        if(defaultObj.hasOwnProperty(i))
+        if (defaultObj.hasOwnProperty(i))
             if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
                 setProps(targetObj[i], defaultObj[i]);
             } else {

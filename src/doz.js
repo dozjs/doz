@@ -1,5 +1,5 @@
 const extend = require('defaulty');
-const component = require('./component');
+const component = require('./component/index');
 
 class Doz {
 

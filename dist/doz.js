@@ -354,6 +354,7 @@ var _require2 = __webpack_require__(3),
 var collection = __webpack_require__(2);
 var copy = __webpack_require__(9);
 var observer = __webpack_require__(10);
+var events = __webpack_require__(11);
 
 function Component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -398,11 +399,14 @@ function getInstances(element) {
                 child.parentNode.replaceChild(newElement.element, child);
                 components.push(newElement);
 
+                events.callRender(newElement.context);
+
                 if (newElement.element.querySelectorAll('*').length) {
                     var nestedChild = getInstances(newElement.element.firstChild);
                     //console.log(nestedChild);
                     if (nestedChild.length) {
                         newElement.child = newElement.child.concat(nestedChild);
+                        newElement.context.child = newElement.child;
                     }
                 }
             }
@@ -487,6 +491,7 @@ function createInstance(cmp, cfg) {
     });
 
     var context = Object.assign(contextProto, {});
+    var isCreated = false;
 
     var instance = {
         tag: cmp.tag,
@@ -495,6 +500,7 @@ function createInstance(cmp, cfg) {
         child: [],
         element: fragment,
         context: observer.create(context, false, function (change) {
+
             change.forEach(function (item) {
                 var node = propsMap[item.currentPath];
                 //console.log(node);
@@ -508,6 +514,10 @@ function createInstance(cmp, cfg) {
                     }
                 }
             });
+
+            if (isCreated) {
+                events.callUpdate(context);
+            }
         })
     };
 
@@ -517,6 +527,9 @@ function createInstance(cmp, cfg) {
     setProps(instance.context, props);
     // Create eventual handlers
     createHandlers(instance.context, handlers);
+
+    events.callCreate(instance.context);
+    isCreated = true;
 
     return instance;
 }
@@ -1386,6 +1399,44 @@ var ObservableSlim = function () {
 try {
     module.exports = ObservableSlim;
 } catch (err) {}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function callCreate(context) {
+    if (typeof context.onCreate === 'function') {
+        context.onCreate.call(context);
+    }
+}
+
+function callRender(context) {
+    if (typeof context.onRender === 'function') {
+        context.onRender.call(context);
+    }
+}
+
+function callUpdate(context) {
+    if (typeof context.onUpdate === 'function') {
+        context.onUpdate.call(context);
+    }
+}
+
+function callDestroy(context) {
+    if (typeof context.onDestroy === 'function') {
+        context.onDestroy.call(context);
+    }
+}
+
+module.exports = {
+    callCreate: callCreate,
+    callRender: callRender,
+    callUpdate: callUpdate,
+    callDestroy: callDestroy
+};
 
 /***/ })
 /******/ ]);

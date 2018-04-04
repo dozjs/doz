@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../dist/doz.js?589654"></script>
+    <style>
+        body{
+            font-family: sans-serif;
+        }
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <doz-clock title="it's"></doz-clock>
+</div>
+<script>
+
+    Doz.Component('doz-clock', {
+        template: `<div>{{title}}: {{time}}</div>`,
+        context: {
+            time: '--:--:--',
+            onRender() {
+                setInterval(() => this.currentTime(), 1000)
+            },
+
+            currentTime() {
+                this.time = new Date().toLocaleTimeString()
+            }
+        }
+    });
+
+    new Doz({
+        el: '#app'
+    })
+
+</script>
+</body>
+</html>
