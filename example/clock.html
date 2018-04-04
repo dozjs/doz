@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - example</title>
     <title>Title</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
     <script src="../dist/doz.js?589654"></script>
     <style>
-        body{
+        body {
             font-family: sans-serif;
         }
+
         div {
             font-size: 35px;
             padding: 20px;
@@ -22,6 +24,37 @@
 <div id="app">
     <doz-clock title="it's"></doz-clock>
 </div>
+
+<h2>HTML</h2>
+<pre class="prettyprint">
+    <code class="lang-html">
+&lt;div id=&quot;app&quot;&gt;
+    &lt;doz-clock title=&quot;it&apos;s&quot;&gt;&lt;/doz-clock&gt;
+&lt;/div&gt;
+    </code>
+</pre>
+<h2>JavaScript</h2>
+<pre class="prettyprint">
+    <code class="lang-js">
+    Doz.Component(&apos;doz-clock&apos;, {
+        template: &grave;&lt;div&gt;{{title}}: {{time}}&lt;/div&gt;&grave;,
+        context: {
+            time: &apos;--:--:--&apos;,
+            onRender() {
+                setInterval(() =&gt; this.currentTime(), 1000)
+            },
+
+            currentTime() {
+                this.time = new Date().toLocaleTimeString()
+            }
+        }
+    });
+
+    new Doz({
+        el: &apos;#app&apos;
+    })
+    </code>
+</pre>
 <script>
 
     Doz.Component('doz-clock', {
