@@ -530,6 +530,8 @@ function createHandlers(context, handlers) {
                 eval(h.listener);
             }.bind(context));
         }
+        // Remove custom attribute
+        h.element.removeAttribute('on-' + h.event);
     });
 }
 
@@ -583,9 +585,9 @@ function sanitize(field) {
 module.exports = {
     Component: Component,
     getInstances: getInstances,
-    //setProps,
-    createPropMap: createPropMap
-    //updateProp
+    setProps: setProps,
+    createPropMap: createPropMap,
+    createHandlers: createHandlers
 };
 
 /***/ }),
