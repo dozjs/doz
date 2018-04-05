@@ -23,7 +23,20 @@ function sanitize(field) {
 }
 
 function getByPath(path, obj) {
-    return path.split('.').reduce((res, prop) => res[prop], obj);
+    return path.split('.').reduce((res, prop) =>
+        res
+            ? res[prop]
+            : {}
+            , obj);
+}
+
+function getLastObjectByPath(path, obj) {
+    if (path.indexOf('.') !== -1) {
+        path = path.split('.');
+        path.pop();
+        path = path.join('.');
+    }
+    return getByPath(path, obj);
 }
 
 /**
@@ -112,6 +125,7 @@ module.exports = {
     tagToText,
     canModel,
     getByPath,
+    getLastObjectByPath,
     objectToPath,
     pathify
 };

@@ -74,7 +74,7 @@ describe('Doz.model', function () {
                 `,
                 context: {
                     data: {
-                        message: 'mmm'
+                        message: 'mmm',
                     },
                     onCreate() {
                         console.log('component created');

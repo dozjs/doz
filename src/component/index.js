@@ -149,16 +149,15 @@ function createInstance(cmp, cfg) {
         element: fragment,
         context: observer.create(context, false, change => {
 
-            //console.log(change);
             change.forEach(item => {
                 //if (item.type !== 'update') return;
                 //const node = propsMap[item.currentPath];
 
                 const nodes = helper.pathify(item);
 
-                for(let path in nodes) {
+                for (let path in nodes) {
                     if (nodes.hasOwnProperty(path)) {
-                        console.log(path);
+                        //console.log(path);
                         const node = helper.getByPath(path, propsMap);
                         const nodeValue = nodes[path];
 
@@ -208,6 +207,8 @@ function createInstance(cmp, cfg) {
     events.callCreate(instance.context);
     isCreated = true;
 
+    //console.log(propsMap)
+
     return instance;
 }
 
@@ -215,17 +216,25 @@ function createListenerModel(context, models) {
 
     models.forEach(m => {
         if (typeof context[m.field] !== 'function') {
-            //context[m.field] = context[m.field] || {};
-            //console.log('context.data',context[m.field], m.field);
-            //console.log('m.element',m.element);
             ['compositionstart', 'compositionend', 'input', 'change']
                 .forEach(function (event) {
                     m.element.addEventListener(event, function () {
-                        //console.log('change', m.field)
-                        console.log('data', context['data.message'])
-                        //context['data'] = {message:''};
-                        console.log(context['data']);
-                        context[m.field] = this.value;
+                        const path = helper.getLastObjectByPath(m.field, context);
+
+                        //TODO Make object structure if not exists
+
+                        if (typeof path === 'undefined')
+                            throw new Error('object not found at ' + m.field);
+
+                        if (typeof path === 'object') {
+                            for (let i in path) {
+                                if (path.hasOwnProperty(i))
+                                    path[i] = this.value;
+                            }
+                        } else {
+                            context[path] = this.value;
+                        }
+
                     });
                 });
         }

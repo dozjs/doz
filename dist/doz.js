@@ -81,6 +81,67 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
+var _require = __webpack_require__(1),
+    ROOT = _require.ROOT;
+
+/**
+ * Get or create global collection
+ * @returns {{}|components|{InjectAsComment: boolean, InjectByTag: boolean}|{InjectAsComment, InjectByTag}|Array|*}
+ */
+
+
+function getOrCreate() {
+    window[ROOT] = window[ROOT] || { components: {} };
+    return window[ROOT].components;
+}
+
+/**
+ * Register a component to global
+ * @param cmp
+ */
+function register(cmp) {
+    var collection = getOrCreate();
+
+    var tag = cmp.tag.toUpperCase();
+
+    if (!collection.hasOwnProperty(tag)) {
+        collection[tag] = cmp;
+    } else {
+        throw new Error('Component ' + tag + ' already defined');
+    }
+}
+
+function removeAll() {
+    if (window[ROOT]) window[ROOT].components = {};
+}
+
+/**
+ * Get component from global
+ * @param tag
+ * @returns {*}
+ */
+function get(tag) {
+    if (typeof tag !== 'string') throw new TypeError('tag must be a string');
+
+    tag = tag.toUpperCase();
+
+    var collection = getOrCreate();
+    return collection[tag];
+}
+
+module.exports = {
+    register: register,
+    get: get,
+    removeAll: removeAll
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 module.exports = {
     ROOT: '__DOZ__',
     SIGN: '__DOZ_SIGN__',
@@ -104,7 +165,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -360,7 +421,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -368,19 +429,19 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 
-var _require = __webpack_require__(3),
+var _require = __webpack_require__(0),
     register = _require.register;
 
 var html = __webpack_require__(8);
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     INSTANCE = _require2.INSTANCE,
     PARSER = _require2.PARSER,
     SIGN = _require2.SIGN;
 
-var collection = __webpack_require__(3);
+var collection = __webpack_require__(0);
 var helper = __webpack_require__(9);
 var observer = __webpack_require__(10);
 var events = __webpack_require__(11);
@@ -490,6 +551,8 @@ function createInstance(cmp, cfg) {
                         element: child
                     });
 
+                    //createPropMap(attr.value, propsMap, child);
+
                     // Found placeholder
                 } else if (placeholderMatch) {
                     var placeholder = placeholderMatch[1];
@@ -516,20 +579,6 @@ function createInstance(cmp, cfg) {
     // Remove tag text added above
     helper.tagToText(textNodes);
 
-    /*const contextProto = Object.defineProperties({}, {
-        element: {
-            enumerable: true,
-            value: fragment,
-            configurable: true,
-            writable: true
-        },
-        child: {
-            enumerable: true,
-            value: [],
-            writable: true
-        }
-    });
-      let context = Object.assign(contextProto, {});*/
     var context = {};
     var isCreated = false;
 
@@ -542,15 +591,28 @@ function createInstance(cmp, cfg) {
         context: observer.create(context, false, function (change) {
 
             change.forEach(function (item) {
-                var node = propsMap[item.currentPath];
-                //console.log(node);
-                if (node) {
-                    if (Array.isArray(node)) {
-                        node.forEach(function (n) {
-                            n.nodeValue = item.newValue;
-                        });
-                    } else {
-                        node.nodeValue = item.newValue;
+                //if (item.type !== 'update') return;
+                //const node = propsMap[item.currentPath];
+
+                var nodes = helper.pathify(item);
+
+                for (var path in nodes) {
+                    if (nodes.hasOwnProperty(path)) {
+                        (function () {
+                            //console.log(path);
+                            var node = helper.getByPath(path, propsMap);
+                            var nodeValue = nodes[path];
+
+                            if (node) {
+                                if (Array.isArray(node)) {
+                                    node.forEach(function (n) {
+                                        n.nodeValue = nodeValue;
+                                    });
+                                } else {
+                                    node.nodeValue = nodeValue;
+                                }
+                            }
+                        })();
                     }
                 }
             });
@@ -588,6 +650,8 @@ function createInstance(cmp, cfg) {
     events.callCreate(instance.context);
     isCreated = true;
 
+    //console.log(propsMap)
+
     return instance;
 }
 
@@ -595,12 +659,21 @@ function createListenerModel(context, models) {
 
     models.forEach(function (m) {
         if (typeof context[m.field] !== 'function') {
-            //console.log('ddddddddddd')
             ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
                 m.element.addEventListener(event, function () {
-                    console.log('change', m.field);
-                    console.log(context[m.field]);
-                    context[m.field] = this.value;
+                    var path = helper.getLastObjectByPath(m.field, context);
+
+                    //TODO Make object structure if not exists
+
+                    if (typeof path === 'undefined') throw new Error('object not found at ' + m.field);
+
+                    if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object') {
+                        for (var i in path) {
+                            if (path.hasOwnProperty(i)) path[i] = this.value;
+                        }
+                    } else {
+                        context[path] = this.value;
+                    }
                 });
             });
         }
@@ -652,68 +725,16 @@ function createPropMap(name, props, component) {
     }, props);
 }
 
+function isSigned(n) {
+    return n.hasOwnProperty(SIGN);
+}
+
 module.exports = {
     Component: Component,
     getInstances: getInstances,
     setProps: setProps,
     createPropMap: createPropMap,
     createListenerHandler: createListenerHandler
-};
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(0),
-    ROOT = _require.ROOT;
-
-/**
- * Get or create global collection
- * @returns {{}|components|{InjectAsComment: boolean, InjectByTag: boolean}|{InjectAsComment, InjectByTag}|Array|*}
- */
-
-
-function getOrCreate() {
-    window[ROOT] = window[ROOT] || { components: {} };
-    return window[ROOT].components;
-}
-
-/**
- * Register a component to global
- * @param cmp
- */
-function register(cmp) {
-    var collection = getOrCreate();
-
-    var tag = cmp.tag.toUpperCase();
-
-    if (!collection.hasOwnProperty(tag)) {
-        collection[tag] = cmp;
-    } else {
-        throw new Error('Component ' + tag + ' already defined');
-    }
-}
-
-/**
- * Get component from global
- * @param tag
- * @returns {*}
- */
-function get(tag) {
-    if (typeof tag !== 'string') throw new TypeError('tag must be a string');
-
-    tag = tag.toUpperCase();
-
-    var collection = getOrCreate();
-    return collection[tag];
-}
-
-module.exports = {
-    register: register,
-    get: get
 };
 
 /***/ }),
@@ -733,7 +754,8 @@ module.exports = __webpack_require__(5);
 
 
 module.exports = __webpack_require__(6);
-module.exports.Component = __webpack_require__(2).Component;
+module.exports.Component = __webpack_require__(3).Component;
+module.exports.collection = __webpack_require__(0);
 
 /***/ }),
 /* 6 */
@@ -744,8 +766,8 @@ module.exports.Component = __webpack_require__(2).Component;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(1);
-var component = __webpack_require__(2);
+var extend = __webpack_require__(2);
+var component = __webpack_require__(3);
 
 var Doz = function Doz() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -890,7 +912,9 @@ module.exports = html;
 "use strict";
 
 
-var _require = __webpack_require__(0),
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(1),
     PARSER = _require.PARSER;
 
 function textToTag(el) {
@@ -915,10 +939,104 @@ function sanitize(field) {
     return field.replace(/[ "=]/g, '');
 }
 
+function getByPath(path, obj) {
+    return path.split('.').reduce(function (res, prop) {
+        return res ? res[prop] : {};
+    }, obj);
+}
+
+function getLastObjectByPath(path, obj) {
+    if (path.indexOf('.') !== -1) {
+        path = path.split('.');
+        path.pop();
+        path = path.join('.');
+    }
+    return getByPath(path, obj);
+}
+
+/**
+ * Convert complex js object to dot notation js object
+ * @link https://github.com/vardars/dotize
+ * @author vardars
+ * @param obj
+ * @param prefix
+ * @returns {*}
+ */
+function objectToPath(obj, prefix) {
+    var newObj = {};
+
+    if ((!obj || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') && !Array.isArray(obj)) {
+        if (prefix) {
+            newObj[prefix] = obj;
+            return newObj;
+        } else {
+            return obj;
+        }
+    }
+
+    function isNumber(f) {
+        return !isNaN(parseInt(f));
+    }
+
+    function isEmptyObj(obj) {
+        for (var prop in obj) {
+            if (Object.hasOwnProperty.call(obj, prop)) return false;
+        }
+    }
+
+    function getFieldName(field, prefix, isRoot, isArrayItem, isArray) {
+        if (isArray) return (prefix ? prefix : '') + (isNumber(field) ? '[' + field + ']' : (isRoot ? '' : '.') + field);else if (isArrayItem) return (prefix ? prefix : '') + '[' + field + ']';else return (prefix ? prefix + '.' : '') + field;
+    }
+
+    return function recurse(o, p, isRoot) {
+        var isArrayItem = Array.isArray(o);
+        for (var f in o) {
+            if (o.hasOwnProperty(f)) {
+                var currentProp = o[f];
+                if (currentProp && (typeof currentProp === 'undefined' ? 'undefined' : _typeof(currentProp)) === 'object') {
+                    if (Array.isArray(currentProp)) {
+                        newObj = recurse(currentProp, getFieldName(f, p, isRoot, false, true), isArrayItem); // array
+                    } else {
+                        if (isArrayItem && isEmptyObj(currentProp) === false) {
+                            newObj = recurse(currentProp, getFieldName(f, p, isRoot, true)); // array item object
+                        } else if (isEmptyObj(currentProp) === false) {
+                            newObj = recurse(currentProp, getFieldName(f, p, isRoot)); // object
+                        } else {
+                                //
+                            }
+                    }
+                } else {
+                    if (isArrayItem || isNumber(f)) {
+                        newObj[getFieldName(f, p, isRoot, true)] = currentProp; // array item primitive
+                    } else {
+                        newObj[getFieldName(f, p, isRoot)] = currentProp; // primitive
+                    }
+                }
+            }
+        }
+
+        return newObj;
+    }(obj, prefix, true);
+}
+
+function pathify(item) {
+    if (_typeof(item.newValue) === 'object') {
+        return objectToPath(item.newValue, item.currentPath);
+    } else {
+        var res = {};
+        res[item.currentPath] = item.newValue;
+        return res;
+    }
+}
+
 module.exports = {
     textToTag: textToTag,
     tagToText: tagToText,
-    canModel: canModel
+    canModel: canModel,
+    getByPath: getByPath,
+    getLastObjectByPath: getLastObjectByPath,
+    objectToPath: objectToPath,
+    pathify: pathify
 };
 
 /***/ }),
