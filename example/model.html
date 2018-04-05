@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - model</title>
+    <title>Title</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <script src="../dist/doz.js?5896549"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            padding: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <doz-input-message placeholder="write a first message"></doz-input-message>
+    <doz-input-message placeholder="write a second message"></doz-input-message>
+</div>
+
+<h2>HTML</h2>
+<pre class="prettyprint">
+    <code class="lang-html">
+
+    </code>
+</pre>
+<h2>JavaScript</h2>
+<pre class="prettyprint">
+    <code class="lang-js">
+
+    </code>
+</pre>
+<script>
+
+    Doz.Component('doz-input-message', {
+        template: `<div><input type="text" do-model="message" placeholder="{{placeholder}}"/><p>{{message}}</p></div>`,
+    });
+
+    new Doz({
+        el: '#app'
+    })
+
+</script>
+</body>
+</html>

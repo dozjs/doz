@@ -79,6 +79,35 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+module.exports = {
+    ROOT: '__DOZ__',
+    SIGN: '__DOZ_SIGN__',
+    INSTANCE: '__DOZ_INSTANCE__',
+    EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
+    PARSER: {
+        REGEX: {
+            TAG: /^\w+-[\w-]+$/,
+            ATTR: /{{([\w.]+)}}/,
+            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
+            HANDLER: /on-(.*)/,
+            MODEL: /do-model/
+        },
+        TAG: {
+            TEXT: 'doz-text-node'
+        }
+    },
+    ATTR: {
+        WIDGET: 'doz-medom-widget'
+    }
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
 var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -331,7 +360,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -339,20 +368,20 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var extend = __webpack_require__(0);
+var extend = __webpack_require__(1);
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(3),
     register = _require.register;
 
 var html = __webpack_require__(8);
 
-var _require2 = __webpack_require__(3),
+var _require2 = __webpack_require__(0),
     INSTANCE = _require2.INSTANCE,
     PARSER = _require2.PARSER,
     SIGN = _require2.SIGN;
 
-var collection = __webpack_require__(2);
-var copy = __webpack_require__(9);
+var collection = __webpack_require__(3);
+var helper = __webpack_require__(9);
 var observer = __webpack_require__(10);
 var events = __webpack_require__(11);
 
@@ -420,11 +449,15 @@ function createInstance(cmp, cfg) {
     var textNodes = [];
     var props = {};
     var propsMap = {};
-    var handlers = [];
+    var listenerHandler = [];
+    var listenerModel = [];
     var fragment = html.create(cmp.cfg.template);
+    var placeholderMatch = null;
+    var handlerMatch = null;
+    var modelMatch = null;
 
     // Find placeholder into text
-    textToTag(fragment);
+    helper.textToTag(fragment);
 
     var nodes = html.getAllNodes(fragment);
 
@@ -437,17 +470,23 @@ function createInstance(cmp, cfg) {
 
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(function (attr) {
-                var placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
-                var listenerMatch = attr.name.match(PARSER.REGEX.LISTENER);
+                placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
+                handlerMatch = attr.name.match(PARSER.REGEX.HANDLER);
+                modelMatch = helper.canModel(child) ? PARSER.REGEX.MODEL.test(attr.name) : false;
+
+                //console.log(modelMatch, attr.name, helper.canModel(child), PARSER.REGEX.MODEL.test(attr.name));
 
                 // Found listener
-                if (listenerMatch) {
-                    var event = listenerMatch[1];
-                    var listener = attr.value;
-
-                    handlers.push({
-                        event: event,
-                        listener: listener,
+                if (handlerMatch) {
+                    listenerHandler.push({
+                        event: handlerMatch[1],
+                        listener: attr.value,
+                        element: child
+                    });
+                    // Found model
+                } else if (modelMatch) {
+                    listenerModel.push({
+                        field: attr.value,
                         element: child
                     });
 
@@ -475,13 +514,14 @@ function createInstance(cmp, cfg) {
     });
 
     // Remove tag text added above
-    tagToText(textNodes);
+    helper.tagToText(textNodes);
 
-    var contextProto = Object.defineProperties({}, {
+    /*const contextProto = Object.defineProperties({}, {
         element: {
             enumerable: true,
             value: fragment,
-            configurable: true
+            configurable: true,
+            writable: true
         },
         child: {
             enumerable: true,
@@ -489,8 +529,8 @@ function createInstance(cmp, cfg) {
             writable: true
         }
     });
-
-    var context = Object.assign(contextProto, {});
+      let context = Object.assign(contextProto, {});*/
+    var context = {};
     var isCreated = false;
 
     var instance = {
@@ -521,12 +561,29 @@ function createInstance(cmp, cfg) {
         })
     };
 
+    Object.defineProperties(instance.context, {
+        element: {
+            enumerable: true,
+            value: function value() {
+                return instance.element;
+            },
+            configurable: true
+        },
+        child: {
+            enumerable: true,
+            value: [],
+            writable: true
+        }
+    });
+
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
     setProps(instance.context, props);
     // Create eventual handlers
-    createHandlers(instance.context, handlers);
+    createListenerHandler(instance.context, listenerHandler);
+    // Create eventual listener for model
+    createListenerModel(instance.context, listenerModel);
 
     events.callCreate(instance.context);
     isCreated = true;
@@ -534,7 +591,25 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-function createHandlers(context, handlers) {
+function createListenerModel(context, models) {
+
+    models.forEach(function (m) {
+        if (typeof context[m.field] !== 'function') {
+            //console.log('ddddddddddd')
+            ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
+                m.element.addEventListener(event, function () {
+                    console.log('change', m.field);
+                    console.log(context[m.field]);
+                    context[m.field] = this.value;
+                });
+            });
+        }
+
+        m.element.removeAttribute('do-model');
+    });
+}
+
+function createListenerHandler(context, handlers) {
     handlers.forEach(function (h) {
         if (h.listener in context && typeof context[h.listener] === 'function') {
             h.element.addEventListener(h.event, context[h.listener].bind(context));
@@ -577,40 +652,22 @@ function createPropMap(name, props, component) {
     }, props);
 }
 
-function textToTag(el) {
-    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
-        // Remove spaces
-        match = sanitize(match);
-        return '<' + PARSER.TAG.TEXT + ' value=' + match + '></' + PARSER.TAG.TEXT + '>';
-    });
-}
-
-function tagToText(textNodes) {
-    textNodes.forEach(function (item) {
-        item.old.parentNode.replaceChild(item.new, item.old);
-    });
-}
-
-function sanitize(field) {
-    return field.replace(/[ "=]/g, '');
-}
-
 module.exports = {
     Component: Component,
     getInstances: getInstances,
     setProps: setProps,
     createPropMap: createPropMap,
-    createHandlers: createHandlers
+    createListenerHandler: createListenerHandler
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(3),
+var _require = __webpack_require__(0),
     ROOT = _require.ROOT;
 
 /**
@@ -660,34 +717,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    ROOT: '__DOZ__',
-    SIGN: '__DOZ_SIGN__',
-    INSTANCE: '__DOZ_INSTANCE__',
-    EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
-    PARSER: {
-        REGEX: {
-            TAG: /^\w+-[\w-]+$/,
-            ATTR: /{{([\w.]+)}}/,
-            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
-            LISTENER: /on-(.*)/
-        },
-        TAG: {
-            TEXT: 'doz-text-node'
-        }
-    },
-    ATTR: {
-        WIDGET: 'doz-medom-widget'
-    }
-};
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -704,7 +733,7 @@ module.exports = __webpack_require__(5);
 
 
 module.exports = __webpack_require__(6);
-module.exports.Component = __webpack_require__(1).Component;
+module.exports.Component = __webpack_require__(2).Component;
 
 /***/ }),
 /* 6 */
@@ -715,8 +744,8 @@ module.exports.Component = __webpack_require__(1).Component;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(0);
-var component = __webpack_require__(1);
+var extend = __webpack_require__(1);
+var component = __webpack_require__(2);
 
 var Doz = function Doz() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -859,86 +888,38 @@ module.exports = html;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-;(function (name, root, factory) {
-  if (( false ? 'undefined' : _typeof(exports)) === 'object') {
-    module.exports = factory();
-  }
-  /* istanbul ignore next */
-  else if (true) {
-      !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else {
-      root[name] = factory();
-    }
-})('dcopy', undefined, function () {
-  /**
-   * Deep copy objects and arrays
-   *
-   * @param {Object/Array} target
-   * @return {Object/Array} copy
-   * @api public
-   */
+var _require = __webpack_require__(0),
+    PARSER = _require.PARSER;
 
-  return function (target) {
-    if (/number|string|boolean/.test(typeof target === 'undefined' ? 'undefined' : _typeof(target))) {
-      return target;
-    }
-    if (target instanceof Date) {
-      return new Date(target.getTime());
-    }
+function textToTag(el) {
+    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
+        // Remove spaces
+        match = sanitize(match);
+        return '<' + PARSER.TAG.TEXT + ' value=' + match + '></' + PARSER.TAG.TEXT + '>';
+    });
+}
 
-    var copy = target instanceof Array ? [] : {};
-    walk(target, copy);
-    return copy;
+function tagToText(textNodes) {
+    textNodes.forEach(function (item) {
+        item.old.parentNode.replaceChild(item.new, item.old);
+    });
+}
 
-    function walk(target, copy) {
-      for (var key in target) {
-        var obj = target[key];
-        if (obj instanceof Date) {
-          var value = new Date(obj.getTime());
-          add(copy, key, value);
-        } else if (obj instanceof Function) {
-          var value = obj;
-          add(copy, key, value);
-        } else if (obj instanceof Array) {
-          var value = [];
-          var last = add(copy, key, value);
-          walk(obj, last);
-        } else if (obj instanceof Object) {
-          var value = {};
-          var last = add(copy, key, value);
-          walk(obj, last);
-        } else {
-          var value = obj;
-          add(copy, key, value);
-        }
-      }
-    }
-  };
+function canModel(el) {
+    return ['INPUT', 'TEXTAREA'].indexOf(el.nodeName) !== -1;
+}
 
-  /**
-   * Adds a value to the copy object based on its type
-   *
-   * @api private
-   */
+function sanitize(field) {
+    return field.replace(/[ "=]/g, '');
+}
 
-  function add(copy, key, value) {
-    if (copy instanceof Array) {
-      copy.push(value);
-      return copy[copy.length - 1];
-    } else if (copy instanceof Object) {
-      copy[key] = value;
-      return copy[key];
-    }
-  }
-});
+module.exports = {
+    textToTag: textToTag,
+    tagToText: tagToText,
+    canModel: canModel
+};
 
 /***/ }),
 /* 10 */

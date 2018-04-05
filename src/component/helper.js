@@ -14,11 +14,16 @@ function tagToText(textNodes) {
     });
 }
 
+function canModel(el) {
+    return ['INPUT', 'TEXTAREA'].indexOf(el.nodeName) !== -1
+}
+
 function sanitize(field) {
     return field.replace(/[ "=]/g, '');
 }
 
 module.exports = {
     textToTag,
-    tagToText
+    tagToText,
+    canModel
 };

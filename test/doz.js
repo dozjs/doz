@@ -156,7 +156,7 @@ describe('Doz', function () {
                     title: 'ciao',
                     myFunction() {
                         this.title = 'altra cosa';
-                        console.log(this.element);
+                        console.log(this.element());
                     }
                 }
             });

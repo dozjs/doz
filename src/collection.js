@@ -25,6 +25,11 @@ function register(cmp) {
     }
 }
 
+function removeAll() {
+    if (window[ROOT])
+        window[ROOT].components = {};
+}
+
 /**
  * Get component from global
  * @param tag
@@ -42,5 +47,6 @@ function get(tag) {
 
 module.exports = {
     register,
-    get
+    get,
+    removeAll
 };

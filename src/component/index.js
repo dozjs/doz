@@ -69,8 +69,12 @@ function createInstance(cmp, cfg) {
     const textNodes = [];
     const props = {};
     const propsMap = {};
-    const handlers = [];
+    const listenerHandler = [];
+    const listenerModel = [];
     const fragment = html.create(cmp.cfg.template);
+    let placeholderMatch = null;
+    let handlerMatch = null;
+    let modelMatch = null;
 
     // Find placeholder into text
     helper.textToTag(fragment);
@@ -86,19 +90,27 @@ function createInstance(cmp, cfg) {
 
         if (child.nodeType === 1) {
             Array.from(child.attributes).forEach(attr => {
-                const placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
-                const listenerMatch = attr.name.match(PARSER.REGEX.LISTENER);
+                placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
+                handlerMatch = attr.name.match(PARSER.REGEX.HANDLER);
+                modelMatch = helper.canModel(child) ? PARSER.REGEX.MODEL.test(attr.name) : false;
+
+                //console.log(modelMatch, attr.name, helper.canModel(child), PARSER.REGEX.MODEL.test(attr.name));
 
                 // Found listener
-                if (listenerMatch) {
-                    const event = listenerMatch[1];
-                    const listener = attr.value;
-
-                    handlers.push({
-                        event,
-                        listener,
+                if (handlerMatch) {
+                    listenerHandler.push({
+                        event: handlerMatch[1],
+                        listener: attr.value,
                         element: child
                     });
+                    // Found model
+                } else if (modelMatch) {
+                    listenerModel.push({
+                        field: attr.value,
+                        element: child
+                    });
+
+                    //createPropMap(attr.value, propsMap, child);
 
                     // Found placeholder
                 } else if (placeholderMatch) {
@@ -126,20 +138,7 @@ function createInstance(cmp, cfg) {
     // Remove tag text added above
     helper.tagToText(textNodes);
 
-    const contextProto = Object.defineProperties({}, {
-        element: {
-            enumerable: true,
-            value: fragment,
-            configurable: true
-        },
-        child: {
-            enumerable: true,
-            value: [],
-            writable: true
-        }
-    });
-
-    let context = Object.assign(contextProto, {});
+    let context = {};
     let isCreated = false;
 
     const instance = {
@@ -170,12 +169,29 @@ function createInstance(cmp, cfg) {
         })
     };
 
+    Object.defineProperties(instance.context, {
+        element: {
+            enumerable: true,
+            value: function () {
+                return instance.element
+            },
+            configurable: true
+        },
+        child: {
+            enumerable: true,
+            value: [],
+            writable: true
+        }
+    });
+
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
     setProps(instance.context, props);
     // Create eventual handlers
-    createHandlers(instance.context, handlers);
+    createListenerHandler(instance.context, listenerHandler);
+    // Create eventual listener for model
+    createListenerModel(instance.context, listenerModel);
 
     events.callCreate(instance.context);
     isCreated = true;
@@ -183,7 +199,28 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-function createHandlers(context, handlers) {
+function createListenerModel(context, models) {
+
+    models.forEach(m => {
+        if (typeof context[m.field] !== 'function') {
+            //context[m.field] = context[m.field] || {};
+            console.log('context.data',context[m.field], m.field);
+            console.log('m.element',m.element);
+            ['compositionstart', 'compositionend', 'input', 'change']
+                .forEach(function (event) {
+                    m.element.addEventListener(event, function () {
+                        console.log('change', m.field)
+                        console.log(context[m.field])
+                        context[m.field] = this.value;
+                    });
+                });
+        }
+
+        m.element.removeAttribute('do-model');
+    });
+}
+
+function createListenerHandler(context, handlers) {
     handlers.forEach(h => {
         if (h.listener in context && typeof context[h.listener] === 'function') {
             h.element.addEventListener(h.event, context[h.listener].bind(context));
@@ -234,5 +271,5 @@ module.exports = {
     getInstances,
     setProps,
     createPropMap,
-    createHandlers
+    createListenerHandler
 };
