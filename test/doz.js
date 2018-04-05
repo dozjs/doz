@@ -186,12 +186,17 @@ describe('Doz', function () {
                 template: `
                     <div>
                         <div>
-                            <button on-click="this.counter += 1">{{title}} - {{counter}}</button>
+                            <button on-click="this.data.p.counter += 1">{{title}} - {{data.p.counter}}</button>: {{other}}
                         </div>
                     </div>
                 `,
                 context: {
-                    counter: 0
+                    data: {
+                        p: {
+                            counter: 0,
+                            other: 4
+                        }
+                    }
                 }
             });
 

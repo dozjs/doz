@@ -149,16 +149,28 @@ function createInstance(cmp, cfg) {
         element: fragment,
         context: observer.create(context, false, change => {
 
+            //console.log(change);
             change.forEach(item => {
-                const node = propsMap[item.currentPath];
-                //console.log(node);
-                if (node) {
-                    if (Array.isArray(node)) {
-                        node.forEach(n => {
-                            n.nodeValue = item.newValue;
-                        });
-                    } else {
-                        node.nodeValue = item.newValue;
+                //if (item.type !== 'update') return;
+                //const node = propsMap[item.currentPath];
+
+                const nodes = helper.pathify(item);
+
+                for(let path in nodes) {
+                    if (nodes.hasOwnProperty(path)) {
+                        console.log(path);
+                        const node = helper.getByPath(path, propsMap);
+                        const nodeValue = nodes[path];
+
+                        if (node) {
+                            if (Array.isArray(node)) {
+                                node.forEach(n => {
+                                    n.nodeValue = nodeValue;
+                                });
+                            } else {
+                                node.nodeValue = nodeValue;
+                            }
+                        }
                     }
                 }
             });
@@ -204,13 +216,15 @@ function createListenerModel(context, models) {
     models.forEach(m => {
         if (typeof context[m.field] !== 'function') {
             //context[m.field] = context[m.field] || {};
-            console.log('context.data',context[m.field], m.field);
-            console.log('m.element',m.element);
+            //console.log('context.data',context[m.field], m.field);
+            //console.log('m.element',m.element);
             ['compositionstart', 'compositionend', 'input', 'change']
                 .forEach(function (event) {
                     m.element.addEventListener(event, function () {
-                        console.log('change', m.field)
-                        console.log(context[m.field])
+                        //console.log('change', m.field)
+                        console.log('data', context['data.message'])
+                        //context['data'] = {message:''};
+                        console.log(context['data']);
                         context[m.field] = this.value;
                     });
                 });
@@ -265,6 +279,11 @@ function createPropMap(name, props, component) {
 
     }, props);
 }
+
+function isSigned(n) {
+    return n.hasOwnProperty(SIGN);
+}
+
 
 module.exports = {
     Component,

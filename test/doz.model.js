@@ -84,7 +84,7 @@ describe('Doz.model', function () {
                         const input = this.element().querySelector('input');
                         input.value = 'hello world';
 
-                        console.log('INPUT',input)
+                        //console.log('INPUT',input)
                         // Simulating changes by human
                         const evt = document.createEvent("HTMLEvents");
                         evt.initEvent("change", false, true);
