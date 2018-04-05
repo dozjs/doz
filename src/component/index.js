@@ -39,7 +39,7 @@ function getInstances(element) {
             const cmp = collection.get(child.nodeName);
 
             if (cmp) {
-                const newElement = new CreateInstance(cmp, {
+                const newElement = createInstance(cmp, {
                     props: child.attributes
                 });
 
@@ -65,7 +65,7 @@ function getInstances(element) {
     return components;
 }
 
-function CreateInstance(cmp, cfg) {
+function createInstance(cmp, cfg) {
     const textNodes = [];
     const props = {};
     const propsMap = {};
@@ -171,6 +171,7 @@ function CreateInstance(cmp, cfg) {
                                     n.nodeValue = nodeValue;
                                 });
                             } else {
+                                //console.log(item);
                                 node.nodeValue = nodeValue;
                             }
                         }
@@ -199,12 +200,6 @@ function CreateInstance(cmp, cfg) {
         }
     });
 
-    // Transform function data to object data
-    if (cmp.cfg.context.data && typeof cmp.cfg.context.data === 'function') {
-        console.log(this);
-        cmp.cfg.context.data = cmp.cfg.context.data();
-    }
-
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
@@ -223,7 +218,6 @@ function CreateInstance(cmp, cfg) {
 }
 
 function createListenerModel(context, models) {
-
     models.forEach(m => {
         if (typeof context[m.field] !== 'function') {
             ['compositionstart', 'compositionend', 'input', 'change']
@@ -274,6 +268,9 @@ function setProps(targetObj, defaultObj) {
         if (defaultObj.hasOwnProperty(i))
             if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
                 setProps(targetObj[i], defaultObj[i]);
+                // Set a copy of data
+            } else if (i === 'data' && typeof defaultObj[i] === 'function'){
+                targetObj[i] = Object.assign({}, defaultObj[i]());
             } else {
                 targetObj[i] = defaultObj[i];
             }

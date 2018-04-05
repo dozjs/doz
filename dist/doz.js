@@ -480,7 +480,7 @@ function getInstances(element) {
             var cmp = collection.get(child.nodeName);
 
             if (cmp) {
-                var newElement = new createInstance(cmp, {
+                var newElement = createInstance(cmp, {
                     props: child.attributes
                 });
 
@@ -613,6 +613,7 @@ function createInstance(cmp, cfg) {
                                         n.nodeValue = nodeValue;
                                     });
                                 } else {
+                                    //console.log(item);
                                     node.nodeValue = nodeValue;
                                 }
                             }
@@ -642,12 +643,6 @@ function createInstance(cmp, cfg) {
         }
     });
 
-    // Transform function data to object data
-    if (cmp.cfg.context.data && typeof cmp.cfg.context.data === 'function') {
-        console.log(this);
-        cmp.cfg.context.data = cmp.cfg.context.data();
-    }
-
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
@@ -666,7 +661,6 @@ function createInstance(cmp, cfg) {
 }
 
 function createListenerModel(context, models) {
-
     models.forEach(function (m) {
         if (typeof context[m.field] !== 'function') {
             ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
@@ -713,6 +707,9 @@ function setProps(targetObj, defaultObj) {
     for (var i in defaultObj) {
         if (defaultObj.hasOwnProperty(i)) if (_typeof(targetObj[i]) === 'object' && typeof defaultObj[i] !== 'undefined') {
             setProps(targetObj[i], defaultObj[i]);
+            // Set a copy of data
+        } else if (i === 'data' && typeof defaultObj[i] === 'function') {
+            targetObj[i] = Object.assign({}, defaultObj[i]());
         } else {
             targetObj[i] = defaultObj[i];
         }
