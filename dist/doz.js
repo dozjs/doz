@@ -480,7 +480,7 @@ function getInstances(element) {
             var cmp = collection.get(child.nodeName);
 
             if (cmp) {
-                var newElement = createInstance(cmp, {
+                var newElement = new createInstance(cmp, {
                     props: child.attributes
                 });
 
@@ -591,8 +591,12 @@ function createInstance(cmp, cfg) {
         context: observer.create(context, false, function (change) {
 
             change.forEach(function (item) {
+                //console.log(item.currentPath, item.newValue);
                 //if (item.type !== 'update') return;
                 //const node = propsMap[item.currentPath];
+
+                // Exclude child property from changes event
+                if (item.currentPath === 'child') return;
 
                 var nodes = helper.pathify(item);
 
@@ -638,6 +642,12 @@ function createInstance(cmp, cfg) {
         }
     });
 
+    // Transform function data to object data
+    if (cmp.cfg.context.data && typeof cmp.cfg.context.data === 'function') {
+        console.log(this);
+        cmp.cfg.context.data = cmp.cfg.context.data();
+    }
+
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
@@ -663,16 +673,19 @@ function createListenerModel(context, models) {
                 m.element.addEventListener(event, function () {
                     var path = helper.getLastObjectByPath(m.field, context);
 
+                    //console.log(m.field, 'path',path);
+
                     //TODO Make object structure if not exists
 
-                    if (typeof path === 'undefined') throw new Error('object not found at ' + m.field);
+                    //if (typeof path === 'undefined')
+                    //  throw new Error('object not found at ' + m.field);
 
                     if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object') {
                         for (var i in path) {
                             if (path.hasOwnProperty(i)) path[i] = this.value;
                         }
                     } else {
-                        context[path] = this.value;
+                        context[m.field] = this.value;
                     }
                 });
             });

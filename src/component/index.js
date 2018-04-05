@@ -39,7 +39,7 @@ function getInstances(element) {
             const cmp = collection.get(child.nodeName);
 
             if (cmp) {
-                const newElement = createInstance(cmp, {
+                const newElement = new CreateInstance(cmp, {
                     props: child.attributes
                 });
 
@@ -65,7 +65,7 @@ function getInstances(element) {
     return components;
 }
 
-function createInstance(cmp, cfg) {
+function CreateInstance(cmp, cfg) {
     const textNodes = [];
     const props = {};
     const propsMap = {};
@@ -150,8 +150,12 @@ function createInstance(cmp, cfg) {
         context: observer.create(context, false, change => {
 
             change.forEach(item => {
+                //console.log(item.currentPath, item.newValue);
                 //if (item.type !== 'update') return;
                 //const node = propsMap[item.currentPath];
+
+                // Exclude child property from changes event
+                if (item.currentPath === 'child') return;
 
                 const nodes = helper.pathify(item);
 
@@ -195,6 +199,12 @@ function createInstance(cmp, cfg) {
         }
     });
 
+    // Transform function data to object data
+    if (cmp.cfg.context.data && typeof cmp.cfg.context.data === 'function') {
+        console.log(this);
+        cmp.cfg.context.data = cmp.cfg.context.data();
+    }
+
     // Set default
     setProps(instance.context, cmp.cfg.context);
     // Set props if exists
@@ -221,10 +231,12 @@ function createListenerModel(context, models) {
                     m.element.addEventListener(event, function () {
                         const path = helper.getLastObjectByPath(m.field, context);
 
+                        //console.log(m.field, 'path',path);
+
                         //TODO Make object structure if not exists
 
-                        if (typeof path === 'undefined')
-                            throw new Error('object not found at ' + m.field);
+                        //if (typeof path === 'undefined')
+                        //  throw new Error('object not found at ' + m.field);
 
                         if (typeof path === 'object') {
                             for (let i in path) {
@@ -232,7 +244,7 @@ function createListenerModel(context, models) {
                                     path[i] = this.value;
                             }
                         } else {
-                            context[path] = this.value;
+                            context[m.field] = this.value;
                         }
 
                     });

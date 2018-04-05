@@ -39,7 +39,7 @@ describe('Doz', function () {
             });
 
             Doz.Component('my-component-a', {
-                template: `<div>hello I'm a {{name}} component <my-component-nested-a name="INNESTATO"></my-component-nested-a></div>`
+                template: `<div>hello I'm a {{name}} component <div></div> <my-component-nested-a name="INNESTATO"></my-component-nested-a> <my-component-nested-a name="INNESTATO1"></my-component-nested-a></div>`
             });
 
             document.body.innerHTML = `

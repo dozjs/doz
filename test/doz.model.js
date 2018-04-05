@@ -29,9 +29,10 @@ describe('Doz.model', function () {
                     </div>
                 `,
                 context: {
-                    message: '',
+                    //message: '',
                     onCreate() {
                         console.log('component created');
+                        this.template = 'dd'
                     },
                     onRender() {
                         console.log('component rendered');

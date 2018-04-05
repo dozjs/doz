@@ -49,9 +49,13 @@
 <script>
 
     Doz.Component('doz-input-message', {
-        template: `<div><input type="text" do-model="message" placeholder="{{placeholder}}"/><p>{{message}}</p></div>`,
+        template: `<div><input type="text" do-model="data.message" placeholder="{{placeholder}}"/><p>{{data.message}}</p></div>`,
         context: {
-            message: Math.random()
+            data: function () {
+                return {
+                    message: ''
+                }
+            }
         }
     });
 
