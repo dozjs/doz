@@ -3,7 +3,7 @@ const {register} = require('../collection');
 const html = require('../html');
 const {INSTANCE, PARSER, SIGN} = require('../constants');
 const collection = require('../collection');
-const copy = require('deep-copy');
+const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
 
@@ -73,7 +73,7 @@ function createInstance(cmp, cfg) {
     const fragment = html.create(cmp.cfg.template);
 
     // Find placeholder into text
-    textToTag(fragment);
+    helper.textToTag(fragment);
 
     const nodes = html.getAllNodes(fragment);
 
@@ -124,7 +124,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Remove tag text added above
-    tagToText(textNodes);
+    helper.tagToText(textNodes);
 
     const contextProto = Object.defineProperties({}, {
         element: {
@@ -227,24 +227,6 @@ function createPropMap(name, props, component) {
         return o[i]
 
     }, props);
-}
-
-function textToTag(el) {
-    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
-        // Remove spaces
-        match = sanitize(match);
-        return `<${PARSER.TAG.TEXT} value=${match}></${PARSER.TAG.TEXT}>`;
-    });
-}
-
-function tagToText(textNodes) {
-    textNodes.forEach(item => {
-        item.old.parentNode.replaceChild(item.new, item.old)
-    });
-}
-
-function sanitize(field) {
-    return field.replace(/[ "=]/g, '');
 }
 
 module.exports = {

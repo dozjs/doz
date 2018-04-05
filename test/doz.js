@@ -214,48 +214,5 @@ describe('Doz', function () {
             be.err.true(/Click Me - 1/g.test(button.innerHTML));
         });
 
-        it('should be ok with a component events', function (done) {
-
-            let isCreated, isRendered;
-
-            Doz.Component('my-component-button-c', {
-                template: `
-                    <div>
-                        <div>
-                            <button on-click="this.counter += 1">{{title}} - {{counter}}</button>
-                        </div>
-                    </div>
-                `,
-                context: {
-                    counter: 0,
-                    onCreate() {
-                        console.log('component created');
-                        isCreated = true;
-                    },
-                    onRender() {
-                        console.log('component rendered');
-                        isRendered = true;
-                    },
-                    onUpdate() {
-                        console.log('component updated');
-                        if(isCreated && isRendered)
-                            done();
-                    }
-                }
-            });
-
-            document.body.innerHTML = `
-                <div id="app">
-                    <my-component-button-c title="Click Me"></my-component-button-c>
-                </div>
-            `;
-
-            new Doz({
-                el: '#app'
-            });
-
-            const button = document.querySelector('button');
-            button.click();
-        });
     });
 });
