@@ -215,10 +215,15 @@ function updateComponent(changes, propsMap) {
         //console.log('NODES',nodes);
         for (let path in nodes) {
             if (nodes.hasOwnProperty(path)) {
-                //console.log(path);
-                const node = helper.getByPath(path, propsMap);
 
                 //console.log(path);
+
+                // Fix discrepancy between add type and update, add type returns []
+                path = path.replace(/\[(.*)]/g,'.$1');
+
+                const node = helper.getByPath(path, propsMap);
+
+                console.log(path, item.type);
 
                 if (node) {
                     const nodeValue = nodes[path];
