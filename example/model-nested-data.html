@@ -39,9 +39,9 @@
 <pre class="prettyprint">
     <code class="lang-js">
     Doz.Component(&apos;doz-input-message&apos;, {
-        template: &grave;&lt;div&gt;&lt;input type=&quot;text&quot; do-model=&quot;data.message.other&quot; placeholder=&quot;{{placeholder}}&quot;/&gt;&lt;p&gt;{{data.message.other}}&lt;/p&gt;&lt;/div&gt;&grave;,
+        template: &grave;&lt;div&gt;&lt;input type=&quot;text&quot; do-model=&quot;message.other&quot; placeholder=&quot;{{placeholder}}&quot;/&gt;&lt;p&gt;{{message.other}}&lt;/p&gt;&lt;/div&gt;&grave;,
         context: {
-            data: function () {
+            data() {
                 return {
                     message: {
                         other: &apos;Waiting for a nested message&apos;
@@ -59,9 +59,9 @@
 <script>
 
     Doz.Component('doz-input-message', {
-        template: `<div><input type="text" do-model="data.message.other" placeholder="{{placeholder}}"/><p>{{data.message.other}}</p></div>`,
+        template: `<div><input type="text" do-model="message.other" placeholder="{{placeholder}}"/><p>{{message.other}}</p></div>`,
         context: {
-            data: function () {
+            data() {
                 return {
                     message: {
                         other: 'Waiting for a nested message'

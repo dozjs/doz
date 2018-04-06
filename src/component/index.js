@@ -242,15 +242,26 @@ function createListenerHandler(context, handlers) {
 
 function setProps(targetObj, defaultObj) {
     for (let i in defaultObj) {
-        if (defaultObj.hasOwnProperty(i))
+        if (defaultObj.hasOwnProperty(i)) {
             if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
                 setProps(targetObj[i], defaultObj[i]);
                 // Set a copy of data
-            } else if (i === 'data' && typeof defaultObj[i] === 'function'){
-                targetObj[i] = Object.assign({}, defaultObj[i]());
+            } else if (i === 'data' && typeof defaultObj[i] === 'function') {
+                let data = defaultObj[i]();
+
+                if (typeof data === 'object') {
+                    for (let j in data) {
+                        if (data.hasOwnProperty(j) && !targetObj.hasOwnProperty(j)) {
+                            targetObj[j] = typeof data[j] === 'object' ? Object.assign({}, data[j]) : data[j]
+                        }
+                    }
+                }
+
+                //targetObj[i] = Object.assign({}, defaultObj[i]());
             } else {
                 targetObj[i] = defaultObj[i];
             }
+        }
     }
     return targetObj;
 }
