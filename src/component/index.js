@@ -75,6 +75,8 @@ function createInstance(cmp, cfg) {
     let placeholderMatch = null;
     let handlerMatch = null;
     let modelMatch = null;
+    let forMatch = null;
+    let ifMatch = null;
 
     // Find placeholder into text
     helper.textToTag(fragment);
@@ -93,8 +95,8 @@ function createInstance(cmp, cfg) {
                 placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
                 handlerMatch = attr.name.match(PARSER.REGEX.HANDLER);
                 modelMatch = helper.canModel(child) ? PARSER.REGEX.MODEL.test(attr.name) : false;
-
-                //console.log(modelMatch, attr.name, helper.canModel(child), PARSER.REGEX.MODEL.test(attr.name));
+                forMatch = PARSER.REGEX.FOR.test(attr.name);
+                ifMatch = PARSER.REGEX.IF.test(attr.name);
 
                 // Found listener
                 if (handlerMatch) {
@@ -109,6 +111,19 @@ function createInstance(cmp, cfg) {
                         field: attr.value,
                         element: child
                     });
+
+                }  else if (forMatch) {
+                    // Get content model
+                    let content = child.innerHTML;
+                    // Remove content
+                    child.innerHTML = '';
+
+                    for (let i in [0,1,2,3,4]) {
+                        child.innerHTML += '['+i+'] ' + content;
+                    }
+
+                }  else if (ifMatch) {
+
 
                     // Found placeholder
                 } else if (placeholderMatch) {
@@ -256,8 +271,6 @@ function setProps(targetObj, defaultObj) {
                         }
                     }
                 }
-
-                //targetObj[i] = Object.assign({}, defaultObj[i]());
             } else {
                 targetObj[i] = defaultObj[i];
             }

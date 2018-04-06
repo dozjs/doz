@@ -16,7 +16,9 @@ module.exports = {
             ATTR: /{{([\w.]+)}}/,
             TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
             HANDLER: /on-(.*)/,
-            MODEL: /do-model/
+            MODEL: /do-model/,
+            FOR: /do-for/,
+            IF: /do-if/
         },
         TAG: {
             TEXT: 'doz-text-node'
