@@ -52,7 +52,6 @@ function getInstances(element) {
 
                 if (newElement.element.querySelectorAll('*').length) {
                     const nestedChild = getInstances(newElement.element.firstChild);
-                    //console.log(nestedChild);
                     if (nestedChild.length) {
                         newElement.child = newElement.child.concat(nestedChild);
                         newElement.context.child = newElement.child;
@@ -119,16 +118,15 @@ function createInstance(cmp, cfg) {
 
                     if (expMatch) {
                         helper.createObjectMap(expMatch[1], propsMap, {
-                                _FOR: true,
-                                element: child,
-                                rows: []
+                                _FOR_: true,
+                                exp: attr.value,
+                                element: child
                             }
                         );
                         //console.log(propsMap)
                     }
 
                 } else if (ifMatch) {
-
 
                     // Found placeholder
                 } else if (placeholderMatch) {
@@ -153,6 +151,7 @@ function createInstance(cmp, cfg) {
         }
     });
 
+    //console.log(textNodes);
     // Remove tag text added above
     helper.tagToText(textNodes);
 
@@ -213,14 +212,16 @@ function updateComponent(changes, propsMap) {
         if (item.currentPath === 'child') return;
 
         const nodes = helper.pathify(item);
-        //console.log('NODES',nodes, item.type);
+        //console.log('NODES',nodes);
         for (let path in nodes) {
             if (nodes.hasOwnProperty(path)) {
                 //console.log(path);
                 const node = helper.getByPath(path, propsMap);
-                const nodeValue = nodes[path];
+
+                //console.log(path);
 
                 if (node) {
+                    const nodeValue = nodes[path];
                     if (Array.isArray(node)) {
                         node.forEach(n => {
                             n.nodeValue = nodeValue;
@@ -229,6 +230,8 @@ function updateComponent(changes, propsMap) {
                         node.nodeValue = nodeValue;
                     }
                 }
+
+                //console.log(node);
             }
         }
     });
