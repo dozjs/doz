@@ -22,8 +22,7 @@
 </head>
 <body>
 <div id="app">
-    <doz-input-message placeholder="write a first message"></doz-input-message>
-    <doz-input-message placeholder="write a second message"></doz-input-message>
+    <doz-input-message placeholder="write a message"></doz-input-message>
 </div>
 
 <h2>HTML</h2>
@@ -49,10 +48,7 @@
 <script>
 
     Doz.Component('doz-input-message', {
-        template: `<div><input type="text" do-model="message" placeholder="{{placeholder}}"/><p>{{message}}</p></div>`,
-        context: {
-            message: Math.random()
-        }
+        template: `<div><input type="text" do-model="message" placeholder="{{placeholder}}"/><p>{{message}}</p></div>`
     });
 
     new Doz({

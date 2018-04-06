@@ -110,8 +110,6 @@ function createInstance(cmp, cfg) {
                         element: child
                     });
 
-                    //createPropMap(attr.value, propsMap, child);
-
                     // Found placeholder
                 } else if (placeholderMatch) {
                     const placeholder = placeholderMatch[1];
@@ -129,7 +127,7 @@ function createInstance(cmp, cfg) {
 
                     // Sign component
                     element[SIGN] = true;
-                    createPropMap(placeholder, propsMap, element);
+                    helper.createObjectMap(placeholder, propsMap, element);
                 }
             });
         }
@@ -150,10 +148,6 @@ function createInstance(cmp, cfg) {
         context: observer.create(context, false, change => {
 
             change.forEach(item => {
-                //console.log(item.currentPath, item.newValue);
-                //if (item.type !== 'update') return;
-                //const node = propsMap[item.currentPath];
-
                 // Exclude child property from changes event
                 if (item.currentPath === 'child') return;
 
@@ -171,7 +165,6 @@ function createInstance(cmp, cfg) {
                                     n.nodeValue = nodeValue;
                                 });
                             } else {
-                                //console.log(item);
                                 node.nodeValue = nodeValue;
                             }
                         }
@@ -223,24 +216,8 @@ function createListenerModel(context, models) {
             ['compositionstart', 'compositionend', 'input', 'change']
                 .forEach(function (event) {
                     m.element.addEventListener(event, function () {
-                        const path = helper.getLastObjectByPath(m.field, context);
-
-                        //console.log(m.field, 'path',path);
-
-                        //TODO Make object structure if not exists
-
-                        //if (typeof path === 'undefined')
-                        //  throw new Error('object not found at ' + m.field);
-
-                        if (typeof path === 'object') {
-                            for (let i in path) {
-                                if (path.hasOwnProperty(i))
-                                    path[i] = this.value;
-                            }
-                        } else {
-                            context[m.field] = this.value;
-                        }
-
+                        // Create structure if not exist and set value
+                        helper.createObjectMap(m.field, context, this.value, true);
                     });
                 });
         }
@@ -278,26 +255,6 @@ function setProps(targetObj, defaultObj) {
     return targetObj;
 }
 
-function createPropMap(name, props, component) {
-    name.split('.').reduce((o, i, y, m) => {
-        const isLast = m[m.length - 1] === i;
-        if (isLast) {
-            if (o.hasOwnProperty(i)) {
-                if (!Array.isArray(o[i]))
-                    o[i] = [o[i]];
-                o[i].push(component)
-            } else {
-                o[i] = component;
-            }
-        } else if (!o.hasOwnProperty(i)) {
-            o[i] = [];
-        }
-
-        return o[i]
-
-    }, props);
-}
-
 function isSigned(n) {
     return n.hasOwnProperty(SIGN);
 }
@@ -307,6 +264,5 @@ module.exports = {
     Component,
     getInstances,
     setProps,
-    createPropMap,
     createListenerHandler
 };

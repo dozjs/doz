@@ -39,6 +39,26 @@ function getLastObjectByPath(path, obj) {
     return getByPath(path, obj);
 }
 
+function createObjectMap(path, obj, value, overwrite = false) {
+    return path.split('.').reduce((o, i, y, m) => {
+        const isLast = m[m.length - 1] === i;
+        if (isLast) {
+            if (!overwrite && o.hasOwnProperty(i)) {
+                if (!Array.isArray(o[i]))
+                    o[i] = [o[i]];
+                o[i].push(value)
+            } else {
+                o[i] = value;
+            }
+        } else if (!o.hasOwnProperty(i)) {
+            o[i] = [];
+        }
+//console.log(i)
+        return o[i]
+
+    }, obj);
+}
+
 /**
  * Convert complex js object to dot notation js object
  * @link https://github.com/vardars/dotize
@@ -127,5 +147,6 @@ module.exports = {
     getByPath,
     getLastObjectByPath,
     objectToPath,
-    pathify
+    pathify,
+    createObjectMap
 };
