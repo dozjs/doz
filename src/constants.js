@@ -18,6 +18,7 @@ module.exports = {
             HANDLER: /on-(.*)/,
             MODEL: /do-model/,
             FOR: /do-for/,
+            FOR_EXP: /in this.(.*)/,
             IF: /do-if/
         },
         TAG: {

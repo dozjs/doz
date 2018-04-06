@@ -66,11 +66,13 @@ function getInstances(element) {
 }
 
 function createInstance(cmp, cfg) {
-    const textNodes = [];
     const props = {};
     const propsMap = {};
     const listenerHandler = [];
     const listenerModel = [];
+    const textNodes = [];
+    const forNodes = [];
+    const ifNodes = [];
     const fragment = html.create(cmp.cfg.template);
     let placeholderMatch = null;
     let handlerMatch = null;
@@ -112,17 +114,20 @@ function createInstance(cmp, cfg) {
                         element: child
                     });
 
-                }  else if (forMatch) {
-                    // Get content model
-                    let content = child.innerHTML;
-                    // Remove content
-                    child.innerHTML = '';
+                } else if (forMatch) {
+                    const expMatch = attr.value.match(PARSER.REGEX.FOR_EXP);
 
-                    for (let i in [0,1,2,3,4]) {
-                        child.innerHTML += '['+i+'] ' + content;
+                    if (expMatch) {
+                        helper.createObjectMap(expMatch[1], propsMap, {
+                                _FOR: true,
+                                element: child,
+                                rows: []
+                            }
+                        );
+                        //console.log(propsMap)
                     }
 
-                }  else if (ifMatch) {
+                } else if (ifMatch) {
 
 
                     // Found placeholder
@@ -160,32 +165,9 @@ function createInstance(cmp, cfg) {
         propsMap,
         child: [],
         element: fragment,
-        context: observer.create(context, false, change => {
+        context: observer.create(context, false, changes => {
 
-            change.forEach(item => {
-                // Exclude child property from changes event
-                if (item.currentPath === 'child') return;
-
-                const nodes = helper.pathify(item);
-
-                for (let path in nodes) {
-                    if (nodes.hasOwnProperty(path)) {
-                        //console.log(path);
-                        const node = helper.getByPath(path, propsMap);
-                        const nodeValue = nodes[path];
-
-                        if (node) {
-                            if (Array.isArray(node)) {
-                                node.forEach(n => {
-                                    n.nodeValue = nodeValue;
-                                });
-                            } else {
-                                node.nodeValue = nodeValue;
-                            }
-                        }
-                    }
-                }
-            });
+            updateComponent(changes, propsMap);
 
             if (isCreated) {
                 events.callUpdate(context);
@@ -223,6 +205,33 @@ function createInstance(cmp, cfg) {
     //console.log(propsMap)
 
     return instance;
+}
+
+function updateComponent(changes, propsMap) {
+    changes.forEach(item => {
+        // Exclude child property from changes event
+        if (item.currentPath === 'child') return;
+
+        const nodes = helper.pathify(item);
+        //console.log('NODES',nodes, item.type);
+        for (let path in nodes) {
+            if (nodes.hasOwnProperty(path)) {
+                //console.log(path);
+                const node = helper.getByPath(path, propsMap);
+                const nodeValue = nodes[path];
+
+                if (node) {
+                    if (Array.isArray(node)) {
+                        node.forEach(n => {
+                            n.nodeValue = nodeValue;
+                        });
+                    } else {
+                        node.nodeValue = nodeValue;
+                    }
+                }
+            }
+        }
+    });
 }
 
 function createListenerModel(context, models) {
