@@ -22,7 +22,7 @@ describe('Doz.for', function () {
 
         it('should be loop', function () {
 
-            Doz.Component('my-input', {
+            Doz.component('my-input', {
                 template: `
                     <div do-for="item in this.items">
                          <label>{{item.title}}</label>

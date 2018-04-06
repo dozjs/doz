@@ -153,7 +153,9 @@ module.exports = {
             ATTR: /{{([\w.]+)}}/,
             TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
             HANDLER: /on-(.*)/,
-            MODEL: /do-model/
+            MODEL: /do-model/,
+            FOR: /do-for/,
+            IF: /do-if/
         },
         TAG: {
             TEXT: 'doz-text-node'
@@ -446,7 +448,7 @@ var helper = __webpack_require__(9);
 var observer = __webpack_require__(10);
 var events = __webpack_require__(11);
 
-function Component(tag) {
+function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
@@ -516,6 +518,8 @@ function createInstance(cmp, cfg) {
     var placeholderMatch = null;
     var handlerMatch = null;
     var modelMatch = null;
+    var forMatch = null;
+    var ifMatch = null;
 
     // Find placeholder into text
     helper.textToTag(fragment);
@@ -534,8 +538,8 @@ function createInstance(cmp, cfg) {
                 placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
                 handlerMatch = attr.name.match(PARSER.REGEX.HANDLER);
                 modelMatch = helper.canModel(child) ? PARSER.REGEX.MODEL.test(attr.name) : false;
-
-                //console.log(modelMatch, attr.name, helper.canModel(child), PARSER.REGEX.MODEL.test(attr.name));
+                forMatch = PARSER.REGEX.FOR.test(attr.name);
+                ifMatch = PARSER.REGEX.IF.test(attr.name);
 
                 // Found listener
                 if (handlerMatch) {
@@ -550,6 +554,16 @@ function createInstance(cmp, cfg) {
                         field: attr.value,
                         element: child
                     });
+                } else if (forMatch) {
+                    // Get content model
+                    var content = child.innerHTML;
+                    // Remove content
+                    child.innerHTML = '';
+
+                    for (var i in [0, 1, 2, 3, 4]) {
+                        child.innerHTML += '[' + i + '] ' + content;
+                    }
+                } else if (ifMatch) {
 
                     // Found placeholder
                 } else if (placeholderMatch) {
@@ -698,8 +712,6 @@ function setProps(targetObj, defaultObj) {
                         }
                     }
                 }
-
-                //targetObj[i] = Object.assign({}, defaultObj[i]());
             } else {
                 targetObj[i] = defaultObj[i];
             }
@@ -713,7 +725,7 @@ function isSigned(n) {
 }
 
 module.exports = {
-    Component: Component,
+    component: component,
     getInstances: getInstances,
     setProps: setProps,
     createListenerHandler: createListenerHandler
@@ -736,7 +748,7 @@ module.exports = __webpack_require__(5);
 
 
 module.exports = __webpack_require__(6);
-module.exports.Component = __webpack_require__(3).Component;
+module.exports.component = __webpack_require__(3).component;
 module.exports.collection = __webpack_require__(0);
 
 /***/ }),

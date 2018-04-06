@@ -23,7 +23,7 @@ describe('Doz.event', function () {
 
             let isCreated, isRendered;
 
-            Doz.Component('my-component-button-c', {
+            Doz.component('my-component-button-c', {
                 template: `
                     <div>
                         <div>

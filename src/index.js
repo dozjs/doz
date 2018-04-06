@@ -1,3 +1,3 @@
 module.exports = require('./doz');
-module.exports.Component = require('./component/index').Component;
+module.exports.component = require('./component/index').component;
 module.exports.collection = require('./collection');

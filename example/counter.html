@@ -56,7 +56,7 @@
 <h2>JavaScript</h2>
 <pre class="prettyprint">
     <code class="lang-js">
-    Doz.Component(&apos;doz-button-counter&apos;, {
+    Doz.component(&apos;doz-button-counter&apos;, {
         template: &grave;&lt;div&gt;&lt;button on-click=&quot;myClickHandler&quot;&gt;{{title}}&lt;/button&gt; &lt;span&gt;{{counter}}&lt;/span&gt;&lt;/div&gt;&grave;,
         context: {
             counter: 0,
@@ -73,7 +73,7 @@
 </pre>
 <script>
 
-    Doz.Component('doz-button-counter', {
+    Doz.component('doz-button-counter', {
         template: `<div><button on-click="myClickHandler">{{title}}</button> <span class="counter">{{counter}}</span></div>`,
         context: {
             counter: 0,

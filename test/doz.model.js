@@ -22,7 +22,7 @@ describe('Doz.model', function () {
 
         it('should be change', function (done) {
 
-            Doz.Component('my-input', {
+            Doz.component('my-input', {
                 template: `
                     <div>
                          <input type="text" do-model="message" />
@@ -67,7 +67,7 @@ describe('Doz.model', function () {
 
         it('should be change, nested data, with default data', function (done) {
 
-            Doz.Component('my-input', {
+            Doz.component('my-input', {
                 template: `
                     <div>
                          <input type="text" do-model="data.message" />
@@ -114,7 +114,7 @@ describe('Doz.model', function () {
 
         it('should be change, nested data, undefined data', function (done) {
 
-            Doz.Component('my-input', {
+            Doz.component('my-input', {
                 template: `
                     <div>
                          <input type="text" do-model="data.message" />

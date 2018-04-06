@@ -1,4 +1,4 @@
-const {Component} = require('../');
+const {component} = require('../');
 const be = require('bejs');
 const collection = require('../src/collection');
 
@@ -21,7 +21,7 @@ describe('component', function () {
     describe('create', function () {
         it('should be registered', function () {
             const tag = 'my-component';
-            Component(tag);
+            component(tag);
             const result = collection.get(tag);
             console.log(result);
             be.err.not.undefined(result);
@@ -30,7 +30,7 @@ describe('component', function () {
         it('wrong tag name', function () {
             const tag = 'mycomponent';
             try {
-                Component(tag);
+                component(tag);
             } catch (e) {
                 be.err.equal(e.message, 'Tag must contain a dash (-): my-component');
             }

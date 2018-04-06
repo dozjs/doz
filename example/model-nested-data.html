@@ -38,7 +38,7 @@
 <h2>JavaScript</h2>
 <pre class="prettyprint">
     <code class="lang-js">
-    Doz.Component(&apos;doz-input-message&apos;, {
+    Doz.component(&apos;doz-input-message&apos;, {
         template: &grave;&lt;div&gt;&lt;input type=&quot;text&quot; do-model=&quot;message.other&quot; placeholder=&quot;{{placeholder}}&quot;/&gt;&lt;p&gt;{{message.other}}&lt;/p&gt;&lt;/div&gt;&grave;,
         context: {
             data() {
@@ -58,7 +58,7 @@
 </pre>
 <script>
 
-    Doz.Component('doz-input-message', {
+    Doz.component('doz-input-message', {
         template: `<div><input type="text" do-model="message.other" placeholder="{{placeholder}}"/><p>{{message.other}}</p></div>`,
         context: {
             data() {

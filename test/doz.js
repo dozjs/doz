@@ -34,11 +34,11 @@ describe('Doz', function () {
         });
 
         it('should be ok with a component', function () {
-            Doz.Component('my-component-nested-a', {
+            Doz.component('my-component-nested-a', {
                 template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component-a', {
+            Doz.component('my-component-a', {
                 template: `<div>hello I'm a {{name}} component <div></div> <my-component-nested-a name="INNESTATO"></my-component-nested-a> <my-component-nested-a name="INNESTATO1"></my-component-nested-a></div>`
             });
 
@@ -65,11 +65,11 @@ describe('Doz', function () {
         });
 
         it('should be ok, a component with more tags', function () {
-            Doz.Component('my-component-nested-b', {
+            Doz.component('my-component-nested-b', {
                 template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component-b', {
+            Doz.component('my-component-b', {
                 template: `<div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component <my-component-nested-b name="INNESTATO"></my-component-nested-b></div>`
             });
 
@@ -98,14 +98,14 @@ describe('Doz', function () {
         });
 
         it('should be ok, update nested', function () {
-            Doz.Component('my-component-nested-c', {
+            Doz.component('my-component-nested-c', {
                 context: {
                     name: 'sono default name'
                 },
                 template: `<div onclick="console.log(g)">Ciao nestend: {{name}} component</div>`
             });
 
-            Doz.Component('my-component-c', {
+            Doz.component('my-component-c', {
                 template: `
                     <div>hello I'm a <span>{{name}}</span> <span>{{name}}</span> component
                         <my-component-nested-c name="{{nested1}}"></my-component-nested-c>
@@ -144,7 +144,7 @@ describe('Doz', function () {
 
         it('should be ok with a component and an handler', function () {
 
-            Doz.Component('my-component-button-a', {
+            Doz.component('my-component-button-a', {
                 template: `
                     <div>
                         <div>
@@ -182,7 +182,7 @@ describe('Doz', function () {
 
         it('should be ok with a component and anonymous function', function () {
 
-            Doz.Component('my-component-button-b', {
+            Doz.component('my-component-button-b', {
                 template: `
                     <div>
                         <div>

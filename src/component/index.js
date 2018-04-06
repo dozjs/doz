@@ -7,7 +7,7 @@ const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
 
-function Component(tag, cfg = {}) {
+function component(tag, cfg = {}) {
 
     if (typeof tag !== 'string') {
         throw new TypeError('Tag must be a string');
@@ -285,7 +285,7 @@ function isSigned(n) {
 
 
 module.exports = {
-    Component,
+    component,
     getInstances,
     setProps,
     createListenerHandler
