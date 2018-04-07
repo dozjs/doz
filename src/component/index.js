@@ -79,7 +79,7 @@ function createInstance(cmp, cfg) {
     let forMatch = null;
     let ifMatch = null;
 
-    // Find placeholder into text
+    // Find placeholder into text and transform it into tag
     helper.textToTag(fragment);
 
     const nodes = html.getAllNodes(fragment);
