@@ -66,6 +66,12 @@
             },
             onBeforeUpdate() {
                 return this.counter < 10;
+            },
+            onUpdate() {
+                const buttonEl = this.element().querySelector('button');
+                if (this.counter === 10) {
+                    buttonEl.setAttribute('disabled', 'false');
+                }
             }
         }
     });
