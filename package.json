@@ -44,6 +44,7 @@
         "babel-loader": "^7.1.2",
         "babel-preset-env": "^1.6.1",
         "bejs": "^2.0.1",
+        "chai": "^4.1.2",
         "jsdoc-to-markdown": "^4.0.1",
         "jsdom": "^11.6.2",
         "jsdom-global": "^3.0.2",

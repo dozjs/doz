@@ -158,20 +158,27 @@ function createInstance(cmp, cfg) {
     let context = {};
     let isCreated = false;
 
+    let proxyContext = observer.create(context, false, changes => {
+
+        updateComponent(changes, propsMap);
+
+        if (isCreated) {
+            events.callUpdate(context);
+        }
+    });
+
+    observer.beforeChange(proxyContext, changes => {
+        //console.log('before changesss', changes);
+        //return false;
+    });
+
     const instance = {
         tag: cmp.tag,
         props,
         propsMap,
         child: [],
         element: fragment,
-        context: observer.create(context, false, changes => {
-
-            updateComponent(changes, propsMap);
-
-            if (isCreated) {
-                events.callUpdate(context);
-            }
-        })
+        context: proxyContext
     };
 
     Object.defineProperties(instance.context, {
@@ -190,15 +197,15 @@ function createInstance(cmp, cfg) {
     });
 
     // Set default
-    setProps(instance.context, cmp.cfg.context);
+    setProps(proxyContext, cmp.cfg.context);
     // Set props if exists
-    setProps(instance.context, props);
+    setProps(proxyContext, props);
     // Create eventual handlers
-    createListenerHandler(instance.context, listenerHandler);
+    createListenerHandler(proxyContext, listenerHandler);
     // Create eventual listener for model
-    createListenerModel(instance.context, listenerModel);
+    createListenerModel(proxyContext, listenerModel);
 
-    events.callCreate(instance.context);
+    events.callCreate(proxyContext);
     isCreated = true;
 
     //console.log(propsMap)
@@ -223,7 +230,7 @@ function updateComponent(changes, propsMap) {
 
                 const node = helper.getByPath(path, propsMap);
 
-                console.log(path, item.type);
+                //console.log(path, item.type);
 
                 if (node) {
                     const nodeValue = nodes[path];

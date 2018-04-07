@@ -155,6 +155,7 @@ module.exports = {
             HANDLER: /on-(.*)/,
             MODEL: /do-model/,
             FOR: /do-for/,
+            FOR_EXP: /in this.(.*)/,
             IF: /do-if/
         },
         TAG: {
@@ -495,7 +496,6 @@ function getInstances(element) {
 
                 if (newElement.element.querySelectorAll('*').length) {
                     var nestedChild = getInstances(newElement.element.firstChild);
-                    //console.log(nestedChild);
                     if (nestedChild.length) {
                         newElement.child = newElement.child.concat(nestedChild);
                         newElement.context.child = newElement.child;
@@ -509,11 +509,13 @@ function getInstances(element) {
 }
 
 function createInstance(cmp, cfg) {
-    var textNodes = [];
     var props = {};
     var propsMap = {};
     var listenerHandler = [];
     var listenerModel = [];
+    var textNodes = [];
+    var forNodes = [];
+    var ifNodes = [];
     var fragment = html.create(cmp.cfg.template);
     var placeholderMatch = null;
     var handlerMatch = null;
@@ -555,13 +557,15 @@ function createInstance(cmp, cfg) {
                         element: child
                     });
                 } else if (forMatch) {
-                    // Get content model
-                    var content = child.innerHTML;
-                    // Remove content
-                    child.innerHTML = '';
+                    var expMatch = attr.value.match(PARSER.REGEX.FOR_EXP);
 
-                    for (var i in [0, 1, 2, 3, 4]) {
-                        child.innerHTML += '[' + i + '] ' + content;
+                    if (expMatch) {
+                        helper.createObjectMap(expMatch[1], propsMap, {
+                            _FOR_: true,
+                            exp: attr.value,
+                            element: child
+                        });
+                        //console.log(propsMap)
                     }
                 } else if (ifMatch) {
 
@@ -588,11 +592,26 @@ function createInstance(cmp, cfg) {
         }
     });
 
+    //console.log(textNodes);
     // Remove tag text added above
     helper.tagToText(textNodes);
 
     var context = {};
     var isCreated = false;
+
+    var proxyContext = observer.create(context, false, function (changes) {
+
+        updateComponent(changes, propsMap);
+
+        if (isCreated) {
+            events.callUpdate(context);
+        }
+    });
+
+    observer.beforeChange(proxyContext, function (changes) {
+        //console.log('before changesss', changes);
+        //return false;
+    });
 
     var instance = {
         tag: cmp.tag,
@@ -600,39 +619,7 @@ function createInstance(cmp, cfg) {
         propsMap: propsMap,
         child: [],
         element: fragment,
-        context: observer.create(context, false, function (change) {
-
-            change.forEach(function (item) {
-                // Exclude child property from changes event
-                if (item.currentPath === 'child') return;
-
-                var nodes = helper.pathify(item);
-
-                for (var path in nodes) {
-                    if (nodes.hasOwnProperty(path)) {
-                        (function () {
-                            //console.log(path);
-                            var node = helper.getByPath(path, propsMap);
-                            var nodeValue = nodes[path];
-
-                            if (node) {
-                                if (Array.isArray(node)) {
-                                    node.forEach(function (n) {
-                                        n.nodeValue = nodeValue;
-                                    });
-                                } else {
-                                    node.nodeValue = nodeValue;
-                                }
-                            }
-                        })();
-                    }
-                }
-            });
-
-            if (isCreated) {
-                events.callUpdate(context);
-            }
-        })
+        context: proxyContext
     };
 
     Object.defineProperties(instance.context, {
@@ -651,20 +638,58 @@ function createInstance(cmp, cfg) {
     });
 
     // Set default
-    setProps(instance.context, cmp.cfg.context);
+    setProps(proxyContext, cmp.cfg.context);
     // Set props if exists
-    setProps(instance.context, props);
+    setProps(proxyContext, props);
     // Create eventual handlers
-    createListenerHandler(instance.context, listenerHandler);
+    createListenerHandler(proxyContext, listenerHandler);
     // Create eventual listener for model
-    createListenerModel(instance.context, listenerModel);
+    createListenerModel(proxyContext, listenerModel);
 
-    events.callCreate(instance.context);
+    events.callCreate(proxyContext);
     isCreated = true;
 
     //console.log(propsMap)
 
     return instance;
+}
+
+function updateComponent(changes, propsMap) {
+    changes.forEach(function (item) {
+        // Exclude child property from changes event
+        if (item.currentPath === 'child') return;
+
+        var nodes = helper.pathify(item);
+        //console.log('NODES',nodes);
+        for (var path in nodes) {
+            if (nodes.hasOwnProperty(path)) {
+
+                //console.log(path);
+
+                // Fix discrepancy between add type and update, add type returns []
+                path = path.replace(/\[(.*)]/g, '.$1');
+
+                var node = helper.getByPath(path, propsMap);
+
+                //console.log(path, item.type);
+
+                if (node) {
+                    (function () {
+                        var nodeValue = nodes[path];
+                        if (Array.isArray(node)) {
+                            node.forEach(function (n) {
+                                n.nodeValue = nodeValue;
+                            });
+                        } else {
+                            node.nodeValue = nodeValue;
+                        }
+                    })();
+                }
+
+                //console.log(node);
+            }
+        }
+    });
 }
 
 function createListenerModel(context, models) {
@@ -1088,6 +1113,9 @@ var ObservableSlim = function () {
     // 'targets' -- together, the pair offer a Hash table where the key is not a string nor number, but the actual target object
     var targetsProxy = [];
 
+    var observableCache = [];
+    var originalObservableCache = null;
+
     // this variable tracks duplicate proxies assigned to the same target.
     // the 'set' handler below will trigger the same change on all other Proxies tracking the same target.
     // however, in order to avoid an infinite loop of Proxies triggering and re-triggering one another, we use dupProxy
@@ -1159,7 +1187,8 @@ var ObservableSlim = function () {
                 // creating Proxies of Proxies.
                 if (property === "__isProxy") {
                     return true;
-
+                } else if (property === "__getTarget") {
+                    return target;
                     // from the perspective of a given observable on a parent object, return the parent object of the given nested object
                 } else if (property === "__getParent") {
                     return function (i) {
@@ -1172,6 +1201,41 @@ var ObservableSlim = function () {
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 var targetProp = target[property];
+
+                // the logic and need behind this next block of code is a little complicated... we want to support multiple observables on the same target object
+                // and if the target object is modified via one Proxy, then we want *all* observables to be notified of that change -- including on all nested
+                // objects of the original target object. in order to do that, we must create proxies recursively the entire nested target object. we used to complete
+                // that recursive initalization in the public 'create' method, but we found that it was too taxing for very large deeply nested objects on older browsers
+                // like IE11. this section of code now adds the new proxies on nested objects as soon as they are accessed and for *all* other observables that are monitoring
+                // the same object
+
+                // mark that the current observable has already 'accessed' this property
+                observableCache.push(observable);
+
+                // if this is the first observable to access the property, then mark this observable as the initiator
+                if (originalObservableCache === null) {
+                    originalObservableCache = observable;
+
+                    // loop over all other observables that are observing this same object
+                    var a = targets.indexOf(target);
+                    var targetProxyList = targetsProxy[a];
+                    var b = targetProxyList.length;
+                    if (b > 1) {
+                        while (b--) {
+                            // if the other observable watching this same target has not yet accessed this property, then proceed to...
+                            if (observableCache.indexOf(targetProxyList[b].observable) === -1) {
+                                // ...access the same property on the other proxies, this will trigger the 'get' method which will
+                                // create a new proxy for the object we've just accessed
+                                targetProxyList[b].proxy[property];
+                            }
+                        }
+                    }
+
+                    // once we've fully exited out of the recursive 'get' calls and we're back to the original observable that accessed
+                    // target[property] then we can reset the observable cache and original observable back to empty
+                    originalObservableCache = null;
+                    observableCache = [];
+                }
 
                 // if we are traversing into a new object, then we want to record path to that object and return a new observable.
                 // recursively returning a new observable allows us a single Observable.observe() to monitor all changes on
@@ -1216,6 +1280,18 @@ var ObservableSlim = function () {
 
                 // record the deletion that just took place
                 changes.push({ "type": "delete", "target": target, "property": property, "newValue": null, "previousValue": previousValue[property], "currentPath": currentPath, "proxy": proxy });
+
+                var t = targets.indexOf(target);
+                if (t > -1) {
+                    var j = targetsProxy[t].length;
+                    while (j--) {
+                        var beforeChange = targetsProxy[t][j].observable.beforeChange;
+                        if (typeof beforeChange === 'function') {
+                            var res = beforeChange(changes);
+                            if (res === false) return false;
+                        }
+                    }
+                }
 
                 if (originalChange === true) {
 
@@ -1273,6 +1349,18 @@ var ObservableSlim = function () {
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
                     changes.push({ "type": type, "target": target, "property": property, "newValue": value, "previousValue": receiver[property], "currentPath": currentPath, "proxy": proxy });
+
+                    var t = targets.indexOf(target);
+                    if (t > -1) {
+                        var j = targetsProxy[t].length;
+                        while (j--) {
+                            var beforeChange = targetsProxy[t][j].observable.beforeChange;
+                            if (typeof beforeChange === 'function') {
+                                var res = beforeChange(changes);
+                                if (res === false) return false;
+                            }
+                        }
+                    }
 
                     // !!IMPORTANT!! if this proxy was the first proxy to receive the change, then we need to go check and see
                     // if there are other proxies for the same project. if there are, then we will modify those proxies as well so the other
@@ -1397,9 +1485,14 @@ var ObservableSlim = function () {
         */
         create: function create(target, domDelay, observer) {
 
-            // test if the target is a Proxy, if it is, then we should throw an error. we do not allow creating proxies of proxies
-            // because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
-            if (target.__isProxy === true) throw new Error("ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.");
+            // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
+            // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
+            if (target.__isProxy === true) {
+                var target = target.__getTarget;
+                //if it is, then we should throw an error. we do not allow creating proxies of proxies
+                // because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
+                //throw new Error("ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.");
+            }
 
             // fire off the _create() method -- it will create a new observable and proxy and return the proxy
             var proxy = _create(target, domDelay);
@@ -1505,6 +1598,28 @@ var ObservableSlim = function () {
             if (foundMatch === true) {
                 observables.splice(c, 1);
             }
+        },
+
+        /*	Method: beforeChange
+                This method accepts a function will be invoked before changes.
+              Parameters:
+            	proxy 	- the ES6 Proxy returned by the create() method.
+                callback 	- Function, will be invoked before every change is made to the proxy, if it returns false no changes will be made.
+        */
+        beforeChange: function beforeChange(proxy, callback) {
+            if (typeof callback !== 'function') throw new Error("Callback function is required");
+
+            var i = observables.length;
+            var foundMatch = false;
+            while (i--) {
+                if (observables[i].proxy === proxy) {
+                    observables[i].beforeChange = callback;
+                    foundMatch = true;
+                    break;
+                }
+            };
+
+            if (foundMatch == false) throw new Error("ObseravableSlim -- matching proxy not found.");
         }
     };
 }();
@@ -1512,7 +1627,7 @@ var ObservableSlim = function () {
 // Export in a try catch to prevent this from erroring out on older browsers
 try {
     module.exports = ObservableSlim;
-} catch (err) {}
+} catch (err) {};
 
 /***/ }),
 /* 11 */
