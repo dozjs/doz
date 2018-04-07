@@ -609,8 +609,9 @@ function createInstance(cmp, cfg) {
     });
 
     observer.beforeChange(proxyContext, function (changes) {
-        //console.log('before changesss', changes);
-        //return false;
+        // Clone context to preventing update looping
+        var res = events.callBeforeUpdate(Object.assign({}, proxyContext));
+        if (res === false) return false;
     });
 
     var instance = {
@@ -664,24 +665,24 @@ function updateComponent(changes, propsMap) {
         for (var path in nodes) {
             if (nodes.hasOwnProperty(path)) {
 
-                //console.log(path);
-
                 // Fix discrepancy between add type and update, add type returns []
                 path = path.replace(/\[(.*)]/g, '.$1');
 
-                var node = helper.getByPath(path, propsMap);
+                //console.log(path);
 
-                //console.log(path, item.type);
+                var node = helper.getNodeByPath(path, propsMap);
+
+                //console.log(node);
 
                 if (node) {
                     (function () {
                         var nodeValue = nodes[path];
                         if (Array.isArray(node)) {
                             node.forEach(function (n) {
-                                n.nodeValue = nodeValue;
+                                updateElement(n, nodeValue);
                             });
                         } else {
-                            node.nodeValue = nodeValue;
+                            updateElement(node, nodeValue);
                         }
                     })();
                 }
@@ -690,6 +691,13 @@ function updateComponent(changes, propsMap) {
             }
         }
     });
+}
+
+function updateElement(element, nodeValue) {
+
+    //console.log(element, nodeValue, 'nodeValue' in element)
+
+    if ('nodeValue' in element) element.nodeValue = nodeValue;
 }
 
 function createListenerModel(context, models) {
@@ -905,6 +913,7 @@ var html = {
     },
 
     getAllNodes: function getAllNodes(el) {
+
         var nodes = [];
 
         function scanner(n) {
@@ -917,6 +926,8 @@ var html = {
         }
 
         scanner(el);
+
+        //console.log('NODE-B',nodes);
 
         return nodes;
     }
@@ -1072,7 +1083,7 @@ module.exports = {
     textToTag: textToTag,
     tagToText: tagToText,
     canModel: canModel,
-    getByPath: getByPath,
+    getNodeByPath: getByPath,
     getLastObjectByPath: getLastObjectByPath,
     objectToPath: objectToPath,
     pathify: pathify,
@@ -1648,6 +1659,12 @@ function callRender(context) {
     }
 }
 
+function callBeforeUpdate(context) {
+    if (typeof context.onBeforeUpdate === 'function') {
+        return context.onBeforeUpdate.call(context);
+    }
+}
+
 function callUpdate(context) {
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context);
@@ -1663,6 +1680,7 @@ function callDestroy(context) {
 module.exports = {
     callCreate: callCreate,
     callRender: callRender,
+    callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
     callDestroy: callDestroy
 };

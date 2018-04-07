@@ -52,6 +52,7 @@ const html = {
     },
 
     getAllNodes: function (el) {
+
         const nodes = [];
 
         function scanner(n) {
@@ -65,6 +66,8 @@ const html = {
         }
 
         scanner(el);
+
+        //console.log('NODE-B',nodes);
 
         return nodes;
     }

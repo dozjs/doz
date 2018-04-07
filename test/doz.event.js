@@ -21,7 +21,7 @@ describe('Doz.event', function () {
 
         it('should be ok with a component events', function (done) {
 
-            let isCreated, isRendered;
+            let isCreated, isRendered, beforeUpdate;
 
             Doz.component('my-component-button-c', {
                 template: `
@@ -41,9 +41,13 @@ describe('Doz.event', function () {
                         console.log('component rendered');
                         isRendered = true;
                     },
+                    onBeforeUpdate() {
+                        console.log('component before update');
+                        beforeUpdate = true;
+                    },
                     onUpdate() {
                         console.log('component updated');
-                        if(isCreated && isRendered)
+                        if(isCreated && isRendered && beforeUpdate)
                             done();
                     }
                 }

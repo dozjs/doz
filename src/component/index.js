@@ -168,8 +168,10 @@ function createInstance(cmp, cfg) {
     });
 
     observer.beforeChange(proxyContext, changes => {
-        //console.log('before changesss', changes);
-        //return false;
+        // Clone context to preventing update looping
+        const res = events.callBeforeUpdate(Object.assign({}, proxyContext));
+        if (res === false)
+            return false;
     });
 
     const instance = {
@@ -223,23 +225,23 @@ function updateComponent(changes, propsMap) {
         for (let path in nodes) {
             if (nodes.hasOwnProperty(path)) {
 
-                //console.log(path);
-
                 // Fix discrepancy between add type and update, add type returns []
                 path = path.replace(/\[(.*)]/g,'.$1');
 
-                const node = helper.getByPath(path, propsMap);
+                //console.log(path);
 
-                //console.log(path, item.type);
+                const node = helper.getNodeByPath(path, propsMap);
+
+                //console.log(node);
 
                 if (node) {
                     const nodeValue = nodes[path];
                     if (Array.isArray(node)) {
                         node.forEach(n => {
-                            n.nodeValue = nodeValue;
+                            updateElement(n, nodeValue);
                         });
                     } else {
-                        node.nodeValue = nodeValue;
+                        updateElement(node, nodeValue);
                     }
                 }
 
@@ -247,6 +249,14 @@ function updateComponent(changes, propsMap) {
             }
         }
     });
+}
+
+function updateElement(element, nodeValue) {
+
+    //console.log(element, nodeValue, 'nodeValue' in element)
+
+    if ('nodeValue' in element)
+        element.nodeValue = nodeValue;
 }
 
 function createListenerModel(context, models) {

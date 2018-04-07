@@ -144,7 +144,7 @@ module.exports = {
     textToTag,
     tagToText,
     canModel,
-    getByPath,
+    getNodeByPath: getByPath,
     getLastObjectByPath,
     objectToPath,
     pathify,

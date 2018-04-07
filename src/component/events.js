@@ -10,6 +10,12 @@ function callRender(context) {
     }
 }
 
+function callBeforeUpdate(context) {
+    if(typeof context.onBeforeUpdate === 'function'){
+        return context.onBeforeUpdate.call(context);
+    }
+}
+
 function callUpdate(context) {
     if(typeof context.onUpdate === 'function'){
         context.onUpdate.call(context);
@@ -25,6 +31,7 @@ function callDestroy(context) {
 module.exports = {
     callCreate,
     callRender,
+    callBeforeUpdate,
     callUpdate,
     callDestroy
 };
