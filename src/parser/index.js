@@ -1,17 +1,17 @@
 function serializeProps(node) {
-    if (!node.attributes) return null;
     const props = {};
 
-    Array.from(node.attributes).forEach(attr => {
-        //const prop = {};
-        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
-        //props.push(prop);
-    });
+    if (node.attributes.length)
+        Array.from(node.attributes).forEach(attr => {
+            //const prop = {};
+            props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
+            //props.push(prop);
+        });
 
     return props;
 }
 
-function parser(node) {
+function transform(node) {
 
     let root = {};
 
@@ -47,5 +47,5 @@ function parser(node) {
 }
 
 module.exports = {
-    parser
+    transform
 };

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - vdom">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - vdom</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <script src="../dist/doz.js?589654"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    const root = document.getElementById('app');
+
+    let prev, next, tpl, props, prevProps;
+
+    function render(){
+        props = {
+            time: new Date().toLocaleTimeString(),
+            disabled: prevProps && prevProps.disabled ? '' : 'disabled'
+        };
+
+        tpl = Doz.html.create(`<div><button ${props.disabled} >Click me</button><div><strong>sono le ore</strong> ${props.time}</div></div>`);
+        next = Doz.transform(tpl);
+        Doz.update(root, next, prev);
+
+        prev = next;
+        prevProps = Object.assign({}, props);
+    }
+
+    render();
+
+    setInterval(()=>{
+        render();
+    }, 1000);
+
+</script>
+</body>
+</html>

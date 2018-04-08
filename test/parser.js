@@ -1,8 +1,9 @@
-const {parser} = require('../src/parser');
+const {transform} = require('../src/parser');
 const {updateElement} = require('../src/virtual-dom');
 const html = require('../src/html');
 const be = require('bejs');
 const collection = require('../src/collection');
+const copy = require('deep-copy');
 
 describe('parser', function () {
 
@@ -24,11 +25,12 @@ describe('parser', function () {
         it('should be return nodes', function () {
             document.body.innerHTML = `<div id="app"></div>`;
             const appRoot = document.getElementById('app');
-            const initial = parser(html.create(`<div>hello<button disabled>testo</button></div>`));
-            //console.log(initial.children[1]);
+            const initial = transform(html.create(`<div>hello<button disabled>testo</button></div>`));
+
             updateElement(appRoot, initial);
             console.log(document.body.innerHTML);
-            const next = parser(html.create(`<div>hello3<button disabled>testo</button></div>`));
+            const next = transform(html.create(`<div>hello<button disabled>rere</button></div>`));
+            //next.children[1].children[0] = 'clicca';
             updateElement(appRoot, next, initial);
             console.log(document.body.innerHTML);
         });

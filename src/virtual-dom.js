@@ -1,5 +1,5 @@
 function h(type, props, ...children) {
-    return { type, props: props || {}, children };
+    return {type, props: props || {}, children};
 }
 
 function setBooleanProp($target, name, value) {
