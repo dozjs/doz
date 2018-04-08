@@ -1,4 +1,6 @@
 const {parser} = require('../src/parser');
+const {updateElement} = require('../src/virtual-dom');
+const html = require('../src/html');
 const be = require('bejs');
 const collection = require('../src/collection');
 
@@ -20,9 +22,15 @@ describe('parser', function () {
 
     describe('create', function () {
         it('should be return nodes', function () {
-            document.body.innerHTML = `<div id="app">hello<button disabled>testo</button></div>`;
-            const appElement = document.getElementById('app');
-            parser(appElement);
+            document.body.innerHTML = `<div id="app"></div>`;
+            const appRoot = document.getElementById('app');
+            const initial = parser(html.create(`<div>hello<button disabled>testo</button></div>`));
+            //console.log(initial.children[1]);
+            updateElement(appRoot, initial);
+            console.log(document.body.innerHTML);
+            const next = parser(html.create(`<div>hello3<button disabled>testo</button></div>`));
+            updateElement(appRoot, next, initial);
+            console.log(document.body.innerHTML);
         });
 
 
