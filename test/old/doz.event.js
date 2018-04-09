@@ -1,4 +1,4 @@
-const Doz = require('../');
+const Doz = require('../../index');
 const be = require('bejs');
 
 describe('Doz.event', function () {

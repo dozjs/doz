@@ -34,25 +34,32 @@
             time: new Date().toLocaleTimeString(),
             record: []
         },
+
         each(obj, func) {
             return obj.map(func).join('');
         },
+
         myHandler(e) {
             e.target.parentNode.style.background = 'red';
         },
+
         template() {
-            return (`
+            return (
+                `
                     <div>
                         <button onclick="this.myHandler()" >Click me </button>
                         <div>
                             <strong>sono le ore</strong> ${this.props.time}
                         </div>
                         ${this.each(this.props.record, item => `<button >name: ${item.name}, desc: ${item.desc} .</button>`)}
-                    </div>`);
+                    </div>
+                `
+            );
         },
 
         render() {
             let next = Doz.transform(Doz.html.create(this.template()));
+
             Doz.update(root, next, this._prev, 0, this);
 
             this._prev = next;
@@ -61,7 +68,7 @@
 
         init() {
             this.render();
-            setInterval(()=>{
+            setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString();
                 this.render();
             }, 1000)

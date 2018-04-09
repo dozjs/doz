@@ -1,7 +1,7 @@
-const Doz = require('../');
+const Doz = require('../../index');
 const be = require('bejs');
 
-describe('Doz.for', function () {
+describe('Doz.if', function () {
 
     this.timeout(5000);
 
@@ -20,38 +20,32 @@ describe('Doz.for', function () {
 
     describe('create basic', function () {
 
-        it('should be loop', function () {
+        it('should be if', function () {
 
-            Doz.component('my-input', {
+            Doz.component('doz-if-cmp', {
                 template: `
-                    <div do-for="item in this.items">
-                         <label>{{item.title}}</label>
-                         <input type="text" />
+                    <div do-if="this.items.length">
+                         {{found}}
                     </div>
+                    <div do-else>{{notfound}}</div>
                 `,
                 context: {
-                    items: [
-                        {id: 1, title: 'Buy a car'},
-                        {id: 2, title: 'Buy a phone'},
-                        {id: 3, title: 'Buy a dog'}
-                    ],
+                    items: [1,2,3],
                     onCreate() {
                         console.log('component created');
                     },
                     onRender() {
                         console.log('component rendered');
-                        this.items[1].title = 'Done, I have get a phone';
-                        this.items[2].title = 'Done, I have get a dog';
                     },
                     onUpdate() {
-                        //console.log('component updated:', this.items);
+                        console.log('component updated');
                     }
                 }
             });
 
             document.body.innerHTML = `
                 <div id="app">
-                    <my-input></my-input>
+                    <doz-if-cmp found="trovato" notfound="non trovato"></doz-if-cmp>
                 </div>
             `;
 

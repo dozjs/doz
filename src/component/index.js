@@ -6,8 +6,8 @@ const collection = require('../collection');
 const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
-const {updateElement} = require('../vdom/index');
-const {transform} = require('../vdom/parser').transform;
+const transform = require('../vdom/parser').transform;
+const update = require('../vdom').updateElement;
 
 function component(tag, cfg = {}) {
 
@@ -24,15 +24,16 @@ function component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        template: '<div></div>',
-        context: {}
+        template() {
+            return '<div></div>'
+        },
+        props: {}
     });
 
     register(cmp);
 }
 
 function getInstances(element) {
-
     const nodes = html.getAllNodes(element);
     let components = [];
 
@@ -42,24 +43,34 @@ function getInstances(element) {
             const cmp = collection.get(child.nodeName);
 
             if (cmp) {
+
                 const newElement = createInstance(cmp, {
-                    props: child.attributes
+                    root: child.parentNode
                 });
 
-                newElement.element[INSTANCE] = newElement;
+                newElement.render();
 
-                child.parentNode.replaceChild(newElement.element, child);
-                components.push(newElement);
+                // Remove old
+                child.parentNode.removeChild(child);
 
-                events.callRender(newElement.context);
+                //console.log(newElement);
 
-                if (newElement.element.querySelectorAll('*').length) {
-                    const nestedChild = getInstances(newElement.element.firstChild);
-                    if (nestedChild.length) {
-                        newElement.child = newElement.child.concat(nestedChild);
-                        newElement.context.child = newElement.child;
-                    }
-                }
+                events.callRender(newElement);
+                /*
+                                newElement.element[INSTANCE] = newElement;
+
+                                child.parentNode.replaceChild(newElement.element, child);
+                                components.push(newElement);
+
+                                events.callRender(newElement.context);
+
+                                if (newElement.element.querySelectorAll('*').length) {
+                                    const nestedChild = getInstances(newElement.element.firstChild);
+                                    if (nestedChild.length) {
+                                        newElement.child = newElement.child.concat(nestedChild);
+                                        newElement.context.child = newElement.child;
+                                    }
+                                }*/
             }
         }
     });
@@ -68,44 +79,78 @@ function getInstances(element) {
 }
 
 function createInstance(cmp, cfg) {
+    let instance = {};
+    let isCreated = false;
 
-}
+    Object.defineProperties(instance, {
+        _prev: {
+            value: null,
+            writable: true
+        },
+        _prevPos: {
+            value: null,
+            writable: true
+        },
+        each: {
+            value: function (obj, func) {
+                return obj.map(func).join('');
+            },
+            enumerable: true
+        },
+        render: {
+            value: function () {
+                let tpl = html.create(this.template());
+                let next = transform(tpl);
 
-function updateComponent(changes, propsMap) {
+                update(cfg.root, next, this._prev, 0, this);
 
-}
-
-function setProps(targetObj, defaultObj) {
-    for (let i in defaultObj) {
-        if (defaultObj.hasOwnProperty(i)) {
-            if (typeof targetObj[i] === 'object' && typeof defaultObj[i] !== 'undefined') {
-                setProps(targetObj[i], defaultObj[i]);
-                // Set a copy of data
-            } else if (i === 'data' && typeof defaultObj[i] === 'function') {
-                let data = defaultObj[i]();
-
-                if (typeof data === 'object') {
-                    for (let j in data) {
-                        if (data.hasOwnProperty(j) && !targetObj.hasOwnProperty(j)) {
-                            targetObj[j] = typeof data[j] === 'object' ? Object.assign({}, data[j]) : data[j]
-                        }
-                    }
-                }
-            } else {
-                targetObj[i] = defaultObj[i];
-            }
+                this._prev = next;
+                this._prevProps = Object.assign({}, this.props);
+            },
+            enumerable: true
         }
-    }
-    return targetObj;
-}
+    });
 
-function isSigned(n) {
-    return n.hasOwnProperty(SIGN);
+    instance = Object.assign(instance, cmp.cfg);
+
+    //console.log(instance.props);
+
+    instance.props = observer.create(cmp.cfg.props, false, change => {
+        console.log('cambio');
+        instance.render();
+
+        if (isCreated) {
+            events.callUpdate(instance);
+        }
+    });
+
+    observer.beforeChange(instance.props, change => {
+        console.log('before change')
+        const res = events.callBeforeUpdate(Object.assign({}, instance));
+        if (res === false)
+            return false;
+    });
+
+
+    //instance.render();
+
+
+    //
+    //instance.props.name = 'Fabios';
+    //instance.props.name = 'Fabiwwwwo';
+    //console.log(proxyProps)
+
+    //
+    events.callCreate(instance);
+    isCreated = true;
+
+    return instance;
 }
 
 
 module.exports = {
     component,
     getInstances,
-    setProps
+    //setProps,
+    //createListenerHandler
 };

@@ -1,6 +1,6 @@
-const {component} = require('../index');
+const {component} = require('../../index');
 const be = require('bejs');
-const collection = require('../src/collection');
+const collection = require('../../src/collection');
 
 describe('component', function () {
 

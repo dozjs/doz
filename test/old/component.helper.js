@@ -1,4 +1,4 @@
-const helper = require('../src/component/helper');
+const helper = require('../../src/component/helper');
 const be = require('bejs');
 
 describe('component.helper', function () {

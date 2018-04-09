@@ -135,6 +135,8 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
             $parent.childNodes[index]
         );
     } else if (changed(newNode, oldNode)) {
+        //console.log(index);
+        //console.log($parent.childNodes[index]);
         $parent.replaceChild(
             createElement(newNode, cmp),
             $parent.childNodes[index]

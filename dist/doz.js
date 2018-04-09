@@ -430,8 +430,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var extend = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
@@ -448,11 +446,8 @@ var collection = __webpack_require__(0);
 var helper = __webpack_require__(11);
 var observer = __webpack_require__(12);
 var events = __webpack_require__(13);
-
-var _require3 = __webpack_require__(5),
-    updateElement = _require3.updateElement;
-
-var transform = __webpack_require__(6).transform.transform;
+var transform = __webpack_require__(5).transform;
+var update = __webpack_require__(6).updateElement;
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -471,15 +466,17 @@ function component(tag) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
-        template: '<div></div>',
-        context: {}
+        template: function template() {
+            return '<div></div>';
+        },
+
+        props: {}
     });
 
     register(cmp);
 }
 
 function getInstances(element) {
-
     var nodes = html.getAllNodes(element);
     var components = [];
 
@@ -489,24 +486,27 @@ function getInstances(element) {
             var cmp = collection.get(child.nodeName);
 
             if (cmp) {
+
                 var newElement = createInstance(cmp, {
-                    props: child.attributes
+                    root: child.parentNode
                 });
 
-                newElement.element[INSTANCE] = newElement;
-
-                child.parentNode.replaceChild(newElement.element, child);
-                components.push(newElement);
-
-                events.callRender(newElement.context);
-
-                if (newElement.element.querySelectorAll('*').length) {
-                    var nestedChild = getInstances(newElement.element.firstChild);
-                    if (nestedChild.length) {
-                        newElement.child = newElement.child.concat(nestedChild);
-                        newElement.context.child = newElement.child;
-                    }
-                }
+                console.log(newElement);
+                // Remove old
+                child.parentNode.removeChild(child);
+                events.callRender(newElement);
+                /*
+                                newElement.element[INSTANCE] = newElement;
+                                  child.parentNode.replaceChild(newElement.element, child);
+                                components.push(newElement);
+                                  events.callRender(newElement.context);
+                                  if (newElement.element.querySelectorAll('*').length) {
+                                    const nestedChild = getInstances(newElement.element.firstChild);
+                                    if (nestedChild.length) {
+                                        newElement.child = newElement.child.concat(nestedChild);
+                                        newElement.context.child = newElement.child;
+                                    }
+                                }*/
             }
         }
     });
@@ -514,42 +514,73 @@ function getInstances(element) {
     return components;
 }
 
-function createInstance(cmp, cfg) {}
+function createInstance(cmp, cfg) {
+    var instance = {};
 
-function updateComponent(changes, propsMap) {}
+    Object.defineProperties(instance, {
+        _prev: {
+            value: null,
+            writable: true
+        },
+        _prevPos: {
+            value: null,
+            writable: true
+        },
+        each: {
+            value: function value(obj, func) {
+                return obj.map(func).join('');
+            },
+            enumerable: true
+        },
+        render: {
+            value: function value() {
+                var tpl = html.create(this.template());
+                var next = transform(tpl);
 
-function setProps(targetObj, defaultObj) {
-    for (var i in defaultObj) {
-        if (defaultObj.hasOwnProperty(i)) {
-            if (_typeof(targetObj[i]) === 'object' && typeof defaultObj[i] !== 'undefined') {
-                setProps(targetObj[i], defaultObj[i]);
-                // Set a copy of data
-            } else if (i === 'data' && typeof defaultObj[i] === 'function') {
-                var data = defaultObj[i]();
+                //console.log(this._prev)
+                //console.log(next)
 
-                if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') {
-                    for (var j in data) {
-                        if (data.hasOwnProperty(j) && !targetObj.hasOwnProperty(j)) {
-                            targetObj[j] = _typeof(data[j]) === 'object' ? Object.assign({}, data[j]) : data[j];
-                        }
-                    }
-                }
-            } else {
-                targetObj[i] = defaultObj[i];
-            }
+                update(cfg.root, next, this._prev, 0, this);
+
+                this._prev = next;
+                this._prevProps = Object.assign({}, this.props);
+            },
+            enumerable: true
         }
-    }
-    return targetObj;
-}
+    });
 
-function isSigned(n) {
-    return n.hasOwnProperty(SIGN);
+    instance = Object.assign(instance, cmp.cfg);
+
+    //console.log(instance.props);
+
+    var proxyProps = observer.create(instance.props, false, function (change) {
+        console.log('cambio');
+        instance.render();
+    });
+
+    observer.beforeChange(proxyProps, function (change) {
+        console.log('before change');
+    });
+    instance.render();
+
+    //instance.render();
+
+
+    proxyProps.name = 'Fabio';
+    //proxyProps.name = 'Fabios';
+
+    //console.log(proxyProps)
+
+    //
+
+    return instance;
 }
 
 module.exports = {
     component: component,
-    getInstances: getInstances,
-    setProps: setProps
+    getInstances: getInstances
+    //setProps,
+    //createListenerHandler
 };
 
 /***/ }),
@@ -635,6 +666,62 @@ module.exports = html;
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function serializeProps(node) {
+    var props = {};
+
+    if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
+        //const prop = {};
+        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
+        //props.push(prop);
+    });
+
+    return props;
+}
+
+function transform(node) {
+
+    var root = {};
+
+    function walking(node, parent) {
+        do {
+            var obj = void 0;
+            if (node.nodeType === 3) {
+                obj = node.nodeValue;
+            } else {
+                obj = {};
+                obj.type = node.nodeName.toLowerCase();
+                obj.children = [];
+                obj.props = serializeProps(node);
+            }
+
+            if (!Object.keys(root).length) root = obj;
+
+            if (parent && parent.children) {
+                parent.children.push(obj);
+            }
+
+            if (node.hasChildNodes()) {
+                walking(node.firstChild, obj);
+            }
+        } while (node = node.nextSibling);
+    }
+
+    walking(node, root);
+
+    return root;
+}
+
+module.exports = {
+    transform: transform
+};
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -793,62 +880,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function serializeProps(node) {
-    var props = {};
-
-    if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
-        //const prop = {};
-        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
-        //props.push(prop);
-    });
-
-    return props;
-}
-
-function transform(node) {
-
-    var root = {};
-
-    function walking(node, parent) {
-        do {
-            var obj = void 0;
-            if (node.nodeType === 3) {
-                obj = node.nodeValue;
-            } else {
-                obj = {};
-                obj.type = node.nodeName.toLowerCase();
-                obj.children = [];
-                obj.props = serializeProps(node);
-            }
-
-            if (!Object.keys(root).length) root = obj;
-
-            if (parent && parent.children) {
-                parent.children.push(obj);
-            }
-
-            if (node.hasChildNodes()) {
-                walking(node.firstChild, obj);
-            }
-        } while (node = node.nextSibling);
-    }
-
-    walking(node, root);
-
-    return root;
-}
-
-module.exports = {
-    transform: transform
-};
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -867,8 +898,8 @@ module.exports = __webpack_require__(8);
 module.exports = __webpack_require__(9);
 module.exports.component = __webpack_require__(3).component;
 module.exports.collection = __webpack_require__(0);
-module.exports.update = __webpack_require__(5).updateElement;
-module.exports.transform = __webpack_require__(6).transform;
+module.exports.update = __webpack_require__(6).updateElement;
+module.exports.transform = __webpack_require__(5).transform;
 module.exports.html = __webpack_require__(4);
 
 /***/ }),
