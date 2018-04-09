@@ -476,8 +476,10 @@ function component(tag) {
     register(cmp);
 }
 
-function getInstances(element) {
-    var nodes = html.getAllNodes(element);
+function getInstances(root, template) {
+    //console.log(element)
+    template = html.create(template);
+    var nodes = html.getAllNodes(template);
     var components = [];
 
     nodes.forEach(function (child) {
@@ -488,12 +490,16 @@ function getInstances(element) {
             if (cmp) {
 
                 var newElement = createInstance(cmp, {
-                    root: child.parentNode
+                    root: root
                 });
 
-                console.log(newElement);
+                //console.log(child.parentNode.id);
+
                 // Remove old
                 child.parentNode.removeChild(child);
+                newElement.render();
+                //console.log(newElement);
+
                 events.callRender(newElement);
                 /*
                                 newElement.element[INSTANCE] = newElement;
@@ -516,13 +522,14 @@ function getInstances(element) {
 
 function createInstance(cmp, cfg) {
     var instance = {};
+    var isCreated = false;
 
     Object.defineProperties(instance, {
         _prev: {
             value: null,
             writable: true
         },
-        _prevPos: {
+        _prevProps: {
             value: null,
             writable: true
         },
@@ -537,9 +544,6 @@ function createInstance(cmp, cfg) {
                 var tpl = html.create(this.template());
                 var next = transform(tpl);
 
-                //console.log(this._prev)
-                //console.log(next)
-
                 update(cfg.root, next, this._prev, 0, this);
 
                 this._prev = next;
@@ -553,25 +557,32 @@ function createInstance(cmp, cfg) {
 
     //console.log(instance.props);
 
-    var proxyProps = observer.create(instance.props, false, function (change) {
-        console.log('cambio');
+    instance.props = observer.create(cmp.cfg.props, false, function (change) {
+        //console.log('cambio');
         instance.render();
+
+        if (isCreated) {
+            events.callUpdate(instance);
+        }
     });
 
-    observer.beforeChange(proxyProps, function (change) {
-        console.log('before change');
+    observer.beforeChange(instance.props, function (change) {
+        //console.log('before change')
+        var res = events.callBeforeUpdate(Object.assign({}, instance));
+        if (res === false) return false;
     });
-    instance.render();
 
     //instance.render();
 
 
-    proxyProps.name = 'Fabio';
-    //proxyProps.name = 'Fabios';
-
+    //
+    //instance.props.name = 'Fabios';
+    //instance.props.name = 'Fabiwwwwo';
     //console.log(proxyProps)
 
     //
+    events.callCreate(instance);
+    isCreated = true;
 
     return instance;
 }
@@ -859,10 +870,12 @@ function updateElement($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
 
+    if (!$parent) return;
     if (!oldNode) {
         $parent.appendChild(createElement(newNode, cmp));
     } else if (!newNode) {
-        $parent.removeChild($parent.childNodes[index]);
+        //console.log('remove', index, $parent.childNodes[index], $parent);
+        if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
     } else if (changed(newNode, oldNode)) {
         $parent.replaceChild(createElement(newNode, cmp), $parent.childNodes[index]);
     } else if (newNode.type) {
@@ -919,14 +932,18 @@ var Doz = function Doz() {
 
     _classCallCheck(this, Doz);
 
-    if (typeof cfg.el !== 'string') {
-        throw new TypeError('el must be a string selector and is required');
-    }
+    /*if (typeof cfg.root !== 'string') {
+        throw new TypeError('root must be a string selector and is required');
+    }*/
 
-    this.cfg = extend.copy(cfg, {});
+    /*this.cfg = extend.copy(cfg, {
+        template: '<div></div>'
+    });*/
 
-    this.dom = document.querySelector(this.cfg.el);
-    this.components = component.getInstances(this.dom) || [];
+    this.cfg = Object.assign({}, cfg);
+
+    //this.dom = document.querySelector(this.cfg.el);
+    this.components = component.getInstances(this.cfg.root, this.cfg.template) || [];
 
     // Set initial defaultProps
     //this.setProps();

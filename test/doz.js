@@ -40,31 +40,31 @@ describe('Doz', function () {
                     name: 'DOZ'
                 },
                 template() {
-                    return `<div>hello I'm a ${this.props.name} component </div>`
+                    return `<div><span>hello I'm a ${this.props.name} component </span></div>`
                 },
                 onCreate() {
                     console.log('onCreate')
                 },
                 onRender() {
-                    console.log('onRender')
+                    console.log('onRender');
+                    this.props.name = 'Fabio Ricali'
                 }
             });
 
             document.body.innerHTML = `
-                <div id="app">
-                    <my-component name="Doz"></my-component>
-                </div>
+                <div id="app"></div>
             `;
 
             const view = new Doz({
-                el: '#app'
+                root: document.getElementById('app'),
+                template: `<div><my-component name="Doz"></my-component></div>`
             });
 
             const html = document.body.innerHTML;
             //console.log(view);
             console.log(html);
 
-            be.err.true(/DOZ/g.test(html));
+            be.err.true(/Fabio Ricali/g.test(html));
 
         });
     });

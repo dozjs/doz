@@ -24,58 +24,56 @@
 
 <script>
 
-    const root = document.getElementById('app');
-
-
-    const component = {
-        _prevProps: null,
-        _prev: null,
+    Doz.component('doz-clock',{
         props: {
             time: new Date().toLocaleTimeString(),
             record: []
         },
 
-        each(obj, func) {
-            return obj.map(func).join('');
+        addItem(e) {
+            this.props.record.push({
+                name: Math.random(),
+                desc: new Date().toLocaleTimeString()
+            });
         },
 
-        myHandler(e) {
-            e.target.parentNode.style.background = 'red';
+        removeItem(arg) {
+            console.log(arg);
+            this.props.record.splice([parseInt(arg[0])], 1);
+            //delete this.props.record[parseInt(arg[0])];
         },
 
         template() {
             return (
-                `
-                    <div>
-                        <button onclick="this.myHandler()" >Click me </button>
-                        <div>
-                            <strong>sono le ore</strong> ${this.props.time}
-                        </div>
-                        ${this.each(this.props.record, item => `<button >name: ${item.name}, desc: ${item.desc} .</button>`)}
-                    </div>
-                `
+`<div>
+    <button onclick="this.addItem()" >Add item </button>
+    <div>
+        <strong>sono le ore ${this.props.time}</strong>
+    </div>
+    <ul>
+    ${this.each(this.props.record, (item, i) => `<li>${item.name}<button onclick="this.removeItem(${i})">X</button></li>`)}
+    </ul>
+</div>`
             );
         },
 
-        render() {
-            let next = Doz.transform(Doz.html.create(this.template()));
-
-            Doz.update(root, next, this._prev, 0, this);
-
-            this._prev = next;
-            this._prevProps = Object.assign({}, this.props);
+        onCreate() {
+            console.log('create');
         },
-
-        init() {
-            this.render();
+        onRender() {
+            console.log('render');
             setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString();
                 this.render();
             }, 1000)
         }
-    };
+    });
 
-    component.init();
+    new Doz({
+        root: document.getElementById('app'),
+        template: `<doz-clock></doz-clock>`
+    })
+
 </script>
 </body>
 </html>

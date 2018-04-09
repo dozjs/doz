@@ -33,8 +33,10 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(element) {
-    const nodes = html.getAllNodes(element);
+function getInstances(root, template) {
+    //console.log(element)
+    template = html.create(template);
+    const nodes = html.getAllNodes(template);
     let components = [];
 
     nodes.forEach(child => {
@@ -45,14 +47,14 @@ function getInstances(element) {
             if (cmp) {
 
                 const newElement = createInstance(cmp, {
-                    root: child.parentNode
+                    root
                 });
 
-                newElement.render();
+                //console.log(child.parentNode.id);
 
                 // Remove old
                 child.parentNode.removeChild(child);
-
+                newElement.render();
                 //console.log(newElement);
 
                 events.callRender(newElement);
@@ -87,7 +89,7 @@ function createInstance(cmp, cfg) {
             value: null,
             writable: true
         },
-        _prevPos: {
+        _prevProps: {
             value: null,
             writable: true
         },
@@ -116,7 +118,7 @@ function createInstance(cmp, cfg) {
     //console.log(instance.props);
 
     instance.props = observer.create(cmp.cfg.props, false, change => {
-        console.log('cambio');
+        //console.log('cambio');
         instance.render();
 
         if (isCreated) {
@@ -125,7 +127,7 @@ function createInstance(cmp, cfg) {
     });
 
     observer.beforeChange(instance.props, change => {
-        console.log('before change')
+        //console.log('before change')
         const res = events.callBeforeUpdate(Object.assign({}, instance));
         if (res === false)
             return false;

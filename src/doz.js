@@ -5,14 +5,18 @@ class Doz {
 
     constructor(cfg = {}) {
 
-        if (typeof cfg.el !== 'string') {
-            throw new TypeError('el must be a string selector and is required');
-        }
+        /*if (typeof cfg.root !== 'string') {
+            throw new TypeError('root must be a string selector and is required');
+        }*/
 
-        this.cfg = extend.copy(cfg, {});
+        /*this.cfg = extend.copy(cfg, {
+            template: '<div></div>'
+        });*/
 
-        this.dom = document.querySelector(this.cfg.el);
-        this.components = component.getInstances(this.dom) || [];
+        this.cfg = Object.assign({}, cfg);
+
+        //this.dom = document.querySelector(this.cfg.el);
+        this.components = component.getInstances(this.cfg.root, this.cfg.template) || [];
 
         // Set initial defaultProps
         //this.setProps();

@@ -126,17 +126,18 @@ function changed(node1, node2) {
 }
 
 function updateElement($parent, newNode, oldNode, index = 0, cmp) {
+    if(!$parent) return;
     if (!oldNode) {
         $parent.appendChild(
             createElement(newNode, cmp)
         );
     } else if (!newNode) {
-        $parent.removeChild(
-            $parent.childNodes[index]
-        );
+        //console.log('remove', index, $parent.childNodes[index], $parent);
+        if ($parent.childNodes[index])
+            $parent.removeChild(
+                $parent.childNodes[index]
+            );
     } else if (changed(newNode, oldNode)) {
-        //console.log(index);
-        //console.log($parent.childNodes[index]);
         $parent.replaceChild(
             createElement(newNode, cmp),
             $parent.childNodes[index]
