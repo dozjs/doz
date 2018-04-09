@@ -1,5 +1,5 @@
-const {transform} = require('../src/parser');
-const {updateElement} = require('../src/virtual-dom');
+const {transform} = require('../src/vdom/parser');
+const {updateElement} = require('../src/vdom/index');
 const html = require('../src/html');
 const be = require('bejs');
 const collection = require('../src/collection');

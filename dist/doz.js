@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -421,7 +421,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /******/)
   );
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ }),
 /* 3 */
@@ -445,9 +445,14 @@ var _require2 = __webpack_require__(1),
     SIGN = _require2.SIGN;
 
 var collection = __webpack_require__(0);
-var helper = __webpack_require__(9);
-var observer = __webpack_require__(10);
-var events = __webpack_require__(11);
+var helper = __webpack_require__(11);
+var observer = __webpack_require__(12);
+var events = __webpack_require__(13);
+
+var _require3 = __webpack_require__(5),
+    updateElement = _require3.updateElement;
+
+var transform = __webpack_require__(6).transform.transform;
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -474,6 +479,7 @@ function component(tag) {
 }
 
 function getInstances(element) {
+
     var nodes = html.getAllNodes(element);
     var components = [];
 
@@ -508,226 +514,9 @@ function getInstances(element) {
     return components;
 }
 
-function createInstance(cmp, cfg) {
-    var props = {};
-    var propsMap = {};
-    var listenerHandler = [];
-    var listenerModel = [];
-    var textNodes = [];
-    var forNodes = [];
-    var ifNodes = [];
-    var fragment = html.create(cmp.cfg.template);
-    var placeholderMatch = null;
-    var handlerMatch = null;
-    var modelMatch = null;
-    var forMatch = null;
-    var ifMatch = null;
+function createInstance(cmp, cfg) {}
 
-    // Find placeholder into text and transform it into tag
-    helper.textToTag(fragment);
-
-    var nodes = html.getAllNodes(fragment);
-
-    // Iterate props by HTMLElement attributes
-    Array.from(cfg.props).forEach(function (prop) {
-        props[prop.name] = prop.value;
-    });
-
-    nodes.forEach(function (child) {
-
-        if (child.nodeType === 1) {
-            Array.from(child.attributes).forEach(function (attr) {
-                placeholderMatch = attr.value.match(PARSER.REGEX.ATTR);
-                handlerMatch = attr.name.match(PARSER.REGEX.HANDLER);
-                modelMatch = helper.canModel(child) ? PARSER.REGEX.MODEL.test(attr.name) : false;
-                forMatch = PARSER.REGEX.FOR.test(attr.name);
-                ifMatch = PARSER.REGEX.IF.test(attr.name);
-
-                // Found listener
-                if (handlerMatch) {
-                    listenerHandler.push({
-                        event: handlerMatch[1],
-                        listener: attr.value,
-                        element: child
-                    });
-                    // Found model
-                } else if (modelMatch) {
-                    listenerModel.push({
-                        field: attr.value,
-                        element: child
-                    });
-                } else if (forMatch) {
-                    var expMatch = attr.value.match(PARSER.REGEX.FOR_EXP);
-
-                    if (expMatch) {
-                        helper.createObjectMap(expMatch[1], propsMap, {
-                            _FOR_: true,
-                            exp: attr.value,
-                            element: child
-                        });
-                        //console.log(propsMap)
-                    }
-                } else if (ifMatch) {
-
-                    // Found placeholder
-                } else if (placeholderMatch) {
-                    var placeholder = placeholderMatch[1];
-                    var element = void 0;
-
-                    if (child.nodeName.toLowerCase() === PARSER.TAG.TEXT) {
-                        element = document.createTextNode('');
-                        textNodes.push({
-                            old: child,
-                            new: element
-                        });
-                    } else {
-                        element = attr;
-                    }
-
-                    // Sign component
-                    element[SIGN] = true;
-                    helper.createObjectMap(placeholder, propsMap, element);
-                }
-            });
-        }
-    });
-
-    //console.log(textNodes);
-    // Remove tag text added above
-    helper.tagToText(textNodes);
-
-    var context = {};
-    var isCreated = false;
-
-    var proxyContext = observer.create(context, false, function (changes) {
-
-        updateComponent(changes, propsMap);
-
-        if (isCreated) {
-            events.callUpdate(context);
-        }
-    });
-
-    observer.beforeChange(proxyContext, function (changes) {
-        // Clone context to preventing update looping
-        var res = events.callBeforeUpdate(Object.assign({}, proxyContext));
-        if (res === false) return false;
-    });
-
-    var instance = {
-        tag: cmp.tag,
-        props: props,
-        propsMap: propsMap,
-        child: [],
-        element: fragment,
-        context: proxyContext
-    };
-
-    Object.defineProperties(instance.context, {
-        element: {
-            enumerable: true,
-            value: function value() {
-                return instance.element;
-            },
-            configurable: true
-        },
-        child: {
-            enumerable: true,
-            value: [],
-            writable: true
-        }
-    });
-
-    // Set default
-    setProps(proxyContext, cmp.cfg.context);
-    // Set props if exists
-    setProps(proxyContext, props);
-    // Create eventual handlers
-    createListenerHandler(proxyContext, listenerHandler);
-    // Create eventual listener for model
-    createListenerModel(proxyContext, listenerModel);
-
-    events.callCreate(proxyContext);
-    isCreated = true;
-
-    //console.log(propsMap)
-
-    return instance;
-}
-
-function updateComponent(changes, propsMap) {
-    changes.forEach(function (item) {
-        // Exclude child property from changes event
-        if (item.currentPath === 'child') return;
-
-        var nodes = helper.pathify(item);
-        //console.log('NODES',nodes);
-        for (var path in nodes) {
-            if (nodes.hasOwnProperty(path)) {
-
-                // Fix discrepancy between add type and update, add type returns []
-                path = path.replace(/\[(.*)]/g, '.$1');
-
-                //console.log(path);
-
-                var node = helper.getNodeByPath(path, propsMap);
-
-                //console.log(node);
-
-                if (node) {
-                    (function () {
-                        var nodeValue = nodes[path];
-                        if (Array.isArray(node)) {
-                            node.forEach(function (n) {
-                                updateElement(n, nodeValue);
-                            });
-                        } else {
-                            updateElement(node, nodeValue);
-                        }
-                    })();
-                }
-
-                //console.log(node);
-            }
-        }
-    });
-}
-
-function updateElement(element, nodeValue) {
-
-    //console.log(element, nodeValue, 'nodeValue' in element)
-
-    if ('nodeValue' in element) element.nodeValue = nodeValue;
-}
-
-function createListenerModel(context, models) {
-    models.forEach(function (m) {
-        if (typeof context[m.field] !== 'function') {
-            ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
-                m.element.addEventListener(event, function () {
-                    // Create structure if not exist and set value
-                    helper.createObjectMap(m.field, context, this.value, true);
-                });
-            });
-        }
-
-        m.element.removeAttribute('do-model');
-    });
-}
-
-function createListenerHandler(context, handlers) {
-    handlers.forEach(function (h) {
-        if (h.listener in context && typeof context[h.listener] === 'function') {
-            h.element.addEventListener(h.event, context[h.listener].bind(context));
-        } else {
-            h.element.addEventListener(h.event, function () {
-                eval(h.listener);
-            }.bind(context));
-        }
-        // Remove custom attribute
-        h.element.removeAttribute('on-' + h.event);
-    });
-}
+function updateComponent(changes, propsMap) {}
 
 function setProps(targetObj, defaultObj) {
     for (var i in defaultObj) {
@@ -760,8 +549,7 @@ function isSigned(n) {
 module.exports = {
     component: component,
     getInstances: getInstances,
-    setProps: setProps,
-    createListenerHandler: createListenerHandler
+    setProps: setProps
 };
 
 /***/ }),
@@ -852,7 +640,157 @@ module.exports = html;
 "use strict";
 
 
-module.exports = __webpack_require__(6);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function h(type, props) {
+    for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        children[_key - 2] = arguments[_key];
+    }
+
+    return { type: type, props: props || {}, children: children };
+}
+
+function setBooleanProp($target, name, value) {
+    if (value) {
+        $target.setAttribute(name, value);
+        $target[name] = true;
+    } else {
+        $target[name] = false;
+    }
+}
+
+function removeBooleanProp($target, name) {
+    $target.removeAttribute(name);
+    $target[name] = false;
+}
+
+function isEventProp(name) {
+    return (/^on/.test(name)
+    );
+}
+
+function extractEventName(name) {
+    return name.slice(2).toLowerCase();
+}
+
+function isCustomProp(name) {
+    return isEventProp(name) || name === 'forceUpdate';
+}
+
+function setProp($target, name, value) {
+    if (isCustomProp(name)) {} else if (name === 'className') {
+        $target.setAttribute('class', value);
+    } else if (typeof value === 'boolean') {
+        setBooleanProp($target, name, value);
+    } else {
+        $target.setAttribute(name, value);
+    }
+}
+
+function removeProp($target, name, value) {
+    if (isCustomProp(name)) {} else if (name === 'className') {
+        $target.removeAttribute('class');
+    } else if (typeof value === 'boolean') {
+        removeBooleanProp($target, name);
+    } else {
+        $target.removeAttribute(name);
+    }
+}
+
+function setProps($target, props) {
+    Object.keys(props).forEach(function (name) {
+        setProp($target, name, props[name]);
+    });
+}
+
+function updateProp($target, name, newVal, oldVal) {
+    if (!newVal) {
+        removeProp($target, name, oldVal);
+    } else if (!oldVal || newVal !== oldVal) {
+        setProp($target, name, newVal);
+    }
+}
+
+function updateProps($target, newProps) {
+    var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var props = Object.assign({}, newProps, oldProps);
+    Object.keys(props).forEach(function (name) {
+        updateProp($target, name, newProps[name], oldProps[name]);
+    });
+}
+
+function addEventListeners($target, props, cmp) {
+    Object.keys(props).forEach(function (name) {
+        if (isEventProp(name)) {
+
+            var match = props[name].match(/^this.(.*)\((.*)\)/);
+
+            if (match) {
+                //console.log(match);
+                var args = null;
+                var handler = match[1];
+                var stringArgs = match[2];
+                if (stringArgs) {
+                    args = stringArgs.split(',').map(function (item) {
+                        return item.trim();
+                    });
+                }
+
+                //console.log(cmp)
+
+                if (handler in cmp) {
+                    //console.log(cmp[handler]);
+                    props[name] = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
+                    //console.log(props[name]);
+                }
+            }
+
+            $target.addEventListener(extractEventName(name), props[name]);
+        }
+    });
+}
+
+function createElement(node, cmp) {
+    if (typeof node === 'string') {
+        return document.createTextNode(node);
+    }
+    var $el = document.createElement(node.type);
+    setProps($el, node.props);
+    addEventListeners($el, node.props, cmp);
+    node.children.map(function (item) {
+        return createElement(item, cmp);
+    }).forEach($el.appendChild.bind($el));
+    return $el;
+}
+
+function changed(node1, node2) {
+    return (typeof node1 === 'undefined' ? 'undefined' : _typeof(node1)) !== (typeof node2 === 'undefined' ? 'undefined' : _typeof(node2)) || typeof node1 === 'string' && node1 !== node2 || node1.type !== node2.type || node1.props && node1.props.forceUpdate;
+}
+
+function updateElement($parent, newNode, oldNode) {
+    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var cmp = arguments[4];
+
+    if (!oldNode) {
+        $parent.appendChild(createElement(newNode, cmp));
+    } else if (!newNode) {
+        $parent.removeChild($parent.childNodes[index]);
+    } else if (changed(newNode, oldNode)) {
+        $parent.replaceChild(createElement(newNode, cmp), $parent.childNodes[index]);
+    } else if (newNode.type) {
+        updateProps($parent.childNodes[index], newNode.props, oldNode.props);
+        var newLength = newNode.children.length;
+        var oldLength = oldNode.children.length;
+        for (var i = 0; i < newLength || i < oldLength; i++) {
+            updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+        }
+    }
+}
+
+module.exports = {
+    updateElement: updateElement
+};
 
 /***/ }),
 /* 6 */
@@ -861,15 +799,80 @@ module.exports = __webpack_require__(6);
 "use strict";
 
 
-module.exports = __webpack_require__(7);
-module.exports.component = __webpack_require__(3).component;
-module.exports.collection = __webpack_require__(0);
-module.exports.update = __webpack_require__(12).updateElement;
-module.exports.transform = __webpack_require__(13).transform;
-module.exports.html = __webpack_require__(4);
+function serializeProps(node) {
+    var props = {};
+
+    if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
+        //const prop = {};
+        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
+        //props.push(prop);
+    });
+
+    return props;
+}
+
+function transform(node) {
+
+    var root = {};
+
+    function walking(node, parent) {
+        do {
+            var obj = void 0;
+            if (node.nodeType === 3) {
+                obj = node.nodeValue;
+            } else {
+                obj = {};
+                obj.type = node.nodeName.toLowerCase();
+                obj.children = [];
+                obj.props = serializeProps(node);
+            }
+
+            if (!Object.keys(root).length) root = obj;
+
+            if (parent && parent.children) {
+                parent.children.push(obj);
+            }
+
+            if (node.hasChildNodes()) {
+                walking(node.firstChild, obj);
+            }
+        } while (node = node.nextSibling);
+    }
+
+    walking(node, root);
+
+    return root;
+}
+
+module.exports = {
+    transform: transform
+};
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(8);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(9);
+module.exports.component = __webpack_require__(3).component;
+module.exports.collection = __webpack_require__(0);
+module.exports.update = __webpack_require__(5).updateElement;
+module.exports.transform = __webpack_require__(6).transform;
+module.exports.html = __webpack_require__(4);
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -909,7 +912,7 @@ var Doz = function Doz() {
 module.exports = Doz;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -939,7 +942,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1094,7 +1097,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1644,7 +1647,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1686,201 +1689,6 @@ module.exports = {
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
     callDestroy: callDestroy
-};
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function h(type, props) {
-    for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        children[_key - 2] = arguments[_key];
-    }
-
-    return { type: type, props: props || {}, children: children };
-}
-
-function setBooleanProp($target, name, value) {
-    if (value) {
-        $target.setAttribute(name, value);
-        $target[name] = true;
-    } else {
-        $target[name] = false;
-    }
-}
-
-function removeBooleanProp($target, name) {
-    $target.removeAttribute(name);
-    $target[name] = false;
-}
-
-function isEventProp(name) {
-    return (/^on/.test(name)
-    );
-}
-
-function extractEventName(name) {
-    return name.slice(2).toLowerCase();
-}
-
-function isCustomProp(name) {
-    return isEventProp(name) || name === 'forceUpdate';
-}
-
-function setProp($target, name, value) {
-    if (isCustomProp(name)) {
-        return;
-    } else if (name === 'className') {
-        $target.setAttribute('class', value);
-    } else if (typeof value === 'boolean') {
-        setBooleanProp($target, name, value);
-    } else {
-        console.log($target, name);
-        $target.setAttribute(name, value);
-    }
-}
-
-function removeProp($target, name, value) {
-    if (isCustomProp(name)) {
-        return;
-    } else if (name === 'className') {
-        $target.removeAttribute('class');
-    } else if (typeof value === 'boolean') {
-        removeBooleanProp($target, name);
-    } else {
-        $target.removeAttribute(name);
-    }
-}
-
-function setProps($target, props) {
-    Object.keys(props).forEach(function (name) {
-        //console.log(name, props[name])
-        setProp($target, name, props[name]);
-    });
-}
-
-function updateProp($target, name, newVal, oldVal) {
-    if (!newVal) {
-        removeProp($target, name, oldVal);
-    } else if (!oldVal || newVal !== oldVal) {
-        setProp($target, name, newVal);
-    }
-}
-
-function updateProps($target, newProps) {
-    var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    var props = Object.assign({}, newProps, oldProps);
-    Object.keys(props).forEach(function (name) {
-        updateProp($target, name, newProps[name], oldProps[name]);
-    });
-}
-
-function addEventListeners($target, props) {
-    Object.keys(props).forEach(function (name) {
-        if (isEventProp(name)) {
-            $target.addEventListener(extractEventName(name), props[name]);
-        }
-    });
-}
-
-function createElement(node) {
-    if (typeof node === 'string') {
-        return document.createTextNode(node);
-    }
-    var $el = document.createElement(node.type);
-    setProps($el, node.props);
-    addEventListeners($el, node.props);
-    node.children.map(createElement).forEach($el.appendChild.bind($el));
-    return $el;
-}
-
-function changed(node1, node2) {
-    return (typeof node1 === 'undefined' ? 'undefined' : _typeof(node1)) !== (typeof node2 === 'undefined' ? 'undefined' : _typeof(node2)) || typeof node1 === 'string' && node1 !== node2 || node1.type !== node2.type || node1.props && node1.props.forceUpdate;
-}
-
-function updateElement($parent, newNode, oldNode) {
-    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-    if (!oldNode) {
-        $parent.appendChild(createElement(newNode));
-    } else if (!newNode) {
-        $parent.removeChild($parent.childNodes[index]);
-    } else if (changed(newNode, oldNode)) {
-        $parent.replaceChild(createElement(newNode), $parent.childNodes[index]);
-    } else if (newNode.type) {
-        updateProps($parent.childNodes[index], newNode.props, oldNode.props);
-        var newLength = newNode.children.length;
-        var oldLength = oldNode.children.length;
-        for (var i = 0; i < newLength || i < oldLength; i++) {
-            updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i);
-        }
-    }
-}
-
-module.exports = {
-    updateElement: updateElement
-};
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function serializeProps(node) {
-    var props = {};
-
-    if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
-        //const prop = {};
-        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
-        //props.push(prop);
-    });
-
-    return props;
-}
-
-function transform(node) {
-
-    var root = {};
-
-    function walking(node, parent) {
-        do {
-            var obj = void 0;
-            if (node.nodeType === 3) {
-                obj = node.nodeValue;
-            } else {
-                obj = {};
-                obj.type = node.nodeName.toLowerCase();
-                obj.children = [];
-                obj.props = serializeProps(node);
-            }
-
-            if (!Object.keys(root).length) root = obj;
-
-            if (parent && parent.children) {
-                parent.children.push(obj);
-            }
-
-            if (node.hasChildNodes()) {
-                walking(node.firstChild, obj);
-            }
-        } while (node = node.nextSibling);
-    }
-
-    walking(node, root);
-
-    return root;
-}
-
-module.exports = {
-    transform: transform
 };
 
 /***/ })

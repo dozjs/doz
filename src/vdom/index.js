@@ -30,20 +30,17 @@ function isCustomProp(name) {
 
 function setProp($target, name, value) {
     if (isCustomProp(name)) {
-        return
     } else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
         setBooleanProp($target, name, value);
     } else {
-        console.log($target, name);
         $target.setAttribute(name, value);
     }
 }
 
 function removeProp($target, name, value) {
     if (isCustomProp(name)) {
-        return;
     } else if (name === 'className') {
         $target.removeAttribute('class');
     } else if (typeof value === 'boolean') {
@@ -55,7 +52,6 @@ function removeProp($target, name, value) {
 
 function setProps($target, props) {
     Object.keys(props).forEach(name => {
-        //console.log(name, props[name])
         setProp($target, name, props[name]);
     });
 }
@@ -75,9 +71,32 @@ function updateProps($target, newProps, oldProps = {}) {
     });
 }
 
-function addEventListeners($target, props) {
+function addEventListeners($target, props, cmp) {
     Object.keys(props).forEach(name => {
         if (isEventProp(name)) {
+
+            let match = props[name].match(/^this.(.*)\((.*)\)/);
+
+            if (match) {
+                //console.log(match);
+                let args = null;
+                let handler = match[1];
+                let stringArgs = match[2];
+                if (stringArgs) {
+                    args = stringArgs.split(',').map(item => item.trim())
+                }
+
+                //console.log(cmp)
+
+                if(handler in cmp) {
+                    //console.log(cmp[handler]);
+                    props[name] = args
+                        ? cmp[handler].bind(cmp, args)
+                        : cmp[handler].bind(cmp);
+                    //console.log(props[name]);
+                }
+            }
+
             $target.addEventListener(
                 extractEventName(name),
                 props[name]
@@ -86,15 +105,15 @@ function addEventListeners($target, props) {
     });
 }
 
-function createElement(node) {
+function createElement(node, cmp) {
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
     const $el = document.createElement(node.type);
     setProps($el, node.props);
-    addEventListeners($el, node.props);
+    addEventListeners($el, node.props, cmp);
     node.children
-        .map(createElement)
+        .map(item => createElement(item, cmp))
         .forEach($el.appendChild.bind($el));
     return $el;
 }
@@ -106,10 +125,10 @@ function changed(node1, node2) {
         node1.props && node1.props.forceUpdate;
 }
 
-function updateElement($parent, newNode, oldNode, index = 0) {
+function updateElement($parent, newNode, oldNode, index = 0, cmp) {
     if (!oldNode) {
         $parent.appendChild(
-            createElement(newNode)
+            createElement(newNode, cmp)
         );
     } else if (!newNode) {
         $parent.removeChild(
@@ -117,7 +136,7 @@ function updateElement($parent, newNode, oldNode, index = 0) {
         );
     } else if (changed(newNode, oldNode)) {
         $parent.replaceChild(
-            createElement(newNode),
+            createElement(newNode, cmp),
             $parent.childNodes[index]
         );
     } else if (newNode.type) {
@@ -133,7 +152,8 @@ function updateElement($parent, newNode, oldNode, index = 0) {
                 $parent.childNodes[index],
                 newNode.children[i],
                 oldNode.children[i],
-                i
+                i,
+                cmp
             );
         }
     }

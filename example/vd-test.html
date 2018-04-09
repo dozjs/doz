@@ -26,28 +26,49 @@
 
     const root = document.getElementById('app');
 
-    let prev, next, tpl, props, prevProps;
 
-    function render(){
-        props = {
+    const component = {
+        _prevProps: null,
+        _prev: null,
+        props: {
             time: new Date().toLocaleTimeString(),
-            disabled: prevProps && prevProps.disabled ? '' : 'disabled'
-        };
+            record: []
+        },
+        each(obj, func) {
+            return obj.map(func).join('');
+        },
+        myHandler(e) {
+            e.target.parentNode.style.background = 'red';
+        },
+        template() {
+            return (`
+                    <div>
+                        <button onclick="this.myHandler()" >Click me </button>
+                        <div>
+                            <strong>sono le ore</strong> ${this.props.time}
+                        </div>
+                        ${this.each(this.props.record, item => `<button >name: ${item.name}, desc: ${item.desc} .</button>`)}
+                    </div>`);
+        },
 
-        tpl = Doz.html.create(`<div><button ${props.disabled} >Click me</button><div><strong>sono le ore</strong> ${props.time}</div></div>`);
-        next = Doz.transform(tpl);
-        Doz.update(root, next, prev);
+        render() {
+            let next = Doz.transform(Doz.html.create(this.template()));
+            Doz.update(root, next, this._prev, 0, this);
 
-        prev = next;
-        prevProps = Object.assign({}, props);
-    }
+            this._prev = next;
+            this._prevProps = Object.assign({}, this.props);
+        },
 
-    render();
+        init() {
+            this.render();
+            setInterval(()=>{
+                this.props.time = new Date().toLocaleTimeString();
+                this.render();
+            }, 1000)
+        }
+    };
 
-    setInterval(()=>{
-        render();
-    }, 1000);
-
+    component.init();
 </script>
 </body>
 </html>
