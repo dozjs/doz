@@ -6,7 +6,7 @@ const collection = require('../collection');
 const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
-const transform = require('../vdom/parser').transform;
+const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 
 function component(tag, cfg = {}) {
@@ -34,7 +34,7 @@ function component(tag, cfg = {}) {
 }
 
 function getInstances(root, template) {
-    //console.log(element)
+
     template = html.create(template);
     const nodes = html.getAllNodes(template);
     let components = [];
@@ -47,32 +47,32 @@ function getInstances(root, template) {
             if (cmp) {
 
                 const newElement = createInstance(cmp, {
-                    root
+                    root,
+                    props: serializeProps(child)
                 });
-
-                //console.log(child.parentNode.id);
 
                 // Remove old
                 child.parentNode.removeChild(child);
                 newElement.render();
-                //console.log(newElement);
 
                 events.callRender(newElement);
+
                 /*
-                                newElement.element[INSTANCE] = newElement;
+                newElement.element[INSTANCE] = newElement;
 
-                                child.parentNode.replaceChild(newElement.element, child);
-                                components.push(newElement);
+                child.parentNode.replaceChild(newElement.element, child);
+                components.push(newElement);
 
-                                events.callRender(newElement.context);
+                events.callRender(newElement.context);
 
-                                if (newElement.element.querySelectorAll('*').length) {
-                                    const nestedChild = getInstances(newElement.element.firstChild);
-                                    if (nestedChild.length) {
-                                        newElement.child = newElement.child.concat(nestedChild);
-                                        newElement.context.child = newElement.child;
-                                    }
-                                }*/
+                if (newElement.element.querySelectorAll('*').length) {
+                    const nestedChild = getInstances(newElement.element.firstChild);
+                    if (nestedChild.length) {
+                        newElement.child = newElement.child.concat(nestedChild);
+                        newElement.context.child = newElement.child;
+                    }
+                }
+                */
             }
         }
     });
@@ -115,9 +115,9 @@ function createInstance(cmp, cfg) {
 
     instance = Object.assign(instance, cmp.cfg);
 
-    //console.log(instance.props);
+    let props = extend.copy(cfg.props, cmp.cfg.props);
 
-    instance.props = observer.create(cmp.cfg.props, true, change => {
+    instance.props = observer.create(props, true, () => {
         instance.render();
 
         if (isCreated) {

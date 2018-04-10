@@ -33,21 +33,21 @@ describe('Doz', function () {
             be.err.not.null(view);
         });
 
-        it('should be ok with a component', function () {
+        it('should be ok with a component', function (done) {
 
             Doz.component('my-component', {
-                props: {
-                    name: 'DOZ'
-                },
                 template() {
-                    return `<div><span>hello I'm a ${this.props.name} component </span></div>`
+                    return `
+                        <div>
+                            <span>hello I'm a ${this.props.name} component </span>
+                        </div>`
                 },
                 onCreate() {
                     console.log('onCreate')
                 },
                 onRender() {
                     console.log('onRender');
-                    this.props.name = 'Fabio Ricali'
+                    this.props.name = 'D O Z'
                 }
             });
 
@@ -60,11 +60,13 @@ describe('Doz', function () {
                 template: `<div><my-component name="Doz"></my-component></div>`
             });
 
-            const html = document.body.innerHTML;
-            //console.log(view);
-            console.log(html);
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
 
-            be.err.true(/Fabio Ricali/g.test(html));
+                be.err(done).true(/D O Z/g.test(html));
+            },100);
+
 
         });
     });

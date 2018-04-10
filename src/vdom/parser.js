@@ -47,5 +47,6 @@ function transform(node) {
 }
 
 module.exports = {
-    transform
+    transform,
+    serializeProps
 };

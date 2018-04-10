@@ -28,8 +28,8 @@
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
                         `<li>
-                            <button onclick="this.removeItem(${i})">X</button>
-                            <button onclick="this.markAsRead(${i})">R</button> <strong>${item.title}</strong>
+                            <button onclick="this.removeItem(${i})">&cross;</button>
+                            <button onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
                          </li>`)}
                     </ul>
                 </div>`
@@ -47,7 +47,8 @@
         },
 
         markAsRead(arg) {
-            this.props.record[parseInt(arg[0])].title = '<i>READ</i>';
+            let record = this.props.record[parseInt(arg[0])];
+            record.title = `<s>${record.title}</s>`;
         },
 
         addItem() {
@@ -64,12 +65,8 @@
 
         onRender() {
             for(let i = 0; i < 20; i++) {
-                this.props.record.push({title: i})
+                this.props.record.push({title: `#${i} Lorem`})
             }
-        },
-
-        onUpdate() {
-            console.log('--U P D A T E')
         }
     });
 
