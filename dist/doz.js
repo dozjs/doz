@@ -871,18 +871,24 @@ function updateElement($parent, newNode, oldNode) {
     var cmp = arguments[4];
 
     if (!$parent) return;
+
     if (!oldNode) {
         $parent.appendChild(createElement(newNode, cmp));
     } else if (!newNode) {
-        //console.log('remove', index, $parent.childNodes[index], $parent);
+        console.log('remove', index, $parent.childNodes[index], $parent);
         if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
     } else if (changed(newNode, oldNode)) {
         $parent.replaceChild(createElement(newNode, cmp), $parent.childNodes[index]);
     } else if (newNode.type) {
+
+        console.log(newNode);
+
         updateProps($parent.childNodes[index], newNode.props, oldNode.props);
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
+            console.log('new node', newNode.children[i]);
+            console.log('old node', oldNode.children[i]);
             updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
         }
     }

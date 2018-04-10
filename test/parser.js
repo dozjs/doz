@@ -25,13 +25,34 @@ describe('parser', function () {
         it('should be return nodes', function () {
             document.body.innerHTML = `<div id="app"></div>`;
             const appRoot = document.getElementById('app');
-            const initial = transform(html.create(`<div>hello<button disabled>testo</button></div>`));
+            const initial = transform(html.create(`
+                <div>hello
+                    <button disabled>testo</button>
+                </div>
+                `));
 
             updateElement(appRoot, initial);
             console.log(document.body.innerHTML);
             const next = transform(html.create(`<div>hello<button disabled>rere</button></div>`));
             //next.children[1].children[0] = 'clicca';
             updateElement(appRoot, next, initial);
+            console.log(document.body.innerHTML);
+        });
+        it('should be return nodes without indent', function () {
+            document.body.innerHTML = `<div id="app"></div>`;
+            const appRoot = document.getElementById('app');
+            const initial = transform(html.create(`
+                <div>hello
+                    <button disabled>testo</button>
+                </div>
+                `));
+
+            /*updateElement(appRoot, initial);
+            console.log(document.body.innerHTML);
+            const next = transform(html.create(`<div>hello<button disabled>rere</button></div>`));
+            //next.children[1].children[0] = 'clicca';
+            updateElement(appRoot, next, initial);*/
+            console.log(initial);
             console.log(document.body.innerHTML);
         });
 

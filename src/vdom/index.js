@@ -127,12 +127,13 @@ function changed(node1, node2) {
 
 function updateElement($parent, newNode, oldNode, index = 0, cmp) {
     if(!$parent) return;
+
     if (!oldNode) {
         $parent.appendChild(
             createElement(newNode, cmp)
         );
     } else if (!newNode) {
-        //console.log('remove', index, $parent.childNodes[index], $parent);
+        console.log('remove', index, $parent.childNodes[index], $parent);
         if ($parent.childNodes[index])
             $parent.removeChild(
                 $parent.childNodes[index]
@@ -143,6 +144,9 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
             $parent.childNodes[index]
         );
     } else if (newNode.type) {
+
+        console.log(newNode);
+
         updateProps(
             $parent.childNodes[index],
             newNode.props,
@@ -151,6 +155,8 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
         for (let i = 0; i < newLength || i < oldLength; i++) {
+            console.log('new node', newNode.children[i])
+            console.log('old node', oldNode.children[i])
             updateElement(
                 $parent.childNodes[index],
                 newNode.children[i],

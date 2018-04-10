@@ -25,6 +25,20 @@
 <script>
 
     Doz.component('doz-clock',{
+        template() {
+            return (
+                `<div>
+                    <button onclick="this.addItem()" >Add item </button>
+                    <div>
+                        <strong>sono le ore ${this.props.time}</strong>
+                    </div>
+                    <ul>
+                    ${this.each(this.props.record, (item, i) => `<li>${item.name}<button onclick="this.removeItem(${i})">X</button></li>`)}
+                    </ul>
+                </div>`
+            );
+        },
+
         props: {
             time: new Date().toLocaleTimeString(),
             record: []
@@ -38,23 +52,7 @@
         },
 
         removeItem(arg) {
-            console.log(arg);
             this.props.record.splice([parseInt(arg[0])], 1);
-            //delete this.props.record[parseInt(arg[0])];
-        },
-
-        template() {
-            return (
-`<div>
-    <button onclick="this.addItem()" >Add item </button>
-    <div>
-        <strong>sono le ore ${this.props.time}</strong>
-    </div>
-    <ul>
-    ${this.each(this.props.record, (item, i) => `<li>${item.name}<button onclick="this.removeItem(${i})">X</button></li>`)}
-    </ul>
-</div>`
-            );
         },
 
         onCreate() {
@@ -64,7 +62,6 @@
             console.log('render');
             setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString();
-                this.render();
             }, 1000)
         }
     });
