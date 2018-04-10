@@ -1,6 +1,6 @@
 const {transform} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
-const html = require('../src/html');
+const html = require('../src/utils/html');
 const be = require('bejs');
 const collection = require('../src/collection');
 const copy = require('deep-copy');
@@ -42,10 +42,9 @@ describe('parser', function () {
             document.body.innerHTML = `<div id="app"></div>`;
             const appRoot = document.getElementById('app');
             const initial = transform(html.create(`
-                <div>hello
+                <div>hello world
                     <button disabled>testo</button>
-                </div>
-                `));
+                    </div>`));
 
             /*updateElement(appRoot, initial);
             console.log(document.body.innerHTML);
