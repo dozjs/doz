@@ -122,7 +122,7 @@ function changed(node1, node2) {
 
 function updateElement($parent, newNode, oldNode, index = 0, cmp) {
     if(!$parent) return;
-
+    //console.log($parent, index);
     if (!oldNode) {
         $parent.appendChild(
             createElement(newNode, cmp)

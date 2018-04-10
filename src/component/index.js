@@ -40,6 +40,7 @@ function getInstances(root, template) {
     let components = [];
 
     nodes.forEach(child => {
+
         if (child.nodeType === 1 && child.parentNode) {
 
             const cmp = collection.get(child.nodeName);
@@ -103,7 +104,7 @@ function createInstance(cmp, cfg) {
             value: function () {
                 let tpl = html.create(this.template());
                 let next = transform(tpl);
-
+                //console.log(next);
                 update(cfg.root, next, this._prev, 0, this);
 
                 this._prev = next;

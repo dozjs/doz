@@ -446,7 +446,11 @@ var collection = __webpack_require__(0);
 var helper = __webpack_require__(11);
 var observer = __webpack_require__(12);
 var events = __webpack_require__(13);
-var transform = __webpack_require__(5).transform;
+
+var _require3 = __webpack_require__(5),
+    transform = _require3.transform,
+    serializeProps = _require3.serializeProps;
+
 var update = __webpack_require__(6).updateElement;
 
 function component(tag) {
@@ -477,12 +481,13 @@ function component(tag) {
 }
 
 function getInstances(root, template) {
-    //console.log(element)
+
     template = html.create(template);
     var nodes = html.getAllNodes(template);
     var components = [];
 
     nodes.forEach(function (child) {
+
         if (child.nodeType === 1 && child.parentNode) {
 
             var cmp = collection.get(child.nodeName);
@@ -490,29 +495,29 @@ function getInstances(root, template) {
             if (cmp) {
 
                 var newElement = createInstance(cmp, {
-                    root: root
+                    root: root,
+                    props: serializeProps(child)
                 });
-
-                //console.log(child.parentNode.id);
 
                 // Remove old
                 child.parentNode.removeChild(child);
                 newElement.render();
-                //console.log(newElement);
 
                 events.callRender(newElement);
+
                 /*
-                                newElement.element[INSTANCE] = newElement;
-                                  child.parentNode.replaceChild(newElement.element, child);
-                                components.push(newElement);
-                                  events.callRender(newElement.context);
-                                  if (newElement.element.querySelectorAll('*').length) {
-                                    const nestedChild = getInstances(newElement.element.firstChild);
-                                    if (nestedChild.length) {
-                                        newElement.child = newElement.child.concat(nestedChild);
-                                        newElement.context.child = newElement.child;
-                                    }
-                                }*/
+                newElement.element[INSTANCE] = newElement;
+                  child.parentNode.replaceChild(newElement.element, child);
+                components.push(newElement);
+                  events.callRender(newElement.context);
+                  if (newElement.element.querySelectorAll('*').length) {
+                    const nestedChild = getInstances(newElement.element.firstChild);
+                    if (nestedChild.length) {
+                        newElement.child = newElement.child.concat(nestedChild);
+                        newElement.context.child = newElement.child;
+                    }
+                }
+                */
             }
         }
     });
@@ -543,7 +548,7 @@ function createInstance(cmp, cfg) {
             value: function value() {
                 var tpl = html.create(this.template());
                 var next = transform(tpl);
-
+                //console.log(next);
                 update(cfg.root, next, this._prev, 0, this);
 
                 this._prev = next;
@@ -555,9 +560,9 @@ function createInstance(cmp, cfg) {
 
     instance = Object.assign(instance, cmp.cfg);
 
-    //console.log(instance.props);
+    var props = extend.copy(cfg.props, cmp.cfg.props);
 
-    instance.props = observer.create(cmp.cfg.props, true, function (change) {
+    instance.props = observer.create(props, true, function () {
         instance.render();
 
         if (isCreated) {
@@ -714,7 +719,8 @@ function transform(node) {
 }
 
 module.exports = {
-    transform: transform
+    transform: transform,
+    serializeProps: serializeProps
 };
 
 /***/ }),
@@ -852,7 +858,7 @@ function updateElement($parent, newNode, oldNode) {
     var cmp = arguments[4];
 
     if (!$parent) return;
-
+    //console.log($parent, index);
     if (!oldNode) {
         $parent.appendChild(createElement(newNode, cmp));
     } else if (!newNode) {

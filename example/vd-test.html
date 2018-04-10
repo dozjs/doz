@@ -20,11 +20,19 @@
 
 <script>
 
-    Doz.component('doz-todo',{
+    Doz.component('doz-label', {
+        template() {
+            return (
+                `<div>Hello</div>`
+            );
+        }
+    });
+
+    Doz.component('doz-todo', {
         template() {
             return (
                 `<div>
-                    <input oninput="this.getTodo()" type="text"><button onclick="this.addItem()" >Add item </button>
+                    <doz-label></doz-label> <input oninput="this.getTodo()" type="text"><button onclick="this.addItem()" >Add item </button>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
                         `<li>
