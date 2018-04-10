@@ -3,4 +3,4 @@ module.exports.component = require('./component/index').component;
 module.exports.collection = require('./collection');
 module.exports.update = require('./vdom/index').updateElement;
 module.exports.transform = require('./vdom/parser').transform;
-module.exports.html = require('./html');
+module.exports.html = require('./utils/html');

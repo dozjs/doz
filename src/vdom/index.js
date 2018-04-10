@@ -78,7 +78,6 @@ function addEventListeners($target, props, cmp) {
             let match = props[name].match(/^this.(.*)\((.*)\)/);
 
             if (match) {
-                //console.log(match);
                 let args = null;
                 let handler = match[1];
                 let stringArgs = match[2];
@@ -86,14 +85,10 @@ function addEventListeners($target, props, cmp) {
                     args = stringArgs.split(',').map(item => item.trim())
                 }
 
-                //console.log(cmp)
-
                 if(handler in cmp) {
-                    //console.log(cmp[handler]);
                     props[name] = args
                         ? cmp[handler].bind(cmp, args)
                         : cmp[handler].bind(cmp);
-                    //console.log(props[name]);
                 }
             }
 
@@ -133,7 +128,6 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
             createElement(newNode, cmp)
         );
     } else if (!newNode) {
-        console.log('remove', index, $parent.childNodes[index], $parent);
         if ($parent.childNodes[index])
             $parent.removeChild(
                 $parent.childNodes[index]
@@ -144,9 +138,6 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
             $parent.childNodes[index]
         );
     } else if (newNode.type) {
-
-        console.log(newNode);
-
         updateProps(
             $parent.childNodes[index],
             newNode.props,
@@ -155,8 +146,6 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
         for (let i = 0; i < newLength || i < oldLength; i++) {
-            console.log('new node', newNode.children[i])
-            console.log('old node', oldNode.children[i])
             updateElement(
                 $parent.childNodes[index],
                 newNode.children[i],

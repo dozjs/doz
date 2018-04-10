@@ -1,6 +1,6 @@
 const extend = require('defaulty');
 const {register} = require('../collection');
-const html = require('../html');
+const html = require('../utils/html');
 const {INSTANCE, PARSER, SIGN} = require('../constants');
 const collection = require('../collection');
 const helper = require('./helper');
@@ -117,8 +117,7 @@ function createInstance(cmp, cfg) {
 
     //console.log(instance.props);
 
-    instance.props = observer.create(cmp.cfg.props, false, change => {
-        //console.log('cambio');
+    instance.props = observer.create(cmp.cfg.props, true, change => {
         instance.render();
 
         if (isCreated) {
@@ -133,16 +132,6 @@ function createInstance(cmp, cfg) {
             return false;
     });
 
-
-    //instance.render();
-
-
-    //
-    //instance.props.name = 'Fabios';
-    //instance.props.name = 'Fabiwwwwo';
-    //console.log(proxyProps)
-
-    //
     events.callCreate(instance);
     isCreated = true;
 

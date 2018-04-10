@@ -1,6 +1,6 @@
 const extend = require('defaulty');
 const {register} = require('../collection');
-const html = require('../html');
+const html = require('../utils/html');
 const {INSTANCE, PARSER, SIGN} = require('../constants');
 const collection = require('../collection');
 const helper = require('./helper');

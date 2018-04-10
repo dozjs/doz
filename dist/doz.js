@@ -557,8 +557,7 @@ function createInstance(cmp, cfg) {
 
     //console.log(instance.props);
 
-    instance.props = observer.create(cmp.cfg.props, false, function (change) {
-        //console.log('cambio');
+    instance.props = observer.create(cmp.cfg.props, true, function (change) {
         instance.render();
 
         if (isCreated) {
@@ -572,15 +571,6 @@ function createInstance(cmp, cfg) {
         if (res === false) return false;
     });
 
-    //instance.render();
-
-
-    //
-    //instance.props.name = 'Fabios';
-    //instance.props.name = 'Fabiwwwwo';
-    //console.log(proxyProps)
-
-    //
     events.callCreate(instance);
     isCreated = true;
 
@@ -601,10 +591,6 @@ module.exports = {
 "use strict";
 
 
-/**
- * dom
- * @type {{create: dom.create, isValidNode: dom.isValidNode, render: dom.render}}
- */
 var html = {
     /**
      * Create DOM element
@@ -613,7 +599,7 @@ var html = {
      */
     create: function create(str) {
         var element = void 0;
-        str = str.trim();
+        str = str.replace(/\n|\t|\r|\s{2,}/g, '');
 
         if (/<.*>/g.test(str)) {
             var template = document.createElement('div');
@@ -825,7 +811,6 @@ function addEventListeners($target, props, cmp) {
             var match = props[name].match(/^this.(.*)\((.*)\)/);
 
             if (match) {
-                //console.log(match);
                 var args = null;
                 var handler = match[1];
                 var stringArgs = match[2];
@@ -835,12 +820,8 @@ function addEventListeners($target, props, cmp) {
                     });
                 }
 
-                //console.log(cmp)
-
                 if (handler in cmp) {
-                    //console.log(cmp[handler]);
                     props[name] = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
-                    //console.log(props[name]);
                 }
             }
 
@@ -875,20 +856,14 @@ function updateElement($parent, newNode, oldNode) {
     if (!oldNode) {
         $parent.appendChild(createElement(newNode, cmp));
     } else if (!newNode) {
-        console.log('remove', index, $parent.childNodes[index], $parent);
         if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
     } else if (changed(newNode, oldNode)) {
         $parent.replaceChild(createElement(newNode, cmp), $parent.childNodes[index]);
     } else if (newNode.type) {
-
-        console.log(newNode);
-
         updateProps($parent.childNodes[index], newNode.props, oldNode.props);
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            console.log('new node', newNode.children[i]);
-            console.log('old node', oldNode.children[i]);
             updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
         }
     }

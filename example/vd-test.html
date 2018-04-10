@@ -6,34 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?589654"></script>
+    <script src="../dist/doz.js?589654888"></script>
     <style>
         body {
             font-family: sans-serif;
         }
 
-        div {
-            font-size: 35px;
-            padding: 20px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
+<h1>TODO list</h1>
 <div id="app"></div>
 
 <script>
 
-    Doz.component('doz-clock',{
+    Doz.component('doz-todo',{
         template() {
             return (
                 `<div>
-                    <button onclick="this.addItem()" >Add item </button>
-                    <div>
-                        <strong>sono le ore ${this.props.time}</strong>
-                    </div>
+                    <input oninput="this.getTodo()" type="text"><button onclick="this.addItem()" >Add item </button>
                     <ul>
-                    ${this.each(this.props.record, (item, i) => `<li>${item.name}<button onclick="this.removeItem(${i})">X</button></li>`)}
+                    ${this.each(this.props.record, (item, i) =>
+                        `<li>
+                            <button onclick="this.removeItem(${i})">X</button>
+                            <button onclick="this.markAsRead(${i})">R</button> <strong>${item.title}</strong>
+                         </li>`)}
                     </ul>
                 </div>`
             );
@@ -41,34 +38,44 @@
 
         props: {
             time: new Date().toLocaleTimeString(),
-            record: []
+            record: [],
+            todo: ''
         },
 
-        addItem(e) {
-            this.props.record.push({
-                name: Math.random(),
-                desc: new Date().toLocaleTimeString()
-            });
+        getTodo(e) {
+            this.props.todo = e.target.value;
+        },
+
+        markAsRead(arg) {
+            this.props.record[parseInt(arg[0])].title = '<i>READ</i>';
+        },
+
+        addItem() {
+            if (this.props.todo) {
+                this.props.record.push({
+                    title: this.props.todo
+                });
+            }
         },
 
         removeItem(arg) {
             this.props.record.splice([parseInt(arg[0])], 1);
         },
 
-        onCreate() {
-            console.log('create');
-        },
         onRender() {
-            console.log('render');
-            setInterval(() => {
-                this.props.time = new Date().toLocaleTimeString();
-            }, 1000)
+            for(let i = 0; i < 20; i++) {
+                this.props.record.push({title: i})
+            }
+        },
+
+        onUpdate() {
+            console.log('--U P D A T E')
         }
     });
 
     new Doz({
         root: document.getElementById('app'),
-        template: `<doz-clock></doz-clock>`
+        template: `<doz-todo></doz-todo>`
     })
 
 </script>
