@@ -38,6 +38,9 @@ function getInstances(root, template) {
     template = typeof template === 'string'
         ? html.create(template)
         : template;
+
+    //console.log(template.innerHTML)
+
     const nodes = html.getAllNodes(template);
     let components = [];
 
@@ -48,10 +51,16 @@ function getInstances(root, template) {
             const cmp = collection.get(child.nodeName);
 
             if (cmp) {
+                let alias = Math.random();
+                const props = serializeProps(child);
+
+                if (props.hasOwnProperty('is-alias')) {
+                    alias = props['is-alias']
+                }
 
                 const newElement = createInstance(cmp, {
                     root,
-                    props: serializeProps(child)
+                    props,
                 });
 
                 // Remove old
@@ -59,6 +68,8 @@ function getInstances(root, template) {
                 newElement.render();
 
                 events.callRender(newElement);
+
+                components.push({[alias]:newElement});
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
@@ -78,7 +89,10 @@ function getInstances(root, template) {
 }
 
 function createInstance(cmp, cfg) {
-    const props = extend.copy(cfg.props, cmp.cfg.props);
+    const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
+        ? cmp.cfg.props()
+        : cmp.cfg.props
+    );
     let instance = {};
     let isCreated = false;
 
@@ -116,7 +130,14 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
-                //this._prevProps = Object.assign({}, this.props);
+            },
+            enumerable: true
+        },
+        destroy: {
+            value: function () {
+                if (!this._rootElement) return;
+                this._rootElement.parentNode.removeChild(this._rootElement);
+                events.callDestroy(this);
             },
             enumerable: true
         }

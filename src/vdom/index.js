@@ -2,8 +2,8 @@ function isEventAttribute(name) {
     return /^on/.test(name);
 }
 
-function isBindAttribute(name) {
-    return /^do-bind/.test(name);
+function isBoundAttribute(name) {
+    return /^is-bound/.test(name);
 }
 
 function canBind($target) {
@@ -12,7 +12,7 @@ function canBind($target) {
 
 function isCustomAttribute(name) {
     return isEventAttribute(name)
-        || isBindAttribute(name)
+        || isBoundAttribute(name)
         || name === 'forceUpdate';
 }
 
@@ -99,7 +99,7 @@ function addEventListener($target, name, value, cmp) {
 }
 
 function setModel($target, name, value, cmp) {
-    if (!isBindAttribute(name) || !canBind($target)) return;
+    if (!isBoundAttribute(name) || !canBind($target)) return;
     if (typeof cmp.props[value] !== 'undefined') {
         ['compositionstart', 'compositionend', 'input', 'change']
             .forEach(function (event) {

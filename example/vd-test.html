@@ -32,12 +32,12 @@
         template() {
             return (
                 `<div>
-                    <doz-label></doz-label> <input do-bind="todo" type="text"><button onclick="this.addItem()" >Add item </button>
+                    <doz-label></doz-label> <input is-bound="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
                         `<li>
                             <button onclick="this.removeItem(${i})">&cross;</button>
-                            <button onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
+                            <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
                          </li>`)}
                     </ul>
                 </div>`
@@ -52,7 +52,9 @@
 
         markAsRead(arg) {
             let record = this.props.record[parseInt(arg[0])];
+            if (record.done) return;
             record.title = `<s>${record.title}</s>`;
+            record.done = true;
         },
 
         addItem() {
@@ -70,15 +72,15 @@
         },
 
         onRender() {
-            for(let i = 0; i < 20; i++) {
-                this.props.record.push({title: `#${i} Lorem`})
-            }
+            /*for(let i = 0; i < 20; i++) {
+                this.props.record.push({title: `#${i} Lorem`, done: false})
+            }*/
         }
     });
 
     new Doz({
         root: document.getElementById('app'),
-        template: `<doz-todo></doz-todo>`
+        template: `<doz-todo is-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo>`
     })
 
 </script>

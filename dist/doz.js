@@ -491,7 +491,7 @@ function getInstances(root, template) {
 }
 
 function createInstance(cmp, cfg) {
-    var props = extend.copy(cfg.props, cmp.cfg.props);
+    var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
     var instance = {};
     var isCreated = false;
 
@@ -529,7 +529,14 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
-                //this._prevProps = Object.assign({}, this.props);
+            },
+            enumerable: true
+        },
+        destroy: {
+            value: function value() {
+                if (!this._rootElement) return;
+                this._rootElement.parentNode.removeChild(this._rootElement);
+                events.callDestroy(this);
             },
             enumerable: true
         }
@@ -677,13 +684,13 @@ module.exports = html;
 "use strict";
 
 
+var castStringTo = __webpack_require__(13);
+
 function serializeProps(node) {
     var props = {};
 
     if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
-        //const prop = {};
-        props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
-        //props.push(prop);
+        props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
     });
 
     return props;
@@ -1586,6 +1593,7 @@ function callUpdate(context) {
 function callDestroy(context) {
     if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
+        context = null;
     }
 }
 
@@ -1596,6 +1604,52 @@ module.exports = {
     callUpdate: callUpdate,
     callDestroy: callDestroy
 };
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function castStringTo(obj) {
+
+    if (typeof obj !== 'string') {
+        return obj;
+    }
+
+    switch (obj) {
+        case 'undefined':
+            return undefined;
+        case 'null':
+            return null;
+        case 'NaN':
+            return NaN;
+        case 'Infinity':
+            return Infinity;
+        case 'true':
+            return true;
+        case 'false':
+            return false;
+        default:
+            try {
+                return JSON.parse(obj);
+            } catch (e) {}
+            break;
+    }
+
+    var num = parseFloat(obj);
+    if (!isNaN(num) && isFinite(obj)) {
+        if (obj.toLowerCase().indexOf('0x') === 0) {
+            return parseInt(obj, 16);
+        }
+        return num;
+    }
+
+    return obj;
+}
+
+module.exports = castStringTo;
 
 /***/ })
 /******/ ]);

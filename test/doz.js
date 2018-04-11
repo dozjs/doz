@@ -60,6 +60,8 @@ describe('Doz', function () {
                 template: `<div><my-component name="Doz"></my-component></div>`
             });
 
+            console.log(view.components);
+
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
@@ -106,8 +108,26 @@ describe('Doz', function () {
 
             const view = new Doz({
                 root: document.getElementById('app'),
-                template: `<div><my-component id="12" title="MR." name="Doz"></my-component><my-component id="34" title="MRS." name="Luis"></my-component></div>`
+                template: `<div>
+                                <my-component
+                                is-alias="first-component"
+                                id="12"
+                                title="MR."
+                                name="Doz">
+                                </my-component>
+                                <my-component
+                                is-alias="second-component"
+                                id="34"
+                                title="MRS."
+                                name="Luis">
+                                </my-component>
+                           </div>`,
+                //template: `<div><my-component do-widget="first-component" id="12" title="MR." name="Doz"></my-component><my-component do-widget="second-component" id="34" title="MRS." name="Luis"></my-component></div>`
+                //template: document.getElementById('template')
+
             });
+
+            console.log(view.components);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;

@@ -6,8 +6,12 @@ const html = {
      */
     create: function (str) {
         let element;
-        str = str.replace(/\n|\t|\r|\s{2,}/g,'');
-
+        //str = str.replace(/\n|\t|\r|\s{2,}/g,'');
+        str = str.replace(/\n|\s{2,}/g,' ');
+        str = str.replace(/[\t\r]/g,'');
+        str = str.replace(/>(\s+)</g,'><');
+        str = str.trim();
+        //console.log(str)
         if (/<.*>/g.test(str)) {
             let template = document.createElement('div');
             template.innerHTML = str;

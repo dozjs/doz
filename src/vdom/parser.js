@@ -1,11 +1,11 @@
+const castStringTo = require('../utils/cast-string-to');
+
 function serializeProps(node) {
     const props = {};
 
     if (node.attributes.length)
         Array.from(node.attributes).forEach(attr => {
-            //const prop = {};
-            props[attr.name] = attr.nodeValue === '' ? true : attr.nodeValue;
-            //props.push(prop);
+            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
         });
 
     return props;

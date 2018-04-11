@@ -25,6 +25,7 @@ function callUpdate(context) {
 function callDestroy(context) {
     if(typeof context.onDestroy === 'function'){
         context.onDestroy.call(context);
+        context = null;
     }
 }
 
