@@ -398,6 +398,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 "use strict";
 
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var extend = __webpack_require__(1);
 
 var _require = __webpack_require__(0),
@@ -451,6 +453,9 @@ function component(tag) {
 function getInstances(root, template) {
 
     template = typeof template === 'string' ? html.create(template) : template;
+
+    //console.log(template.innerHTML)
+
     var nodes = html.getAllNodes(template);
     var components = [];
 
@@ -461,10 +466,16 @@ function getInstances(root, template) {
             var cmp = collection.get(child.nodeName);
 
             if (cmp) {
+                var alias = Math.random();
+                var props = serializeProps(child);
+
+                if (props.hasOwnProperty('is-alias')) {
+                    alias = props['is-alias'];
+                }
 
                 var newElement = createInstance(cmp, {
                     root: root,
-                    props: serializeProps(child)
+                    props: props
                 });
 
                 // Remove old
@@ -472,6 +483,8 @@ function getInstances(root, template) {
                 newElement.render();
 
                 events.callRender(newElement);
+
+                components.push(_defineProperty({}, alias, newElement));
 
                 var nested = newElement._rootElement.querySelectorAll('*');
 
@@ -615,8 +628,12 @@ var html = {
      */
     create: function create(str) {
         var element = void 0;
-        str = str.replace(/\n|\t|\r|\s{2,}/g, '');
-
+        //str = str.replace(/\n|\t|\r|\s{2,}/g,'');
+        str = str.replace(/\n|\s{2,}/g, ' ');
+        str = str.replace(/[\t\r]/g, '');
+        str = str.replace(/>(\s+)</g, '><');
+        str = str.trim();
+        //console.log(str)
         if (/<.*>/g.test(str)) {
             var template = document.createElement('div');
             template.innerHTML = str;
@@ -748,8 +765,8 @@ function isEventAttribute(name) {
     );
 }
 
-function isBindAttribute(name) {
-    return (/^do-bind/.test(name)
+function isBoundAttribute(name) {
+    return (/^is-bound/.test(name)
     );
 }
 
@@ -758,7 +775,7 @@ function canBind($target) {
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || isBindAttribute(name) || name === 'forceUpdate';
+    return isEventAttribute(name) || isBoundAttribute(name) || name === 'forceUpdate';
 }
 
 function setBooleanAttribute($target, name, value) {
@@ -841,7 +858,7 @@ function addEventListener($target, name, value, cmp) {
 }
 
 function setModel($target, name, value, cmp) {
-    if (!isBindAttribute(name) || !canBind($target)) return;
+    if (!isBoundAttribute(name) || !canBind($target)) return;
     if (typeof cmp.props[value] !== 'undefined') {
         ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
             $target.addEventListener(event, function () {
