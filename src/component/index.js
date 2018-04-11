@@ -35,11 +35,15 @@ function component(tag, cfg = {}) {
 
 function getInstances(root, template) {
 
-    template = html.create(template);
+    template = typeof template === 'string'
+        ? html.create(template)
+        : template;
     const nodes = html.getAllNodes(template);
     let components = [];
 
-    nodes.forEach(child => {
+    nodes.forEach((child, i) => {
+
+        //console.log(child.nodeName)
 
         if (child.nodeType === 1 && child.parentNode) {
 
@@ -58,22 +62,29 @@ function getInstances(root, template) {
 
                 events.callRender(newElement);
 
-                /*
-                newElement.element[INSTANCE] = newElement;
+                //console.log(i);
 
-                child.parentNode.replaceChild(newElement.element, child);
-                components.push(newElement);
+                const nested = newElement._rootElement.querySelectorAll('*');
 
-                events.callRender(newElement.context);
+                Array.from(nested).forEach(item => {
 
-                if (newElement.element.querySelectorAll('*').length) {
-                    const nestedChild = getInstances(newElement.element.firstChild);
-                    if (nestedChild.length) {
-                        newElement.child = newElement.child.concat(nestedChild);
-                        newElement.context.child = newElement.child;
+                    //console.log(item.nodeName);
+                    //console.log(nested);
+
+                    if (PARSER.REGEX.TAG.test(item.nodeName)) {
+                        const template = item.outerHTML;
+                        const rootElement = document.createElement('doz-root-component');
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, template);
                     }
-                }
-                */
+
+
+                    /*if (nestedChild.length) {
+                        newElement.child = newElement.child.concat(nestedChild);
+                        //newElement.context.child = newElement.child;
+                    }*/
+                });
+                console.log('--------------------------')
             }
         }
     });
@@ -94,6 +105,10 @@ function createInstance(cmp, cfg) {
             value: null,
             writable: true
         },
+        _rootElement: {
+            value: null,
+            writable: true
+        },
         each: {
             value: function (obj, func) {
                 return obj.map(func).join('');
@@ -102,10 +117,14 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function () {
-                let tpl = html.create(this.template());
-                let next = transform(tpl);
+                const tpl = html.create(this.template());
+                const next = transform(tpl);
                 //console.log(next);
-                update(cfg.root, next, this._prev, 0, this);
+                const rootElement = update(cfg.root, next, this._prev, 0, this);
+
+                if (!this._rootElement && rootElement) {
+                    this._rootElement = rootElement;
+                }
 
                 this._prev = next;
                 this._prevProps = Object.assign({}, this.props);
@@ -127,7 +146,6 @@ function createInstance(cmp, cfg) {
     });
 
     observer.beforeChange(instance.props, change => {
-        //console.log('before change')
         const res = events.callBeforeUpdate(Object.assign({}, instance));
         if (res === false)
             return false;

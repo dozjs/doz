@@ -69,5 +69,56 @@ describe('Doz', function () {
 
 
         });
+
+        it('should be ok with a nested component', function (done) {
+
+            Doz.component('my-id', {
+                template() {
+                    return `
+                        <span>ID TEST</span>`
+                }
+            });
+
+            Doz.component('my-label', {
+                template() {
+                    return `
+                        <span><my-id></my-id> MR.</span>`
+                }
+            });
+
+            Doz.component('my-component', {
+                template() {
+                    return `
+                        <div>
+                            <span>hello I'm <my-label></my-label> ${this.props.name} component </span>
+                        </div>`
+                },
+                onCreate() {
+                    console.log('onCreate')
+                },
+                onRender() {
+                    console.log('onRender');
+                    this.props.name = 'D O Z'
+                }
+            });
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            const view = new Doz({
+                root: document.getElementById('app'),
+                template: `<div><my-component name="Doz"></my-component><my-component name="Luis"></my-component></div>`
+            });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+
+                be.err(done).true(/D O Z/g.test(html));
+            },100);
+
+
+        });
     });
 });

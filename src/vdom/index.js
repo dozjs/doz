@@ -124,9 +124,9 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
     if(!$parent) return;
     //console.log($parent, index);
     if (!oldNode) {
-        $parent.appendChild(
-            createElement(newNode, cmp)
-        );
+        const rootElement = createElement(newNode, cmp);
+        $parent.appendChild(rootElement);
+        return rootElement;
     } else if (!newNode) {
         if ($parent.childNodes[index])
             $parent.removeChild(
