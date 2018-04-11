@@ -74,15 +74,13 @@ describe('Doz', function () {
 
             Doz.component('my-id', {
                 template() {
-                    return `
-                        <span>ID TEST</span>`
+                    return `<span>${this.props.number}</span>`
                 }
             });
 
             Doz.component('my-label', {
                 template() {
-                    return `
-                        <span><my-id></my-id> MR.</span>`
+                    return `<span><my-id number="${this.props.id}"></my-id> ${this.props.title}</span>`
                 }
             });
 
@@ -90,7 +88,7 @@ describe('Doz', function () {
                 template() {
                     return `
                         <div>
-                            <span>hello I'm <my-label></my-label> ${this.props.name} component </span>
+                            <span>hello I'm <my-label id="${this.props.id}" title="${this.props.title}"></my-label> ${this.props.name} component </span>
                         </div>`
                 },
                 onCreate() {
@@ -108,7 +106,7 @@ describe('Doz', function () {
 
             const view = new Doz({
                 root: document.getElementById('app'),
-                template: `<div><my-component name="Doz"></my-component><my-component name="Luis"></my-component></div>`
+                template: `<div><my-component id="12" title="MR." name="Doz"></my-component><my-component id="34" title="MRS." name="Luis"></my-component></div>`
             });
 
             setTimeout(()=>{

@@ -3,7 +3,7 @@ const {register} = require('../collection');
 const html = require('../utils/html');
 const {INSTANCE, PARSER, SIGN} = require('../constants');
 const collection = require('../collection');
-const helper = require('./helper');
+//const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
 const {transform, serializeProps} = require('../vdom/parser');
@@ -41,9 +41,7 @@ function getInstances(root, template) {
     const nodes = html.getAllNodes(template);
     let components = [];
 
-    nodes.forEach((child, i) => {
-
-        //console.log(child.nodeName)
+    nodes.forEach(child => {
 
         if (child.nodeType === 1 && child.parentNode) {
 
@@ -62,29 +60,16 @@ function getInstances(root, template) {
 
                 events.callRender(newElement);
 
-                //console.log(i);
-
                 const nested = newElement._rootElement.querySelectorAll('*');
 
                 Array.from(nested).forEach(item => {
-
-                    //console.log(item.nodeName);
-                    //console.log(nested);
-
                     if (PARSER.REGEX.TAG.test(item.nodeName)) {
                         const template = item.outerHTML;
-                        const rootElement = document.createElement('doz-root-component');
+                        const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
                         getInstances(rootElement, template);
                     }
-
-
-                    /*if (nestedChild.length) {
-                        newElement.child = newElement.child.concat(nestedChild);
-                        //newElement.context.child = newElement.child;
-                    }*/
                 });
-                console.log('--------------------------')
             }
         }
     });
@@ -93,6 +78,7 @@ function getInstances(root, template) {
 }
 
 function createInstance(cmp, cfg) {
+    const props = extend.copy(cfg.props, cmp.cfg.props);
     let instance = {};
     let isCreated = false;
 
@@ -109,6 +95,10 @@ function createInstance(cmp, cfg) {
             value: null,
             writable: true
         },
+        _boundElements: {
+            value: {},
+            writable: true
+        },
         each: {
             value: function (obj, func) {
                 return obj.map(func).join('');
@@ -119,7 +109,6 @@ function createInstance(cmp, cfg) {
             value: function () {
                 const tpl = html.create(this.template());
                 const next = transform(tpl);
-                //console.log(next);
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
                 if (!this._rootElement && rootElement) {
@@ -127,7 +116,7 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
-                this._prevProps = Object.assign({}, this.props);
+                //this._prevProps = Object.assign({}, this.props);
             },
             enumerable: true
         }
@@ -135,18 +124,24 @@ function createInstance(cmp, cfg) {
 
     instance = Object.assign(instance, cmp.cfg);
 
-    let props = extend.copy(cfg.props, cmp.cfg.props);
-
-    instance.props = observer.create(props, true, () => {
+    instance.props = observer.create(props, true, changes => {
         instance.render();
+
+        changes.forEach(item => {
+            if (instance._boundElements.hasOwnProperty(item.property)) {
+                instance._boundElements[item.property].forEach(element => {
+                    element.value = item.newValue;
+                })
+            }
+        });
 
         if (isCreated) {
             events.callUpdate(instance);
         }
     });
 
-    observer.beforeChange(instance.props, change => {
-        const res = events.callBeforeUpdate(Object.assign({}, instance));
+    observer.beforeChange(instance.props, () => {
+        const res = events.callBeforeUpdate(Object.assign({}, instance.props));
         if (res === false)
             return false;
     });
@@ -157,10 +152,7 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-
 module.exports = {
     component,
-    getInstances,
-    //setProps,
-    //createListenerHandler
+    getInstances
 };

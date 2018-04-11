@@ -1,25 +1,6 @@
 const {PARSER} = require('../constants');
-
-function textToTag(el) {
-    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
-        // Remove spaces
-        match = sanitize(match);
-        return `<${PARSER.TAG.TEXT} value=${match}></${PARSER.TAG.TEXT}>`;
-    });
-}
-
-function tagToText(textNodes) {
-    textNodes.forEach(item => {
-        item.old.parentNode.replaceChild(item.new, item.old)
-    });
-}
-
 function canModel(el) {
     return ['INPUT', 'TEXTAREA'].indexOf(el.nodeName) !== -1
-}
-
-function sanitize(field) {
-    return field.replace(/[ "=]/g, '');
 }
 
 function getByPath(path, obj) {

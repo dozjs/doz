@@ -14,15 +14,7 @@ module.exports = {
         REGEX: {
             TAG: /^\w+-[\w-]+$/,
             ATTR: /{{([\w.]+)}}/,
-            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
-            HANDLER: /on-(.*)/,
-            MODEL: /do-model/,
-            FOR: /do-for/,
-            FOR_EXP: /in this.(.*)/,
-            IF: /do-if/
-        },
-        TAG: {
-            TEXT: 'doz-text-node'
+            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
         }
     },
     ATTR: {

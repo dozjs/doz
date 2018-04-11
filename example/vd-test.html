@@ -23,7 +23,7 @@
     Doz.component('doz-label', {
         template() {
             return (
-                `<div>Hello</div>`
+                `<div>Insert title</div>`
             );
         }
     });
@@ -32,7 +32,7 @@
         template() {
             return (
                 `<div>
-                    <doz-label></doz-label> <input oninput="this.getTodo()" type="text"><button onclick="this.addItem()" >Add item </button>
+                    <doz-label></doz-label> <input do-bind="todo" type="text"><button onclick="this.addItem()" >Add item </button>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
                         `<li>
@@ -50,10 +50,6 @@
             todo: ''
         },
 
-        getTodo(e) {
-            this.props.todo = e.target.value;
-        },
-
         markAsRead(arg) {
             let record = this.props.record[parseInt(arg[0])];
             record.title = `<s>${record.title}</s>`;
@@ -65,6 +61,8 @@
                     title: this.props.todo
                 });
             }
+
+            this.props.todo = '';
         },
 
         removeItem(arg) {

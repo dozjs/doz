@@ -1,8 +1,22 @@
-function h(type, props, ...children) {
-    return {type, props: props || {}, children};
+function isEventAttribute(name) {
+    return /^on/.test(name);
 }
 
-function setBooleanProp($target, name, value) {
+function isBindAttribute(name) {
+    return /^do-bind/.test(name);
+}
+
+function canBind($target) {
+    return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1
+}
+
+function isCustomAttribute(name) {
+    return isEventAttribute(name)
+        || isBindAttribute(name)
+        || name === 'forceUpdate';
+}
+
+function setBooleanAttribute($target, name, value) {
     if (value) {
         $target.setAttribute(name, value);
         $target[name] = true;
@@ -11,92 +25,101 @@ function setBooleanProp($target, name, value) {
     }
 }
 
-function removeBooleanProp($target, name) {
+function removeBooleanAttribute($target, name) {
     $target.removeAttribute(name);
     $target[name] = false;
-}
-
-function isEventProp(name) {
-    return /^on/.test(name);
 }
 
 function extractEventName(name) {
     return name.slice(2).toLowerCase();
 }
 
-function isCustomProp(name) {
-    return isEventProp(name) || name === 'forceUpdate';
-}
-
-function setProp($target, name, value) {
-    if (isCustomProp(name)) {
+function setAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
-        setBooleanProp($target, name, value);
+        setBooleanAttribute($target, name, value);
     } else {
         $target.setAttribute(name, value);
     }
 }
 
-function removeProp($target, name, value) {
-    if (isCustomProp(name)) {
+function removeAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.removeAttribute('class');
     } else if (typeof value === 'boolean') {
-        removeBooleanProp($target, name);
+        removeBooleanAttribute($target, name);
     } else {
         $target.removeAttribute(name);
     }
 }
 
-function setProps($target, props) {
-    Object.keys(props).forEach(name => {
-        setProp($target, name, props[name]);
-    });
-}
-
-function updateProp($target, name, newVal, oldVal) {
+function updateAttribute($target, name, newVal, oldVal) {
     if (!newVal) {
-        removeProp($target, name, oldVal);
+        removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
-        setProp($target, name, newVal);
+        setAttribute($target, name, newVal);
     }
 }
 
-function updateProps($target, newProps, oldProps = {}) {
+function updateAttributes($target, newProps, oldProps = {}) {
     const props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(name => {
-        updateProp($target, name, newProps[name], oldProps[name]);
+        updateAttribute($target, name, newProps[name], oldProps[name]);
     });
 }
 
-function addEventListeners($target, props, cmp) {
-    Object.keys(props).forEach(name => {
-        if (isEventProp(name)) {
+function addEventListener($target, name, value, cmp) {
 
-            let match = props[name].match(/^this.(.*)\((.*)\)/);
+    if (!isEventAttribute(name)) return;
 
-            if (match) {
-                let args = null;
-                let handler = match[1];
-                let stringArgs = match[2];
-                if (stringArgs) {
-                    args = stringArgs.split(',').map(item => item.trim())
-                }
+    let match = value.match(/^this.(.*)\((.*)\)/);
 
-                if(handler in cmp) {
-                    props[name] = args
-                        ? cmp[handler].bind(cmp, args)
-                        : cmp[handler].bind(cmp);
-                }
-            }
-
-            $target.addEventListener(
-                extractEventName(name),
-                props[name]
-            );
+    if (match) {
+        let args = null;
+        let handler = match[1];
+        let stringArgs = match[2];
+        if (stringArgs) {
+            args = stringArgs.split(',').map(item => item.trim())
         }
+
+        if (handler in cmp) {
+            value = args
+                ? cmp[handler].bind(cmp, args)
+                : cmp[handler].bind(cmp);
+        }
+    }
+
+    $target.addEventListener(
+        extractEventName(name),
+        value
+    );
+}
+
+function setModel($target, name, value, cmp) {
+    if (!isBindAttribute(name) || !canBind($target)) return;
+    if (typeof cmp.props[value] !== 'undefined') {
+        ['compositionstart', 'compositionend', 'input', 'change']
+            .forEach(function (event) {
+                $target.addEventListener(event, function () {
+                    cmp.props[value] = this.value;
+                });
+            });
+        if (cmp._boundElements.hasOwnProperty(value)) {
+            cmp._boundElements[value].push($target);
+        } else {
+            cmp._boundElements[value] = [$target];
+        }
+    }
+}
+
+function attach($target, props, cmp) {
+    Object.keys(props).forEach(name => {
+        setAttribute($target, name, props[name]);
+        addEventListener($target, name, props[name], cmp);
+        setModel($target, name, props[name], cmp)
     });
 }
 
@@ -105,24 +128,25 @@ function createElement(node, cmp) {
         return document.createTextNode(node);
     }
     const $el = document.createElement(node.type);
-    setProps($el, node.props);
-    addEventListeners($el, node.props, cmp);
+
+    attach($el, node.props, cmp);
+
     node.children
         .map(item => createElement(item, cmp))
         .forEach($el.appendChild.bind($el));
     return $el;
 }
 
-function changed(node1, node2) {
-    return typeof node1 !== typeof node2 ||
-        typeof node1 === 'string' && node1 !== node2 ||
-        node1.type !== node2.type ||
-        node1.props && node1.props.forceUpdate;
+function changed(nodeA, nodeB) {
+    return typeof nodeA !== typeof nodeB ||
+        typeof nodeA === 'string' && nodeA !== nodeB ||
+        nodeA.type !== nodeB.type ||
+        nodeA.props && nodeA.props.forceUpdate;
 }
 
 function updateElement($parent, newNode, oldNode, index = 0, cmp) {
-    if(!$parent) return;
-    //console.log($parent, index);
+    if (!$parent) return;
+
     if (!oldNode) {
         const rootElement = createElement(newNode, cmp);
         $parent.appendChild(rootElement);
@@ -133,12 +157,14 @@ function updateElement($parent, newNode, oldNode, index = 0, cmp) {
                 $parent.childNodes[index]
             );
     } else if (changed(newNode, oldNode)) {
+        const rootElement = createElement(newNode, cmp);
         $parent.replaceChild(
-            createElement(newNode, cmp),
+            rootElement,
             $parent.childNodes[index]
         );
+        return rootElement;
     } else if (newNode.type) {
-        updateProps(
+        updateAttributes(
             $parent.childNodes[index],
             newNode.props,
             oldNode.props

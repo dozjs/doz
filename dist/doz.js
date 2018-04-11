@@ -81,7 +81,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(3),
     ROOT = _require.ROOT;
 
 /**
@@ -137,38 +137,6 @@ module.exports = {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    ROOT: '__DOZ__',
-    SIGN: '__DOZ_SIGN__',
-    INSTANCE: '__DOZ_INSTANCE__',
-    EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
-    PARSER: {
-        REGEX: {
-            TAG: /^\w+-[\w-]+$/,
-            ATTR: /{{([\w.]+)}}/,
-            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g,
-            HANDLER: /on-(.*)/,
-            MODEL: /do-model/,
-            FOR: /do-for/,
-            FOR_EXP: /in this.(.*)/,
-            IF: /do-if/
-        },
-        TAG: {
-            TEXT: 'doz-text-node'
-        }
-    },
-    ATTR: {
-        WIDGET: 'doz-medom-widget'
-    }
-};
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -424,28 +392,28 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var extend = __webpack_require__(2);
+var extend = __webpack_require__(1);
 
 var _require = __webpack_require__(0),
     register = _require.register;
 
 var html = __webpack_require__(4);
 
-var _require2 = __webpack_require__(1),
+var _require2 = __webpack_require__(3),
     INSTANCE = _require2.INSTANCE,
     PARSER = _require2.PARSER,
     SIGN = _require2.SIGN;
 
 var collection = __webpack_require__(0);
-var helper = __webpack_require__(11);
-var observer = __webpack_require__(12);
-var events = __webpack_require__(13);
+//const helper = require('./helper');
+var observer = __webpack_require__(11);
+var events = __webpack_require__(12);
 
 var _require3 = __webpack_require__(5),
     transform = _require3.transform,
@@ -482,7 +450,7 @@ function component(tag) {
 
 function getInstances(root, template) {
 
-    template = html.create(template);
+    template = typeof template === 'string' ? html.create(template) : template;
     var nodes = html.getAllNodes(template);
     var components = [];
 
@@ -505,19 +473,16 @@ function getInstances(root, template) {
 
                 events.callRender(newElement);
 
-                /*
-                newElement.element[INSTANCE] = newElement;
-                  child.parentNode.replaceChild(newElement.element, child);
-                components.push(newElement);
-                  events.callRender(newElement.context);
-                  if (newElement.element.querySelectorAll('*').length) {
-                    const nestedChild = getInstances(newElement.element.firstChild);
-                    if (nestedChild.length) {
-                        newElement.child = newElement.child.concat(nestedChild);
-                        newElement.context.child = newElement.child;
+                var nested = newElement._rootElement.querySelectorAll('*');
+
+                Array.from(nested).forEach(function (item) {
+                    if (PARSER.REGEX.TAG.test(item.nodeName)) {
+                        var _template = item.outerHTML;
+                        var rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, _template);
                     }
-                }
-                */
+                });
             }
         }
     });
@@ -526,6 +491,7 @@ function getInstances(root, template) {
 }
 
 function createInstance(cmp, cfg) {
+    var props = extend.copy(cfg.props, cmp.cfg.props);
     var instance = {};
     var isCreated = false;
 
@@ -538,6 +504,14 @@ function createInstance(cmp, cfg) {
             value: null,
             writable: true
         },
+        _rootElement: {
+            value: null,
+            writable: true
+        },
+        _boundElements: {
+            value: {},
+            writable: true
+        },
         each: {
             value: function value(obj, func) {
                 return obj.map(func).join('');
@@ -548,11 +522,14 @@ function createInstance(cmp, cfg) {
             value: function value() {
                 var tpl = html.create(this.template());
                 var next = transform(tpl);
-                //console.log(next);
-                update(cfg.root, next, this._prev, 0, this);
+                var rootElement = update(cfg.root, next, this._prev, 0, this);
+
+                if (!this._rootElement && rootElement) {
+                    this._rootElement = rootElement;
+                }
 
                 this._prev = next;
-                this._prevProps = Object.assign({}, this.props);
+                //this._prevProps = Object.assign({}, this.props);
             },
             enumerable: true
         }
@@ -560,19 +537,24 @@ function createInstance(cmp, cfg) {
 
     instance = Object.assign(instance, cmp.cfg);
 
-    var props = extend.copy(cfg.props, cmp.cfg.props);
-
-    instance.props = observer.create(props, true, function () {
+    instance.props = observer.create(props, true, function (changes) {
         instance.render();
+
+        changes.forEach(function (item) {
+            if (instance._boundElements.hasOwnProperty(item.property)) {
+                instance._boundElements[item.property].forEach(function (element) {
+                    element.value = item.newValue;
+                });
+            }
+        });
 
         if (isCreated) {
             events.callUpdate(instance);
         }
     });
 
-    observer.beforeChange(instance.props, function (change) {
-        //console.log('before change')
-        var res = events.callBeforeUpdate(Object.assign({}, instance));
+    observer.beforeChange(instance.props, function () {
+        var res = events.callBeforeUpdate(Object.assign({}, instance.props));
         if (res === false) return false;
     });
 
@@ -585,8 +567,30 @@ function createInstance(cmp, cfg) {
 module.exports = {
     component: component,
     getInstances: getInstances
-    //setProps,
-    //createListenerHandler
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    ROOT: '__DOZ__',
+    SIGN: '__DOZ_SIGN__',
+    INSTANCE: '__DOZ_INSTANCE__',
+    EVENTS: ['show', 'hide', 'beforeContentChange', 'contentChange', 'state', 'beforeState'],
+    PARSER: {
+        REGEX: {
+            TAG: /^\w+-[\w-]+$/,
+            ATTR: /{{([\w.]+)}}/,
+            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
+        }
+    },
+    ATTR: {
+        WIDGET: 'doz-medom-widget'
+    }
 };
 
 /***/ }),
@@ -732,15 +736,25 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-function h(type, props) {
-    for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        children[_key - 2] = arguments[_key];
-    }
-
-    return { type: type, props: props || {}, children: children };
+function isEventAttribute(name) {
+    return (/^on/.test(name)
+    );
 }
 
-function setBooleanProp($target, name, value) {
+function isBindAttribute(name) {
+    return (/^do-bind/.test(name)
+    );
+}
+
+function canBind($target) {
+    return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1;
+}
+
+function isCustomAttribute(name) {
+    return isEventAttribute(name) || isBindAttribute(name) || name === 'forceUpdate';
+}
+
+function setBooleanAttribute($target, name, value) {
     if (value) {
         $target.setAttribute(name, value);
         $target[name] = true;
@@ -749,90 +763,97 @@ function setBooleanProp($target, name, value) {
     }
 }
 
-function removeBooleanProp($target, name) {
+function removeBooleanAttribute($target, name) {
     $target.removeAttribute(name);
     $target[name] = false;
-}
-
-function isEventProp(name) {
-    return (/^on/.test(name)
-    );
 }
 
 function extractEventName(name) {
     return name.slice(2).toLowerCase();
 }
 
-function isCustomProp(name) {
-    return isEventProp(name) || name === 'forceUpdate';
-}
-
-function setProp($target, name, value) {
-    if (isCustomProp(name)) {} else if (name === 'className') {
+function setAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
-        setBooleanProp($target, name, value);
+        setBooleanAttribute($target, name, value);
     } else {
         $target.setAttribute(name, value);
     }
 }
 
-function removeProp($target, name, value) {
-    if (isCustomProp(name)) {} else if (name === 'className') {
+function removeAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.removeAttribute('class');
     } else if (typeof value === 'boolean') {
-        removeBooleanProp($target, name);
+        removeBooleanAttribute($target, name);
     } else {
         $target.removeAttribute(name);
     }
 }
 
-function setProps($target, props) {
-    Object.keys(props).forEach(function (name) {
-        setProp($target, name, props[name]);
-    });
-}
-
-function updateProp($target, name, newVal, oldVal) {
+function updateAttribute($target, name, newVal, oldVal) {
     if (!newVal) {
-        removeProp($target, name, oldVal);
+        removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
-        setProp($target, name, newVal);
+        setAttribute($target, name, newVal);
     }
 }
 
-function updateProps($target, newProps) {
+function updateAttributes($target, newProps) {
     var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(function (name) {
-        updateProp($target, name, newProps[name], oldProps[name]);
+        updateAttribute($target, name, newProps[name], oldProps[name]);
     });
 }
 
-function addEventListeners($target, props, cmp) {
-    Object.keys(props).forEach(function (name) {
-        if (isEventProp(name)) {
+function addEventListener($target, name, value, cmp) {
 
-            var match = props[name].match(/^this.(.*)\((.*)\)/);
+    if (!isEventAttribute(name)) return;
 
-            if (match) {
-                var args = null;
-                var handler = match[1];
-                var stringArgs = match[2];
-                if (stringArgs) {
-                    args = stringArgs.split(',').map(function (item) {
-                        return item.trim();
-                    });
-                }
+    var match = value.match(/^this.(.*)\((.*)\)/);
 
-                if (handler in cmp) {
-                    props[name] = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
-                }
-            }
-
-            $target.addEventListener(extractEventName(name), props[name]);
+    if (match) {
+        var args = null;
+        var handler = match[1];
+        var stringArgs = match[2];
+        if (stringArgs) {
+            args = stringArgs.split(',').map(function (item) {
+                return item.trim();
+            });
         }
+
+        if (handler in cmp) {
+            value = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
+        }
+    }
+
+    $target.addEventListener(extractEventName(name), value);
+}
+
+function setModel($target, name, value, cmp) {
+    if (!isBindAttribute(name) || !canBind($target)) return;
+    if (typeof cmp.props[value] !== 'undefined') {
+        ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
+            $target.addEventListener(event, function () {
+                cmp.props[value] = this.value;
+            });
+        });
+        if (cmp._boundElements.hasOwnProperty(value)) {
+            cmp._boundElements[value].push($target);
+        } else {
+            cmp._boundElements[value] = [$target];
+        }
+    }
+}
+
+function attach($target, props, cmp) {
+    Object.keys(props).forEach(function (name) {
+        setAttribute($target, name, props[name]);
+        addEventListener($target, name, props[name], cmp);
+        setModel($target, name, props[name], cmp);
     });
 }
 
@@ -841,16 +862,17 @@ function createElement(node, cmp) {
         return document.createTextNode(node);
     }
     var $el = document.createElement(node.type);
-    setProps($el, node.props);
-    addEventListeners($el, node.props, cmp);
+
+    attach($el, node.props, cmp);
+
     node.children.map(function (item) {
         return createElement(item, cmp);
     }).forEach($el.appendChild.bind($el));
     return $el;
 }
 
-function changed(node1, node2) {
-    return (typeof node1 === 'undefined' ? 'undefined' : _typeof(node1)) !== (typeof node2 === 'undefined' ? 'undefined' : _typeof(node2)) || typeof node1 === 'string' && node1 !== node2 || node1.type !== node2.type || node1.props && node1.props.forceUpdate;
+function changed(nodeA, nodeB) {
+    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceUpdate;
 }
 
 function updateElement($parent, newNode, oldNode) {
@@ -858,15 +880,19 @@ function updateElement($parent, newNode, oldNode) {
     var cmp = arguments[4];
 
     if (!$parent) return;
-    //console.log($parent, index);
+
     if (!oldNode) {
-        $parent.appendChild(createElement(newNode, cmp));
+        var rootElement = createElement(newNode, cmp);
+        $parent.appendChild(rootElement);
+        return rootElement;
     } else if (!newNode) {
         if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
     } else if (changed(newNode, oldNode)) {
-        $parent.replaceChild(createElement(newNode, cmp), $parent.childNodes[index]);
+        var _rootElement = createElement(newNode, cmp);
+        $parent.replaceChild(_rootElement, $parent.childNodes[index]);
+        return _rootElement;
     } else if (newNode.type) {
-        updateProps($parent.childNodes[index], newNode.props, oldNode.props);
+        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
         for (var i = 0; i < newLength || i < oldLength; i++) {
@@ -896,7 +922,7 @@ module.exports = __webpack_require__(8);
 
 
 module.exports = __webpack_require__(9);
-module.exports.component = __webpack_require__(3).component;
+module.exports.component = __webpack_require__(2).component;
 module.exports.collection = __webpack_require__(0);
 module.exports.update = __webpack_require__(6).updateElement;
 module.exports.transform = __webpack_require__(5).transform;
@@ -911,8 +937,8 @@ module.exports.html = __webpack_require__(4);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(2);
-var component = __webpack_require__(3);
+var extend = __webpack_require__(1);
+var component = __webpack_require__(2);
 
 var Doz = function Doz() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -978,161 +1004,6 @@ module.exports = function (module) {
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _require = __webpack_require__(1),
-    PARSER = _require.PARSER;
-
-function textToTag(el) {
-    el.innerHTML = el.innerHTML.replace(PARSER.REGEX.TEXT, function replacer(match) {
-        // Remove spaces
-        match = sanitize(match);
-        return '<' + PARSER.TAG.TEXT + ' value=' + match + '></' + PARSER.TAG.TEXT + '>';
-    });
-}
-
-function tagToText(textNodes) {
-    textNodes.forEach(function (item) {
-        item.old.parentNode.replaceChild(item.new, item.old);
-    });
-}
-
-function canModel(el) {
-    return ['INPUT', 'TEXTAREA'].indexOf(el.nodeName) !== -1;
-}
-
-function sanitize(field) {
-    return field.replace(/[ "=]/g, '');
-}
-
-function getByPath(path, obj) {
-    return path.split('.').reduce(function (res, prop) {
-        return res ? res[prop] : {};
-    }, obj);
-}
-
-function getLastObjectByPath(path, obj) {
-    if (path.indexOf('.') !== -1) {
-        path = path.split('.');
-        path.pop();
-        path = path.join('.');
-    }
-    return getByPath(path, obj);
-}
-
-function createObjectMap(path, obj, value) {
-    var overwrite = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    return path.split('.').reduce(function (o, i, y, m) {
-        var isLast = m[m.length - 1] === i;
-        if (isLast) {
-            if (!overwrite && o.hasOwnProperty(i)) {
-                if (!Array.isArray(o[i])) o[i] = [o[i]];
-                o[i].push(value);
-            } else {
-                o[i] = value;
-            }
-        } else if (!o.hasOwnProperty(i)) {
-            o[i] = [];
-        }
-        //console.log(i)
-        return o[i];
-    }, obj);
-}
-
-/**
- * Convert complex js object to dot notation js object
- * @link https://github.com/vardars/dotize
- * @author vardars
- * @param obj
- * @param prefix
- * @returns {*}
- */
-function objectToPath(obj, prefix) {
-    var newObj = {};
-
-    if ((!obj || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') && !Array.isArray(obj)) {
-        if (prefix) {
-            newObj[prefix] = obj;
-            return newObj;
-        } else {
-            return obj;
-        }
-    }
-
-    function isNumber(f) {
-        return !isNaN(parseInt(f));
-    }
-
-    function isEmptyObj(obj) {
-        for (var prop in obj) {
-            if (Object.hasOwnProperty.call(obj, prop)) return false;
-        }
-    }
-
-    function getFieldName(field, prefix, isRoot, isArrayItem, isArray) {
-        if (isArray) return (prefix ? prefix : '') + (isNumber(field) ? '[' + field + ']' : (isRoot ? '' : '.') + field);else if (isArrayItem) return (prefix ? prefix : '') + '[' + field + ']';else return (prefix ? prefix + '.' : '') + field;
-    }
-
-    return function recurse(o, p, isRoot) {
-        var isArrayItem = Array.isArray(o);
-        for (var f in o) {
-            if (o.hasOwnProperty(f)) {
-                var currentProp = o[f];
-                if (currentProp && (typeof currentProp === 'undefined' ? 'undefined' : _typeof(currentProp)) === 'object') {
-                    if (Array.isArray(currentProp)) {
-                        newObj = recurse(currentProp, getFieldName(f, p, isRoot, false, true), isArrayItem); // array
-                    } else {
-                        if (isArrayItem && isEmptyObj(currentProp) === false) {
-                            newObj = recurse(currentProp, getFieldName(f, p, isRoot, true)); // array item object
-                        } else if (isEmptyObj(currentProp) === false) {
-                            newObj = recurse(currentProp, getFieldName(f, p, isRoot)); // object
-                        } else {
-                                //
-                            }
-                    }
-                } else {
-                    if (isArrayItem || isNumber(f)) {
-                        newObj[getFieldName(f, p, isRoot, true)] = currentProp; // array item primitive
-                    } else {
-                        newObj[getFieldName(f, p, isRoot)] = currentProp; // primitive
-                    }
-                }
-            }
-        }
-
-        return newObj;
-    }(obj, prefix, true);
-}
-
-function pathify(item) {
-    if (_typeof(item.newValue) === 'object') {
-        return objectToPath(item.newValue, item.currentPath);
-    } else {
-        var res = {};
-        res[item.currentPath] = item.newValue;
-        return res;
-    }
-}
-
-module.exports = {
-    textToTag: textToTag,
-    tagToText: tagToText,
-    canModel: canModel,
-    getNodeByPath: getByPath,
-    getLastObjectByPath: getLastObjectByPath,
-    objectToPath: objectToPath,
-    pathify: pathify,
-    createObjectMap: createObjectMap
-};
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1682,7 +1553,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
