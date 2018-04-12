@@ -23,7 +23,7 @@
     Doz.component('doz-label', {
         template() {
             return (
-                `<div>Insert title</div>`
+                `<div>${this.props.fieldname}</div>`
             );
         }
     });
@@ -32,7 +32,7 @@
         template() {
             return (
                 `<div>
-                    <doz-label d-alias="mylabel"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
+                    <doz-label d-alias="label" fieldname="Insert title"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
                     `<li>
@@ -51,7 +51,7 @@
         },
 
         markAsRead(arg) {
-            let record = this.props.record[parseInt(arg[0])];
+            let record = this.props.record[arg[0]];
             if (record.done) return;
             record.title = `<s>${record.title}</s>`;
             record.done = true;
@@ -68,25 +68,24 @@
         },
 
         removeItem(arg) {
-            this.props.record.splice([parseInt(arg[0])], 1);
+            this.props.record.splice([arg[0]], 1);
         },
 
         onRender() {
-            //console.log(this.props)
+            console.log(this._rootElement)
         }
     });
 
     const view = new Doz({
         root: document.getElementById('app'),
-        template: `<h2>Result <strong>cccccc</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo><h2>cccccc</h2>ciao`
-        //template: `<doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo>`
+        template: `<h2>Result <strong>here</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo>`
     });
-
-    //console.log(view._usedComponents)
+/*
+    console.log(view.getComponent('todo-list'));
 
     setInterval(() => {
-        //view.getComponent('todo-list').props.todo = new Date().toLocaleTimeString();
-    }, 1000);
+        view.getComponent('todo-list').children['label'].props.fieldname = new Date().toLocaleTimeString();
+    }, 1000);*/
 
 
 </script>

@@ -21,59 +21,59 @@
     </style>
 </head>
 <body>
-<div id="app">
-    <doz-clock title="it's"></doz-clock>
-</div>
+<div id="app"></div>
 
 <h2>HTML</h2>
 <pre class="prettyprint">
     <code class="lang-html">
-&lt;div id=&quot;app&quot;&gt;
-    &lt;doz-clock title=&quot;it&apos;s&quot;&gt;&lt;/doz-clock&gt;
-&lt;/div&gt;
+    &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
     </code>
 </pre>
 <h2>JavaScript</h2>
 <pre class="prettyprint">
     <code class="lang-js">
     Doz.component(&apos;doz-clock&apos;, {
-        template: &grave;&lt;div&gt;{{title}}: {{time}}&lt;/div&gt;&grave;,
-        context: {
+        template(){
+            return &grave;&lt;div&gt;${this.props.title}: &lt;strong&gt;${this.props.time}&lt;/strong&gt;&lt;/div&gt;&grave;
+        },
+        props: {
             time: &apos;--:--:--&apos;,
-            onRender() {
-                setInterval(() =&gt; this.currentTime(), 1000)
-            },
-
-            currentTime() {
-                this.time = new Date().toLocaleTimeString()
-            }
+        },
+        onRender() {
+            setInterval(() =&gt; this.currentTime(), 1000)
+        },
+        currentTime() {
+            this.props.time = new Date().toLocaleTimeString()
         }
     });
 
     new Doz({
-        el: &apos;#app&apos;
-    })
+        root: document.getElementById(&apos;app&apos;),
+        template: &grave;&lt;doz-clock title=&quot;it&apos;s&quot;&gt;&lt;/doz-clock&gt;&grave;
+    });
     </code>
 </pre>
 <script>
 
     Doz.component('doz-clock', {
-        template: `<div>{{title}}: {{time}}</div>`,
-        context: {
+        template(){
+            return `<div>${this.props.title}: <strong>${this.props.time}</strong></div>`
+        },
+        props: {
             time: '--:--:--',
-            onRender() {
-                setInterval(() => this.currentTime(), 1000)
-            },
-
-            currentTime() {
-                this.time = new Date().toLocaleTimeString()
-            }
+        },
+        onRender() {
+            setInterval(() => this.currentTime(), 1000)
+        },
+        currentTime() {
+            this.props.time = new Date().toLocaleTimeString()
         }
     });
 
     new Doz({
-        el: '#app'
-    })
+        root: document.getElementById('app'),
+        template: `<doz-clock title="it's"></doz-clock>`
+    });
 
 </script>
 </body>

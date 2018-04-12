@@ -8,6 +8,7 @@ const observer = require('./observer');
 const events = require('./events');
 const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
+const castStringTo = require('../utils/cast-string-to');
 
 function component(tag, cfg = {}) {
 
@@ -33,7 +34,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, localComponents, index = 0) {
+function getInstances(root, template, localComponents) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -41,6 +42,9 @@ function getInstances(root, template, localComponents, index = 0) {
 
     const nodes = html.getAllNodes(template);
     let components = {};
+    let index = 0;
+
+    //console.log(nodes);
 
     nodes.forEach(child => {
         if (child.nodeType === 1 && child.parentNode) {
@@ -77,15 +81,21 @@ function getInstances(root, template, localComponents, index = 0) {
 
                 Array.from(nested).forEach(item => {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-                        index++
+                        //index++;
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances(rootElement, template, localComponents, index);
+                        const cmps = getInstances(rootElement, template, localComponents);
 
                         Object.keys(cmps).forEach(i => {
-                            //console.log(i, typeof i)
-                            newElement.children[i] = cmps[i]
+                            let n = i;
+                            if (newElement.children.hasOwnProperty(n)) {
+                                if (typeof castStringTo(n) === 'number') {
+                                    n++
+                                }
+                            }
+                                newElement.children[n] = cmps[i]
+
                         })
 
                     } else {
@@ -109,7 +119,7 @@ function createInstance(cmp, cfg) {
 
     let isCreated = false;
 
-    let instance = Object.defineProperties({}, {
+    const instance = Object.defineProperties({}, {
         _prev: {
             value: null,
             writable: true
@@ -134,6 +144,10 @@ function createInstance(cmp, cfg) {
         children: {
             value: {},
             writable: true,
+            enumerable: true
+        },
+        tag: {
+            value: cmp.tag,
             enumerable: true
         },
         each: {
@@ -170,7 +184,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    instance = Object.assign(instance, cmp.cfg);
+    Object.assign(instance, cmp.cfg);
 
     // Create observer to props
     instance.props = observer.create(props, true, changes => {

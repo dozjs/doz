@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -165,6 +165,52 @@ module.exports = {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function castStringTo(obj) {
+
+    if (typeof obj !== 'string') {
+        return obj;
+    }
+
+    switch (obj) {
+        case 'undefined':
+            return undefined;
+        case 'null':
+            return null;
+        case 'NaN':
+            return NaN;
+        case 'Infinity':
+            return Infinity;
+        case 'true':
+            return true;
+        case 'false':
+            return false;
+        default:
+            try {
+                return JSON.parse(obj);
+            } catch (e) {}
+            break;
+    }
+
+    var num = parseFloat(obj);
+    if (!isNaN(num) && isFinite(obj)) {
+        if (obj.toLowerCase().indexOf('0x') === 0) {
+            return parseInt(obj, 16);
+        }
+        return num;
+    }
+
+    return obj;
+}
+
+module.exports = castStringTo;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -417,21 +463,21 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /******/)
   );
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var extend = __webpack_require__(2);
+var extend = __webpack_require__(3);
 
 var _require = __webpack_require__(1),
     register = _require.register;
 
-var html = __webpack_require__(4);
+var html = __webpack_require__(5);
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
@@ -440,14 +486,15 @@ var _require2 = __webpack_require__(0),
 
 var collection = __webpack_require__(1);
 //const helper = require('./helper');
-var observer = __webpack_require__(11);
-var events = __webpack_require__(12);
+var observer = __webpack_require__(12);
+var events = __webpack_require__(13);
 
-var _require3 = __webpack_require__(5),
+var _require3 = __webpack_require__(6),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(6).updateElement;
+var update = __webpack_require__(7).updateElement;
+var castStringTo = __webpack_require__(2);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -477,13 +524,14 @@ function component(tag) {
 }
 
 function getInstances(root, template, localComponents) {
-    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
 
     template = typeof template === 'string' ? html.create(template) : template;
 
     var nodes = html.getAllNodes(template);
     var components = {};
+    var index = 0;
+
+    //console.log(nodes);
 
     nodes.forEach(function (child) {
         if (child.nodeType === 1 && child.parentNode) {
@@ -520,15 +568,20 @@ function getInstances(root, template, localComponents) {
 
                 Array.from(nested).forEach(function (item) {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-                        index++;
+                        //index++;
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        var cmps = getInstances(rootElement, _template, localComponents, index);
+                        var cmps = getInstances(rootElement, _template, localComponents);
 
                         Object.keys(cmps).forEach(function (i) {
-                            //console.log(i, typeof i)
-                            newElement.children[i] = cmps[i];
+                            var n = i;
+                            if (newElement.children.hasOwnProperty(n)) {
+                                if (typeof castStringTo(n) === 'number') {
+                                    n++;
+                                }
+                            }
+                            newElement.children[n] = cmps[i];
                         });
                     } else {}
                 });
@@ -573,6 +626,10 @@ function createInstance(cmp, cfg) {
             writable: true,
             enumerable: true
         },
+        tag: {
+            value: cmp.tag,
+            enumerable: true
+        },
         each: {
             value: function value(obj, func) {
                 if (Array.isArray(obj)) return obj.map(func).join('');
@@ -606,7 +663,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    instance = Object.assign(instance, cmp.cfg);
+    Object.assign(instance, cmp.cfg);
 
     // Create observer to props
     instance.props = observer.create(props, true, function (changes) {
@@ -642,7 +699,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -723,13 +780,13 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var castStringTo = __webpack_require__(13);
+var castStringTo = __webpack_require__(2);
 
 function serializeProps(node) {
     var props = {};
@@ -785,7 +842,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -796,6 +853,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
+
+var castStringTo = __webpack_require__(2);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -888,7 +947,7 @@ function addEventListener($target, name, value, cmp) {
         var stringArgs = match[2];
         if (stringArgs) {
             args = stringArgs.split(',').map(function (item) {
-                return item.trim();
+                return castStringTo(item.trim());
             });
         }
 
@@ -979,15 +1038,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(8);
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -995,14 +1045,23 @@ module.exports = __webpack_require__(8);
 
 
 module.exports = __webpack_require__(9);
-module.exports.component = __webpack_require__(3).component;
-module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(6).updateElement;
-module.exports.transform = __webpack_require__(5).transform;
-module.exports.html = __webpack_require__(4);
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(10);
+module.exports.component = __webpack_require__(4).component;
+module.exports.collection = __webpack_require__(1);
+module.exports.update = __webpack_require__(7).updateElement;
+module.exports.transform = __webpack_require__(6).transform;
+module.exports.html = __webpack_require__(5);
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1014,8 +1073,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(2);
-var component = __webpack_require__(3);
+var extend = __webpack_require__(3);
+var component = __webpack_require__(4);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG;
@@ -1063,7 +1122,7 @@ var Doz = function () {
     _createClass(Doz, [{
         key: 'getComponent',
         value: function getComponent(alias) {
-            return this._usedComponents['0'].children[alias];
+            return this._usedComponents[0].children[alias];
         }
     }]);
 
@@ -1073,7 +1132,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1103,7 +1162,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1653,7 +1712,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1697,52 +1756,6 @@ module.exports = {
     callUpdate: callUpdate,
     callDestroy: callDestroy
 };
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function castStringTo(obj) {
-
-    if (typeof obj !== 'string') {
-        return obj;
-    }
-
-    switch (obj) {
-        case 'undefined':
-            return undefined;
-        case 'null':
-            return null;
-        case 'NaN':
-            return NaN;
-        case 'Infinity':
-            return Infinity;
-        case 'true':
-            return true;
-        case 'false':
-            return false;
-        default:
-            try {
-                return JSON.parse(obj);
-            } catch (e) {}
-            break;
-    }
-
-    var num = parseFloat(obj);
-    if (!isNaN(num) && isFinite(obj)) {
-        if (obj.toLowerCase().indexOf('0x') === 0) {
-            return parseInt(obj, 16);
-        }
-        return num;
-    }
-
-    return obj;
-}
-
-module.exports = castStringTo;
 
 /***/ })
 /******/ ]);

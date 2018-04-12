@@ -1,4 +1,5 @@
 const {REGEX, ATTR} = require('../constants');
+const castStringTo = require('../utils/cast-string-to');
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -95,7 +96,7 @@ function addEventListener($target, name, value, cmp) {
         let handler = match[1];
         let stringArgs = match[2];
         if (stringArgs) {
-            args = stringArgs.split(',').map(item => item.trim())
+            args = stringArgs.split(',').map(item => castStringTo(item.trim()))
         }
 
         if (handler in cmp) {

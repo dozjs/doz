@@ -84,7 +84,7 @@ describe('Doz', function () {
 
             Doz.component('my-label', {
                 template() {
-                    return `<span><my-id is-alias="my-label" number="${this.props.id}"></my-id> ${this.props.title}</span>`
+                    return `<span><my-id d-alias="my-label" number="${this.props.id}"></my-id> ${this.props.title}</span>`
                 }
             });
 
@@ -126,8 +126,9 @@ describe('Doz', function () {
                            `
             });
 
-            console.log(view._usedComponents);
-            //console.log(view.getComponent('first-component').children['4']);
+            //console.log(view._usedComponents);
+            //console.log(view.getComponent('second-component'));
+            //console.log(view.getComponent());
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
