@@ -1,7 +1,7 @@
 const extend = require('defaulty');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {INSTANCE, PARSER, SIGN} = require('../constants');
+const {REGEX, ATTR} = require('../constants');
 const collection = require('../collection');
 //const helper = require('./helper');
 const observer = require('./observer');
@@ -15,7 +15,7 @@ function component(tag, cfg = {}) {
         throw new TypeError('Tag must be a string');
     }
 
-    if (!PARSER.REGEX.TAG.test(tag)) {
+    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
         throw new TypeError('Tag must contain a dash (-): my-component');
     }
 
@@ -33,34 +33,36 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template) {
+function getInstances(root, template, localComponents) {
 
     template = typeof template === 'string'
         ? html.create(template)
         : template;
 
-    //console.log(template.innerHTML)
-
     const nodes = html.getAllNodes(template);
-    let components = [];
+    let components = {};
+
+    //console.log('TEM',template)
+    //console.log(nodes)
 
     nodes.forEach(child => {
 
         if (child.nodeType === 1 && child.parentNode) {
 
-            const cmp = collection.get(child.nodeName);
+            const cmp = collection.get(child.nodeName) || localComponents[child.nodeName];
 
             if (cmp) {
-                let alias = Math.random();
+                let alias = Object.keys(components).length++;
                 const props = serializeProps(child);
 
-                if (props.hasOwnProperty('is-alias')) {
-                    alias = props['is-alias']
+                if (props.hasOwnProperty(ATTR.ALIAS)) {
+                    alias = props[ATTR.ALIAS];
+                    delete  props[ATTR.ALIAS];
                 }
 
                 const newElement = createInstance(cmp, {
                     root,
-                    props,
+                    props
                 });
 
                 // Remove old
@@ -69,18 +71,23 @@ function getInstances(root, template) {
 
                 events.callRender(newElement);
 
-                components.push({[alias]:newElement});
+                components[alias] = newElement;
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
                 Array.from(nested).forEach(item => {
-                    if (PARSER.REGEX.TAG.test(item.nodeName)) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, template);
+                        getInstances(rootElement, template, localComponents);
+                    } else {
+                        console.log('be')
                     }
                 });
+            } else {
+                //console.log('aaa')
+                //root.appendChild(child);
             }
         }
     });
@@ -93,10 +100,10 @@ function createInstance(cmp, cfg) {
         ? cmp.cfg.props()
         : cmp.cfg.props
     );
-    let instance = {};
+
     let isCreated = false;
 
-    Object.defineProperties(instance, {
+    const instance = Object.defineProperties({}, {
         _prev: {
             value: null,
             writable: true
@@ -112,6 +119,11 @@ function createInstance(cmp, cfg) {
         _boundElements: {
             value: {},
             writable: true
+        },
+        ref: {
+            value: {},
+            writable: true,
+            enumerable: true
         },
         each: {
             value: function (obj, func) {
@@ -143,8 +155,10 @@ function createInstance(cmp, cfg) {
         }
     });
 
-    instance = Object.assign(instance, cmp.cfg);
+    // Assign cfg to instance
+    Object.assign(instance, cmp.cfg);
 
+    // Create observer to props
     instance.props = observer.create(props, true, changes => {
         instance.render();
 

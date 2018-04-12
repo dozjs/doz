@@ -1,9 +1,15 @@
+const {REGEX, ATTR} = require('../constants');
+
 function isEventAttribute(name) {
-    return /^on/.test(name);
+    return REGEX.IS_LISTENER.test(name);
 }
 
-function isBoundAttribute(name) {
-    return /^is-bound/.test(name);
+function isBindAttribute(name) {
+    return name === ATTR.BIND;
+}
+
+function isRefAttribute(name) {
+    return name === ATTR.REF;
 }
 
 function canBind($target) {
@@ -12,7 +18,8 @@ function canBind($target) {
 
 function isCustomAttribute(name) {
     return isEventAttribute(name)
-        || isBoundAttribute(name)
+        || isBindAttribute(name)
+        || isRefAttribute(name)
         || name === 'forceUpdate';
 }
 
@@ -75,7 +82,7 @@ function addEventListener($target, name, value, cmp) {
 
     if (!isEventAttribute(name)) return;
 
-    let match = value.match(/^this.(.*)\((.*)\)/);
+    let match = value.match(REGEX.GET_LISTENER);
 
     if (match) {
         let args = null;
@@ -98,8 +105,8 @@ function addEventListener($target, name, value, cmp) {
     );
 }
 
-function setModel($target, name, value, cmp) {
-    if (!isBoundAttribute(name) || !canBind($target)) return;
+function setBind($target, name, value, cmp) {
+    if (!isBindAttribute(name) || !canBind($target)) return;
     if (typeof cmp.props[value] !== 'undefined') {
         ['compositionstart', 'compositionend', 'input', 'change']
             .forEach(function (event) {
@@ -115,11 +122,17 @@ function setModel($target, name, value, cmp) {
     }
 }
 
+function setRef($target, name, value, cmp) {
+    if (!isRefAttribute(name)) return;
+    cmp.ref[value] = $target
+}
+
 function attach($target, props, cmp) {
     Object.keys(props).forEach(name => {
         setAttribute($target, name, props[name]);
         addEventListener($target, name, props[name], cmp);
-        setModel($target, name, props[name], cmp)
+        setBind($target, name, props[name], cmp);
+        setRef($target, name, props[name], cmp);
     });
 }
 

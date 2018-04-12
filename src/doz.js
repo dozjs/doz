@@ -5,29 +5,28 @@ class Doz {
 
     constructor(cfg = {}) {
 
-        /*if (typeof cfg.root !== 'string') {
-            throw new TypeError('root must be a string selector and is required');
-        }*/
+        if (!cfg.root instanceof HTMLElement) {
+            throw new TypeError('root must be an HTMLElement');
+        }
 
-        /*this.cfg = extend.copy(cfg, {
-            template: '<div></div>'
-        });*/
+        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string')) {
+            throw new TypeError('template must be a string or an HTMLElement');
+        }
 
-        this.cfg = Object.assign({}, cfg);
+        this.cfg = extend(cfg, {
+            components: {}
+        });
 
-        //this.dom = document.querySelector(this.cfg.el);
-        this.components = component.getInstances(this.cfg.root, this.cfg.template) || [];
+        this.cfg.components['doz-view-component'] = {};
+        this.cfg.template = `<doz-view-component>${this.cfg.template}</doz-view-component>`;
 
-        // Set initial defaultProps
-        //this.setProps();
+        this._usedComponents = component.getInstances(this.cfg.root, this.cfg.template, this.cfg.components) || [];
 
     }
 
-    /*setProps(props) {
-        this.components.forEach(cmp => {
-            component.setProps(props || {},  cmp.defaultProps, cmp.propsMap);
-        })
-    }*/
+    getComponent(alias) {
+        return this._usedComponents[alias];
+    }
 
 }
 

@@ -1,23 +1,16 @@
 module.exports = {
-    ROOT: '__DOZ__',
-    SIGN: '__DOZ_SIGN__',
-    INSTANCE: '__DOZ_INSTANCE__',
-    EVENTS: [
-        'show',
-        'hide',
-        'beforeContentChange',
-        'contentChange',
-        'state',
-        'beforeState'
-    ],
-    PARSER: {
-        REGEX: {
-            TAG: /^\w+-[\w-]+$/,
-            ATTR: /{{([\w.]+)}}/,
-            TEXT: /(?!<.){{([\w.]+)}}(?!.>)/g
-        }
+    ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    REGEX: {
+        IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
+        IS_BIND: /^d-bind$/,
+        IS_ALIAS: /^d-alias$/,
+        IS_REF: /^d-ref$/,
+        IS_LISTENER: /^on/,
+        GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
-        WIDGET: 'doz-medom-widget'
+        BIND: 'd-bind',
+        ALIAS: 'd-alias',
+        REF: 'd-ref'
     }
 };

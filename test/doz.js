@@ -110,24 +110,44 @@ describe('Doz', function () {
                 root: document.getElementById('app'),
                 template: `<div>
                                 <my-component
-                                is-alias="first-component"
+                                d-alias="first-component"
                                 id="12"
                                 title="MR."
                                 name="Doz">
                                 </my-component>
                                 <my-component
-                                is-alias="second-component"
+                                d-alias="second-component"
                                 id="34"
                                 title="MRS."
                                 name="Luis">
                                 </my-component>
-                           </div>`,
-                //template: `<div><my-component do-widget="first-component" id="12" title="MR." name="Doz"></my-component><my-component do-widget="second-component" id="34" title="MRS." name="Luis"></my-component></div>`
-                //template: document.getElementById('template')
-
+                           </div>`
             });
 
-            console.log(view.components);
+            console.log(view._usedComponents);
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+
+                be.err(done).true(/D O Z/g.test(html));
+            },100);
+
+
+        });
+
+        it('should be ok without component', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            const view = new Doz({
+                root: document.getElementById('app'),
+                template: `<div><h2>without component</h2></div>`
+            });
+
+            console.log(view._usedComponents);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
