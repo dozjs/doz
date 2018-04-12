@@ -39,72 +39,77 @@
     </style>
 </head>
 <body>
-<div id="app">
-    <p>Stop after 10</p>
-    <doz-button-counter title="Click me!"></doz-button-counter>
-    <doz-button-counter title="Touch me!"></doz-button-counter>
-</div>
+<div id="app"></div>
 
 <h2>HTML</h2>
 <pre class="prettyprint">
     <code class="lang-html">
-&lt;div id=&quot;app&quot;&gt;
-    &lt;doz-button-counter title=&quot;Click me!&quot;&gt;&lt;/doz-button-counter&gt;
-    &lt;doz-button-counter title=&quot;Touch me!&quot;&gt;&lt;/doz-button-counter&gt;
-&lt;/div&gt;
+    &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
     </code>
 </pre>
 <h2>JavaScript</h2>
 <pre class="prettyprint">
     <code class="lang-js">
     Doz.component(&apos;doz-button-counter&apos;, {
-        template: &grave;&lt;div&gt;&lt;button on-click=&quot;myClickHandler&quot;&gt;{{title}}&lt;/button&gt; &lt;span&gt;{{counter}}&lt;/span&gt;&lt;/div&gt;&grave;,
-        context: {
-            counter: 0,
-            myClickHandler() {
-                this.counter += 1;
-            },
-            onBeforeUpdate() {
-                return this.counter < 10;
-            },
-            onUpdate() {
-                const buttonEl = this.element().querySelector('button');
-                if (this.counter === 10) {
-                    buttonEl.setAttribute('disabled', 'false');
-                }
+        template(){
+            return &grave;&lt;div&gt;&lt;button d-ref=&quot;button&quot; onclick=&quot;this.myClickHandler()&quot;&gt;${this.props.title}&lt;/button&gt; &lt;span class=&quot;counter&quot;&gt;${this.props.counter}&lt;/span&gt;&lt;/div&gt;&grave;
+        },
+        props: {
+            counter: 0
+        },
+        myClickHandler() {
+            this.props.counter += 1;
+        },
+        onBeforeUpdate() {
+            return this.props.counter &lt; 10;
+        },
+        onUpdate() {
+            if (this.props.counter === 10) {
+                this.ref.button.setAttribute(&apos;disabled&apos;, &apos;false&apos;);
             }
         }
     });
 
     new Doz({
-        el: &apos;#app&apos;
-    })
+        root: document.getElementById(&apos;app&apos;),
+        template: &grave;
+            &lt;p&gt;Stop after 10&lt;/p&gt;
+            &lt;doz-button-counter title=&quot;Click me!&quot;&gt;&lt;/doz-button-counter&gt;
+            &lt;doz-button-counter title=&quot;Touch me!&quot;&gt;&lt;/doz-button-counter&gt;
+        &grave;
+    });
     </code>
 </pre>
 <script>
 
     Doz.component('doz-button-counter', {
-        template: `<div><button on-click="myClickHandler">{{title}}</button> <span class="counter">{{counter}}</span></div>`,
-        context: {
-            counter: 0,
-            myClickHandler() {
-                this.counter += 1;
-            },
-            onBeforeUpdate() {
-                return this.counter < 10;
-            },
-            onUpdate() {
-                const buttonEl = this.element().querySelector('button');
-                if (this.counter === 10) {
-                    buttonEl.setAttribute('disabled', 'false');
-                }
+        template(){
+            return `<div><button d-ref="button" onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter}</span></div>`
+        },
+        props: {
+            counter: 0
+        },
+        myClickHandler() {
+            this.props.counter += 1;
+        },
+        onBeforeUpdate() {
+            return this.props.counter < 10;
+        },
+        onUpdate() {
+            if (this.props.counter === 10) {
+                this.ref.button.setAttribute('disabled', 'false');
             }
         }
     });
 
     new Doz({
-        el: '#app'
-    })
+        root: document.getElementById('app'),
+        template: `
+            <p>Stop after 10</p>
+            <doz-button-counter title="Click me!"></doz-button-counter>
+            <doz-button-counter title="Touch me!"></doz-button-counter>
+        `
+    });
 
 </script>
 </body>
