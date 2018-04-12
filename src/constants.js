@@ -1,5 +1,9 @@
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    TAG: {
+        ROOT: 'doz-root',
+        VIEW: 'doz-view-component'
+    },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_BIND: /^d-bind$/,

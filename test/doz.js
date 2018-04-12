@@ -15,6 +15,7 @@ describe('Doz', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
+        Doz.collection.removeAll();
     });
 
     describe('create basic', function () {
@@ -25,7 +26,8 @@ describe('Doz', function () {
                 <div id="app"></div>`;
 
             const view = new Doz({
-                el: '#app'
+                root: document.getElementById('app'),
+                template: ''
             });
 
             console.log(view);
@@ -87,9 +89,6 @@ describe('Doz', function () {
             });
 
             Doz.component('my-component', {
-                /*props(){
-                    return {name:'hhhhhhh'}
-                },*/
                 template() {
                     return `
                         <div>
@@ -101,7 +100,7 @@ describe('Doz', function () {
                 },
                 onRender() {
                     console.log('onRender');
-                    this.props.name = 'D O Z'
+                    //this.props.name = 'D O Z'
                 }
             });
 
@@ -111,7 +110,7 @@ describe('Doz', function () {
 
             const view = new Doz({
                 root: document.getElementById('app'),
-                template: `<div>
+                template: `
                                 <my-component
                                 d-alias="first-component"
                                 id="12"
@@ -124,16 +123,17 @@ describe('Doz', function () {
                                 title="MRS."
                                 name="Luis">
                                 </my-component>
-                           </div>`
+                           `
             });
 
             console.log(view._usedComponents);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
 
-                be.err(done).true(/D O Z/g.test(html));
+                be.err.true(/Doz/g.test(html));
+                be.err(done).true(/Luis/g.test(html));
             },100);
 
 
@@ -154,9 +154,9 @@ describe('Doz', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
 
-                be.err(done).true(/D O Z/g.test(html));
+                be.err(done).true(/without component/g.test(html));
             },100);
 
 

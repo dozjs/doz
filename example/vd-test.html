@@ -79,7 +79,8 @@
 
     const view = new Doz({
         root: document.getElementById('app'),
-        template: `<div><h2>Result <strong>cccccc</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo><h2>cccccc</h2>ciao</div>`
+        //template: `<div><h2>Result <strong>cccccc</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo><h2>cccccc</h2>ciao</div>`
+        template: `<doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo>`
     });
 
     setInterval(() => {

@@ -1,7 +1,7 @@
 const extend = require('defaulty');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, ATTR} = require('../constants');
+const {REGEX, ATTR, TAG} = require('../constants');
 const collection = require('../collection');
 //const helper = require('./helper');
 const observer = require('./observer');
@@ -42,15 +42,10 @@ function getInstances(root, template, localComponents) {
     const nodes = html.getAllNodes(template);
     let components = {};
 
-    //console.log('TEM',nodes)
-
-
     nodes.forEach(child => {
-        //console.log(child.innerHTML);
         if (child.nodeType === 1 && child.parentNode) {
 
             const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-            //console.log(cmp.cfg.template());
             if (cmp) {
                 let alias = Object.keys(components).length++;
                 const props = serializeProps(child);
@@ -75,23 +70,16 @@ function getInstances(root, template, localComponents) {
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
-                //console.log(newElement._rootElement.outerHTML);
-
                 Array.from(nested).forEach(item => {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        //console.log('CUSTOM TAG', item.nodeName);
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
                         getInstances(rootElement, template, localComponents);
                     } else {
-                        //console.log(item.innerHTML)
-                        //console.log('STANDARD TAG', item.nodeName);
                     }
                 });
             } else {
-               // console.log('aaa', child.innerHTML)
-                //root.appendChild(child);
             }
         }
     });
@@ -100,7 +88,6 @@ function getInstances(root, template, localComponents) {
 }
 
 function createInstance(cmp, cfg) {
-    //console.log(cfg.props, cmp.cfg.props);
     const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
         ? cmp.cfg.props()
         : cmp.cfg.props
@@ -141,7 +128,7 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function () {
-                const tpl = html.create(this.template());
+                const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
                 //console.log(this.template());
                 //console.log(tpl);
                 const next = transform(tpl);

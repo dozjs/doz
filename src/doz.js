@@ -1,5 +1,6 @@
 const extend = require('defaulty');
 const component = require('./component/index');
+const {TAG} = require('./constants');
 
 class Doz {
 
@@ -24,7 +25,7 @@ class Doz {
             }
         });
 
-        this.cfg._components['doz-view-component'] = {
+        this.cfg._components[TAG.VIEW] = {
             cfg: {
                 props: {},
                 template() {
@@ -32,7 +33,7 @@ class Doz {
                 }
             }
         };
-        const template = `<doz-view-component></doz-view-component>`;
+        const template = `<${TAG.VIEW}></${TAG.VIEW}>`;
 
         this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
 

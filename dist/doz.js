@@ -81,7 +81,35 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-var _require = __webpack_require__(1),
+module.exports = {
+    ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    TAG: {
+        ROOT: 'doz-root',
+        VIEW: 'doz-view-component'
+    },
+    REGEX: {
+        IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
+        IS_BIND: /^d-bind$/,
+        IS_ALIAS: /^d-alias$/,
+        IS_REF: /^d-ref$/,
+        IS_LISTENER: /^on/,
+        GET_LISTENER: /^this.(.*)\((.*)\)/
+    },
+    ATTR: {
+        BIND: 'd-bind',
+        ALIAS: 'd-alias',
+        REF: 'd-ref'
+    }
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
     ROOT = _require.ROOT;
 
 /**
@@ -133,30 +161,6 @@ module.exports = {
     register: register,
     get: get,
     removeAll: removeAll
-};
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    ROOT: '__DOZ_GLOBAL_COMPONENTS__',
-    REGEX: {
-        IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
-        IS_BIND: /^d-bind$/,
-        IS_ALIAS: /^d-alias$/,
-        IS_REF: /^d-ref$/,
-        IS_LISTENER: /^on/,
-        GET_LISTENER: /^this.(.*)\((.*)\)/
-    },
-    ATTR: {
-        BIND: 'd-bind',
-        ALIAS: 'd-alias',
-        REF: 'd-ref'
-    }
 };
 
 /***/ }),
@@ -424,16 +428,17 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
 var extend = __webpack_require__(2);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     register = _require.register;
 
 var html = __webpack_require__(4);
 
-var _require2 = __webpack_require__(1),
+var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
-    ATTR = _require2.ATTR;
+    ATTR = _require2.ATTR,
+    TAG = _require2.TAG;
 
-var collection = __webpack_require__(0);
+var collection = __webpack_require__(1);
 //const helper = require('./helper');
 var observer = __webpack_require__(11);
 var events = __webpack_require__(12);
@@ -478,15 +483,10 @@ function getInstances(root, template, localComponents) {
     var nodes = html.getAllNodes(template);
     var components = {};
 
-    //console.log('TEM',nodes)
-
-
     nodes.forEach(function (child) {
-        //console.log(child.innerHTML);
         if (child.nodeType === 1 && child.parentNode) {
 
             var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-            //console.log(cmp.cfg.template());
             if (cmp) {
                 var alias = Object.keys(components).length++;
                 var props = serializeProps(child);
@@ -511,24 +511,15 @@ function getInstances(root, template, localComponents) {
 
                 var nested = newElement._rootElement.querySelectorAll('*');
 
-                //console.log(newElement._rootElement.outerHTML);
-
                 Array.from(nested).forEach(function (item) {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        //console.log('CUSTOM TAG', item.nodeName);
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
                         getInstances(rootElement, _template, localComponents);
-                    } else {
-                        //console.log(item.innerHTML)
-                        //console.log('STANDARD TAG', item.nodeName);
-                    }
+                    } else {}
                 });
-            } else {
-                // console.log('aaa', child.innerHTML)
-                //root.appendChild(child);
-            }
+            } else {}
         }
     });
 
@@ -536,7 +527,6 @@ function getInstances(root, template, localComponents) {
 }
 
 function createInstance(cmp, cfg) {
-    //console.log(cfg.props, cmp.cfg.props);
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
     //console.log(props, cfg.props);
@@ -573,7 +563,7 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value() {
-                var tpl = html.create(this.template());
+                var tpl = html.create('<' + TAG.ROOT + '>' + this.template() + '</' + TAG.ROOT + '>');
                 //console.log(this.template());
                 //console.log(tpl);
                 var next = transform(tpl);
@@ -785,7 +775,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
@@ -988,7 +978,7 @@ module.exports = __webpack_require__(8);
 
 module.exports = __webpack_require__(9);
 module.exports.component = __webpack_require__(3).component;
-module.exports.collection = __webpack_require__(0);
+module.exports.collection = __webpack_require__(1);
 module.exports.update = __webpack_require__(6).updateElement;
 module.exports.transform = __webpack_require__(5).transform;
 module.exports.html = __webpack_require__(4);
@@ -1008,6 +998,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var extend = __webpack_require__(2);
 var component = __webpack_require__(3);
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
 
 var Doz = function () {
     function Doz() {
@@ -1036,7 +1029,7 @@ var Doz = function () {
             }
         });
 
-        this.cfg._components['doz-view-component'] = {
+        this.cfg._components[TAG.VIEW] = {
             cfg: {
                 props: {},
                 template: function template() {
@@ -1044,7 +1037,7 @@ var Doz = function () {
                 }
             }
         };
-        var template = '<doz-view-component></doz-view-component>';
+        var template = '<' + TAG.VIEW + '></' + TAG.VIEW + '>';
 
         this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
     }
