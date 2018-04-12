@@ -475,18 +475,96 @@ function getInstances(root, template, localComponents) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
+    //const nodes = html.getAllNodes(template);
+    var components = {};
+
+    function scanner(child) {
+        do {
+            if (child.nodeType === 1 && child.parentNode) {
+                var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+                if (cmp) {
+                    var alias = Object.keys(components).length++;
+                    var props = serializeProps(child);
+
+                    if (props.hasOwnProperty(ATTR.ALIAS)) {
+                        alias = props[ATTR.ALIAS];
+                        delete props[ATTR.ALIAS];
+                    }
+
+                    var newElement = createInstance(cmp, {
+                        root: root,
+                        props: props
+                    });
+
+                    // Remove old
+                    child.parentNode.removeChild(child);
+                    newElement.render();
+
+                    events.callRender(newElement);
+
+                    components[alias] = newElement;
+
+                    //console.log(newElement._rootElement.parentNode);
+                    //console.log(newElement._rootElement.innerHTML);
+
+                    var nested = newElement._rootElement.querySelectorAll('*');
+
+                    //console.log(newElement._rootElement);
+
+                    Array.from(nested).forEach(function (item) {
+                        //console.log(item.nodeName)
+                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                            var _template = item.outerHTML;
+                            //console.log(template)
+                            var rootElement = document.createElement(item.nodeName);
+                            item.parentNode.replaceChild(rootElement, item);
+                            getInstances(rootElement, _template, localComponents); /**/
+                        } else {
+                            console.log('be');
+                        }
+                    });
+
+                    /*if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                        const template = item.outerHTML;
+                        const rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, template, localComponents);
+                    }*/
+
+                    //scanner(newElement._rootElement);
+                    //getInstances(newElement._rootElement, template, localComponents);
+                }
+            }
+
+            if (child.hasChildNodes()) {
+                //console.log(child)
+                scanner(child.firstChild);
+            }
+        } while (child = child.nextSibling);
+    }
+
+    scanner(template);
+
+    //console.log('NODE-B',nodes);
+
+    return components;
+}
+
+function _getInstances(root, template, localComponents) {
+
+    template = typeof template === 'string' ? html.create(template) : template;
+
     var nodes = html.getAllNodes(template);
     var components = {};
 
-    //console.log('TEM',template)
-    //console.log(nodes)
+    console.log('TEM', template);
 
     nodes.forEach(function (child) {
 
         if (child.nodeType === 1 && child.parentNode) {
 
-            var cmp = collection.get(child.nodeName) || localComponents[child.nodeName];
-
+            var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+            console.log(cmp.cfg.template());
             if (cmp) {
                 var alias = Object.keys(components).length++;
                 var props = serializeProps(child);
@@ -511,12 +589,15 @@ function getInstances(root, template, localComponents) {
 
                 var nested = newElement._rootElement.querySelectorAll('*');
 
+                //console.log(newElement._rootElement);
+
                 Array.from(nested).forEach(function (item) {
+                    //console.log(item.nodeName)
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        var _template = item.outerHTML;
+                        var _template2 = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, _template, localComponents);
+                        getInstances(rootElement, _template2, localComponents);
                     } else {
                         console.log('be');
                     }
@@ -982,6 +1063,8 @@ module.exports.html = __webpack_require__(4);
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -991,6 +1074,8 @@ var component = __webpack_require__(3);
 
 var Doz = function () {
     function Doz() {
+        var _this = this;
+
         var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         _classCallCheck(this, Doz);
@@ -1004,13 +1089,27 @@ var Doz = function () {
         }
 
         this.cfg = extend(cfg, {
-            components: {}
+            components: [],
+            _components: {}
         });
 
-        this.cfg.components['doz-view-component'] = {};
-        this.cfg.template = '<doz-view-component>' + this.cfg.template + '</doz-view-component>';
+        this.cfg.components.forEach(function (cmp) {
+            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                _this.cfg._components[cmp.tag] = cmp;
+            }
+        });
 
-        this._usedComponents = component.getInstances(this.cfg.root, this.cfg.template, this.cfg.components) || [];
+        this.cfg._components['doz-view-component'] = {
+            cfg: {
+                props: {},
+                template: function template() {
+                    return cfg.template;
+                }
+            }
+        };
+        var template = '<doz-view-component></doz-view-component>';
+
+        this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
     }
 
     _createClass(Doz, [{

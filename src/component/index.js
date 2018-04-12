@@ -33,7 +33,92 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
+
+
 function getInstances(root, template, localComponents) {
+
+    template = typeof template === 'string'
+        ? html.create(template)
+        : template;
+
+    //const nodes = html.getAllNodes(template);
+    let components = {};
+
+    function scanner(child) {
+        do {
+            if (child.nodeType === 1 && child.parentNode) {
+                const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+                if (cmp) {
+                    let alias = Object.keys(components).length++;
+                    const props = serializeProps(child);
+
+                    if (props.hasOwnProperty(ATTR.ALIAS)) {
+                        alias = props[ATTR.ALIAS];
+                        delete  props[ATTR.ALIAS];
+                    }
+
+                    const newElement = createInstance(cmp, {
+                        root,
+                        props
+                    });
+
+                    // Remove old
+                    child.parentNode.removeChild(child);
+                    newElement.render();
+
+                    events.callRender(newElement);
+
+                    components[alias] = newElement;
+
+                    //console.log(newElement._rootElement.parentNode);
+                    //console.log(newElement._rootElement.innerHTML);
+
+                    const nested = newElement._rootElement.querySelectorAll('*');
+
+                    //console.log(newElement._rootElement);
+
+                    Array.from(nested).forEach(item => {
+                        //console.log(item.nodeName)
+                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                            const template = item.outerHTML;
+                            //console.log(template)
+                            const rootElement = document.createElement(item.nodeName);
+                            item.parentNode.replaceChild(rootElement, item);
+                            getInstances(rootElement, template, localComponents);/**/
+                        } else {
+                            console.log('be')
+                        }
+                    });
+
+                    /*if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                        const template = item.outerHTML;
+                        const rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, template, localComponents);
+                    }*/
+
+                    //scanner(newElement._rootElement);
+                    //getInstances(newElement._rootElement, template, localComponents);
+                }
+            }
+
+
+            if (child.hasChildNodes()) {
+                //console.log(child)
+                scanner(child.firstChild)
+            }
+
+        } while (child = child.nextSibling)
+    }
+
+    scanner(template);
+
+    //console.log('NODE-B',nodes);
+
+    return components;
+}
+
+function _getInstances(root, template, localComponents) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -42,15 +127,15 @@ function getInstances(root, template, localComponents) {
     const nodes = html.getAllNodes(template);
     let components = {};
 
-    //console.log('TEM',template)
-    //console.log(nodes)
+    console.log('TEM',template)
+
 
     nodes.forEach(child => {
 
         if (child.nodeType === 1 && child.parentNode) {
 
-            const cmp = collection.get(child.nodeName) || localComponents[child.nodeName];
-
+            const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+            console.log(cmp.cfg.template());
             if (cmp) {
                 let alias = Object.keys(components).length++;
                 const props = serializeProps(child);
@@ -75,7 +160,10 @@ function getInstances(root, template, localComponents) {
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
+                //console.log(newElement._rootElement);
+
                 Array.from(nested).forEach(item => {
+                    //console.log(item.nodeName)
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);

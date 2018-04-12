@@ -87,6 +87,9 @@ describe('Doz', function () {
             });
 
             Doz.component('my-component', {
+                /*props(){
+                    return {name:'hhhhhhh'}
+                },*/
                 template() {
                     return `
                         <div>

@@ -14,13 +14,27 @@ class Doz {
         }
 
         this.cfg = extend(cfg, {
-            components: {}
+            components: [],
+            _components: {}
         });
 
-        this.cfg.components['doz-view-component'] = {};
-        this.cfg.template = `<doz-view-component>${this.cfg.template}</doz-view-component>`;
+        this.cfg.components.forEach(cmp => {
+            if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
+                this.cfg._components[cmp.tag] = cmp;
+            }
+        });
 
-        this._usedComponents = component.getInstances(this.cfg.root, this.cfg.template, this.cfg.components) || [];
+        this.cfg._components['doz-view-component'] = {
+            cfg: {
+                props: {},
+                template() {
+                    return cfg.template;
+                }
+            }
+        };
+        const template = `<doz-view-component></doz-view-component>`;
+
+        this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
 
     }
 
