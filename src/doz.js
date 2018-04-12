@@ -40,7 +40,7 @@ class Doz {
     }
 
     getComponent(alias) {
-        return this._usedComponents[alias];
+        return this._usedComponents['0'].children[alias];
     }
 
 }

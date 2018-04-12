@@ -477,6 +477,8 @@ function component(tag) {
 }
 
 function getInstances(root, template, localComponents) {
+    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
 
     template = typeof template === 'string' ? html.create(template) : template;
 
@@ -488,13 +490,18 @@ function getInstances(root, template, localComponents) {
 
             var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
             if (cmp) {
-                var alias = Object.keys(components).length++;
+
+                var alias = index; //+ Object.keys(components).length++;
+                index++;
                 var props = serializeProps(child);
                 //console.log('props',props);
                 if (props.hasOwnProperty(ATTR.ALIAS)) {
                     alias = props[ATTR.ALIAS];
                     delete props[ATTR.ALIAS];
                 }
+
+                //console.log('ATTR.ALIAS',ATTR.ALIAS);
+                //console.log('ALIAS',alias);
 
                 var newElement = createInstance(cmp, {
                     root: root,
@@ -512,11 +519,17 @@ function getInstances(root, template, localComponents) {
                 var nested = newElement._rootElement.querySelectorAll('*');
 
                 Array.from(nested).forEach(function (item) {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+                        index++;
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, _template, localComponents);
+                        var cmps = getInstances(rootElement, _template, localComponents, index);
+
+                        Object.keys(cmps).forEach(function (i) {
+                            //console.log(i, typeof i)
+                            newElement.children[i] = cmps[i];
+                        });
                     } else {}
                 });
             } else {}
@@ -551,6 +564,11 @@ function createInstance(cmp, cfg) {
             writable: true
         },
         ref: {
+            value: {},
+            writable: true,
+            enumerable: true
+        },
+        children: {
             value: {},
             writable: true,
             enumerable: true
@@ -1045,7 +1063,7 @@ var Doz = function () {
     _createClass(Doz, [{
         key: 'getComponent',
         value: function getComponent(alias) {
-            return this._usedComponents[alias];
+            return this._usedComponents['0'].children[alias];
         }
     }]);
 

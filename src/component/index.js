@@ -33,7 +33,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, localComponents) {
+function getInstances(root, template, localComponents, index = 0) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -47,13 +47,18 @@ function getInstances(root, template, localComponents) {
 
             const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
             if (cmp) {
-                let alias = Object.keys(components).length++;
+
+                let alias = index ;//+ Object.keys(components).length++;
+                index++;
                 const props = serializeProps(child);
                 //console.log('props',props);
                 if (props.hasOwnProperty(ATTR.ALIAS)) {
                     alias = props[ATTR.ALIAS];
                     delete  props[ATTR.ALIAS];
                 }
+
+                //console.log('ATTR.ALIAS',ATTR.ALIAS);
+                //console.log('ALIAS',alias);
 
                 const newElement = createInstance(cmp, {
                     root,
@@ -71,11 +76,18 @@ function getInstances(root, template, localComponents) {
                 const nested = newElement._rootElement.querySelectorAll('*');
 
                 Array.from(nested).forEach(item => {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+                        index++
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, template, localComponents);
+                        const cmps = getInstances(rootElement, template, localComponents, index);
+
+                        Object.keys(cmps).forEach(i => {
+                            //console.log(i, typeof i)
+                            newElement.children[i] = cmps[i]
+                        })
+
                     } else {
                     }
                 });
@@ -115,6 +127,11 @@ function createInstance(cmp, cfg) {
             writable: true
         },
         ref: {
+            value: {},
+            writable: true,
+            enumerable: true
+        },
+        children: {
             value: {},
             writable: true,
             enumerable: true
