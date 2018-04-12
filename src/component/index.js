@@ -33,92 +33,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-
-
 function getInstances(root, template, localComponents) {
-
-    template = typeof template === 'string'
-        ? html.create(template)
-        : template;
-
-    //const nodes = html.getAllNodes(template);
-    let components = {};
-
-    function scanner(child) {
-        do {
-            if (child.nodeType === 1 && child.parentNode) {
-                const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-                if (cmp) {
-                    let alias = Object.keys(components).length++;
-                    const props = serializeProps(child);
-
-                    if (props.hasOwnProperty(ATTR.ALIAS)) {
-                        alias = props[ATTR.ALIAS];
-                        delete  props[ATTR.ALIAS];
-                    }
-
-                    const newElement = createInstance(cmp, {
-                        root,
-                        props
-                    });
-
-                    // Remove old
-                    child.parentNode.removeChild(child);
-                    newElement.render();
-
-                    events.callRender(newElement);
-
-                    components[alias] = newElement;
-
-                    //console.log(newElement._rootElement.parentNode);
-                    //console.log(newElement._rootElement.innerHTML);
-
-                    const nested = newElement._rootElement.querySelectorAll('*');
-
-                    //console.log(newElement._rootElement);
-
-                    Array.from(nested).forEach(item => {
-                        //console.log(item.nodeName)
-                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                            const template = item.outerHTML;
-                            //console.log(template)
-                            const rootElement = document.createElement(item.nodeName);
-                            item.parentNode.replaceChild(rootElement, item);
-                            getInstances(rootElement, template, localComponents);/**/
-                        } else {
-                            console.log('be')
-                        }
-                    });
-
-                    /*if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        const template = item.outerHTML;
-                        const rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, template, localComponents);
-                    }*/
-
-                    //scanner(newElement._rootElement);
-                    //getInstances(newElement._rootElement, template, localComponents);
-                }
-            }
-
-
-            if (child.hasChildNodes()) {
-                //console.log(child)
-                scanner(child.firstChild)
-            }
-
-        } while (child = child.nextSibling)
-    }
-
-    scanner(template);
-
-    //console.log('NODE-B',nodes);
-
-    return components;
-}
-
-function _getInstances(root, template, localComponents) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -127,19 +42,19 @@ function _getInstances(root, template, localComponents) {
     const nodes = html.getAllNodes(template);
     let components = {};
 
-    console.log('TEM',template)
+    //console.log('TEM',nodes)
 
 
     nodes.forEach(child => {
-
+        //console.log(child.innerHTML);
         if (child.nodeType === 1 && child.parentNode) {
 
             const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-            console.log(cmp.cfg.template());
+            //console.log(cmp.cfg.template());
             if (cmp) {
                 let alias = Object.keys(components).length++;
                 const props = serializeProps(child);
-
+                //console.log('props',props);
                 if (props.hasOwnProperty(ATTR.ALIAS)) {
                     alias = props[ATTR.ALIAS];
                     delete  props[ATTR.ALIAS];
@@ -160,21 +75,22 @@ function _getInstances(root, template, localComponents) {
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
-                //console.log(newElement._rootElement);
+                //console.log(newElement._rootElement.outerHTML);
 
                 Array.from(nested).forEach(item => {
-                    //console.log(item.nodeName)
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                        //console.log('CUSTOM TAG', item.nodeName);
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
                         getInstances(rootElement, template, localComponents);
                     } else {
-                        console.log('be')
+                        //console.log(item.innerHTML)
+                        //console.log('STANDARD TAG', item.nodeName);
                     }
                 });
             } else {
-                //console.log('aaa')
+               // console.log('aaa', child.innerHTML)
                 //root.appendChild(child);
             }
         }
@@ -184,14 +100,17 @@ function _getInstances(root, template, localComponents) {
 }
 
 function createInstance(cmp, cfg) {
+    //console.log(cfg.props, cmp.cfg.props);
     const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
         ? cmp.cfg.props()
         : cmp.cfg.props
     );
 
+    //console.log(props, cfg.props);
+
     let isCreated = false;
 
-    const instance = Object.defineProperties({}, {
+    let instance = Object.defineProperties({}, {
         _prev: {
             value: null,
             writable: true
@@ -215,13 +134,16 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function (obj, func) {
-                return obj.map(func).join('');
+                if (Array.isArray(obj))
+                    return obj.map(func).join('');
             },
             enumerable: true
         },
         render: {
             value: function () {
                 const tpl = html.create(this.template());
+                //console.log(this.template());
+                //console.log(tpl);
                 const next = transform(tpl);
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -244,7 +166,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    Object.assign(instance, cmp.cfg);
+    instance = Object.assign(instance, cmp.cfg);
 
     // Create observer to props
     instance.props = observer.create(props, true, changes => {

@@ -35,7 +35,7 @@
                     <doz-label d-alias="mylabel"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        `<li>
+                    `<li>
                             <button onclick="this.removeItem(${i})">&cross;</button>&nbsp;
                             <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button>&nbsp;<strong>${item.title}</strong>
                          </li>`)}
@@ -58,6 +58,7 @@
         },
 
         addItem() {
+            console.log(this.props);
             if (this.props.todo) {
                 this.props.record.push({
                     title: this.props.todo
@@ -72,16 +73,16 @@
         },
 
         onRender() {
-            console.log(this.ref)
+            console.log(this.props)
         }
     });
 
     const view = new Doz({
         root: document.getElementById('app'),
-        template: `<h2>Result <strong>cccccc</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo><h2>cccccc</h2>ciao`
+        template: `<div><h2>Result <strong>cccccc</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo><h2>cccccc</h2>ciao</div>`
     });
 
-    setInterval(()=>{
+    setInterval(() => {
         //view.getComponent('todo-list').props.todo = new Date().toLocaleTimeString();
     }, 1000);
 

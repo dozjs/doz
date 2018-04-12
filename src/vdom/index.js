@@ -47,6 +47,12 @@ function setAttribute($target, name, value) {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
+    } else if (typeof value === 'object'){
+        try {
+            $target.setAttribute(name, JSON.stringify(value));
+        } catch (e) {
+
+        }
     } else {
         $target.setAttribute(name, value);
     }

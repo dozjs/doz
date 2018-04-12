@@ -475,100 +475,22 @@ function getInstances(root, template, localComponents) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
-    //const nodes = html.getAllNodes(template);
-    var components = {};
-
-    function scanner(child) {
-        do {
-            if (child.nodeType === 1 && child.parentNode) {
-                var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-                if (cmp) {
-                    var alias = Object.keys(components).length++;
-                    var props = serializeProps(child);
-
-                    if (props.hasOwnProperty(ATTR.ALIAS)) {
-                        alias = props[ATTR.ALIAS];
-                        delete props[ATTR.ALIAS];
-                    }
-
-                    var newElement = createInstance(cmp, {
-                        root: root,
-                        props: props
-                    });
-
-                    // Remove old
-                    child.parentNode.removeChild(child);
-                    newElement.render();
-
-                    events.callRender(newElement);
-
-                    components[alias] = newElement;
-
-                    //console.log(newElement._rootElement.parentNode);
-                    //console.log(newElement._rootElement.innerHTML);
-
-                    var nested = newElement._rootElement.querySelectorAll('*');
-
-                    //console.log(newElement._rootElement);
-
-                    Array.from(nested).forEach(function (item) {
-                        //console.log(item.nodeName)
-                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                            var _template = item.outerHTML;
-                            //console.log(template)
-                            var rootElement = document.createElement(item.nodeName);
-                            item.parentNode.replaceChild(rootElement, item);
-                            getInstances(rootElement, _template, localComponents); /**/
-                        } else {
-                            console.log('be');
-                        }
-                    });
-
-                    /*if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        const template = item.outerHTML;
-                        const rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, template, localComponents);
-                    }*/
-
-                    //scanner(newElement._rootElement);
-                    //getInstances(newElement._rootElement, template, localComponents);
-                }
-            }
-
-            if (child.hasChildNodes()) {
-                //console.log(child)
-                scanner(child.firstChild);
-            }
-        } while (child = child.nextSibling);
-    }
-
-    scanner(template);
-
-    //console.log('NODE-B',nodes);
-
-    return components;
-}
-
-function _getInstances(root, template, localComponents) {
-
-    template = typeof template === 'string' ? html.create(template) : template;
-
     var nodes = html.getAllNodes(template);
     var components = {};
 
-    console.log('TEM', template);
+    //console.log('TEM',nodes)
+
 
     nodes.forEach(function (child) {
-
+        //console.log(child.innerHTML);
         if (child.nodeType === 1 && child.parentNode) {
 
             var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
-            console.log(cmp.cfg.template());
+            //console.log(cmp.cfg.template());
             if (cmp) {
                 var alias = Object.keys(components).length++;
                 var props = serializeProps(child);
-
+                //console.log('props',props);
                 if (props.hasOwnProperty(ATTR.ALIAS)) {
                     alias = props[ATTR.ALIAS];
                     delete props[ATTR.ALIAS];
@@ -589,21 +511,22 @@ function _getInstances(root, template, localComponents) {
 
                 var nested = newElement._rootElement.querySelectorAll('*');
 
-                //console.log(newElement._rootElement);
+                //console.log(newElement._rootElement.outerHTML);
 
                 Array.from(nested).forEach(function (item) {
-                    //console.log(item.nodeName)
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
-                        var _template2 = item.outerHTML;
+                        //console.log('CUSTOM TAG', item.nodeName);
+                        var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, _template2, localComponents);
+                        getInstances(rootElement, _template, localComponents);
                     } else {
-                        console.log('be');
+                        //console.log(item.innerHTML)
+                        //console.log('STANDARD TAG', item.nodeName);
                     }
                 });
             } else {
-                //console.log('aaa')
+                // console.log('aaa', child.innerHTML)
                 //root.appendChild(child);
             }
         }
@@ -613,7 +536,10 @@ function _getInstances(root, template, localComponents) {
 }
 
 function createInstance(cmp, cfg) {
+    //console.log(cfg.props, cmp.cfg.props);
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
+
+    //console.log(props, cfg.props);
 
     var isCreated = false;
 
@@ -641,13 +567,15 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-                return obj.map(func).join('');
+                if (Array.isArray(obj)) return obj.map(func).join('');
             },
             enumerable: true
         },
         render: {
             value: function value() {
                 var tpl = html.create(this.template());
+                //console.log(this.template());
+                //console.log(tpl);
                 var next = transform(tpl);
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -670,7 +598,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    Object.assign(instance, cmp.cfg);
+    instance = Object.assign(instance, cmp.cfg);
 
     // Create observer to props
     instance.props = observer.create(props, true, function (changes) {
@@ -798,9 +726,14 @@ var castStringTo = __webpack_require__(13);
 function serializeProps(node) {
     var props = {};
 
-    if (node.attributes.length) Array.from(node.attributes).forEach(function (attr) {
-        props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
-    });
+    if (node.attributes.length) {
+        Array.from(node.attributes).forEach(function (attr) {
+            //console.log('propsss', attr.name, attr.nodeValue)
+            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+        });
+    }
+
+    //console.log('propsss', props)
 
     return props;
 }
@@ -899,6 +832,10 @@ function setAttribute($target, name, value) {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
+    } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+        try {
+            $target.setAttribute(name, JSON.stringify(value));
+        } catch (e) {}
     } else {
         $target.setAttribute(name, value);
     }
