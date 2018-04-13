@@ -31,7 +31,7 @@ new Doz({
 });
 ```
 
-## Example
+## Demo
 
 <a href="https://fabioricali.github.io/doz/example/">Try now</a>
 
