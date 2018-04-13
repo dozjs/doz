@@ -851,7 +851,7 @@ function canBind($target) {
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === 'forceUpdate';
+    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === 'forceupdate';
 }
 
 function setBooleanAttribute($target, name, value) {
@@ -982,7 +982,7 @@ function createElement(node, cmp) {
 }
 
 function changed(nodeA, nodeB) {
-    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceUpdate;
+    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
 function updateElement($parent, newNode, oldNode) {

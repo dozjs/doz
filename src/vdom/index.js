@@ -21,7 +21,7 @@ function isCustomAttribute(name) {
     return isEventAttribute(name)
         || isBindAttribute(name)
         || isRefAttribute(name)
-        || name === 'forceUpdate';
+        || name === 'forceupdate';
 }
 
 function setBooleanAttribute($target, name, value) {
@@ -161,7 +161,7 @@ function changed(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
-        nodeA.props && nodeA.props.forceUpdate;
+        nodeA.props && nodeA.props.forceupdate;
 }
 
 function updateElement($parent, newNode, oldNode, index = 0, cmp) {
