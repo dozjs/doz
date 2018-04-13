@@ -62,7 +62,7 @@ describe('Doz', function () {
                 template: `<div><my-component name="Doz"></my-component></div>`
             });
 
-            console.log(view.components);
+            //console.log(view.components);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
@@ -70,7 +70,6 @@ describe('Doz', function () {
 
                 be.err(done).true(/D O Z/g.test(html));
             },100);
-
 
         });
 
@@ -161,6 +160,44 @@ describe('Doz', function () {
                 be.err(done).true(/without component/g.test(html));
             },100);
 
+        });
+
+        it('should be ok with a selector', function (done) {
+
+            Doz.component('my-component', {
+                template() {
+                    return `
+                        <div>
+                            <span>hello I'm a ${this.props.name} component </span>
+                        </div>`
+                },
+                onCreate() {
+                    console.log('onCreate')
+                },
+                onRender() {
+                    console.log('onRender');
+                    this.props.name = 'D O Z';
+                }
+            });
+
+            document.body.innerHTML = ' \
+                <script id="template" type="text/template">  \
+                    <div><my-component name="Doz"></my-component></div> \
+                </script> \
+                <div id="app"></div> \
+            ';
+
+            const view = new Doz({
+                root: '#app',
+                template: '#template'
+            });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+
+                be.err(done).true(/D O Z/g.test(html));
+            },100);
 
         });
     });
