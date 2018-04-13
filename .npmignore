@@ -7,3 +7,4 @@ version-to-tag.sh
 webpack.config.js
 .gitignore
 .travis.yml
+example/
