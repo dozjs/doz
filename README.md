@@ -1,6 +1,10 @@
 # doz
 Build UI, so simple.
 
+```
+npm install --save doz
+```
+
 ```html
 <div id="app"></div>
 ```
