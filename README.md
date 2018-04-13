@@ -8,7 +8,11 @@ Build UI, so simple.
 ```javascript
 Doz.component('doz-button-counter', {
     template(){
-        return `<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter}</span></div>`
+        return `
+            <div>
+                <button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter}</span>
+            </div>
+        `
     },
     props: {
         counter: 0
