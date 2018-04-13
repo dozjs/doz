@@ -93,6 +93,7 @@ module.exports = {
         IS_ALIAS: /^d-alias$/,
         IS_REF: /^d-ref$/,
         IS_LISTENER: /^on/,
+        IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
@@ -1077,7 +1078,8 @@ var extend = __webpack_require__(3);
 var component = __webpack_require__(4);
 
 var _require = __webpack_require__(0),
-    TAG = _require.TAG;
+    TAG = _require.TAG,
+    REGEX = _require.REGEX;
 
 var Doz = function () {
     function Doz() {
@@ -1087,12 +1089,23 @@ var Doz = function () {
 
         _classCallCheck(this, Doz);
 
-        if (!cfg.root instanceof HTMLElement) {
-            throw new TypeError('root must be an HTMLElement');
+        var template = '<' + TAG.VIEW + '></' + TAG.VIEW + '>';
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
+            cfg.root = document.getElementById(cfg.root.substring(1));
+        }
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
+            cfg.template = document.getElementById(cfg.template.substring(1));
+            cfg.template = cfg.template.innerHTML;
+        }
+
+        if (!(cfg.root instanceof HTMLElement)) {
+            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
 
         if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string')) {
-            throw new TypeError('template must be a string or an HTMLElement');
+            throw new TypeError('template must be a string or an HTMLElement or an valid ID selector like #example-template');
         }
 
         this.cfg = extend(cfg, {
@@ -1114,7 +1127,6 @@ var Doz = function () {
                 }
             }
         };
-        var template = '<' + TAG.VIEW + '></' + TAG.VIEW + '>';
 
         this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
     }
