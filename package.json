@@ -5,9 +5,9 @@
     "main": "dist/doz.js",
     "scripts": {
         "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
-        "release:major": "npm run-script release:before && webpack --env.major && npm run-script release:publish",
-        "release:minor": "npm run-script release:before && webpack --env.minor && npm run-script release:publish",
-        "release:patch": "npm run-script release:before && webpack --env.patch && npm run-script release:publish",
+        "release:major": "webpack --env.major && npm run-script release:publish",
+        "release:minor": "webpack --env.minor && npm run-script release:publish",
+        "release:patch": "webpack --env.patch && npm run-script release:publish",
         "release:publish": "echo git commit -a -m BUILD && version-to-tag.sh && npm publish",
         "build": "webpack --progress",
         "test": "npm run-script build && mocha test",
