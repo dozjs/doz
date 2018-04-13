@@ -2,7 +2,7 @@
     "name": "doz",
     "version": "0.0.0",
     "description": "Build UI, so simple",
-    "main": "index.js",
+    "main": "dist/doz.js",
     "scripts": {
         "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
         "release:major": "npm run-script release:before && webpack --env.major && npm run-script release:publish",

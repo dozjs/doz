@@ -486,7 +486,6 @@ var _require2 = __webpack_require__(0),
     TAG = _require2.TAG;
 
 var collection = __webpack_require__(1);
-//const helper = require('./helper');
 var observer = __webpack_require__(12);
 var events = __webpack_require__(13);
 
@@ -714,7 +713,6 @@ var html = {
      */
     create: function create(str) {
         var element = void 0;
-        //str = str.replace(/\n|\t|\r|\s{2,}/g,'');
         str = str.replace(/\n|\s{2,}/g, ' ');
         str = str.replace(/[\t\r]/g, '');
         str = str.replace(/>(\s+)</g, '><');
@@ -741,22 +739,6 @@ var html = {
         return el && 'nodeType' in el;
     },
 
-    /**
-     * Append multiple elements into target element
-     * @param {Element} target
-     * @param {Array | Element} els
-     * @returns {Element | Node | Error}
-     */
-    render: function render(target, els) {
-        els = Array.isArray(els) ? els : [els];
-        if (!this.isValidNode(target)) throw new Error('Require a valid HTML Element');
-
-        els.forEach(function (el) {
-            target.appendChild(el);
-        });
-        return target;
-    },
-
     getAllNodes: function getAllNodes(el) {
 
         var nodes = [];
@@ -771,8 +753,6 @@ var html = {
         }
 
         scanner(el);
-
-        //console.log('NODE-B',nodes);
 
         return nodes;
     }
@@ -794,12 +774,9 @@ function serializeProps(node) {
 
     if (node.attributes.length) {
         Array.from(node.attributes).forEach(function (attr) {
-            //console.log('propsss', attr.name, attr.nodeValue)
             props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
         });
     }
-
-    //console.log('propsss', props)
 
     return props;
 }
@@ -1375,16 +1352,9 @@ var ObservableSlim = function () {
                 // record the deletion that just took place
                 changes.push({ "type": "delete", "target": target, "property": property, "newValue": null, "previousValue": previousValue[property], "currentPath": currentPath, "proxy": proxy });
 
-                var t = targets.indexOf(target);
-                if (t > -1) {
-                    var j = targetsProxy[t].length;
-                    while (j--) {
-                        var beforeChange = targetsProxy[t][j].observable.beforeChange;
-                        if (typeof beforeChange === 'function') {
-                            var res = beforeChange(changes);
-                            if (res === false) return false;
-                        }
-                    }
+                if (typeof observable.beforeChange === "function") {
+                    var res = observable.beforeChange(changes);
+                    if (res === false) return false;
                 }
 
                 if (originalChange === true) {
@@ -1444,16 +1414,9 @@ var ObservableSlim = function () {
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
                     changes.push({ "type": type, "target": target, "property": property, "newValue": value, "previousValue": receiver[property], "currentPath": currentPath, "proxy": proxy });
 
-                    var t = targets.indexOf(target);
-                    if (t > -1) {
-                        var j = targetsProxy[t].length;
-                        while (j--) {
-                            var beforeChange = targetsProxy[t][j].observable.beforeChange;
-                            if (typeof beforeChange === 'function') {
-                                var res = beforeChange(changes);
-                                if (res === false) return false;
-                            }
-                        }
+                    if (typeof observable.beforeChange === "function") {
+                        var res = observable.beforeChange(changes);
+                        if (res === false) return false;
                     }
 
                     // !!IMPORTANT!! if this proxy was the first proxy to receive the change, then we need to go check and see
@@ -1695,10 +1658,10 @@ var ObservableSlim = function () {
         },
 
         /*	Method: beforeChange
-                This method accepts a function will be invoked before changes.
-              Parameters:
-            	proxy 	- the ES6 Proxy returned by the create() method.
-                callback 	- Function, will be invoked before every change is made to the proxy, if it returns false no changes will be made.
+        		This method accepts a function will be invoked before changes.
+        Parameters:
+        proxy 	- the ES6 Proxy returned by the create() method.
+        callback 	- Function, will be invoked before every change is made to the proxy, if it returns false no changes will be made.
         */
         beforeChange: function beforeChange(proxy, callback) {
             if (typeof callback !== 'function') throw new Error("Callback function is required");

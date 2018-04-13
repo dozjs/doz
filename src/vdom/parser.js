@@ -5,12 +5,9 @@ function serializeProps(node) {
 
     if (node.attributes.length) {
         Array.from(node.attributes).forEach(attr => {
-            //console.log('propsss', attr.name, attr.nodeValue)
             props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
         });
     }
-
-    //console.log('propsss', props)
 
     return props;
 }

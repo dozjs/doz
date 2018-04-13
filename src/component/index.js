@@ -3,7 +3,6 @@ const {register} = require('../collection');
 const html = require('../utils/html');
 const {REGEX, ATTR, TAG} = require('../constants');
 const collection = require('../collection');
-//const helper = require('./helper');
 const observer = require('./observer');
 const events = require('./events');
 const {transform, serializeProps} = require('../vdom/parser');

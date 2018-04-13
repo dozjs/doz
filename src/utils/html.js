@@ -6,7 +6,6 @@ const html = {
      */
     create: function (str) {
         let element;
-        //str = str.replace(/\n|\t|\r|\s{2,}/g,'');
         str = str.replace(/\n|\s{2,}/g,' ');
         str = str.replace(/[\t\r]/g,'');
         str = str.replace(/>(\s+)</g,'><');
@@ -34,23 +33,6 @@ const html = {
         return el && 'nodeType' in el;
     },
 
-    /**
-     * Append multiple elements into target element
-     * @param {Element} target
-     * @param {Array | Element} els
-     * @returns {Element | Node | Error}
-     */
-    render: function (target, els) {
-        els = Array.isArray(els) ? els : [els];
-        if (!this.isValidNode(target))
-            throw new Error('Require a valid HTML Element');
-
-        els.forEach(function (el) {
-            target.appendChild(el);
-        });
-        return target;
-    },
-
     getAllNodes: function (el) {
 
         const nodes = [];
@@ -66,8 +48,6 @@ const html = {
         }
 
         scanner(el);
-
-        //console.log('NODE-B',nodes);
 
         return nodes;
     }
