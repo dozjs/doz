@@ -25,17 +25,31 @@ class Doz {
         }
 
         this.cfg = extend(cfg, {
-            components: [],
-            _components: {}
+            components: []
+        });
+
+        Object.defineProperties(this, {
+            _components: {
+                value: {},
+                writable: true
+            },
+            _usedComponents: {
+                value: {},
+                writable: true
+            },
+            _stores: {
+                value: {},
+                writable: true
+            }
         });
 
         this.cfg.components.forEach(cmp => {
             if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
-                this.cfg._components[cmp.tag] = cmp;
+                this._components[cmp.tag] = cmp;
             }
         });
 
-        this.cfg._components[TAG.VIEW] = {
+        this._components[TAG.VIEW] = {
             cfg: {
                 props: {},
                 template() {
@@ -44,12 +58,16 @@ class Doz {
             }
         };
 
-        this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
+        this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
 
     }
 
     getComponent(alias) {
         return this._usedComponents[0].children[alias];
+    }
+
+    getStore(store) {
+        return this._stores[store];
     }
 
 }

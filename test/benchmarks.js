@@ -1,7 +1,7 @@
 const {transform} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
-const observer = require('../src/component/observer');
+const observer = require('../src/utils/proxy');
 const Doz = require('../');
 
 describe('speed test', function () {

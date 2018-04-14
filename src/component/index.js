@@ -8,6 +8,7 @@ const events = require('./events');
 const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 const castStringTo = require('../utils/cast-string-to');
+const store = require('./store');
 
 function component(tag, cfg = {}) {
 
@@ -33,7 +34,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, localComponents) {
+function getInstances(root, template, view) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -48,10 +49,10 @@ function getInstances(root, template, localComponents) {
     nodes.forEach(child => {
         if (child.nodeType === 1 && child.parentNode) {
 
-            const cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+            const cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
             if (cmp) {
 
-                let alias = index ;//+ Object.keys(components).length++;
+                let alias = index ;
                 index++;
                 const props = serializeProps(child);
                 //console.log('props',props);
@@ -60,12 +61,10 @@ function getInstances(root, template, localComponents) {
                     delete  props[ATTR.ALIAS];
                 }
 
-                //console.log('ATTR.ALIAS',ATTR.ALIAS);
-                //console.log('ALIAS',alias);
-
                 const newElement = createInstance(cmp, {
                     root,
-                    props
+                    props,
+                    view
                 });
 
                 // Remove old
@@ -80,11 +79,11 @@ function getInstances(root, template, localComponents) {
 
                 Array.from(nested).forEach(item => {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-                        //index++;
+
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances(rootElement, template, localComponents);
+                        const cmps = getInstances(rootElement, template, view);
 
                         Object.keys(cmps).forEach(i => {
                             let n = i;
@@ -114,11 +113,11 @@ function createInstance(cmp, cfg) {
         : cmp.cfg.props
     );
 
-    //console.log(props, cfg.props);
-
-    let isCreated = false;
-
     const instance = Object.defineProperties({}, {
+        _IsCreated: {
+            value: false,
+            writable: true
+        },
         _prev: {
             value: null,
             writable: true
@@ -134,6 +133,9 @@ function createInstance(cmp, cfg) {
         _boundElements: {
             value: {},
             writable: true
+        },
+        _view: {
+            value: cfg.view
         },
         ref: {
             value: {},
@@ -156,11 +158,15 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
+        getStore: {
+            value: function (storeName) {
+                return this._view.getStore(storeName);
+            },
+            enumerable: true
+        },
         render: {
             value: function () {
                 const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
-                //console.log(this.template());
-                //console.log(tpl);
                 const next = transform(tpl);
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -183,35 +189,21 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    Object.assign(instance, cmp.cfg);
-
+    extendInstance(instance, cmp.cfg);
     // Create observer to props
-    instance.props = observer.create(props, true, changes => {
-        instance.render();
-
-        changes.forEach(item => {
-            if (instance._boundElements.hasOwnProperty(item.property)) {
-                instance._boundElements[item.property].forEach(element => {
-                    element.value = item.newValue;
-                })
-            }
-        });
-
-        if (isCreated) {
-            events.callUpdate(instance);
-        }
-    });
-
-    observer.beforeChange(instance.props, () => {
-        const res = events.callBeforeUpdate(Object.assign({}, instance.props));
-        if (res === false)
-            return false;
-    });
-
+    observer.create(instance, props);
+    // Create shared store
+    store.create(instance, props);
+    // Call create
     events.callCreate(instance);
-    isCreated = true;
+    // Now instance is created
+    instance._isCreated = true;
 
     return instance;
+}
+
+function extendInstance(instance, cfg) {
+    Object.assign(instance, cfg);
 }
 
 module.exports = {

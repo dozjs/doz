@@ -30,23 +30,15 @@
         props: {
             state: 'pause'
         },
-        template() {
-
-            let el = '';
-
+        template: function () {
             switch (this.props.state) {
                 case 'play':
-                    el = `<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
-                    break;
+                    return `<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
                 case 'pause':
-                    el = `<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
-                    break;
+                    return `<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
                 case 'loading':
-                    el = `<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
-                    break;
+                    return `<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
-
-            return el;
         },
         play() {
             this.props.state = 'loading';

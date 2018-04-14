@@ -523,7 +523,7 @@ function component(tag) {
     register(cmp);
 }
 
-function getInstances(root, template, localComponents) {
+function getInstances(root, template, view) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
@@ -536,10 +536,10 @@ function getInstances(root, template, localComponents) {
     nodes.forEach(function (child) {
         if (child.nodeType === 1 && child.parentNode) {
 
-            var cmp = collection.get(child.nodeName) || localComponents[child.nodeName.toLowerCase()];
+            var cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
             if (cmp) {
 
-                var alias = index; //+ Object.keys(components).length++;
+                var alias = index;
                 index++;
                 var props = serializeProps(child);
                 //console.log('props',props);
@@ -548,12 +548,10 @@ function getInstances(root, template, localComponents) {
                     delete props[ATTR.ALIAS];
                 }
 
-                //console.log('ATTR.ALIAS',ATTR.ALIAS);
-                //console.log('ALIAS',alias);
-
                 var newElement = createInstance(cmp, {
                     root: root,
-                    props: props
+                    props: props,
+                    view: view
                 });
 
                 // Remove old
@@ -568,11 +566,11 @@ function getInstances(root, template, localComponents) {
 
                 Array.from(nested).forEach(function (item) {
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-                        //index++;
+
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        var cmps = getInstances(rootElement, _template, localComponents);
+                        var cmps = getInstances(rootElement, _template, view);
 
                         Object.keys(cmps).forEach(function (i) {
                             var n = i;
@@ -595,11 +593,11 @@ function getInstances(root, template, localComponents) {
 function createInstance(cmp, cfg) {
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
-    //console.log(props, cfg.props);
-
-    var isCreated = false;
-
     var instance = Object.defineProperties({}, {
+        _IsCreated: {
+            value: false,
+            writable: true
+        },
         _prev: {
             value: null,
             writable: true
@@ -615,6 +613,9 @@ function createInstance(cmp, cfg) {
         _boundElements: {
             value: {},
             writable: true
+        },
+        _view: {
+            value: cfg.view
         },
         ref: {
             value: {},
@@ -636,11 +637,15 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
+        getStore: {
+            value: function value(store) {
+                return this._view.getStore(store);
+            },
+            enumerable: true
+        },
         render: {
             value: function value() {
                 var tpl = html.create('<' + TAG.ROOT + '>' + this.template() + '</' + TAG.ROOT + '>');
-                //console.log(this.template());
-                //console.log(tpl);
                 var next = transform(tpl);
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -663,9 +668,33 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    Object.assign(instance, cmp.cfg);
-
+    extendInstance(instance, cmp.cfg);
     // Create observer to props
+    createObserver(instance, props);
+    // Create shared store
+    createStore(instance);
+    // Call create
+    events.callCreate(instance);
+    // Now instance is created
+    instance._isCreated = true;
+
+    return instance;
+}
+
+function extendInstance(instance, cfg) {
+    Object.assign(instance, cfg);
+}
+
+function createStore(instance) {
+    if (typeof instance.store === 'string') {
+        if (instance._view.stores.hasOwnProperty(instance.store)) {
+            throw new Error('Store already defined: ' + instance.store);
+        }
+        instance._view.stores[instance.store] = instance.props;
+    }
+}
+
+function createObserver(instance, props) {
     instance.props = observer.create(props, true, function (changes) {
         instance.render();
 
@@ -677,7 +706,7 @@ function createInstance(cmp, cfg) {
             }
         });
 
-        if (isCreated) {
+        if (instance._isCreated) {
             events.callUpdate(instance);
         }
     });
@@ -686,11 +715,6 @@ function createInstance(cmp, cfg) {
         var res = events.callBeforeUpdate(Object.assign({}, instance.props));
         if (res === false) return false;
     });
-
-    events.callCreate(instance);
-    isCreated = true;
-
-    return instance;
 }
 
 module.exports = {
@@ -1086,17 +1110,31 @@ var Doz = function () {
         }
 
         this.cfg = extend(cfg, {
-            components: [],
-            _components: {}
+            components: []
+        });
+
+        Object.defineProperties(this, {
+            _components: {
+                value: {},
+                writable: true
+            },
+            _usedComponents: {
+                value: {},
+                writable: true
+            },
+            _stores: {
+                value: {},
+                writable: true
+            }
         });
 
         this.cfg.components.forEach(function (cmp) {
             if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                _this.cfg._components[cmp.tag] = cmp;
+                _this._components[cmp.tag] = cmp;
             }
         });
 
-        this.cfg._components[TAG.VIEW] = {
+        this._components[TAG.VIEW] = {
             cfg: {
                 props: {},
                 template: function template() {
@@ -1105,13 +1143,18 @@ var Doz = function () {
             }
         };
 
-        this._usedComponents = component.getInstances(this.cfg.root, template, this.cfg._components) || [];
+        this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
     }
 
     _createClass(Doz, [{
         key: 'getComponent',
         value: function getComponent(alias) {
             return this._usedComponents[0].children[alias];
+        }
+    }, {
+        key: 'getStore',
+        value: function getStore(store) {
+            return this._stores[store];
         }
     }]);
 

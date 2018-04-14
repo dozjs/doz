@@ -9,6 +9,7 @@ module.exports = {
         IS_BIND: /^d-bind$/,
         IS_ALIAS: /^d-alias$/,
         IS_REF: /^d-ref$/,
+        IS_STORE: /^d-store$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
@@ -16,6 +17,7 @@ module.exports = {
     ATTR: {
         BIND: 'd-bind',
         ALIAS: 'd-alias',
-        REF: 'd-ref'
+        REF: 'd-ref',
+        STORE: 'd-store'
     }
 };
