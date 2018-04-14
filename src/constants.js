@@ -7,17 +7,19 @@ module.exports = {
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_BIND: /^d-bind$/,
-        IS_ALIAS: /^d-alias$/,
         IS_REF: /^d-ref$/,
-        IS_STORE: /^d-store$/,
+        IS_ALIAS: /^d:alias$/,
+        IS_STORE: /^d:store$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
+        // Attributes for HTMLElement
         BIND: 'd-bind',
-        ALIAS: 'd-alias',
         REF: 'd-ref',
-        STORE: 'd-store'
+        // Attribute for Components
+        ALIAS: 'd:alias',
+        STORE: 'd:store'
     }
 };

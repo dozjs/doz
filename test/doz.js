@@ -83,7 +83,7 @@ describe('Doz', function () {
 
             Doz.component('my-label', {
                 template() {
-                    return `<span><my-id d-alias="my-label" number="${this.props.id}"></my-id> ${this.props.title}</span>`
+                    return `<span><my-id number="${this.props.id}"></my-id> ${this.props.title}</span>`
                 }
             });
 
@@ -111,16 +111,14 @@ describe('Doz', function () {
                 root: document.getElementById('app'),
                 template: `
                                 <my-component
-                                d-alias="first-component"
-                                id="12"
-                                title="MR."
-                                name="Doz">
+                                    id="12"
+                                    title="MR."
+                                    name="Doz">
                                 </my-component>
                                 <my-component
-                                d-alias="second-component"
-                                id="34"
-                                title="MRS."
-                                name="Luis">
+                                    id="34"
+                                    title="MRS."
+                                    name="Luis">
                                 </my-component>
                            `
             });

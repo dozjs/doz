@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.store', function () {
+describe('Doz.alias', function () {
 
     this.timeout(5000);
 
@@ -18,14 +18,13 @@ describe('Doz.store', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component with store defined', function () {
+    describe('create view with component with alias defined', function () {
 
         it('should be ok with a nested component', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('salutation-card', {
-                store: 'salutation',
                 template() {
                     return `<div>Hello ${this.props.title} ${this.props.name}</div>`
                 }
@@ -33,11 +32,7 @@ describe('Doz.store', function () {
 
             Doz.component('caller-o', {
                 template() {
-                    return `<div>${this.props.repeater}</div>`
-                },
-                onCreate() {
-                    this.getStore('salutation1').name = 'Hi by repeater'
-                    this.props.repeater = this.getStore('salutation1').name + ' Teddy'
+                    return `<div>call me</div>`
                 }
             });
 
@@ -45,26 +40,25 @@ describe('Doz.store', function () {
                 root: '#app',
                 template: `
                     <salutation-card
-                        d:store="salutation1"
+                        d:alias="salutation1"
                         title="MR."
                         name="Doz">
                     </salutation-card>
                     <salutation-card
-                        d:store="salutation2"
+                        d:alias="salutation2"
                         title="MRS."
                         name="Tina">
                     </salutation-card>
-                    <caller-o></caller-o>
+                    <caller-o d:alias="caller"></caller-o>
                 `
             });
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(view);
-                be.err.true(/Hi by repeater</g.test(html));
-                be.err.true(/Hi by repeater Teddy</g.test(html));
-                be.err(done).true(/MRS. Tina/g.test(html));
+                //console.log(html);
+                be.err.object(view.getComponent('salutation1'));
+                be.err.object(view.getComponent('salutation2'));
+                be.err(done).object(view.getComponent('caller'));
             },100);
 
 
