@@ -734,7 +734,7 @@ var html = {
         var element = void 0;
         str = str.replace(/\n|\s{2,}/g, ' ');
         str = str.replace(/[\t\r]/g, '');
-        str = str.replace(/>(\s+)</g, '><');
+        str = str.replace(/>\s{2,}</g, '> <');
         str = str.trim();
         //console.log(str)
         if (/<.*>/g.test(str)) {
