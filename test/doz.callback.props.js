@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.store', function () {
+describe('Doz.callback', function () {
 
     this.timeout(5000);
 
@@ -18,7 +18,7 @@ describe('Doz.store', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component with store defined', function () {
+    describe('create view with component callback', function () {
 
         it('should be ok', function (done) {
 
@@ -27,7 +27,11 @@ describe('Doz.store', function () {
             Doz.component('salutation-card', {
                 store: 'salutation',
                 template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                    return `<div>Hello ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="this.aCallback"></caller-o></div>`
+                },
+                aCallback: function() {
+                    console.log('callback is called');
+                    done()
                 }
             });
 
@@ -54,7 +58,6 @@ describe('Doz.store', function () {
                         title="MRS."
                         name="Tina">
                     </salutation-card>
-                    <caller-o></caller-o>
                 `
             });
 
@@ -62,9 +65,9 @@ describe('Doz.store', function () {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(view);
-                be.err.true(/Hi by repeater</g.test(html));
+                /*be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
-                be.err(done).true(/MRS. Tina/g.test(html));
+                be.err(done).true(/MRS. Tina/g.test(html));*/
             },100);
 
 

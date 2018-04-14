@@ -10,9 +10,11 @@ module.exports = {
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
         IS_STORE: /^d:store$/,
+        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
-        GET_LISTENER: /^this.(.*)\((.*)\)/
+        GET_LISTENER: /^this.(.*)\((.*)\)/,
+        GET_COMPONENT_LISTENER: /^this.(.*)/
     },
     ATTR: {
         // Attributes for HTMLElement
