@@ -1,7 +1,7 @@
 const extend = require('defaulty');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, ATTR, TAG} = require('../constants');
+const {REGEX, TAG} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');

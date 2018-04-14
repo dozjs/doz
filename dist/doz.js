@@ -486,7 +486,6 @@ var html = __webpack_require__(5);
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
-    ATTR = _require2.ATTR,
     TAG = _require2.TAG;
 
 var collection = __webpack_require__(1);
