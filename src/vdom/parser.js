@@ -1,11 +1,20 @@
 const castStringTo = require('../utils/cast-string-to');
+const {REGEX, ATTR} = require('../constants');
 
 function serializeProps(node) {
     const props = {};
 
     if (node.attributes.length) {
         Array.from(node.attributes).forEach(attr => {
-            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+            if (isComponentListener) {
+                if (!props.hasOwnProperty(ATTR.LISTENER))
+                    props[ATTR.LISTENER] = {};
+                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+                delete props[attr.name];
+            } else {
+                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            }
         });
     }
 

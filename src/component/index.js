@@ -35,7 +35,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, view) {
+function getInstances(root, template, view, parentCmp) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -62,7 +62,8 @@ function getInstances(root, template, view) {
                     root,
                     view,
                     props,
-                    dProps
+                    dProps,
+                    parentCmp
                 });
 
                 // Remove old
@@ -79,7 +80,7 @@ function getInstances(root, template, view) {
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances(rootElement, template, view);
+                        const cmps = getInstances(rootElement, template, view, newElement);
 
                         Object.keys(cmps).forEach(i => {
                             let n = i;
@@ -127,6 +128,13 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
+        _parentCmp: {
+            value: cfg.parentCmp
+        },
+        _callback: {
+            value: cfg.dProps['callback'],
+            writable: true
+        },
         _view: {
             value: cfg.view
         },
@@ -142,6 +150,16 @@ function createInstance(cmp, cfg) {
         },
         tag: {
             value: cmp.tag,
+            enumerable: true
+        },
+        fire: {
+            value: function (name, ...args) {
+                if (this._callback && this._callback.hasOwnProperty(name)
+                    && this._parentCmp.hasOwnProperty(this._callback[name])
+                    && typeof this._parentCmp[this._callback[name]] === 'function') {
+                    this._parentCmp[this._callback[name]].apply(this._parentCmp, args);
+                }
+            },
             enumerable: true
         },
         each: {

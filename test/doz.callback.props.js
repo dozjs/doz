@@ -25,53 +25,35 @@ describe('Doz.callback', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('salutation-card', {
-                store: 'salutation',
                 template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="this.aCallback"></caller-o></div>`
+                    return `<div>Hello ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="aCallback"></caller-o></div>`
                 },
-                aCallback: function() {
-                    console.log('callback is called');
-                    done()
+                aCallback: function(arg) {
+                    console.log('callback is called', arg);
+                    be.err(done).equal(arg, 'hello');
                 }
             });
 
             Doz.component('caller-o', {
                 template() {
-                    return `<div>${this.props.repeater}</div>`
+                    return `<div>Callback</div>`
                 },
                 onCreate() {
-                    this.getStore('salutation1').name = 'Hi by repeater'
-                    this.props.repeater = this.getStore('salutation1').name + ' Teddy'
+                    setTimeout(()=>{
+                        this.fire('mycallback', 'hello');
+                    },1000);
                 }
             });
 
-            const view = new Doz({
+            new Doz({
                 root: '#app',
                 template: `
                     <salutation-card
-                        d:store="salutation1"
                         title="MR."
                         name="Doz">
                     </salutation-card>
-                    <salutation-card
-                        d:store="salutation2"
-                        title="MRS."
-                        name="Tina">
-                    </salutation-card>
                 `
             });
-
-            setTimeout(()=>{
-                const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(view);
-                /*be.err.true(/Hi by repeater</g.test(html));
-                be.err.true(/Hi by repeater Teddy</g.test(html));
-                be.err(done).true(/MRS. Tina/g.test(html));*/
-            },100);
-
-
         });
-
     });
 });

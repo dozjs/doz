@@ -14,6 +14,11 @@ function extract(props) {
         delete  props[ATTR.STORE];
     }
 
+    if (props.hasOwnProperty(ATTR.LISTENER)) {
+        dProps['callback'] = props[ATTR.LISTENER];
+        delete  props[ATTR.LISTENER];
+    }
+
     return dProps;
 }
 

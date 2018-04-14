@@ -13,8 +13,7 @@ module.exports = {
         IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
-        GET_LISTENER: /^this.(.*)\((.*)\)/,
-        GET_COMPONENT_LISTENER: /^this.(.*)/
+        GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -22,6 +21,7 @@ module.exports = {
         REF: 'd-ref',
         // Attribute for Components
         ALIAS: 'd:alias',
-        STORE: 'd:store'
+        STORE: 'd:store',
+        LISTENER: 'd:on'
     }
 };

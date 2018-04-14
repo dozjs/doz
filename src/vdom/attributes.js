@@ -18,7 +18,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value) {
-    console.log(name, value, typeof value)
+    //console.log(name, value, typeof value)
     if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.setAttribute('class', value);
