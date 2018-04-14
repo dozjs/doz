@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,16 +90,20 @@ module.exports = {
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_BIND: /^d-bind$/,
-        IS_ALIAS: /^d-alias$/,
         IS_REF: /^d-ref$/,
+        IS_ALIAS: /^d:alias$/,
+        IS_STORE: /^d:store$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
+        // Attributes for HTMLElement
         BIND: 'd-bind',
-        ALIAS: 'd-alias',
-        REF: 'd-ref'
+        REF: 'd-ref',
+        // Attribute for Components
+        ALIAS: 'd:alias',
+        STORE: 'd:store'
     }
 };
 
@@ -464,7 +468,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /******/)
   );
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ }),
 /* 4 */
@@ -486,15 +490,19 @@ var _require2 = __webpack_require__(0),
     TAG = _require2.TAG;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(12);
-var events = __webpack_require__(13);
+var observer = __webpack_require__(13);
+var events = __webpack_require__(6);
 
-var _require3 = __webpack_require__(6),
+var _require3 = __webpack_require__(7),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(7).updateElement;
+var update = __webpack_require__(8).updateElement;
 var castStringTo = __webpack_require__(2);
+var store = __webpack_require__(17);
+
+var _require4 = __webpack_require__(18),
+    extract = _require4.extract;
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -542,25 +550,20 @@ function getInstances(root, template, view) {
                 var alias = index;
                 index++;
                 var props = serializeProps(child);
-                //console.log('props',props);
-                if (props.hasOwnProperty(ATTR.ALIAS)) {
-                    alias = props[ATTR.ALIAS];
-                    delete props[ATTR.ALIAS];
-                }
+                var dProps = extract(props);
 
                 var newElement = createInstance(cmp, {
                     root: root,
+                    view: view,
                     props: props,
-                    view: view
+                    dProps: dProps
                 });
 
                 // Remove old
                 child.parentNode.removeChild(child);
                 newElement.render();
-
                 events.callRender(newElement);
-
-                components[alias] = newElement;
+                components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 var nested = newElement._rootElement.querySelectorAll('*');
 
@@ -581,9 +584,9 @@ function getInstances(root, template, view) {
                             }
                             newElement.children[n] = cmps[i];
                         });
-                    } else {}
+                    }
                 });
-            } else {}
+            }
         }
     });
 
@@ -638,8 +641,8 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         getStore: {
-            value: function value(store) {
-                return this._view.getStore(store);
+            value: function value(storeName) {
+                return this._view.getStore(storeName);
             },
             enumerable: true
         },
@@ -668,11 +671,11 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    extendInstance(instance, cmp.cfg);
+    extendInstance(instance, cmp.cfg, cfg.dProps);
     // Create observer to props
-    createObserver(instance, props);
+    observer.create(instance, props);
     // Create shared store
-    createStore(instance);
+    store.create(instance, props);
     // Call create
     events.callCreate(instance);
     // Now instance is created
@@ -681,40 +684,11 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-function extendInstance(instance, cfg) {
+function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg);
-}
 
-function createStore(instance) {
-    if (typeof instance.store === 'string') {
-        if (instance._view.stores.hasOwnProperty(instance.store)) {
-            throw new Error('Store already defined: ' + instance.store);
-        }
-        instance._view.stores[instance.store] = instance.props;
-    }
-}
-
-function createObserver(instance, props) {
-    instance.props = observer.create(props, true, function (changes) {
-        instance.render();
-
-        changes.forEach(function (item) {
-            if (instance._boundElements.hasOwnProperty(item.property)) {
-                instance._boundElements[item.property].forEach(function (element) {
-                    element.value = item.newValue;
-                });
-            }
-        });
-
-        if (instance._isCreated) {
-            events.callUpdate(instance);
-        }
-    });
-
-    observer.beforeChange(instance.props, function () {
-        var res = events.callBeforeUpdate(Object.assign({}, instance.props));
-        if (res === false) return false;
-    });
+    // Overwrite store name with that passed though props
+    if (dProps.store) instance.store = dProps.store;
 }
 
 module.exports = {
@@ -791,6 +765,52 @@ module.exports = html;
 "use strict";
 
 
+function callCreate(context) {
+    if (typeof context.onCreate === 'function') {
+        context.onCreate.call(context);
+    }
+}
+
+function callRender(context) {
+    if (typeof context.onRender === 'function') {
+        context.onRender.call(context);
+    }
+}
+
+function callBeforeUpdate(context) {
+    if (typeof context.onBeforeUpdate === 'function') {
+        return context.onBeforeUpdate.call(context);
+    }
+}
+
+function callUpdate(context) {
+    if (typeof context.onUpdate === 'function') {
+        context.onUpdate.call(context);
+    }
+}
+
+function callDestroy(context) {
+    if (typeof context.onDestroy === 'function') {
+        context.onDestroy.call(context);
+        context = null;
+    }
+}
+
+module.exports = {
+    callCreate: callCreate,
+    callRender: callRender,
+    callBeforeUpdate: callBeforeUpdate,
+    callUpdate: callUpdate,
+    callDestroy: callDestroy
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var castStringTo = __webpack_require__(2);
 
 function serializeProps(node) {
@@ -844,209 +864,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _require = __webpack_require__(0),
-    REGEX = _require.REGEX,
-    ATTR = _require.ATTR;
-
-var castStringTo = __webpack_require__(2);
-
-function isEventAttribute(name) {
-    return REGEX.IS_LISTENER.test(name);
-}
-
-function isBindAttribute(name) {
-    return name === ATTR.BIND;
-}
-
-function isRefAttribute(name) {
-    return name === ATTR.REF;
-}
-
-function canBind($target) {
-    return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1;
-}
-
-function isCustomAttribute(name) {
-    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === 'forceupdate';
-}
-
-function setBooleanAttribute($target, name, value) {
-    if (value) {
-        $target.setAttribute(name, value);
-        $target[name] = true;
-    } else {
-        $target[name] = false;
-    }
-}
-
-function removeBooleanAttribute($target, name) {
-    $target.removeAttribute(name);
-    $target[name] = false;
-}
-
-function extractEventName(name) {
-    return name.slice(2).toLowerCase();
-}
-
-function setAttribute($target, name, value) {
-    if (isCustomAttribute(name)) {} else if (name === 'className') {
-        $target.setAttribute('class', value);
-    } else if (typeof value === 'boolean') {
-        setBooleanAttribute($target, name, value);
-    } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-        try {
-            $target.setAttribute(name, JSON.stringify(value));
-        } catch (e) {}
-    } else {
-        $target.setAttribute(name, value);
-    }
-}
-
-function removeAttribute($target, name, value) {
-    if (isCustomAttribute(name)) {} else if (name === 'className') {
-        $target.removeAttribute('class');
-    } else if (typeof value === 'boolean') {
-        removeBooleanAttribute($target, name);
-    } else {
-        $target.removeAttribute(name);
-    }
-}
-
-function updateAttribute($target, name, newVal, oldVal) {
-    if (!newVal) {
-        removeAttribute($target, name, oldVal);
-    } else if (!oldVal || newVal !== oldVal) {
-        setAttribute($target, name, newVal);
-    }
-}
-
-function updateAttributes($target, newProps) {
-    var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    var props = Object.assign({}, newProps, oldProps);
-    Object.keys(props).forEach(function (name) {
-        updateAttribute($target, name, newProps[name], oldProps[name]);
-    });
-}
-
-function addEventListener($target, name, value, cmp) {
-
-    if (!isEventAttribute(name)) return;
-
-    var match = value.match(REGEX.GET_LISTENER);
-
-    if (match) {
-        var args = null;
-        var handler = match[1];
-        var stringArgs = match[2];
-        if (stringArgs) {
-            args = stringArgs.split(',').map(function (item) {
-                return castStringTo(item.trim());
-            });
-        }
-
-        if (handler in cmp) {
-            value = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
-        }
-    }
-
-    $target.addEventListener(extractEventName(name), value);
-}
-
-function setBind($target, name, value, cmp) {
-    if (!isBindAttribute(name) || !canBind($target)) return;
-    if (typeof cmp.props[value] !== 'undefined') {
-        ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
-            $target.addEventListener(event, function () {
-                cmp.props[value] = this.value;
-            });
-        });
-        if (cmp._boundElements.hasOwnProperty(value)) {
-            cmp._boundElements[value].push($target);
-        } else {
-            cmp._boundElements[value] = [$target];
-        }
-    }
-}
-
-function setRef($target, name, value, cmp) {
-    if (!isRefAttribute(name)) return;
-    cmp.ref[value] = $target;
-}
-
-function attach($target, props, cmp) {
-    Object.keys(props).forEach(function (name) {
-        setAttribute($target, name, props[name]);
-        addEventListener($target, name, props[name], cmp);
-        setBind($target, name, props[name], cmp);
-        setRef($target, name, props[name], cmp);
-    });
-}
-
-function createElement(node, cmp) {
-    if (typeof node === 'string') {
-        return document.createTextNode(node);
-    }
-    var $el = document.createElement(node.type);
-
-    attach($el, node.props, cmp);
-
-    node.children.map(function (item) {
-        return createElement(item, cmp);
-    }).forEach($el.appendChild.bind($el));
-    return $el;
-}
-
-function changed(nodeA, nodeB) {
-    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
-}
-
-function updateElement($parent, newNode, oldNode) {
-    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-    var cmp = arguments[4];
-
-    if (!$parent) return;
-
-    if (!oldNode) {
-        var rootElement = createElement(newNode, cmp);
-        $parent.appendChild(rootElement);
-        return rootElement;
-    } else if (!newNode) {
-        if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
-    } else if (changed(newNode, oldNode)) {
-        var _rootElement = createElement(newNode, cmp);
-        $parent.replaceChild(_rootElement, $parent.childNodes[index]);
-        return _rootElement;
-    } else if (newNode.type) {
-        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
-        var newLength = newNode.children.length;
-        var oldLength = oldNode.children.length;
-        for (var i = 0; i < newLength || i < oldLength; i++) {
-            updateElement($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
-        }
-    }
-}
-
-module.exports = {
-    updateElement: updateElement
-};
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(9);
+var element = __webpack_require__(15);
+
+module.exports = {
+    updateElement: element.update
+};
 
 /***/ }),
 /* 9 */
@@ -1056,14 +884,23 @@ module.exports = __webpack_require__(9);
 
 
 module.exports = __webpack_require__(10);
-module.exports.component = __webpack_require__(4).component;
-module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(7).updateElement;
-module.exports.transform = __webpack_require__(6).transform;
-module.exports.html = __webpack_require__(5);
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(11);
+module.exports.component = __webpack_require__(4).component;
+module.exports.collection = __webpack_require__(1);
+module.exports.update = __webpack_require__(8).updateElement;
+module.exports.transform = __webpack_require__(7).transform;
+module.exports.html = __webpack_require__(5);
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1164,7 +1001,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1194,7 +1031,44 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 12 */
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var proxy = __webpack_require__(14);
+var events = __webpack_require__(6);
+
+function create(instance, props) {
+    instance.props = proxy.create(props, true, function (changes) {
+        instance.render();
+
+        changes.forEach(function (item) {
+            if (instance._boundElements.hasOwnProperty(item.property)) {
+                instance._boundElements[item.property].forEach(function (element) {
+                    element.value = item.newValue;
+                });
+            }
+        });
+
+        if (instance._isCreated) {
+            events.callUpdate(instance);
+        }
+    });
+
+    proxy.beforeChange(instance.props, function () {
+        var res = events.callBeforeUpdate(Object.assign({}, instance.props));
+        if (res === false) return false;
+    });
+}
+
+module.exports = {
+    create: create
+};
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1730,49 +1604,270 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function callCreate(context) {
-    if (typeof context.onCreate === 'function') {
-        context.onCreate.call(context);
-    }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(16),
+    attach = _require.attach,
+    updateAttributes = _require.updateAttributes;
+
+function isChanged(nodeA, nodeB) {
+    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
-function callRender(context) {
-    if (typeof context.onRender === 'function') {
-        context.onRender.call(context);
+function create(node, cmp) {
+    if (typeof node === 'string') {
+        return document.createTextNode(node);
     }
+    var $el = document.createElement(node.type);
+
+    attach($el, node.props, cmp);
+
+    node.children.map(function (item) {
+        return create(item, cmp);
+    }).forEach($el.appendChild.bind($el));
+    return $el;
 }
 
-function callBeforeUpdate(context) {
-    if (typeof context.onBeforeUpdate === 'function') {
-        return context.onBeforeUpdate.call(context);
-    }
-}
+function update($parent, newNode, oldNode) {
+    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var cmp = arguments[4];
 
-function callUpdate(context) {
-    if (typeof context.onUpdate === 'function') {
-        context.onUpdate.call(context);
-    }
-}
+    if (!$parent) return;
 
-function callDestroy(context) {
-    if (typeof context.onDestroy === 'function') {
-        context.onDestroy.call(context);
-        context = null;
+    if (!oldNode) {
+        var rootElement = create(newNode, cmp);
+        $parent.appendChild(rootElement);
+        return rootElement;
+    } else if (!newNode) {
+        if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
+    } else if (isChanged(newNode, oldNode)) {
+        var _rootElement = create(newNode, cmp);
+        $parent.replaceChild(_rootElement, $parent.childNodes[index]);
+        return _rootElement;
+    } else if (newNode.type) {
+        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
+        var newLength = newNode.children.length;
+        var oldLength = oldNode.children.length;
+        for (var i = 0; i < newLength || i < oldLength; i++) {
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+        }
     }
 }
 
 module.exports = {
-    callCreate: callCreate,
-    callRender: callRender,
-    callBeforeUpdate: callBeforeUpdate,
-    callUpdate: callUpdate,
-    callDestroy: callDestroy
+    create: create,
+    update: update
+};
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(0),
+    REGEX = _require.REGEX,
+    ATTR = _require.ATTR;
+
+var castStringTo = __webpack_require__(2);
+
+function isEventAttribute(name) {
+    return REGEX.IS_LISTENER.test(name);
+}
+
+function isBindAttribute(name) {
+    return name === ATTR.BIND;
+}
+
+function isRefAttribute(name) {
+    return name === ATTR.REF;
+}
+
+function canBind($target) {
+    return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1;
+}
+
+function setAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {} else if (name === 'className') {
+        $target.setAttribute('class', value);
+    } else if (typeof value === 'boolean') {
+        setBooleanAttribute($target, name, value);
+    } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+        try {
+            $target.setAttribute(name, JSON.stringify(value));
+        } catch (e) {}
+    } else {
+        $target.setAttribute(name, value);
+    }
+}
+
+function removeAttribute($target, name, value) {
+    if (isCustomAttribute(name)) {} else if (name === 'className') {
+        $target.removeAttribute('class');
+    } else if (typeof value === 'boolean') {
+        removeBooleanAttribute($target, name);
+    } else {
+        $target.removeAttribute(name);
+    }
+}
+
+function updateAttribute($target, name, newVal, oldVal) {
+    if (!newVal) {
+        removeAttribute($target, name, oldVal);
+    } else if (!oldVal || newVal !== oldVal) {
+        setAttribute($target, name, newVal);
+    }
+}
+
+function updateAttributes($target, newProps) {
+    var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var props = Object.assign({}, newProps, oldProps);
+    Object.keys(props).forEach(function (name) {
+        updateAttribute($target, name, newProps[name], oldProps[name]);
+    });
+}
+
+function isCustomAttribute(name) {
+    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === 'forceupdate';
+}
+
+function setBooleanAttribute($target, name, value) {
+    if (value) {
+        $target.setAttribute(name, value);
+        $target[name] = true;
+    } else {
+        $target[name] = false;
+    }
+}
+
+function removeBooleanAttribute($target, name) {
+    $target.removeAttribute(name);
+    $target[name] = false;
+}
+
+function extractEventName(name) {
+    return name.slice(2).toLowerCase();
+}
+
+function addEventListener($target, name, value, cmp) {
+
+    if (!isEventAttribute(name)) return;
+
+    var match = value.match(REGEX.GET_LISTENER);
+
+    if (match) {
+        var args = null;
+        var handler = match[1];
+        var stringArgs = match[2];
+        if (stringArgs) {
+            args = stringArgs.split(',').map(function (item) {
+                return castStringTo(item.trim());
+            });
+        }
+
+        if (handler in cmp) {
+            value = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
+        }
+    }
+
+    $target.addEventListener(extractEventName(name), value);
+}
+
+function setBind($target, name, value, cmp) {
+    if (!isBindAttribute(name) || !canBind($target)) return;
+    if (typeof cmp.props[value] !== 'undefined') {
+        ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
+            $target.addEventListener(event, function () {
+                cmp.props[value] = this.value;
+            });
+        });
+        if (cmp._boundElements.hasOwnProperty(value)) {
+            cmp._boundElements[value].push($target);
+        } else {
+            cmp._boundElements[value] = [$target];
+        }
+    }
+}
+
+function setRef($target, name, value, cmp) {
+    if (!isRefAttribute(name)) return;
+    cmp.ref[value] = $target;
+}
+
+function attach($target, props, cmp) {
+    Object.keys(props).forEach(function (name) {
+        setAttribute($target, name, props[name]);
+        addEventListener($target, name, props[name], cmp);
+        setBind($target, name, props[name], cmp);
+        setRef($target, name, props[name], cmp);
+    });
+}
+
+module.exports = {
+    attach: attach,
+    updateAttributes: updateAttributes
+};
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function create(instance) {
+
+    if (typeof instance.store === 'string') {
+        if (instance._view._stores.hasOwnProperty(instance.store)) {
+            throw new Error('Store already defined: ' + instance.store);
+        }
+        instance._view._stores[instance.store] = instance.props;
+    }
+}
+
+module.exports = {
+    create: create
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    ATTR = _require.ATTR;
+
+function extract(props) {
+
+    var dProps = {};
+
+    if (props.hasOwnProperty(ATTR.ALIAS)) {
+        dProps['alias'] = props[ATTR.ALIAS];
+        delete props[ATTR.ALIAS];
+    }
+
+    if (props.hasOwnProperty(ATTR.STORE)) {
+        dProps['store'] = props[ATTR.STORE];
+        delete props[ATTR.STORE];
+    }
+
+    return dProps;
+}
+
+module.exports = {
+    extract: extract
 };
 
 /***/ })
