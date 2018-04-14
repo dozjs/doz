@@ -93,6 +93,7 @@ module.exports = {
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
         IS_STORE: /^d:store$/,
+        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
@@ -103,7 +104,8 @@ module.exports = {
         REF: 'd-ref',
         // Attribute for Components
         ALIAS: 'd:alias',
-        STORE: 'd:store'
+        STORE: 'd:store',
+        LISTENER: 'd:on'
     }
 };
 
@@ -530,7 +532,7 @@ function component(tag) {
     register(cmp);
 }
 
-function getInstances(root, template, view) {
+function getInstances(root, template, view, parentCmp) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
@@ -555,7 +557,8 @@ function getInstances(root, template, view) {
                     root: root,
                     view: view,
                     props: props,
-                    dProps: dProps
+                    dProps: dProps,
+                    parentCmp: parentCmp
                 });
 
                 // Remove old
@@ -572,7 +575,7 @@ function getInstances(root, template, view) {
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        var cmps = getInstances(rootElement, _template, view);
+                        var cmps = getInstances(rootElement, _template, view, newElement);
 
                         Object.keys(cmps).forEach(function (i) {
                             var n = i;
@@ -616,6 +619,13 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
+        _parentCmp: {
+            value: cfg.parentCmp
+        },
+        _callback: {
+            value: cfg.dProps['callback'],
+            writable: true
+        },
         _view: {
             value: cfg.view
         },
@@ -631,6 +641,18 @@ function createInstance(cmp, cfg) {
         },
         tag: {
             value: cmp.tag,
+            enumerable: true
+        },
+        fire: {
+            value: function value(name) {
+                if (this._callback && this._callback.hasOwnProperty(name) && this._parentCmp.hasOwnProperty(this._callback[name]) && typeof this._parentCmp[this._callback[name]] === 'function') {
+                    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                        args[_key - 1] = arguments[_key];
+                    }
+
+                    this._parentCmp[this._callback[name]].apply(this._parentCmp, args);
+                }
+            },
             enumerable: true
         },
         each: {
@@ -812,12 +834,23 @@ module.exports = {
 
 var castStringTo = __webpack_require__(2);
 
+var _require = __webpack_require__(0),
+    REGEX = _require.REGEX,
+    ATTR = _require.ATTR;
+
 function serializeProps(node) {
     var props = {};
 
     if (node.attributes.length) {
         Array.from(node.attributes).forEach(function (attr) {
-            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+            if (isComponentListener) {
+                if (!props.hasOwnProperty(ATTR.LISTENER)) props[ATTR.LISTENER] = {};
+                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+                delete props[attr.name];
+            } else {
+                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            }
         });
     }
 
@@ -1696,6 +1729,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value) {
+    //console.log(name, value, typeof value)
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
@@ -1860,6 +1894,11 @@ function extract(props) {
     if (props.hasOwnProperty(ATTR.STORE)) {
         dProps['store'] = props[ATTR.STORE];
         delete props[ATTR.STORE];
+    }
+
+    if (props.hasOwnProperty(ATTR.LISTENER)) {
+        dProps['callback'] = props[ATTR.LISTENER];
+        delete props[ATTR.LISTENER];
     }
 
     return dProps;
