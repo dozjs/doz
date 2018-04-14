@@ -9,6 +9,7 @@ const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 const castStringTo = require('../utils/cast-string-to');
 const store = require('./store');
+const {extract} = require('./d-props');
 
 function component(tag, cfg = {}) {
 
@@ -52,28 +53,23 @@ function getInstances(root, template, view) {
             const cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
             if (cmp) {
 
-                let alias = index ;
+                let alias = index;
                 index++;
                 const props = serializeProps(child);
-                //console.log('props',props);
-                if (props.hasOwnProperty(ATTR.ALIAS)) {
-                    alias = props[ATTR.ALIAS];
-                    delete  props[ATTR.ALIAS];
-                }
+                const dProps = extract(props);
 
                 const newElement = createInstance(cmp, {
                     root,
+                    view,
                     props,
-                    view
+                    dProps
                 });
 
                 // Remove old
                 child.parentNode.removeChild(child);
                 newElement.render();
-
                 events.callRender(newElement);
-
-                components[alias] = newElement;
+                components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 const nested = newElement._rootElement.querySelectorAll('*');
 
@@ -92,14 +88,11 @@ function getInstances(root, template, view) {
                                     n++
                                 }
                             }
-                                newElement.children[n] = cmps[i]
+                            newElement.children[n] = cmps[i]
 
                         })
-
-                    } else {
                     }
                 });
-            } else {
             }
         }
     });
@@ -189,7 +182,7 @@ function createInstance(cmp, cfg) {
     });
 
     // Assign cfg to instance
-    extendInstance(instance, cmp.cfg);
+    extendInstance(instance, cmp.cfg, cfg.dProps);
     // Create observer to props
     observer.create(instance, props);
     // Create shared store
@@ -202,8 +195,12 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-function extendInstance(instance, cfg) {
+function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg);
+
+    // Overwrite store name with that passed though props
+    if (dProps.store)
+        instance.store = dProps.store;
 }
 
 module.exports = {

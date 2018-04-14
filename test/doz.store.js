@@ -31,6 +31,16 @@ describe('Doz.store', function () {
                 }
             });
 
+            Doz.component('caller-o', {
+                template() {
+                    return `<div>${this.props.repeater}</div>`
+                },
+                onCreate() {
+                    this.getStore('salutation1').name = 'Hi by repeater'
+                    this.props.repeater = this.getStore('salutation1').name + ' Teddy'
+                }
+            });
+
             const view = new Doz({
                 root: '#app',
                 template: `
@@ -44,6 +54,7 @@ describe('Doz.store', function () {
                         title="MRS."
                         name="Tina">
                     </salutation-card>
+                    <caller-o></caller-o>
                 `
             });
 
@@ -51,7 +62,8 @@ describe('Doz.store', function () {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(view);
-                be.err.true(/MR. Doz/g.test(html));
+                be.err.true(/Hi by repeater</g.test(html));
+                be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
             },100);
 

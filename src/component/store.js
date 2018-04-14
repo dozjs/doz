@@ -1,5 +1,4 @@
-function create(instance, props) {
-    console.log(props);
+function create(instance) {
 
     if (typeof instance.store === 'string') {
         if (instance._view._stores.hasOwnProperty(instance.store)) {
