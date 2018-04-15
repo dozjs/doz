@@ -105,7 +105,9 @@ module.exports = {
         // Attribute for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
-        LISTENER: 'd:on'
+        LISTENER: 'd:on',
+        CLASS: 'd:class',
+        STYLE: 'd:style'
     }
 };
 
@@ -336,8 +338,6 @@ function getInstances(root, template, view, parentCmp) {
     var components = {};
     var index = 0;
 
-    //console.log(nodes);
-
     nodes.forEach(function (child) {
         if (child.nodeType === 1 && child.parentNode) {
 
@@ -364,9 +364,9 @@ function getInstances(root, template, view, parentCmp) {
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 var nested = newElement._rootElement.querySelectorAll('*');
-
+                //console.log(child.nodeName, dProps, props);
                 Array.from(nested).forEach(function (item) {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
 
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
@@ -395,7 +395,7 @@ function createInstance(cmp, cfg) {
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
     var instance = Object.defineProperties({}, {
-        _IsCreated: {
+        _isCreated: {
             value: false,
             writable: true
         },
@@ -415,15 +415,16 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
-        _parentCmp: {
-            value: cfg.parentCmp
-        },
         _callback: {
             value: cfg.dProps['callback'],
             writable: true
         },
         _view: {
             value: cfg.view
+        },
+        parent: {
+            value: cfg.parentCmp,
+            enumerable: true
         },
         ref: {
             value: {},
@@ -441,12 +442,12 @@ function createInstance(cmp, cfg) {
         },
         fire: {
             value: function value(name) {
-                if (this._callback && this._callback.hasOwnProperty(name) && this._parentCmp.hasOwnProperty(this._callback[name]) && typeof this._parentCmp[this._callback[name]] === 'function') {
+                if (this._callback && this._callback.hasOwnProperty(name) && this.parent.hasOwnProperty(this._callback[name]) && typeof this.parent[this._callback[name]] === 'function') {
                     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                         args[_key - 1] = arguments[_key];
                     }
 
-                    this._parentCmp[this._callback[name]].apply(this._parentCmp, args);
+                    this.parent[this._callback[name]].apply(this.parent, args);
                 }
             },
             enumerable: true
@@ -465,8 +466,12 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value() {
-                var tpl = html.create('<' + TAG.ROOT + '>' + this.template() + '</' + TAG.ROOT + '>');
+                //const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
+                var tag = this.tag ? this.tag + '-root' : TAG.ROOT;
+                var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
                 var next = transform(tpl);
+
+                //console.log(next, this._prev)
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
                 if (!this._rootElement && rootElement) {
@@ -530,7 +535,8 @@ var html = {
         var element = void 0;
         str = str.replace(/\n|\s{2,}/g, ' ');
         str = str.replace(/[\t\r]/g, '');
-        str = str.replace(/>\s{2,}</g, '> <');
+        str = str.replace(/>\s+</g, '><');
+        //str = str.replace(/>\s{2,}</g,'>&nbsp;<');
         str = str.trim();
         //console.log(str)
         if (/<.*>/g.test(str)) {
@@ -1495,7 +1501,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value) {
-    //console.log(name, value, typeof value)
+    if (!$target) return;
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
@@ -1510,6 +1516,7 @@ function setAttribute($target, name, value) {
 }
 
 function removeAttribute($target, name, value) {
+    if (!$target) return;
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.removeAttribute('class');
     } else if (typeof value === 'boolean') {
@@ -1520,6 +1527,7 @@ function removeAttribute($target, name, value) {
 }
 
 function updateAttribute($target, name, newVal, oldVal) {
+    if (!$target) return;
     if (!newVal) {
         removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
@@ -1541,6 +1549,7 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
+    if (!$target) return;
     if (value) {
         $target.setAttribute(name, value);
         $target[name] = true;
@@ -1550,6 +1559,7 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
+    if (!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }
@@ -1665,6 +1675,11 @@ function extract(props) {
     if (props.hasOwnProperty(ATTR.LISTENER)) {
         dProps['callback'] = props[ATTR.LISTENER];
         delete props[ATTR.LISTENER];
+    }
+
+    if (props.hasOwnProperty(ATTR.CLASS)) {
+        dProps['class'] = props[ATTR.CLASS];
+        delete props[ATTR.CLASS];
     }
 
     return dProps;

@@ -59,7 +59,6 @@ describe('Doz.local.component', function () {
                 be.err(done).true(/Luis/g.test(html));
             },100);
 
-
         });
 
     });

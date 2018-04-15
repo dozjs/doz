@@ -22,6 +22,8 @@ module.exports = {
         // Attribute for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
-        LISTENER: 'd:on'
+        LISTENER: 'd:on',
+        CLASS: 'd:class',
+        STYLE: 'd:style'
     }
 };

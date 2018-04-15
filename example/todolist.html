@@ -60,7 +60,8 @@
         addItem() {
             if (this.props.todo) {
                 this.props.record.push({
-                    title: this.props.todo
+                    title: this.props.todo,
+                    done: false
                 });
             }
 
@@ -68,17 +69,23 @@
         },
 
         removeItem(arg) {
+            console.log('before remove', arg[0])
             this.props.record.splice([arg[0]], 1);
+            console.log('after remove',this.props.record)
         },
 
         onRender() {
             console.log(this._rootElement)
+        },
+
+        onUpdate() {
+            console.log('on update',this.props.record)
         }
     });
 
     const view = new Doz({
         root: document.getElementById('app'),
-        template: `<h2>Result <strong>here</strong></h2><doz-todo d-alias="todo-list" record='[{"title":"ciao", "done": true}]'></doz-todo>`
+        template: `<h2>Result <strong>here</strong></h2><doz-todo d-alias="todo-list" recordf='[{"title":"ciao", "done": true}]'></doz-todo>`
     });
 /*
     console.log(view.getComponent('todo-list'));

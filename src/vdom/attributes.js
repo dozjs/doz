@@ -18,7 +18,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value) {
-    //console.log(name, value, typeof value)
+    if (!$target) return;
     if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.setAttribute('class', value);
@@ -36,6 +36,7 @@ function setAttribute($target, name, value) {
 }
 
 function removeAttribute($target, name, value) {
+    if (!$target) return;
     if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.removeAttribute('class');
@@ -47,6 +48,7 @@ function removeAttribute($target, name, value) {
 }
 
 function updateAttribute($target, name, newVal, oldVal) {
+    if (!$target) return;
     if (!newVal) {
         removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
@@ -69,6 +71,7 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
+    if (!$target) return;
     if (value) {
         $target.setAttribute(name, value);
         $target[name] = true;
@@ -78,6 +81,7 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
+    if (!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }

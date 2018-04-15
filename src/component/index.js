@@ -45,8 +45,6 @@ function getInstances(root, template, view, parentCmp) {
     let components = {};
     let index = 0;
 
-    //console.log(nodes);
-
     nodes.forEach(child => {
         if (child.nodeType === 1 && child.parentNode) {
 
@@ -73,9 +71,9 @@ function getInstances(root, template, view, parentCmp) {
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 const nested = newElement._rootElement.querySelectorAll('*');
-
+                //console.log(child.nodeName, dProps, props);
                 Array.from(nested).forEach(item => {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
 
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
@@ -108,7 +106,7 @@ function createInstance(cmp, cfg) {
     );
 
     const instance = Object.defineProperties({}, {
-        _IsCreated: {
+        _isCreated: {
             value: false,
             writable: true
         },
@@ -128,15 +126,16 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
-        _parentCmp: {
-            value: cfg.parentCmp
-        },
         _callback: {
             value: cfg.dProps['callback'],
             writable: true
         },
         _view: {
             value: cfg.view
+        },
+        parent: {
+            value: cfg.parentCmp,
+            enumerable: true
         },
         ref: {
             value: {},
@@ -155,9 +154,9 @@ function createInstance(cmp, cfg) {
         fire: {
             value: function (name, ...args) {
                 if (this._callback && this._callback.hasOwnProperty(name)
-                    && this._parentCmp.hasOwnProperty(this._callback[name])
-                    && typeof this._parentCmp[this._callback[name]] === 'function') {
-                    this._parentCmp[this._callback[name]].apply(this._parentCmp, args);
+                    && this.parent.hasOwnProperty(this._callback[name])
+                    && typeof this.parent[this._callback[name]] === 'function') {
+                    this.parent[this._callback[name]].apply(this.parent, args);
                 }
             },
             enumerable: true
@@ -177,8 +176,12 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function () {
-                const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
+                //const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
+                const tag = this.tag ? this.tag + '-root' : TAG.ROOT;
+                const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
                 const next = transform(tpl);
+
+                //console.log(next, this._prev)
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
                 if (!this._rootElement && rootElement) {

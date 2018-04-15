@@ -19,6 +19,11 @@ function extract(props) {
         delete  props[ATTR.LISTENER];
     }
 
+    if (props.hasOwnProperty(ATTR.CLASS)) {
+        dProps['class'] = props[ATTR.CLASS];
+        delete  props[ATTR.CLASS];
+    }
+
     return dProps;
 }
 
