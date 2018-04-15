@@ -1,4 +1,4 @@
-const extend = require('defaulty');
+const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
 const {REGEX, TAG} = require('../constants');

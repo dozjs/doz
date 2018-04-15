@@ -221,256 +221,52 @@ module.exports = castStringTo;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-// [AIV]  Defaulty Build version: 2.1.0  
-(function webpackUniversalModuleDefinition(root, factory) {
-  if (( false ? 'undefined' : _typeof2(exports)) === 'object' && ( false ? 'undefined' : _typeof2(module)) === 'object') module.exports = factory();else if (true) !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else if ((typeof exports === 'undefined' ? 'undefined' : _typeof2(exports)) === 'object') exports["defaulty"] = factory();else root["defaulty"] = factory();
-})(typeof self !== 'undefined' ? self : undefined, function () {
-  return (/******/function (modules) {
-      // webpackBootstrap
-      /******/ // The module cache
-      /******/var installedModules = {};
-      /******/
-      /******/ // The require function
-      /******/function __webpack_require__(moduleId) {
-        /******/
-        /******/ // Check if module is in cache
-        /******/if (installedModules[moduleId]) {
-          /******/return installedModules[moduleId].exports;
-          /******/
-        }
-        /******/ // Create a new module (and put it into the cache)
-        /******/var module = installedModules[moduleId] = {
-          /******/i: moduleId,
-          /******/l: false,
-          /******/exports: {}
-          /******/ };
-        /******/
-        /******/ // Execute the module function
-        /******/modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-        /******/
-        /******/ // Flag the module as loaded
-        /******/module.l = true;
-        /******/
-        /******/ // Return the exports of the module
-        /******/return module.exports;
-        /******/
-      }
-      /******/
-      /******/
-      /******/ // expose the modules object (__webpack_modules__)
-      /******/__webpack_require__.m = modules;
-      /******/
-      /******/ // expose the module cache
-      /******/__webpack_require__.c = installedModules;
-      /******/
-      /******/ // define getter function for harmony exports
-      /******/__webpack_require__.d = function (exports, name, getter) {
-        /******/if (!__webpack_require__.o(exports, name)) {
-          /******/Object.defineProperty(exports, name, {
-            /******/configurable: false,
-            /******/enumerable: true,
-            /******/get: getter
-            /******/ });
-          /******/
-        }
-        /******/
-      };
-      /******/
-      /******/ // getDefaultExport function for compatibility with non-harmony modules
-      /******/__webpack_require__.n = function (module) {
-        /******/var getter = module && module.__esModule ?
-        /******/function getDefault() {
-          return module['default'];
-        } :
-        /******/function getModuleExports() {
-          return module;
-        };
-        /******/__webpack_require__.d(getter, 'a', getter);
-        /******/return getter;
-        /******/
-      };
-      /******/
-      /******/ // Object.prototype.hasOwnProperty.call
-      /******/__webpack_require__.o = function (object, property) {
-        return Object.prototype.hasOwnProperty.call(object, property);
-      };
-      /******/
-      /******/ // __webpack_public_path__
-      /******/__webpack_require__.p = "";
-      /******/
-      /******/ // Load entry module and return exports
-      /******/return __webpack_require__(__webpack_require__.s = 0);
-      /******/
-    }(
-    /************************************************************************/
-    /******/[
-    /* 0 */
-    /***/function (module, exports, __webpack_require__) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-      "use strict";
+/**
+ * Copies deep missing properties to the target object
+ * @param targetObj {Object} target object
+ * @param defaultObj {Object} default object
+ * @param exclude {Array} exclude properties from copy
+ * @returns {*}
+ */
 
-      module.exports = __webpack_require__(1);
+function extend(targetObj, defaultObj) {
+    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
-      /***/
-    },
-    /* 1 */
-    /***/function (module, exports, __webpack_require__) {
-
-      "use strict";
-
-      var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
-        return typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
-      } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
-      };
-
-      var deepCopy = __webpack_require__(2);
-
-      /**
-       * Copies deep missing properties to the target object
-       * @param targetObj {Object} target object
-       * @param defaultObj {Object} default object
-       * @param exclude {Array} exclude properties from copy
-       * @returns {*}
-       */
-
-      var defaulty = function defaulty(targetObj, defaultObj) {
-        var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-        for (var i in defaultObj) {
-          /* istanbul ignore else  */
-          if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
+    for (var i in defaultObj) {
+        /* istanbul ignore else  */
+        if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
             if (!targetObj.hasOwnProperty(i) || typeof targetObj[i] === 'undefined') {
-              targetObj[i] = defaultObj[i];
+                targetObj[i] = defaultObj[i];
             } else if (_typeof(targetObj[i]) === 'object') {
-              defaulty(targetObj[i], defaultObj[i]);
+                extend(targetObj[i], defaultObj[i]);
             }
-          }
         }
-        return targetObj;
-      };
+    }
+    return targetObj;
+}
 
-      /**
-       * Creates new target object and copies deep missing properties to the target object
-       * @param args[0] {Object} target object
-       * @param args[1] {Object} default object
-       * @param args[2] {Array} exclude properties from copy
-       * @returns {*}
-       */
-      var copy = function copy() {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
+/**
+ * Creates new target object and copies deep missing properties to the target object
+ * @param args[0] {Object} target object
+ * @param args[1] {Object} default object
+ * @param args[2] {Array} exclude properties from copy
+ * @returns {*}
+ */
+function copy() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
 
-        //args[0] = Object.assign({}, args[0]);
-        args[0] = deepCopy(args[0]);
-        return defaulty.apply(undefined, args);
-      };
+    args[0] = Object.assign({}, args[0]);
+    return extend.apply(this, args);
+}
 
-      module.exports = defaulty;
-      module.exports.copy = copy;
-
-      /***/
-    },
-    /* 2 */
-    /***/function (module, exports, __webpack_require__) {
-
-      "use strict";
-
-      var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-      var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
-        return typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
-      } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
-      };
-
-      ;(function (name, root, factory) {
-        if ((false ? 'undefined' : _typeof(exports)) === 'object') {
-          module.exports = factory();
-        }
-        /* istanbul ignore next */
-        else if (true) {
-            !(__WEBPACK_AMD_DEFINE_FACTORY__ = factory, __WEBPACK_AMD_DEFINE_RESULT__ = typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? __WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module) : __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-          } else {
-            root[name] = factory();
-          }
-      })('dcopy', undefined, function () {
-        /**
-         * Deep copy objects and arrays
-         *
-         * @param {Object/Array} target
-         * @return {Object/Array} copy
-         * @api public
-         */
-
-        return function (target) {
-          if (/number|string|boolean/.test(typeof target === 'undefined' ? 'undefined' : _typeof(target))) {
-            return target;
-          }
-          if (target instanceof Date) {
-            return new Date(target.getTime());
-          }
-
-          var copy = target instanceof Array ? [] : {};
-          walk(target, copy);
-          return copy;
-
-          function walk(target, copy) {
-            for (var key in target) {
-              var obj = target[key];
-              if (obj instanceof Date) {
-                var value = new Date(obj.getTime());
-                add(copy, key, value);
-              } else if (obj instanceof Function) {
-                var value = obj;
-                add(copy, key, value);
-              } else if (obj instanceof Array) {
-                var value = [];
-                var last = add(copy, key, value);
-                walk(obj, last);
-              } else if (obj instanceof Object) {
-                var value = {};
-                var last = add(copy, key, value);
-                walk(obj, last);
-              } else {
-                var value = obj;
-                add(copy, key, value);
-              }
-            }
-          }
-        };
-
-        /**
-         * Adds a value to the copy object based on its type
-         *
-         * @api private
-         */
-
-        function add(copy, key, value) {
-          if (copy instanceof Array) {
-            copy.push(value);
-            return copy[copy.length - 1];
-          } else if (copy instanceof Object) {
-            copy[key] = value;
-            return copy[key];
-          }
-        }
-      });
-
-      /***/
-    }]
-    /******/)
-  );
-});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+module.exports = extend;
+module.exports.copy = copy;
 
 /***/ }),
 /* 4 */
@@ -491,7 +287,7 @@ var _require2 = __webpack_require__(0),
     TAG = _require2.TAG;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(13);
+var observer = __webpack_require__(12);
 var events = __webpack_require__(6);
 
 var _require3 = __webpack_require__(7),
@@ -500,9 +296,9 @@ var _require3 = __webpack_require__(7),
 
 var update = __webpack_require__(8).updateElement;
 var castStringTo = __webpack_require__(2);
-var store = __webpack_require__(17);
+var store = __webpack_require__(16);
 
-var _require4 = __webpack_require__(18),
+var _require4 = __webpack_require__(17),
     extract = _require4.extract;
 
 function component(tag) {
@@ -902,7 +698,7 @@ module.exports = {
 "use strict";
 
 
-var element = __webpack_require__(15);
+var element = __webpack_require__(14);
 
 module.exports = {
     updateElement: element.update
@@ -1039,37 +835,7 @@ module.exports = Doz;
 "use strict";
 
 
-module.exports = function (module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function () {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function get() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function get() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var proxy = __webpack_require__(14);
+var proxy = __webpack_require__(13);
 var events = __webpack_require__(6);
 
 function create(instance, props) {
@@ -1100,7 +866,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1636,7 +1402,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1644,7 +1410,7 @@ try {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(16),
+var _require = __webpack_require__(15),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1698,7 +1464,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1852,7 +1618,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1873,7 +1639,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

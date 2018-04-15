@@ -1,4 +1,4 @@
-const extend = require('defaulty');
+const extend = require('./utils/extend');
 const component = require('./component/index');
 const {TAG, REGEX} = require('./constants');
 

@@ -30,15 +30,7 @@
         "url": "https://github.com/fabioricali/doz/issues"
     },
     "homepage": "https://github.com/fabioricali/doz#readme",
-    "dependencies": {
-        "arrayme": "^1.0.3",
-        "deep-copy": "^1.4.2",
-        "defaulty": "^2.1.0",
-        "dohtml": "^0.1.0",
-        "fast-deep-equal": "^1.1.0",
-        "flak": "^1.0.0",
-        "typis": "^1.1.1"
-    },
+    "dependencies": {},
     "devDependencies": {
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",

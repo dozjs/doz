@@ -2,8 +2,6 @@ const {transform} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
 const be = require('bejs');
-const collection = require('../src/collection');
-const copy = require('deep-copy');
 
 describe('parser', function () {
 
