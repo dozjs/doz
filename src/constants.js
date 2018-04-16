@@ -3,7 +3,8 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view-component'
+        VIEW: 'doz-view-component',
+        SUFFIX_ROOT: '-root'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -14,6 +15,7 @@ module.exports = {
         IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
+        IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {

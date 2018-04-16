@@ -13,6 +13,8 @@ function create(node, cmp) {
     }
     const $el = document.createElement(node.type);
 
+    //console.log($el);
+
     attach($el, node.props, cmp);
 
     node.children
@@ -40,23 +42,32 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         );
         return rootElement;
     } else if (newNode.type) {
+        //console.log('update');
         updateAttributes(
             $parent.childNodes[index],
             newNode.props,
             oldNode.props
         );
+
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
 
+        let rootElement = [];
+
         for (let i = 0; i < newLength || i < oldLength; i++) {
-            update(
+            let res = update(
                 $parent.childNodes[index],
                 newNode.children[i],
                 oldNode.children[i],
                 i,
                 cmp
             );
+
+            if (res) rootElement = rootElement.concat(res);
         }
+
+        if (rootElement.length)
+            return rootElement;
     }
 }
 

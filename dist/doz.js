@@ -86,7 +86,8 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view-component'
+        VIEW: 'doz-view-component',
+        SUFFIX_ROOT: '-root'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -97,6 +98,7 @@ module.exports = {
         IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
+        IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/
     },
     ATTR: {
@@ -400,6 +402,10 @@ function createInstance(cmp, cfg) {
             value: false,
             writable: true
         },
+        _prevTpl: {
+            value: null,
+            writable: true
+        },
         _prev: {
             value: null,
             writable: true
@@ -469,18 +475,38 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value() {
-                var tag = this.tag ? this.tag + '-root' : TAG.ROOT;
+                var _this = this;
+
+                var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
+
+                //console.log(this.template());
+
                 var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
                 var next = transform(tpl);
 
-                //console.log(next, this._prev)
+                //console.log(tpl);
+
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
+                // This can identify components that must be transform to HTML then check them
+                if (Array.isArray(rootElement)) {
+                    rootElement.forEach(function (item) {
+                        //console.log(el);
+                        //getInstances(el, el.outerHTML, this._view, this.cmp)
+
+                        var template = item.outerHTML;
+                        var rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, template, _this._view, _this);
+                    });
+                }
+
                 this._prev = next;
+                this._prevTpl = tpl;
             },
             enumerable: true
         },
@@ -1435,6 +1461,8 @@ function create(node, cmp) {
     }
     var $el = document.createElement(node.type);
 
+    //console.log($el);
+
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
@@ -1459,13 +1487,21 @@ function update($parent, newNode, oldNode) {
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
+        //console.log('update');
         updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
+
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
+        var _rootElement2 = [];
+
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+            var res = update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+
+            if (res) _rootElement2 = _rootElement2.concat(res);
         }
+
+        if (_rootElement2.length) return _rootElement2;
     }
 }
 
@@ -1540,6 +1576,7 @@ function updateAttribute($target, name, newVal, oldVal) {
 function updateAttributes($target, newProps) {
     var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
+    //console.log('update att')
     var props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(function (name) {
         updateAttribute($target, name, newProps[name], oldProps[name]);
@@ -1582,6 +1619,13 @@ function addEventListener($target, name, value, cmp) {
             args = stringArgs.split(',').map(function (item) {
                 return castStringTo(item.trim());
             });
+        }
+
+        var isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
+
+        if (isParentMethod) {
+            handler = isParentMethod[1];
+            cmp = cmp.parent;
         }
 
         if (handler in cmp) {

@@ -88,7 +88,6 @@ function getInstances(root, template, view, parentCmp) {
                                 }
                             }
                             newElement.children[n] = cmps[i]
-
                         })
                     }
                 });
@@ -108,6 +107,10 @@ function createInstance(cmp, cfg) {
     const instance = Object.defineProperties({}, {
         _isCreated: {
             value: false,
+            writable: true
+        },
+        _prevTpl: {
+            value: null,
             writable: true
         },
         _prev: {
@@ -176,18 +179,36 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function () {
-                const tag = this.tag ? this.tag + '-root' : TAG.ROOT;
+                const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
+
+                //console.log(this.template());
+
                 const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
                 const next = transform(tpl);
 
-                //console.log(next, this._prev)
+                //console.log(tpl);
+
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
+                // This can identify components that must be transform to HTML then check them
+                if (Array.isArray(rootElement)){
+                    rootElement.forEach(item => {
+                        //console.log(el);
+                        //getInstances(el, el.outerHTML, this._view, this.cmp)
+
+                        const template = item.outerHTML;
+                        const rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        getInstances(rootElement, template, this._view, this);
+                    });
+                }
+
                 this._prev = next;
+                this._prevTpl = tpl;
             },
             enumerable: true
         },

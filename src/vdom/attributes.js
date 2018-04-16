@@ -54,6 +54,7 @@ function updateAttribute($target, name, newVal, oldVal) {
 }
 
 function updateAttributes($target, newProps, oldProps = {}) {
+    //console.log('update att')
     const props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(name => {
         updateAttribute($target, name, newProps[name], oldProps[name]);
@@ -97,6 +98,13 @@ function addEventListener($target, name, value, cmp) {
         let stringArgs = match[2];
         if (stringArgs) {
             args = stringArgs.split(',').map(item => castStringTo(item.trim()))
+        }
+
+        let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
+
+        if (isParentMethod) {
+            handler = isParentMethod[1];
+            cmp = cmp.parent;
         }
 
         if (handler in cmp) {

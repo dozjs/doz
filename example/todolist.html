@@ -22,27 +22,35 @@
 
     Doz.component('doz-label', {
         template() {
-            return (
-                `<div>${this.props.fieldname}</div>`
-            );
+            return `<div>${this.props.fieldname}</div>`;
+        }
+    });
+
+    Doz.component('doz-todo-item', {
+        template() {
+            return `
+                <li>
+                    <button onclick="this.parent.removeItem(${this.props.id})">&cross;</button>
+                    <button disabled=${this.props.done} onclick="this.parent.markAsRead(${this.props.id})">&check;</button> <strong>${this.props.title}</strong>
+                </li>
+            `;
         }
     });
 
     Doz.component('doz-todo', {
         template() {
-            return (
-                `<div>
+            return `
+                <div>
                     <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text">
                     <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
-                    <ul>${this.each(this.props.record, (item, i) =>
-                        `<li>
-                            <button onclick="this.removeItem(${i})">&cross;</button>
-                            <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
-                         </li>`
-                        )}
+                    <ul>${
+                            this.each(this.props.record, (item, i) =>
+                                `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                            )
+                        }
                     </ul>
-                </div>`
-            );
+                </div>
+            `;
         },
 
         props: {
