@@ -195,7 +195,7 @@ function createInstance(cmp, cfg) {
                 // This can identify components that must be transform to HTML then check them
                 if (Array.isArray(rootElement)){
                     rootElement.forEach(item => {
-                        console.log('item')
+                        if (item.nodeType !== 1) return;
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
