@@ -73,7 +73,7 @@ function getInstances(root, template, view, parentCmp) {
                 const nested = newElement._rootElement.querySelectorAll('*');
                 //console.log(child.nodeName, dProps, props);
                 Array.from(nested).forEach(item => {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && [TAG.EACH, TAG.ROOT].indexOf(item.nodeName.toLowerCase()) === -1) {
 
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
@@ -164,7 +164,7 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
                 if (Array.isArray(obj))
-                    return obj.map(func).join('');
+                    return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
             },
             enumerable: true
         },

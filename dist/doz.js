@@ -85,6 +85,7 @@ module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     TAG: {
         ROOT: 'doz-root',
+        EACH: 'doz-each-root',
         VIEW: 'doz-view-component'
     },
     REGEX: {
@@ -366,7 +367,7 @@ function getInstances(root, template, view, parentCmp) {
                 var nested = newElement._rootElement.querySelectorAll('*');
                 //console.log(child.nodeName, dProps, props);
                 Array.from(nested).forEach(function (item) {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName)) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && [TAG.EACH, TAG.ROOT].indexOf(item.nodeName.toLowerCase()) === -1) {
 
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
@@ -454,7 +455,9 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-                if (Array.isArray(obj)) return obj.map(func).join('');
+                if (Array.isArray(obj)) return '<' + TAG.EACH + '>' + obj.map(func).map(function (e) {
+                    return e.trim();
+                }).join('') + '</' + TAG.EACH + '>';
             },
             enumerable: true
         },
@@ -533,12 +536,8 @@ var html = {
      */
     create: function create(str) {
         var element = void 0;
-        str = str.replace(/\n|\s{2,}/g, ' ');
-        str = str.replace(/[\t\r]/g, '');
-        str = str.replace(/>\s+</g, '><');
-        //str = str.replace(/>\s{2,}</g,'>&nbsp;<');
-        str = str.trim();
-        //console.log(str)
+        str = str.replace(/\n/g, ' ');
+        str = str.replace(/\s+/g, ' ');
         if (/<.*>/g.test(str)) {
             var template = document.createElement('div');
             template.innerHTML = str;
@@ -1442,7 +1441,6 @@ function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
 
-    if (!$parent) return;
 
     if (!oldNode) {
         var rootElement = create(newNode, cmp);
@@ -1458,6 +1456,7 @@ function update($parent, newNode, oldNode) {
         updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
+
         for (var i = 0; i < newLength || i < oldLength; i++) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
         }
@@ -1501,7 +1500,6 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value) {
-    if (!$target) return;
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
@@ -1516,7 +1514,6 @@ function setAttribute($target, name, value) {
 }
 
 function removeAttribute($target, name, value) {
-    if (!$target) return;
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.removeAttribute('class');
     } else if (typeof value === 'boolean') {
@@ -1527,7 +1524,6 @@ function removeAttribute($target, name, value) {
 }
 
 function updateAttribute($target, name, newVal, oldVal) {
-    if (!$target) return;
     if (!newVal) {
         removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
@@ -1549,7 +1545,6 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
-    if (!$target) return;
     if (value) {
         $target.setAttribute(name, value);
         $target[name] = true;
@@ -1559,7 +1554,6 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
-    if (!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }

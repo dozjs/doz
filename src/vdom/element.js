@@ -22,7 +22,6 @@ function create(node, cmp) {
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp) {
-    if (!$parent) return;
 
     if (!oldNode) {
         const rootElement = create(newNode, cmp);
@@ -48,6 +47,7 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         );
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
+
         for (let i = 0; i < newLength || i < oldLength; i++) {
             update(
                 $parent.childNodes[index],

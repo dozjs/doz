@@ -2,6 +2,7 @@ module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     TAG: {
         ROOT: 'doz-root',
+        EACH: 'doz-each-root',
         VIEW: 'doz-view-component'
     },
     REGEX: {

@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
     <script src="../dist/doz.js?589654888"></script>
     <style>
         body {
@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-<h1>TODO list</h1>
+
 <div id="app"></div>
 
 <script>
@@ -32,20 +32,19 @@
         template() {
             return (
                 `<div>
-                    <doz-label d-alias="label" fieldname="Insert title"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
-                    <ul>
-                    ${this.each(this.props.record, (item, i) =>
-                    `<li>
-                            <button onclick="this.removeItem(${i})">&cross;</button>&nbsp;
-                            <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button>&nbsp;<strong>${item.title}</strong>
-                         </li>`)}
+                    <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
+                    <ul>${this.each(this.props.record, (item, i) =>
+                        `<li>
+                            <button onclick="this.removeItem(${i})">&cross;</button>
+                            <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
+                         </li>`
+                        )}
                     </ul>
                 </div>`
             );
         },
 
         props: {
-            time: new Date().toLocaleTimeString(),
             record: [],
             todo: ''
         },
@@ -69,31 +68,17 @@
         },
 
         removeItem(arg) {
-            console.log('before remove', arg[0])
             this.props.record.splice([arg[0]], 1);
-            console.log('after remove',this.props.record)
-        },
-
-        onRender() {
-            console.log(this._rootElement)
-        },
-
-        onUpdate() {
-            console.log('on update',this.props.record)
         }
     });
 
-    const view = new Doz({
+    new Doz({
         root: document.getElementById('app'),
-        template: `<h2>Result <strong>here</strong></h2><doz-todo d-alias="todo-list" recordf='[{"title":"ciao", "done": true}]'></doz-todo>`
+        template: `
+            <h1>TODO list</h1>
+            <doz-todo d-alias="todo-list" record='[{"title":"Buy milk", "done":false}]'></doz-todo>
+        `
     });
-/*
-    console.log(view.getComponent('todo-list'));
-
-    setInterval(() => {
-        view.getComponent('todo-list').children['label'].props.fieldname = new Date().toLocaleTimeString();
-    }, 1000);*/
-
 
 </script>
 </body>
