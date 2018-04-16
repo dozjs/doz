@@ -176,7 +176,6 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function () {
-                //const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
                 const tag = this.tag ? this.tag + '-root' : TAG.ROOT;
                 const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
                 const next = transform(tpl);
@@ -194,7 +193,7 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function () {
-                if (!this._rootElement) return;
+                if (!this._rootElement || events.callBeforeDestroy(this) === false) return;
                 this._rootElement.parentNode.removeChild(this._rootElement);
                 events.callDestroy(this);
             },

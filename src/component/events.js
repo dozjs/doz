@@ -22,6 +22,12 @@ function callUpdate(context) {
     }
 }
 
+function callBeforeDestroy(context) {
+    if(typeof context.onBeforeDestroy === 'function'){
+        return context.onBeforeDestroy.call(context);
+    }
+}
+
 function callDestroy(context) {
     if(typeof context.onDestroy === 'function'){
         context.onDestroy.call(context);
@@ -34,5 +40,6 @@ module.exports = {
     callRender,
     callBeforeUpdate,
     callUpdate,
+    callBeforeDestroy,
     callDestroy
 };

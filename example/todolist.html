@@ -32,7 +32,8 @@
         template() {
             return (
                 `<div>
-                    <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text"><button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
+                    <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text">
+                    <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
                     <ul>${this.each(this.props.record, (item, i) =>
                         `<li>
                             <button onclick="this.removeItem(${i})">&cross;</button>
@@ -69,6 +70,10 @@
 
         removeItem(arg) {
             this.props.record.splice([arg[0]], 1);
+        },
+
+        onBeforeDestroy() {
+            return confirm('Destroy component?');
         }
     });
 

@@ -469,7 +469,6 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value() {
-                //const tpl = html.create(`<${TAG.ROOT}>${this.template()}</${TAG.ROOT}>`);
                 var tag = this.tag ? this.tag + '-root' : TAG.ROOT;
                 var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
                 var next = transform(tpl);
@@ -487,7 +486,7 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value() {
-                if (!this._rootElement) return;
+                if (!this._rootElement || events.callBeforeDestroy(this) === false) return;
                 this._rootElement.parentNode.removeChild(this._rootElement);
                 events.callDestroy(this);
             },
@@ -611,6 +610,12 @@ function callUpdate(context) {
     }
 }
 
+function callBeforeDestroy(context) {
+    if (typeof context.onBeforeDestroy === 'function') {
+        return context.onBeforeDestroy.call(context);
+    }
+}
+
 function callDestroy(context) {
     if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
@@ -623,6 +628,7 @@ module.exports = {
     callRender: callRender,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
+    callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
 
