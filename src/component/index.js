@@ -181,12 +181,8 @@ function createInstance(cmp, cfg) {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
-                //console.log(this.template());
-
                 const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
-                const next = transform(tpl);
-
-                //console.log(tpl);
+                let next = transform(tpl);
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -194,21 +190,29 @@ function createInstance(cmp, cfg) {
                     this._rootElement = rootElement;
                 }
 
+                this._prev = next;
+                console.log(rootElement);
                 // This can identify components that must be transform to HTML then check them
                 if (Array.isArray(rootElement)){
                     rootElement.forEach(item => {
-                        //console.log(el);
-                        //getInstances(el, el.outerHTML, this._view, this.cmp)
-
+                        console.log('item')
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        getInstances(rootElement, template, this._view, this);
+                        let cmp = getInstances(rootElement, template, this._view, this);
+                        console.log('cmp',cmp);
+                        ///this._prev = transform(this._rootElement);
+                        //console.log(next);
+                        //next = transform(cfg.root);
+                        //update(this._rootElement, next, null, 0, this);
                     });
+                    //console.log('next',next);
+                    //console.log('prev',this._prev);
+                    //this._prev = transform(this._rootElement);
                 }
 
-                this._prev = next;
-                this._prevTpl = tpl;
+
+                //this._prevTpl = tpl;
             },
             enumerable: true
         },

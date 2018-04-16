@@ -29,11 +29,14 @@
     Doz.component('doz-todo-item', {
         template() {
             return `
-                <li>
+                <div>
                     <button onclick="this.parent.removeItem(${this.props.id})">&cross;</button>
-                    <button disabled=${this.props.done} onclick="this.parent.markAsRead(${this.props.id})">&check;</button> <strong>${this.props.title}</strong>
-                </li>
+                    <button disabled=${this.props.done} onclick="this.parent.markAsRead(${this.props.id})">&check;</button> #${this.props.id} <strong>${this.props.title}</strong>
+                </div>
             `;
+        },
+        onRender() {
+            //console.log(this);
         }
     });
 
@@ -43,12 +46,12 @@
                 <div>
                     <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text">
                     <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
-                    <ul>${
+                    <div>${
                             this.each(this.props.record, (item, i) =>
                                 `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                             )
                         }
-                    </ul>
+                    </div>
                 </div>
             `;
         },
@@ -77,6 +80,7 @@
         },
 
         removeItem(arg) {
+            console.log(this.props.record[arg[0]]);
             this.props.record.splice([arg[0]], 1);
         },
 

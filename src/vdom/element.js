@@ -30,6 +30,8 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
+        console.log('remove', $parent, $parent.childNodes[index].innerHTML)
+
         if ($parent.childNodes[index])
             $parent.removeChild(
                 $parent.childNodes[index]
@@ -53,6 +55,9 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         const oldLength = oldNode.children.length;
 
         let rootElement = [];
+
+        //if (newLength!== oldLength)
+        ///console.log(newLength, oldLength);
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
             let res = update(
