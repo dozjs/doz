@@ -26,17 +26,19 @@
         }
     });
 
+    Doz.component('doz-field', {
+        template() {
+            return `<span>${this.props.title}</span>`
+        }
+    });
+
     Doz.component('doz-todo-item', {
         template() {
             return `
                 <div>
-                    <button onclick="this.parent.removeItem(${this.props.id})">&cross;</button>
-                    <button disabled=${this.props.done} onclick="this.parent.markAsRead(${this.props.id})">&check;</button> #${this.props.id} <strong>${this.props.title}</strong>
-                </div>
-            `;
-        },
-        onRender() {
-            //console.log(this);
+                    <button onclick="this.removeItem(${this.props.id})">&cross;</button>
+                    <button disabled=${this.props.done} onclick="this.markAsRead(${this.props.id})">&check;</button> #${this.props.id} <strong><doz-field title="${this.props.title}"></doz-field></strong>
+                </div>`;
         }
     });
 
@@ -45,7 +47,7 @@
             return `
                 <div>
                     <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text">
-                    <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button>
+                    <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button> <button onclick="this.reverse()" >Reverse</button>
                     <div>${
                             this.each(this.props.record, (item, i) =>
                                 `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
@@ -79,13 +81,26 @@
             this.props.todo = '';
         },
 
+        reverse() {
+            this.props.record.reverse();
+        },
+
         removeItem(arg) {
-            console.log(this.props.record[arg[0]]);
+            //console.log(this.props.record[arg[0]]);
             this.props.record.splice([arg[0]], 1);
         },
 
         onBeforeDestroy() {
             return confirm('Destroy component?');
+        },
+
+        onRender() {
+            for (let i = 0; i < 1000; i++) {
+                this.props.record.push({
+                    title: 'title ' + i,
+                    done: false
+                });
+            }
         }
     });
 
@@ -93,7 +108,7 @@
         root: document.getElementById('app'),
         template: `
             <h1>TODO list</h1>
-            <doz-todo d-alias="todo-list" record='[{"title":"Buy milk", "done":false}]'></doz-todo>
+            <doz-todo d-alias="todo-list" recordd='[{"title":"Buy milk", "done":false},{"title":"Buy milk2", "done":false}]'></doz-todo>
         `
     });
 

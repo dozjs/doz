@@ -68,12 +68,13 @@ function getInstances(root, template, view, parentCmp) {
                 child.parentNode.removeChild(child);
                 newElement.render();
                 events.callRender(newElement);
+
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 const nested = newElement._rootElement.querySelectorAll('*');
-                //console.log(child.nodeName, dProps, props);
+
                 Array.from(nested).forEach(item => {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && [TAG.EACH, TAG.ROOT].indexOf(item.nodeName.toLowerCase()) === -1) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
@@ -173,11 +174,11 @@ function createInstance(cmp, cfg) {
 
                         if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
                             let el = html.create(stringEl);
-                            el.setAttribute(ATTR.DYNAMIC, 'each');
+                            el.setAttribute(ATTR.STATIC, 'each');
                             stringEl = el.outerHTML;
                             let cmp = getInstances(document.createElement(TAG.ROOT), stringEl, this._view, this);
-                            console.log('stringEl',cmp);
                             stringEl = cmp[0]._rootElement.innerHTML;
+                            cmp[0].destroy();
                         }
 
                         return stringEl
@@ -195,16 +196,9 @@ function createInstance(cmp, cfg) {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 //console.time('render tpl');
-                const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
+                const template = this.template().trim();
+                const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 //console.timeEnd('render tpl');
-
-                /*let nodes = html.getAllNodes(tpl);
-
-                nodes.forEach(item => {
-                    if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
-                    console.log('ROOT', item.firstChild);
-                    console.log(item);
-                });*/
 
                 //console.time('transform tpl');
                 let next = transform(tpl);
@@ -220,17 +214,6 @@ function createInstance(cmp, cfg) {
 
                 this._prev = next;
 
-                //This can identify components that must be transform to HTML then check them
-                if (Array.isArray(rootElement)){
-                    /*rootElement.forEach(item => {
-                        if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
-                        const template = item.outerHTML;
-                        const rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        let cmp = getInstances(rootElement, template, this._view, this);
-                        console.log('cmp',cmp);
-                    });*/
-                }
             },
             enumerable: true
         },

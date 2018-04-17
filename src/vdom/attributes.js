@@ -17,7 +17,7 @@ function canBind($target) {
     return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1
 }
 
-function setAttribute($target, name, value) {
+function setAttribute($target, name, value, cmp) {
     if (isCustomAttribute(name)) {
     } else if (name === 'className') {
         $target.setAttribute('class', value);
@@ -30,7 +30,16 @@ function setAttribute($target, name, value) {
 
         }
     } else {
+
         $target.setAttribute(name, value);
+
+        for (let i in $target.dataset) {
+            if ($target.dataset.hasOwnProperty(i)&& REGEX.IS_LISTENER.test(i)) {
+                //console.log('data', i, $target.dataset[i]);
+                //console.log(cmp);
+                addEventListener($target, i, $target.dataset[i], cmp);
+            }
+        }
     }
 }
 
@@ -93,6 +102,8 @@ function addEventListener($target, name, value, cmp) {
 
     let match = value.match(REGEX.GET_LISTENER);
 
+    $target.dataset[name] = value;
+
     if (match) {
         let args = null;
         let handler = match[1];
@@ -115,10 +126,12 @@ function addEventListener($target, name, value, cmp) {
         }
     }
 
-    $target.addEventListener(
-        extractEventName(name),
-        value
-    );
+    if (typeof value === 'function')
+        $target.addEventListener(
+            extractEventName(name),
+            value
+        );
+
 }
 
 function setBind($target, name, value, cmp) {
@@ -145,7 +158,7 @@ function setRef($target, name, value, cmp) {
 
 function attach($target, props, cmp) {
     Object.keys(props).forEach(name => {
-        setAttribute($target, name, props[name]);
+        setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
         setBind($target, name, props[name], cmp);
         setRef($target, name, props[name], cmp);

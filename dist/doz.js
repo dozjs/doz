@@ -112,7 +112,7 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        DYNAMIC: 'd:dynamic'
+        STATIC: 'd:static'
     }
 };
 
@@ -367,12 +367,13 @@ function getInstances(root, template, view, parentCmp) {
                 child.parentNode.removeChild(child);
                 newElement.render();
                 events.callRender(newElement);
+
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 var nested = newElement._rootElement.querySelectorAll('*');
-                //console.log(child.nodeName, dProps, props);
+
                 Array.from(nested).forEach(function (item) {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && [TAG.EACH, TAG.ROOT].indexOf(item.nodeName.toLowerCase()) === -1) {
+                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
                         var _template = item.outerHTML;
                         var rootElement = document.createElement(item.nodeName);
@@ -472,11 +473,11 @@ function createInstance(cmp, cfg) {
 
                     if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
                         var el = html.create(stringEl);
-                        el.setAttribute(ATTR.DYNAMIC, 'each');
+                        el.setAttribute(ATTR.STATIC, 'each');
                         stringEl = el.outerHTML;
                         var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this);
-                        console.log('stringEl', _cmp);
                         stringEl = _cmp[0]._rootElement.innerHTML;
+                        _cmp[0].destroy();
                     }
 
                     return stringEl;
@@ -494,15 +495,9 @@ function createInstance(cmp, cfg) {
             value: function value() {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 //console.time('render tpl');
-                var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
+                var template = this.template().trim();
+                var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 //console.timeEnd('render tpl');
-
-                /*let nodes = html.getAllNodes(tpl);
-                  nodes.forEach(item => {
-                    if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
-                    console.log('ROOT', item.firstChild);
-                    console.log(item);
-                });*/
 
                 //console.time('transform tpl');
                 var next = transform(tpl);
@@ -517,18 +512,6 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
-
-                //This can identify components that must be transform to HTML then check them
-                if (Array.isArray(rootElement)) {
-                    /*rootElement.forEach(item => {
-                        if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
-                        const template = item.outerHTML;
-                        const rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        let cmp = getInstances(rootElement, template, this._view, this);
-                        console.log('cmp',cmp);
-                    });*/
-                }
             },
             enumerable: true
         },
@@ -1497,6 +1480,8 @@ function update($parent, newNode, oldNode) {
     var cmp = arguments[4];
 
 
+    //if (!$parent) return;
+
     if (!oldNode) {
         var rootElement = create(newNode, cmp);
         $parent.appendChild(rootElement);
@@ -1561,7 +1546,7 @@ function canBind($target) {
     return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1;
 }
 
-function setAttribute($target, name, value) {
+function setAttribute($target, name, value, cmp) {
     if (isCustomAttribute(name)) {} else if (name === 'className') {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
@@ -1571,7 +1556,16 @@ function setAttribute($target, name, value) {
             $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {}
     } else {
+
         $target.setAttribute(name, value);
+
+        for (var i in $target.dataset) {
+            if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
+                //console.log('data', i, $target.dataset[i]);
+                //console.log(cmp);
+                addEventListener($target, i, $target.dataset[i], cmp);
+            }
+        }
     }
 }
 
@@ -1632,6 +1626,8 @@ function addEventListener($target, name, value, cmp) {
 
     var match = value.match(REGEX.GET_LISTENER);
 
+    $target.dataset[name] = value;
+
     if (match) {
         var args = null;
         var handler = match[1];
@@ -1654,7 +1650,7 @@ function addEventListener($target, name, value, cmp) {
         }
     }
 
-    $target.addEventListener(extractEventName(name), value);
+    if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);
 }
 
 function setBind($target, name, value, cmp) {
@@ -1680,7 +1676,7 @@ function setRef($target, name, value, cmp) {
 
 function attach($target, props, cmp) {
     Object.keys(props).forEach(function (name) {
-        setAttribute($target, name, props[name]);
+        setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
         setBind($target, name, props[name], cmp);
         setRef($target, name, props[name], cmp);

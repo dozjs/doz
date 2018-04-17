@@ -74,6 +74,15 @@
 
         onBeforeDestroy() {
             return confirm('Destroy component?');
+        },
+
+        onRender() {
+            for (let i = 0; i < 1000; i++) {
+                this.props.record.push({
+                    title: 'title ' + i,
+                    done: false
+                });
+            }
         }
     });
 

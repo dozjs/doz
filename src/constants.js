@@ -29,6 +29,6 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        DYNAMIC: 'd:dynamic'
+        STATIC: 'd:static'
     }
 };
