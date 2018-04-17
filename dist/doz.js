@@ -91,6 +91,7 @@ module.exports = {
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
+        IS_CUSTOM_TAG_STRING: /^<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
@@ -105,12 +106,13 @@ module.exports = {
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
-        // Attribute for Components
+        // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
         CLASS: 'd:class',
-        STYLE: 'd:style'
+        STYLE: 'd:style',
+        DYNAMIC: 'd:dynamic'
     }
 };
 
@@ -289,7 +291,8 @@ var html = __webpack_require__(5);
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
-    TAG = _require2.TAG;
+    TAG = _require2.TAG,
+    ATTR = _require2.ATTR;
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(12);
@@ -461,11 +464,23 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-                if (Array.isArray(obj))
-                    //return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
-                    return obj.map(func).map(function (e) {
-                        return e.trim();
-                    }).join('').trim();
+                var _this = this;
+
+                if (Array.isArray(obj)) return obj.map(func).map(function (stringEl) {
+
+                    stringEl = stringEl.trim();
+
+                    if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
+                        var el = html.create(stringEl);
+                        el.setAttribute(ATTR.DYNAMIC, 'each');
+                        stringEl = el.outerHTML;
+                        var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this);
+                        console.log('stringEl', _cmp);
+                        stringEl = _cmp[0]._rootElement.innerHTML;
+                    }
+
+                    return stringEl;
+                }).join('').trim();
             },
             enumerable: true
         },
@@ -482,12 +497,12 @@ function createInstance(cmp, cfg) {
                 var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
                 //console.timeEnd('render tpl');
 
-                var nodes = html.getAllNodes(tpl);
-
-                nodes.forEach(function (item) {
+                /*let nodes = html.getAllNodes(tpl);
+                  nodes.forEach(item => {
                     if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
+                    console.log('ROOT', item.firstChild);
                     console.log(item);
-                });
+                });*/
 
                 //console.time('transform tpl');
                 var next = transform(tpl);

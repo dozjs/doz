@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG} = require('../constants');
+const {REGEX, TAG, ATTR} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');
@@ -167,8 +167,21 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
                 if (Array.isArray(obj))
-                    //return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
-                    return obj.map(func).map(e => e.trim()).join('').trim();
+                    return obj.map(func).map(stringEl =>  {
+
+                        stringEl = stringEl.trim();
+
+                        if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
+                            let el = html.create(stringEl);
+                            el.setAttribute(ATTR.DYNAMIC, 'each');
+                            stringEl = el.outerHTML;
+                            let cmp = getInstances(document.createElement(TAG.ROOT), stringEl, this._view, this);
+                            console.log('stringEl',cmp);
+                            stringEl = cmp[0]._rootElement.innerHTML;
+                        }
+
+                        return stringEl
+                    }).join('').trim();
             },
             enumerable: true
         },
@@ -185,12 +198,13 @@ function createInstance(cmp, cfg) {
                 const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
                 //console.timeEnd('render tpl');
 
-                let nodes = html.getAllNodes(tpl);
+                /*let nodes = html.getAllNodes(tpl);
 
                 nodes.forEach(item => {
                     if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
+                    console.log('ROOT', item.firstChild);
                     console.log(item);
-                });
+                });*/
 
                 //console.time('transform tpl');
                 let next = transform(tpl);

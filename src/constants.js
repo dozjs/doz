@@ -8,6 +8,7 @@ module.exports = {
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
+        IS_CUSTOM_TAG_STRING: /^<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
@@ -22,11 +23,12 @@ module.exports = {
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
-        // Attribute for Components
+        // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
         CLASS: 'd:class',
-        STYLE: 'd:style'
+        STYLE: 'd:style',
+        DYNAMIC: 'd:dynamic'
     }
 };
