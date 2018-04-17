@@ -1,4 +1,4 @@
-// [AIV_SHORT]  Doz Build version: 0.0.3  
+// [AIV_SHORT]  Doz Build version: 0.0.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
