@@ -86,7 +86,6 @@
         },
 
         removeItem(arg) {
-            //console.log(this.props.record[arg[0]]);
             this.props.record.splice([arg[0]], 1);
         },
 
@@ -95,12 +94,7 @@
         },
 
         onRender() {
-            for (let i = 0; i < 1000; i++) {
-                this.props.record.push({
-                    title: 'title ' + i,
-                    done: false
-                });
-            }
+            this.props.record = [{title:"Buy milk", done:false},{title:"Buy cigarettes", done:false}];
         }
     });
 
@@ -108,7 +102,7 @@
         root: document.getElementById('app'),
         template: `
             <h1>TODO list</h1>
-            <doz-todo d-alias="todo-list" recordd='[{"title":"Buy milk", "done":false},{"title":"Buy milk2", "done":false}]'></doz-todo>
+            <doz-todo d-alias="todo-list"></doz-todo>
         `
     });
 

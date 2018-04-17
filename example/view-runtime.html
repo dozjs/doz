@@ -20,6 +20,14 @@
 
 <script>
 
+    Doz.component('doz-post-component', {
+        template() {
+            return `
+                <div>Hello</div>
+            `;
+        }
+    });
+
     Doz.component('doz-label', {
         template() {
             return (
@@ -39,7 +47,7 @@
                             <button onclick="this.removeItem(${i})">&cross;</button>
                             <button disabled=${item.done} onclick="this.markAsRead(${i})">&check;</button> <strong>${item.title}</strong>
                          </li>`
-                )}
+                        )}
                     </ul>
                 </div>`
             );
@@ -81,7 +89,7 @@
         root: document.getElementById('app'),
         template: `
             <h1>TODO list</h1>
-            <doz-todo d-alias="todo-list" record='[{"title":"Buy milk", "done":false}]'></doz-todo>
+            <doz-todo d-alias="todo-list" record='[{"title":"Buy milk", "done":false}]'>ssasasasassa</doz-todo>
         `
     });
 
