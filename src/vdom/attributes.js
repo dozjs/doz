@@ -78,6 +78,7 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
+    //if(!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }

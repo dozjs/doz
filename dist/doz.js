@@ -461,9 +461,11 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-                if (Array.isArray(obj)) return '<' + TAG.EACH + '>' + obj.map(func).map(function (e) {
-                    return e.trim();
-                }).join('') + '</' + TAG.EACH + '>';
+                if (Array.isArray(obj))
+                    //return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
+                    return obj.map(func).map(function (e) {
+                        return e.trim();
+                    }).join('').trim();
             },
             enumerable: true
         },
@@ -475,41 +477,43 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value() {
-                var _this = this;
-
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-
+                //console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + this.template() + '</' + tag + '>');
-                var next = transform(tpl);
+                //console.timeEnd('render tpl');
 
+                var nodes = html.getAllNodes(tpl);
+
+                nodes.forEach(function (item) {
+                    if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
+                    console.log(item);
+                });
+
+                //console.time('transform tpl');
+                var next = transform(tpl);
+                //console.timeEnd('transform tpl');
+
+                //console.time('update');
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
+                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
-                console.log(rootElement);
-                // This can identify components that must be transform to HTML then check them
-                if (Array.isArray(rootElement)) {
-                    rootElement.forEach(function (item) {
-                        if (item.nodeType !== 1) return;
-                        var template = item.outerHTML;
-                        var rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        var cmp = getInstances(rootElement, template, _this._view, _this);
-                        console.log('cmp', cmp);
-                        ///this._prev = transform(this._rootElement);
-                        //console.log(next);
-                        //next = transform(cfg.root);
-                        //update(this._rootElement, next, null, 0, this);
-                    });
-                    //console.log('next',next);
-                    //console.log('prev',this._prev);
-                    //this._prev = transform(this._rootElement);
-                }
 
-                //this._prevTpl = tpl;
+                //This can identify components that must be transform to HTML then check them
+                if (Array.isArray(rootElement)) {
+                    /*rootElement.forEach(item => {
+                        if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
+                        const template = item.outerHTML;
+                        const rootElement = document.createElement(item.nodeName);
+                        item.parentNode.replaceChild(rootElement, item);
+                        let cmp = getInstances(rootElement, template, this._view, this);
+                        console.log('cmp',cmp);
+                    });*/
+                }
             },
             enumerable: true
         },
@@ -847,8 +851,9 @@ var Doz = function () {
                 }
             }
         };
-
+        console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
+        console.timeEnd('render instances');
     }
 
     _createClass(Doz, [{
@@ -1464,8 +1469,6 @@ function create(node, cmp) {
     }
     var $el = document.createElement(node.type);
 
-    //console.log($el);
-
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
@@ -1484,24 +1487,18 @@ function update($parent, newNode, oldNode) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('remove', $parent, $parent.childNodes[index].innerHTML);
-
         if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
     } else if (isChanged(newNode, oldNode)) {
         var _rootElement = create(newNode, cmp);
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        //console.log('update');
         updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
         var _rootElement2 = [];
-
-        //if (newLength!== oldLength)
-        ///console.log(newLength, oldLength);
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
             var res = update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
@@ -1605,6 +1602,7 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
+    //if(!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }

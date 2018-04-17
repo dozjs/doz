@@ -57,8 +57,9 @@ class Doz {
                 }
             }
         };
-
+        console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
+        console.timeEnd('render instances');
 
     }
 

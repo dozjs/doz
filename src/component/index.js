@@ -167,7 +167,8 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
                 if (Array.isArray(obj))
-                    return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
+                    //return `<${TAG.EACH}>${obj.map(func).map(e => e.trim()).join('')}</${TAG.EACH}>`;
+                    return obj.map(func).map(e => e.trim()).join('').trim();
             },
             enumerable: true
         },
@@ -180,39 +181,42 @@ function createInstance(cmp, cfg) {
         render: {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-
+                //console.time('render tpl');
                 const tpl = html.create(`<${tag}>${this.template()}</${tag}>`);
-                let next = transform(tpl);
+                //console.timeEnd('render tpl');
 
+                let nodes = html.getAllNodes(tpl);
+
+                nodes.forEach(item => {
+                    if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
+                    console.log(item);
+                });
+
+                //console.time('transform tpl');
+                let next = transform(tpl);
+                //console.timeEnd('transform tpl');
+
+                //console.time('update');
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
+                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
-                console.log(rootElement);
-                // This can identify components that must be transform to HTML then check them
+
+                //This can identify components that must be transform to HTML then check them
                 if (Array.isArray(rootElement)){
-                    rootElement.forEach(item => {
-                        if (item.nodeType !== 1) return;
+                    /*rootElement.forEach(item => {
+                        if (item.nodeType !== 1 || !REGEX.IS_CUSTOM_TAG.test(item.nodeName)) return;
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
                         let cmp = getInstances(rootElement, template, this._view, this);
                         console.log('cmp',cmp);
-                        ///this._prev = transform(this._rootElement);
-                        //console.log(next);
-                        //next = transform(cfg.root);
-                        //update(this._rootElement, next, null, 0, this);
-                    });
-                    //console.log('next',next);
-                    //console.log('prev',this._prev);
-                    //this._prev = transform(this._rootElement);
+                    });*/
                 }
-
-
-                //this._prevTpl = tpl;
             },
             enumerable: true
         },

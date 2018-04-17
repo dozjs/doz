@@ -13,8 +13,6 @@ function create(node, cmp) {
     }
     const $el = document.createElement(node.type);
 
-    //console.log($el);
-
     attach($el, node.props, cmp);
 
     node.children
@@ -30,8 +28,6 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('remove', $parent, $parent.childNodes[index].innerHTML)
-
         if ($parent.childNodes[index])
             $parent.removeChild(
                 $parent.childNodes[index]
@@ -44,7 +40,6 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         );
         return rootElement;
     } else if (newNode.type) {
-        //console.log('update');
         updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -55,9 +50,6 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         const oldLength = oldNode.children.length;
 
         let rootElement = [];
-
-        //if (newLength!== oldLength)
-        ///console.log(newLength, oldLength);
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
             let res = update(
