@@ -1,4 +1,4 @@
-// [AIV_SHORT]  Doz Build version: 0.0.4  
+// [DOZ]  Build version: 0.0.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -453,7 +453,7 @@ function createInstance(cmp, cfg) {
             value: cmp.tag,
             enumerable: true
         },
-        fire: {
+        emit: {
             value: function value(name) {
                 if (this._callback && this._callback.hasOwnProperty(name) && this.parent.hasOwnProperty(this._callback[name]) && typeof this.parent[this._callback[name]] === 'function') {
                     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -499,6 +499,9 @@ function createInstance(cmp, cfg) {
                 console.time('get template');
                 var template = this.template().trim();
                 console.timeEnd('get template');
+
+                console.log(template);
+
                 console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 console.timeEnd('render tpl');
@@ -1317,7 +1320,7 @@ var ObservableSlim = function () {
                 //throw new Error("ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.");
             }
 
-            // fire off the _create() method -- it will create a new observable and proxy and return the proxy
+            // emit off the _create() method -- it will create a new observable and proxy and return the proxy
             var proxy = _create(target, domDelay);
 
             // assign the observer function
@@ -1472,6 +1475,8 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp) {
     if (typeof node === 'undefined') return;
 
+    //console.time('create element');
+
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
@@ -1484,6 +1489,8 @@ function create(node, cmp) {
     node.children.map(function (item) {
         return create(item, cmp);
     }).forEach($el.appendChild.bind($el));
+
+    //console.timeEnd('create element');
     return $el;
 }
 
@@ -1507,26 +1514,23 @@ function update($parent, newNode, oldNode) {
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
+        setTimeout(function () {
+            updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
 
-        var newLength = newNode.children.length;
-        var oldLength = oldNode.children.length;
+            var newLength = newNode.children.length;
+            var oldLength = oldNode.children.length;
 
-        var _rootElement2 = [];
+            for (var i = 0; i < newLength || i < oldLength; i++) {
+                update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+            }
 
-        for (var i = 0; i < newLength || i < oldLength; i++) {
-            /*let res = */update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+            var dl = deadChildren.length;
 
-            //if (res) rootElement = rootElement.concat(res);
-        }
-
-        var dl = deadChildren.length;
-
-        while (dl--) {
-            deadChildren[dl].remove();
-        }
-
-        if (_rootElement2.length) return _rootElement2;
+            while (dl--) {
+                deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+                deadChildren.splice(dl, 1);
+            }
+        }, 5);
     }
 }
 

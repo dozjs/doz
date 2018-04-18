@@ -400,7 +400,7 @@ var ObservableSlim = (function() {
                 //throw new Error("ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.");
             }
 
-            // fire off the _create() method -- it will create a new observable and proxy and return the proxy
+            // emit off the _create() method -- it will create a new observable and proxy and return the proxy
             var proxy = _create(target, domDelay);
 
             // assign the observer function

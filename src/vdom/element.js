@@ -10,6 +10,8 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp) {
     if (typeof node === 'undefined') return;
 
+    //console.time('create element');
+
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
@@ -22,6 +24,8 @@ function create(node, cmp) {
     node.children
         .map(item => create(item, cmp))
         .forEach($el.appendChild.bind($el));
+
+    //console.timeEnd('create element');
     return $el;
 }
 
@@ -45,37 +49,33 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         );
         return rootElement;
     } else if (newNode.type) {
-        updateAttributes(
-            $parent.childNodes[index],
-            newNode.props,
-            oldNode.props
-        );
-
-        const newLength = newNode.children.length;
-        const oldLength = oldNode.children.length;
-
-        let rootElement = [];
-
-        for (let i = 0; i < newLength || i < oldLength; i++) {
-            /*let res = */update(
+        setTimeout(() => {
+            updateAttributes(
                 $parent.childNodes[index],
-                newNode.children[i],
-                oldNode.children[i],
-                i,
-                cmp
+                newNode.props,
+                oldNode.props
             );
 
-            //if (res) rootElement = rootElement.concat(res);
-        }
+            const newLength = newNode.children.length;
+            const oldLength = oldNode.children.length;
 
-        let dl = deadChildren.length;
+            for (let i = 0; i < newLength || i < oldLength; i++) {
+                update(
+                    $parent.childNodes[index],
+                    newNode.children[i],
+                    oldNode.children[i],
+                    i,
+                    cmp
+                );
+            }
 
-        while (dl--) {
-            deadChildren[dl].remove();
-        }
+            let dl = deadChildren.length;
 
-        if (rootElement.length)
-            return rootElement;
+            while (dl--) {
+                deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+                deadChildren.splice(dl, 1);
+            }
+        }, 5);
     }
 }
 

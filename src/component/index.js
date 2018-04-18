@@ -157,7 +157,7 @@ function createInstance(cmp, cfg) {
             value: cmp.tag,
             enumerable: true
         },
-        fire: {
+        emit: {
             value: function (name, ...args) {
                 if (this._callback && this._callback.hasOwnProperty(name)
                     && this.parent.hasOwnProperty(this._callback[name])
@@ -200,6 +200,9 @@ function createInstance(cmp, cfg) {
                 console.time('get template');
                 const template = this.template().trim();
                 console.timeEnd('get template');
+
+                console.log(template);
+
                 console.time('render tpl');
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 console.timeEnd('render tpl');

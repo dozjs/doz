@@ -40,7 +40,7 @@ describe('Doz.callback', function () {
                 },
                 onCreate() {
                     setTimeout(()=>{
-                        this.fire('mycallback', 'hello');
+                        this.emit('mycallback', 'hello');
                     },1000);
                 }
             });

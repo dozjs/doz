@@ -39,6 +39,12 @@
 
     let currentBench = "";
 
+    Doz.component('doz-label', {
+        template() {
+            return `<h1>${this.props.title}</h1>`
+        }
+    });
+
     Doz.component('doz-list', {
         template() {
             return (
@@ -98,6 +104,7 @@
         },
 
         swap() {
+            if (!this.props.record.length) return;
             let record = Object.assign([], this.props.record);
             let i1 = Math.floor(Math.random()*record.length);
             let i2 = Math.floor(Math.random()*record.length);
@@ -117,7 +124,7 @@
     new Doz({
         root: document.getElementById('app'),
         template: `
-            <h1>Loop</h1>
+            <doz-label title="Loop"></doz-label>
             <doz-list></doz-list>
         `
     });

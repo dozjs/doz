@@ -31,18 +31,20 @@ module.exports = {
             mangle: true,
             comments: false,
             compress: {
-                warnings: false
+                warnings: false,
+                drop_console: true
             }, include: /\.min\.js$/
         }),
         new WebpackAutoInject({
             PACKAGE_JSON_PATH: './package.json',
+            SHORT: 'DOZ',
             components: {
                 InjectAsComment: true,
                 InjectByTag: true
             },
             componentsOptions: {
                 InjectAsComment: {
-                    tag: 'Doz Build version: {version}'
+                    tag: 'Build version: {version}'
                 }
             }
         }),
