@@ -340,7 +340,9 @@ function getInstances(root, template, view, parentCmp) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
+    //console.time('getAllNodes');
     var nodes = html.getAllNodes(template);
+    //console.timeEnd('getAllNodes');
     var components = {};
     var index = 0;
 
@@ -494,19 +496,20 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value() {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                //console.time('render tpl');
+                console.time('get template');
                 var template = this.template().trim();
-                //console.log(template)
+                console.timeEnd('get template');
+                console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
-                //console.timeEnd('render tpl');
+                console.timeEnd('render tpl');
 
-                //console.time('transform tpl');
+                console.time('transform tpl');
                 var next = transform(tpl);
-                //console.timeEnd('transform tpl');
+                console.timeEnd('transform tpl');
 
-                //console.time('update');
+                console.time('update');
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
-                //console.timeEnd('update');
+                console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -884,8 +887,11 @@ var events = __webpack_require__(6);
 
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
+        console.time('render in observer');
         instance.render();
+        console.timeEnd('render in observer');
 
+        console.time('changes');
         changes.forEach(function (item) {
             if (instance._boundElements.hasOwnProperty(item.property)) {
                 instance._boundElements[item.property].forEach(function (element) {
@@ -893,6 +899,7 @@ function create(instance, props) {
                 });
             }
         });
+        console.timeEnd('changes');
 
         if (instance._isCreated) {
             events.callUpdate(instance);
@@ -1480,42 +1487,23 @@ function create(node, cmp) {
     return $el;
 }
 
-function removeChild(child) {
-    if (child) {
-        child.remove();
-        if (child) {
-            console.log('exists again', child);
-        }
-    }
-}
+var deadChildren = [];
 
 function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
 
 
-    //if (!$parent) return;
-
     if (!oldNode) {
         var rootElement = create(newNode, cmp);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        removeChild($parent.childNodes[index]);
-        //console.log('REMOVE')
         if ($parent.childNodes[index]) {
-            removeChild($parent.childNodes[index]);
-            /*$parent.removeChild(
-                $parent.childNodes[index]
-            );
-            if ($parent.childNodes[index]) {
-                console.log('exists again', $parent.childNodes[index])
-            }*/
+            deadChildren.push($parent.childNodes[index]);
         }
-        /**/
     } else if (isChanged(newNode, oldNode)) {
         var _rootElement = create(newNode, cmp);
-        //console.log('CHANGED')
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
@@ -1527,10 +1515,15 @@ function update($parent, newNode, oldNode) {
         var _rootElement2 = [];
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            //for (let i = newLength || oldLength; i--;) {
-            var res = update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+            /*let res = */update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
 
-            if (res) _rootElement2 = _rootElement2.concat(res);
+            //if (res) rootElement = rootElement.concat(res);
+        }
+
+        var dl = deadChildren.length;
+
+        while (dl--) {
+            deadChildren[dl].remove();
         }
 
         if (_rootElement2.length) return _rootElement2;

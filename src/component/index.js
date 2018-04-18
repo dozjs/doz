@@ -41,7 +41,9 @@ function getInstances(root, template, view, parentCmp) {
         ? html.create(template)
         : template;
 
+    //console.time('getAllNodes');
     const nodes = html.getAllNodes(template);
+    //console.timeEnd('getAllNodes');
     let components = {};
     let index = 0;
 
@@ -195,19 +197,20 @@ function createInstance(cmp, cfg) {
         render: {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                //console.time('render tpl');
+                console.time('get template');
                 const template = this.template().trim();
-                //console.log(template)
+                console.timeEnd('get template');
+                console.time('render tpl');
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
-                //console.timeEnd('render tpl');
+                console.timeEnd('render tpl');
 
-                //console.time('transform tpl');
+                console.time('transform tpl');
                 let next = transform(tpl);
-                //console.timeEnd('transform tpl');
+                console.timeEnd('transform tpl');
 
-                //console.time('update');
+                console.time('update');
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
-                //console.timeEnd('update');
+                console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;

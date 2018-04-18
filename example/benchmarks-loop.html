@@ -12,6 +12,23 @@
             font-family: sans-serif;
         }
 
+        button {
+            border: 1px;
+            padding: 15px;
+            color: white;
+            background: firebrick;
+            transition: all .1s;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: red;
+        }
+
+        button:active {
+            background: hotpink;
+        }
+
     </style>
 </head>
 <body>
@@ -20,16 +37,20 @@
 
 <script>
 
+    let currentBench = "";
+
     Doz.component('doz-list', {
         template() {
             return (
                 `<div>
-                    <button onclick="this.addItem(10)" >Add 10</button>
                     <button onclick="this.addItem(1000)" >Add 1000</button>
                     <button onclick="this.addItem(10000)" >Add 10000</button>
+                    <button onclick="this.reverse()" >Reverse</button>
+                    <button onclick="this.sort()" >Sort</button>
+                    <button onclick="this.remove()" >Remove</button>
+                    <button onclick="this.swap()" >Swap</button>
                     <button onclick="this.clear()" >Clear</button>
-                    <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}
-                    </ul>
+                    <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}</ul>
                 </div>`
             );
         },
@@ -41,30 +62,62 @@
         addItem(arg) {
 
             const num = arg[0];
-            console.time('add items ' + num);
-            const record = [];
+            console.time(currentBench = 'add items ' + num);
+            const record = Object.assign([], this.props.record);
+            const initLength = this.props.record.length;
 
             for(let i = 0; i < num; i++)
-                record.push('item - ' + i);
+                record.push('item - ' + (initLength + i));
 
             this.props.record = record;
-
-            console.timeEnd('add items ' + num);
 
         },
 
         clear() {
-            console.time('clear');
+            console.time(currentBench = 'clear');
             this.props.record = [];
-            console.timeEnd('clear');
         },
+
+        reverse() {
+            console.time(currentBench = 'reverse');
+            let record = Object.assign([], this.props.record);
+            this.props.record = record.reverse();
+        },
+
+        sort() {
+            console.time(currentBench = 'sort');
+            let record = Object.assign([], this.props.record);
+            this.props.record = record.sort();
+        },
+
+        remove() {
+            console.time(currentBench = 'remove');
+            let record = Object.assign([], this.props.record);
+            record.splice(Math.floor(Math.random()*record.length), 1);
+            this.props.record = record;
+        },
+
+        swap() {
+            let record = Object.assign([], this.props.record);
+            let i1 = Math.floor(Math.random()*record.length);
+            let i2 = Math.floor(Math.random()*record.length);
+            let tmp = record[i1];
+            record[i1] = record[i2];
+            record[i2] = tmp;
+            console.time(currentBench = "swap");
+            this.props.record = record;
+        },
+
+        onUpdate() {
+            console.timeEnd(currentBench);
+        }
 
     });
 
     new Doz({
         root: document.getElementById('app'),
         template: `
-            <h1>List</h1>
+            <h1>Loop</h1>
             <doz-list></doz-list>
         `
     });

@@ -25,39 +25,20 @@ function create(node, cmp) {
     return $el;
 }
 
-function removeChild(child) {
-    if (child) {
-        child.remove();
-        if (child) {
-            console.log('exists again', child)
-        }
-    }
-}
+const deadChildren = [];
 
 function update($parent, newNode, oldNode, index = 0, cmp) {
-
-    //if (!$parent) return;
 
     if (!oldNode) {
         const rootElement = create(newNode, cmp);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        removeChild($parent.childNodes[index]);
-        //console.log('REMOVE')
         if ($parent.childNodes[index]) {
-            removeChild($parent.childNodes[index]);
-            /*$parent.removeChild(
-                $parent.childNodes[index]
-            );
-            if ($parent.childNodes[index]) {
-                console.log('exists again', $parent.childNodes[index])
-            }*/
+            deadChildren.push($parent.childNodes[index]);
         }
-        /**/
     } else if (isChanged(newNode, oldNode)) {
         const rootElement = create(newNode, cmp);
-        //console.log('CHANGED')
         $parent.replaceChild(
             rootElement,
             $parent.childNodes[index]
@@ -76,8 +57,7 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         let rootElement = [];
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
-            //for (let i = newLength || oldLength; i--;) {
-            let res = update(
+            /*let res = */update(
                 $parent.childNodes[index],
                 newNode.children[i],
                 oldNode.children[i],
@@ -85,7 +65,13 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
                 cmp
             );
 
-            if (res) rootElement = rootElement.concat(res);
+            //if (res) rootElement = rootElement.concat(res);
+        }
+
+        let dl = deadChildren.length;
+
+        while (dl--) {
+            deadChildren[dl].remove();
         }
 
         if (rootElement.length)
