@@ -201,7 +201,7 @@ function createInstance(cmp, cfg) {
                 const template = this.template().trim();
                 console.timeEnd('get template');
 
-                console.log(template);
+                //console.log(template);
 
                 console.time('render tpl');
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);

@@ -1,6 +1,6 @@
 {
     "name": "doz",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Build UI, so simple",
     "main": "dist/doz.js",
     "scripts": {
@@ -37,6 +37,7 @@
         "babel-preset-env": "^1.6.1",
         "bejs": "^2.0.1",
         "chai": "^4.1.2",
+        "compression-webpack-plugin": "^1.1.11",
         "jsdoc-to-markdown": "^4.0.1",
         "jsdom": "^11.6.2",
         "jsdom-global": "^3.0.2",

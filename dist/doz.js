@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 0.0.4  
+// [DOZ]  Build version: 0.0.5  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -500,7 +500,7 @@ function createInstance(cmp, cfg) {
                 var template = this.template().trim();
                 console.timeEnd('get template');
 
-                console.log(template);
+                //console.log(template);
 
                 console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
@@ -819,8 +819,8 @@ var Doz = function () {
             throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
 
-        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string')) {
-            throw new TypeError('template must be a string or an HTMLElement or an valid ID selector like #example-template');
+        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
         this.cfg = extend(cfg, {
@@ -850,12 +850,13 @@ var Doz = function () {
 
         this._components[TAG.VIEW] = {
             cfg: {
-                props: {},
+                props: cfg.props || {},
                 template: function template() {
-                    return cfg.template;
+                    return typeof cfg.template === 'function' ? cfg.template() : cfg.template;
                 }
             }
         };
+
         console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
         console.timeEnd('render instances');
