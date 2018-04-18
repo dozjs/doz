@@ -197,6 +197,7 @@ function createInstance(cmp, cfg) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 //console.time('render tpl');
                 const template = this.template().trim();
+                //console.log(template)
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 //console.timeEnd('render tpl');
 

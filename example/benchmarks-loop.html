@@ -24,10 +24,11 @@
         template() {
             return (
                 `<div>
-                    <button onclick="this.addItem(1000)" >Add 1000</button> <button onclick="this.addItem(10000)" >Add 10000</button> <button onclick="this.destroy()" >Destroy component</button>
-                    <ul>${this.each(this.props.record, item =>
-                        `<li> ${item}</li>`
-                        )}
+                    <button onclick="this.addItem(10)" >Add 10</button>
+                    <button onclick="this.addItem(1000)" >Add 1000</button>
+                    <button onclick="this.addItem(10000)" >Add 10000</button>
+                    <button onclick="this.clear()" >Clear</button>
+                    <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}
                     </ul>
                 </div>`
             );
@@ -40,21 +41,24 @@
         addItem(arg) {
 
             const num = arg[0];
-            console.time('add item ' + num);
+            console.time('add items ' + num);
+            const record = [];
+
             for(let i = 0; i < num; i++)
-                this.props.record.push('item - ' + i);
+                record.push('item - ' + i);
 
-            console.timeEnd('add item ' + num);
+            this.props.record = record;
+
+            console.timeEnd('add items ' + num);
 
         },
 
-        removeItem(arg) {
-            this.props.record.splice([arg[0]], 1);
+        clear() {
+            console.time('clear');
+            this.props.record = [];
+            console.timeEnd('clear');
         },
 
-        onBeforeDestroy() {
-            return confirm('Destroy component?');
-        }
     });
 
     new Doz({

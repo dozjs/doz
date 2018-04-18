@@ -8,10 +8,14 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp) {
+    if (typeof node === 'undefined') return;
+
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
     const $el = document.createElement(node.type);
+
+    //console.log('CREATE');
 
     attach($el, node.props, cmp);
 
@@ -19,6 +23,15 @@ function create(node, cmp) {
         .map(item => create(item, cmp))
         .forEach($el.appendChild.bind($el));
     return $el;
+}
+
+function removeChild(child) {
+    if (child) {
+        child.remove();
+        if (child) {
+            console.log('exists again', child)
+        }
+    }
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp) {
@@ -30,12 +43,21 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        if ($parent.childNodes[index])
-            $parent.removeChild(
+        removeChild($parent.childNodes[index]);
+        //console.log('REMOVE')
+        if ($parent.childNodes[index]) {
+            removeChild($parent.childNodes[index]);
+            /*$parent.removeChild(
                 $parent.childNodes[index]
             );
+            if ($parent.childNodes[index]) {
+                console.log('exists again', $parent.childNodes[index])
+            }*/
+        }
+        /**/
     } else if (isChanged(newNode, oldNode)) {
         const rootElement = create(newNode, cmp);
+        //console.log('CHANGED')
         $parent.replaceChild(
             rootElement,
             $parent.childNodes[index]
@@ -54,6 +76,7 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         let rootElement = [];
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
+            //for (let i = newLength || oldLength; i--;) {
             let res = update(
                 $parent.childNodes[index],
                 newNode.children[i],

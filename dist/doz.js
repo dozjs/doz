@@ -496,6 +496,7 @@ function createInstance(cmp, cfg) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 //console.time('render tpl');
                 var template = this.template().trim();
+                //console.log(template)
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 //console.timeEnd('render tpl');
 
@@ -1462,10 +1463,14 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp) {
+    if (typeof node === 'undefined') return;
+
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
     var $el = document.createElement(node.type);
+
+    //console.log('CREATE');
 
     attach($el, node.props, cmp);
 
@@ -1473,6 +1478,15 @@ function create(node, cmp) {
         return create(item, cmp);
     }).forEach($el.appendChild.bind($el));
     return $el;
+}
+
+function removeChild(child) {
+    if (child) {
+        child.remove();
+        if (child) {
+            console.log('exists again', child);
+        }
+    }
 }
 
 function update($parent, newNode, oldNode) {
@@ -1487,9 +1501,21 @@ function update($parent, newNode, oldNode) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        if ($parent.childNodes[index]) $parent.removeChild($parent.childNodes[index]);
+        removeChild($parent.childNodes[index]);
+        //console.log('REMOVE')
+        if ($parent.childNodes[index]) {
+            removeChild($parent.childNodes[index]);
+            /*$parent.removeChild(
+                $parent.childNodes[index]
+            );
+            if ($parent.childNodes[index]) {
+                console.log('exists again', $parent.childNodes[index])
+            }*/
+        }
+        /**/
     } else if (isChanged(newNode, oldNode)) {
         var _rootElement = create(newNode, cmp);
+        //console.log('CHANGED')
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
@@ -1501,6 +1527,7 @@ function update($parent, newNode, oldNode) {
         var _rootElement2 = [];
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
+            //for (let i = newLength || oldLength; i--;) {
             var res = update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
 
             if (res) _rootElement2 = _rootElement2.concat(res);
