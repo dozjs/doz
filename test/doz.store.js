@@ -36,7 +36,8 @@ describe('Doz.store', function () {
                     return `<div>${this.props.repeater}</div>`
                 },
                 onCreate() {
-                    this.getStore('salutation1').name = 'Hi by repeater'
+                    console.log(this.getStore('salutation1'));
+                    this.getStore('salutation1').name = 'Hi by repeater';
                     this.props.repeater = this.getStore('salutation1').name + ' Teddy'
                 }
             });

@@ -346,56 +346,67 @@ function getInstances(root, template, view, parentCmp) {
     var components = {};
     var index = 0;
 
-    nodes.forEach(function (child) {
+    //nodes.forEach(child => {
+    for (var j = nodes.length - 1; j >= 0; --j) {
+        var child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
             var cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
             if (cmp) {
+                (function () {
 
-                var alias = index;
-                index++;
-                var props = serializeProps(child);
-                var dProps = extract(props);
+                    var alias = index;
+                    index++;
+                    var props = serializeProps(child);
+                    var dProps = extract(props);
 
-                var newElement = createInstance(cmp, {
-                    root: root,
-                    view: view,
-                    props: props,
-                    dProps: dProps,
-                    parentCmp: parentCmp
-                });
+                    var newElement = createInstance(cmp, {
+                        root: root,
+                        view: view,
+                        props: props,
+                        dProps: dProps,
+                        parentCmp: parentCmp
+                    });
 
-                // Remove old
-                child.parentNode.removeChild(child);
-                newElement.render();
-                events.callRender(newElement);
+                    // Remove old
+                    child.parentNode.removeChild(child);
+                    newElement.render();
+                    events.callRender(newElement);
 
-                components[dProps.alias ? dProps.alias : alias] = newElement;
+                    components[dProps.alias ? dProps.alias : alias] = newElement;
 
-                var nested = newElement._rootElement.querySelectorAll('*');
+                    var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
-                Array.from(nested).forEach(function (item) {
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+                    //console.log('nested.length', nested)
+                    nested.forEach(function (item) {
+                        /*for (let jj = nested.length - 1; jj >= 0; --jj){
+                            let item = nested[jj];
+                              console.log('ITEM', item)*/
 
-                        var _template = item.outerHTML;
-                        var rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        var cmps = getInstances(rootElement, _template, view, newElement);
+                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
-                        Object.keys(cmps).forEach(function (i) {
-                            var n = i;
-                            if (newElement.children.hasOwnProperty(n)) {
-                                if (typeof castStringTo(n) === 'number') {
-                                    n++;
+                            var _template = item.outerHTML;
+                            var rootElement = document.createElement(item.nodeName);
+                            item.parentNode.replaceChild(rootElement, item);
+                            var cmps = getInstances(rootElement, _template, view, newElement);
+
+                            Object.keys(cmps).forEach(function (i) {
+                                var n = i;
+                                if (newElement.children.hasOwnProperty(n)) {
+                                    if (typeof castStringTo(n) === 'number') {
+                                        n++;
+                                    }
                                 }
-                            }
-                            newElement.children[n] = cmps[i];
-                        });
-                    }
-                });
+                                newElement.children[n] = cmps[i];
+                            });
+                        }
+                        //}
+                    });
+                })();
             }
         }
-    });
+    }
+    //});
 
     return components;
 }
@@ -685,18 +696,20 @@ var _require = __webpack_require__(0),
 
 function serializeProps(node) {
     var props = {};
-
-    if (node.attributes.length) {
-        Array.from(node.attributes).forEach(function (attr) {
-            var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-            if (isComponentListener) {
-                if (!props.hasOwnProperty(ATTR.LISTENER)) props[ATTR.LISTENER] = {};
-                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-                delete props[attr.name];
-            } else {
-                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
-            }
-        });
+    var attributes = Array.from(node.attributes);
+    //if (node.attributes.length) {
+    for (var j = attributes.length - 1; j >= 0; --j) {
+        var attr = attributes[j];
+        //Array.from(node.attributes).forEach(attr => {
+        var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+        if (isComponentListener) {
+            if (!props.hasOwnProperty(ATTR.LISTENER)) props[ATTR.LISTENER] = {};
+            props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+            delete props[attr.name];
+        } else {
+            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+        }
+        //});
     }
 
     return props;

@@ -47,7 +47,9 @@ function getInstances(root, template, view, parentCmp) {
     let components = {};
     let index = 0;
 
-    nodes.forEach(child => {
+    //nodes.forEach(child => {
+    for (let j = nodes.length - 1; j >= 0; --j) {
+        let child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
             const cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
@@ -73,9 +75,15 @@ function getInstances(root, template, view, parentCmp) {
 
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
-                const nested = newElement._rootElement.querySelectorAll('*');
+                const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
-                Array.from(nested).forEach(item => {
+                //console.log('nested.length', nested)
+                nested.forEach(item => {
+                    /*for (let jj = nested.length - 1; jj >= 0; --jj){
+                        let item = nested[jj];
+
+                        console.log('ITEM', item)*/
+
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
                         const template = item.outerHTML;
@@ -93,10 +101,12 @@ function getInstances(root, template, view, parentCmp) {
                             newElement.children[n] = cmps[i]
                         })
                     }
+                    //}
                 });
             }
         }
-    });
+    }
+    //});
 
     return components;
 }
@@ -170,7 +180,7 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
                 if (Array.isArray(obj))
-                    return obj.map(func).map(stringEl =>  {
+                    return obj.map(func).map(stringEl => {
 
                         stringEl = stringEl.trim();
 
