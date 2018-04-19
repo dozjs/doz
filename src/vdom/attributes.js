@@ -1,5 +1,6 @@
 const {REGEX, ATTR} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
+const objectPath = require('../utils/object-path');
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -117,10 +118,12 @@ function addEventListener($target, name, value, cmp) {
             cmp = cmp.parent;
         }
 
-        if (handler in cmp) {
+        const method = objectPath(handler, cmp);
+
+        if (method !== undefined) {
             value = args
-                ? cmp[handler].bind(cmp, args)
-                : cmp[handler].bind(cmp);
+                ? method.bind(cmp, ...args)
+                : method.bind(cmp);
         }
     }
 

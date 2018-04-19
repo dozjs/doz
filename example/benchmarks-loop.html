@@ -39,30 +39,10 @@
 
     let currentBench = "";
 
-    Doz.component('doz-label', {
-        template() {
-            return `<h1>${this.props.title}</h1>`
-        }
-    });
+    let actions = {
+        add(num) {
 
-    Doz.component('doz-buttons', {
-        template() {
-            return (
-                `<div>
-                    <button onclick="this.add(1000)" >Add 1000</button>
-                    <button onclick="this.add(10000)" >Add 10000</button>
-                    <button onclick="this.reverse()" >Reverse</button>
-                    <button onclick="this.sort()" >Sort</button>
-                    <button onclick="this.remove()" >Remove</button>
-                    <button onclick="this.swap()" >Swap</button>
-                    <button onclick="this.clear()" >Clear</button>
-                </div>`
-            );
-        },
-
-        add(arg) {
-
-            const num = arg[0];
+            //const num = arg[0];
             console.time(currentBench = 'add items ' + num);
             const record = Object.assign([], this.getStore('list').record);
             const initLength = this.getStore('list').record.length;
@@ -108,7 +88,29 @@
             record[i2] = tmp;
             console.time(currentBench = "swap");
             this.getStore('list').record = record;
-        },
+        }
+    };
+
+    Doz.component('doz-label', {
+        template() {
+            return `<h1>${this.props.title}</h1>`
+        }
+    });
+
+    Doz.component('doz-buttons', {
+        template() {
+            return (
+                `<div>
+                    <button onclick="this.action.add(1000)" >Add 1000</button>
+                    <button onclick="this.action.add(10000)" >Add 10000</button>
+                    <button onclick="this.action.reverse()" >Reverse</button>
+                    <button onclick="this.action.sort()" >Sort</button>
+                    <button onclick="this.action.remove()" >Remove</button>
+                    <button onclick="this.action.swap()" >Swap</button>
+                    <button onclick="this.action.clear()" >Clear</button>
+                </div>`
+            );
+        }
     });
 
     Doz.component('doz-list', {
@@ -132,6 +134,7 @@
     });
 
     new Doz({
+        actions,
         root: document.getElementById('app'),
         template: `
             <doz-label title="Loop"></doz-label>

@@ -63,8 +63,8 @@
             todo: ''
         },
 
-        markAsRead(arg) {
-            let record = this.props.record[arg[0]];
+        markAsRead(index) {
+            let record = this.props.record[index];
             if (record.done) return;
             record.title = `<s>${record.title}</s>`;
             record.done = true;
@@ -85,8 +85,8 @@
             this.props.record.reverse();
         },
 
-        removeItem(arg) {
-            this.props.record.splice([arg[0]], 1);
+        removeItem(index) {
+            this.props.record.splice(index, 1);
         },
 
         onBeforeDestroy() {

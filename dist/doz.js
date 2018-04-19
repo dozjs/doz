@@ -295,7 +295,7 @@ var _require2 = __webpack_require__(0),
     ATTR = _require2.ATTR;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(12);
+var observer = __webpack_require__(13);
 var events = __webpack_require__(6);
 
 var _require3 = __webpack_require__(7),
@@ -304,9 +304,9 @@ var _require3 = __webpack_require__(7),
 
 var update = __webpack_require__(8).updateElement;
 var castStringTo = __webpack_require__(2);
-var store = __webpack_require__(16);
+var store = __webpack_require__(18);
 
-var _require4 = __webpack_require__(17),
+var _require4 = __webpack_require__(19),
     extract = _require4.extract;
 
 function component(tag) {
@@ -502,6 +502,10 @@ function createInstance(cmp, cfg) {
             value: function value(storeName) {
                 return this._view.getStore(storeName);
             },
+            enumerable: true
+        },
+        action: {
+            value: cfg.view._actions,
             enumerable: true
         },
         render: {
@@ -798,7 +802,7 @@ module.exports = {
 "use strict";
 
 
-var element = __webpack_require__(14);
+var element = __webpack_require__(15);
 
 module.exports = {
     updateElement: element.update
@@ -841,6 +845,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(3);
+var bind = __webpack_require__(12);
 var component = __webpack_require__(4);
 
 var _require = __webpack_require__(0),
@@ -875,7 +880,8 @@ var Doz = function () {
         }
 
         this.cfg = extend(cfg, {
-            components: []
+            components: [],
+            actions: {}
         });
 
         Object.defineProperties(this, {
@@ -890,6 +896,9 @@ var Doz = function () {
             _stores: {
                 value: {},
                 writable: true
+            },
+            _actions: {
+                value: bind(this.cfg.actions, this)
             }
         });
 
@@ -908,9 +917,7 @@ var Doz = function () {
             }
         };
 
-        //console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
-        //console.timeEnd('render instances');
     }
 
     _createClass(Doz, [{
@@ -937,7 +944,39 @@ module.exports = Doz;
 "use strict";
 
 
-var proxy = __webpack_require__(13);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function bind(obj, context) {
+    if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') {
+        throw new TypeError('expected an object');
+    }
+
+    var target = Object.assign({}, obj);
+
+    var keys = Object.keys(obj);
+
+    for (var i = keys.length - 1; i >= 0; --i) {
+        var item = target[keys[i]];
+        if (typeof item === 'function') {
+            target[keys[i]] = item.bind(context);
+        } else if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object') {
+            target[keys[i]] = bind(item, context);
+        }
+    }
+
+    return target;
+}
+
+module.exports = bind;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var proxy = __webpack_require__(14);
 var events = __webpack_require__(6);
 
 function create(instance, props) {
@@ -972,7 +1011,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1508,7 +1547,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1516,7 +1555,7 @@ try {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(15),
+var _require = __webpack_require__(16),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1590,7 +1629,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1598,11 +1637,14 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(2);
+var objectPath = __webpack_require__(17);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -1717,8 +1759,10 @@ function addEventListener($target, name, value, cmp) {
             cmp = cmp.parent;
         }
 
-        if (handler in cmp) {
-            value = args ? cmp[handler].bind(cmp, args) : cmp[handler].bind(cmp);
+        var method = objectPath(handler, cmp);
+
+        if (method !== undefined) {
+            value = args ? method.bind.apply(method, [cmp].concat(_toConsumableArray(args))) : method.bind(cmp);
         }
     }
 
@@ -1761,7 +1805,22 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function getByPath(path, obj) {
+        return path.split('.').reduce(function (res, prop) {
+                return res ? res[prop] : undefined;
+        }, obj);
+}
+
+module.exports = getByPath;
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1782,7 +1841,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
