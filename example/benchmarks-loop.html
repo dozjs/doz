@@ -41,8 +41,6 @@
 
     let actions = {
         add(num) {
-
-            //const num = arg[0];
             console.time(currentBench = 'add items ' + num);
             const record = Object.assign([], this.getStore('list').record);
             const initLength = this.getStore('list').record.length;
@@ -51,7 +49,6 @@
                 record.push('item - ' + (initLength + i));
 
             this.getStore('list').record = record;
-
         },
 
         clear() {
