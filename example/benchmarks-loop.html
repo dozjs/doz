@@ -45,17 +45,77 @@
         }
     });
 
-    Doz.component('doz-list', {
+    Doz.component('doz-buttons', {
         template() {
             return (
                 `<div>
-                    <button onclick="this.addItem(1000)" >Add 1000</button>
-                    <button onclick="this.addItem(10000)" >Add 10000</button>
+                    <button onclick="this.add(1000)" >Add 1000</button>
+                    <button onclick="this.add(10000)" >Add 10000</button>
                     <button onclick="this.reverse()" >Reverse</button>
                     <button onclick="this.sort()" >Sort</button>
                     <button onclick="this.remove()" >Remove</button>
                     <button onclick="this.swap()" >Swap</button>
                     <button onclick="this.clear()" >Clear</button>
+                </div>`
+            );
+        },
+
+        add(arg) {
+
+            const num = arg[0];
+            console.time(currentBench = 'add items ' + num);
+            const record = Object.assign([], this.getStore('list').record);
+            const initLength = this.getStore('list').record.length;
+
+            for(let i = 0; i < num; i++)
+                record.push('item - ' + (initLength + i));
+
+            this.getStore('list').record = record;
+
+        },
+
+        clear() {
+            console.time(currentBench = 'clear');
+            this.getStore('list').record = [];
+        },
+
+        reverse() {
+            console.time(currentBench = 'reverse');
+            let record = Object.assign([], this.getStore('list').record);
+            this.getStore('list').record = record.reverse();
+        },
+
+        sort() {
+            console.time(currentBench = 'sort');
+            let record = Object.assign([], this.getStore('list').record);
+            this.getStore('list').record = record.sort();
+        },
+
+        remove() {
+            console.time(currentBench = 'remove');
+            let record = Object.assign([], this.getStore('list').record);
+            record.splice(Math.floor(Math.random()*record.length), 1);
+            this.getStore('list').record = record;
+        },
+
+        swap() {
+            if (!this.getStore('list').record.length) return;
+            let record = Object.assign([], this.getStore('list').record);
+            let i1 = Math.floor(Math.random()*record.length);
+            let i2 = Math.floor(Math.random()*record.length);
+            let tmp = record[i1];
+            record[i1] = record[i2];
+            record[i2] = tmp;
+            console.time(currentBench = "swap");
+            this.getStore('list').record = record;
+        },
+    });
+
+    Doz.component('doz-list', {
+        store: 'list',
+        template() {
+            return (
+                `<div>
                     <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}</ul>
                 </div>`
             );
@@ -63,56 +123,6 @@
 
         props: {
             record: []
-        },
-
-        addItem(arg) {
-
-            const num = arg[0];
-            console.time(currentBench = 'add items ' + num);
-            const record = Object.assign([], this.props.record);
-            const initLength = this.props.record.length;
-
-            for(let i = 0; i < num; i++)
-                record.push('item - ' + (initLength + i));
-
-            this.props.record = record;
-
-        },
-
-        clear() {
-            console.time(currentBench = 'clear');
-            this.props.record = [];
-        },
-
-        reverse() {
-            console.time(currentBench = 'reverse');
-            let record = Object.assign([], this.props.record);
-            this.props.record = record.reverse();
-        },
-
-        sort() {
-            console.time(currentBench = 'sort');
-            let record = Object.assign([], this.props.record);
-            this.props.record = record.sort();
-        },
-
-        remove() {
-            console.time(currentBench = 'remove');
-            let record = Object.assign([], this.props.record);
-            record.splice(Math.floor(Math.random()*record.length), 1);
-            this.props.record = record;
-        },
-
-        swap() {
-            if (!this.props.record.length) return;
-            let record = Object.assign([], this.props.record);
-            let i1 = Math.floor(Math.random()*record.length);
-            let i2 = Math.floor(Math.random()*record.length);
-            let tmp = record[i1];
-            record[i1] = record[i2];
-            record[i2] = tmp;
-            console.time(currentBench = "swap");
-            this.props.record = record;
         },
 
         onUpdate() {
@@ -124,7 +134,8 @@
     new Doz({
         root: document.getElementById('app'),
         template: `
-            <doz-label title="Loop">ciao</doz-label>
+            <doz-label title="Loop"></doz-label>
+            <doz-buttons></doz-buttons>
             <doz-list></doz-list>
         `
     });

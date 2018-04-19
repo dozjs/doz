@@ -34,7 +34,7 @@ const html = {
 
         const nodes = [];
 
-        function scanner(n) {
+        /*function scanner(n) {
             do {
                 nodes.push(n);
                 if (n.hasChildNodes()) {
@@ -42,6 +42,16 @@ const html = {
                 }
 
             } while (n = n.nextSibling)
+        }*/
+
+        function scanner(n) {
+            while (n) {
+                nodes.push(n);
+                if (n.hasChildNodes()) {
+                    scanner(n.firstChild)
+                }
+                n = n.nextSibling;
+            }
         }
 
         scanner(el);

@@ -52,6 +52,26 @@ describe('parser', function () {
             console.log(initial);
             console.log(document.body.innerHTML);
         });
+        it('tree walker', function () {
+            document.body.innerHTML = `<div id="app"></div>`;
+            const appRoot = document.getElementById('app');
+            const initial = transform(html.create(`
+                <div>hello world
+                    <button disabled>testo</button>
+                    </div>`));
+
+            var treeWalker = document.createTreeWalker(
+                document.getElementById('app'),
+                NodeFilter.SHOW_ALL,
+                { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
+                false
+            );
+
+            var nodeList = [];
+
+            while(treeWalker.nextNode()) nodeList.push(treeWalker.currentNode);
+            console.log(nodeList)
+        });
 
 
     });

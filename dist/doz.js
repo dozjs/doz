@@ -507,29 +507,31 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value() {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                console.time('get template');
+                //console.time('into render');
+                //console.time('get template');
                 var template = this.template().trim();
-                console.timeEnd('get template');
+                //console.timeEnd('get template');
 
                 //console.log(template);
 
-                console.time('render tpl');
+                //console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
-                console.timeEnd('render tpl');
+                //console.timeEnd('render tpl');
 
-                console.time('transform tpl');
+                //console.time('transform tpl');
                 var next = transform(tpl);
-                console.timeEnd('transform tpl');
+                //console.timeEnd('transform tpl');
 
-                console.time('update');
+                //console.time('update');
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
-                console.timeEnd('update');
+                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
+                //console.timeEnd('into render');
             },
             enumerable: true
         },
@@ -611,13 +613,23 @@ var html = {
 
         var nodes = [];
 
-        function scanner(n) {
+        /*function scanner(n) {
             do {
+                nodes.push(n);
+                if (n.hasChildNodes()) {
+                    scanner(n.firstChild)
+                }
+              } while (n = n.nextSibling)
+        }*/
+
+        function scanner(n) {
+            while (n) {
                 nodes.push(n);
                 if (n.hasChildNodes()) {
                     scanner(n.firstChild);
                 }
-            } while (n = n.nextSibling);
+                n = n.nextSibling;
+            }
         }
 
         scanner(el);
@@ -719,9 +731,33 @@ function transform(node) {
 
     var root = {};
 
+    /*
+        function walking(node, parent) {
+            do {
+                let obj;
+                if (node.nodeType === 3) {
+                    obj = node.nodeValue;
+                } else {
+                    obj = {};
+                    obj.type = node.nodeName.toLowerCase();
+                    obj.children = [];
+                    obj.props = serializeProps(node);
+                }
+                  if (!Object.keys(root).length)
+                    root = obj;
+                  if (parent && parent.children) {
+                    parent.children.push(obj);
+                }
+                  if (node.hasChildNodes()) {
+                    walking(ne.firstChild, obj);
+                }
+            } while (node = node.nextSibling)
+          }/*
+    */
     function walking(node, parent) {
-        do {
+        while (node) {
             var obj = void 0;
+
             if (node.nodeType === 3) {
                 obj = node.nodeValue;
             } else {
@@ -740,7 +776,9 @@ function transform(node) {
             if (node.hasChildNodes()) {
                 walking(node.firstChild, obj);
             }
-        } while (node = node.nextSibling);
+
+            node = node.nextSibling;
+        }
     }
 
     walking(node, root);
@@ -870,9 +908,9 @@ var Doz = function () {
             }
         };
 
-        console.time('render instances');
+        //console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
-        console.timeEnd('render instances');
+        //console.timeEnd('render instances');
     }
 
     _createClass(Doz, [{
@@ -904,11 +942,11 @@ var events = __webpack_require__(6);
 
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
-        console.time('render in observer');
+        //console.time('render in observer');
         instance.render();
-        console.timeEnd('render in observer');
+        //console.timeEnd('render in observer');
 
-        console.time('changes');
+        //console.time('changes');
         changes.forEach(function (item) {
             if (instance._boundElements.hasOwnProperty(item.property)) {
                 instance._boundElements[item.property].forEach(function (element) {
@@ -916,7 +954,7 @@ function create(instance, props) {
                 });
             }
         });
-        console.timeEnd('changes');
+        //console.timeEnd('changes');
 
         if (instance._isCreated) {
             events.callUpdate(instance);
@@ -1528,23 +1566,21 @@ function update($parent, newNode, oldNode) {
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        setTimeout(function () {
-            updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
+        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
 
-            var newLength = newNode.children.length;
-            var oldLength = oldNode.children.length;
+        var newLength = newNode.children.length;
+        var oldLength = oldNode.children.length;
 
-            for (var i = 0; i < newLength || i < oldLength; i++) {
-                update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
-            }
+        for (var i = 0; i < newLength || i < oldLength; i++) {
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+        }
 
-            var dl = deadChildren.length;
+        var dl = deadChildren.length;
 
-            while (dl--) {
-                deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-                deadChildren.splice(dl, 1);
-            }
-        }, 5);
+        while (dl--) {
+            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+            deadChildren.splice(dl, 1);
+        }
     }
 }
 
@@ -1599,8 +1635,6 @@ function setAttribute($target, name, value, cmp) {
 
         for (var i in $target.dataset) {
             if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
-                //console.log('data', i, $target.dataset[i]);
-                //console.log(cmp);
                 addEventListener($target, i, $target.dataset[i], cmp);
             }
         }

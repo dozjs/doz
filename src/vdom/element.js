@@ -49,33 +49,31 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         );
         return rootElement;
     } else if (newNode.type) {
-        setTimeout(() => {
-            updateAttributes(
+        updateAttributes(
+            $parent.childNodes[index],
+            newNode.props,
+            oldNode.props
+        );
+
+        const newLength = newNode.children.length;
+        const oldLength = oldNode.children.length;
+
+        for (let i = 0; i < newLength || i < oldLength; i++) {
+            update(
                 $parent.childNodes[index],
-                newNode.props,
-                oldNode.props
+                newNode.children[i],
+                oldNode.children[i],
+                i,
+                cmp
             );
+        }
 
-            const newLength = newNode.children.length;
-            const oldLength = oldNode.children.length;
+        let dl = deadChildren.length;
 
-            for (let i = 0; i < newLength || i < oldLength; i++) {
-                update(
-                    $parent.childNodes[index],
-                    newNode.children[i],
-                    oldNode.children[i],
-                    i,
-                    cmp
-                );
-            }
-
-            let dl = deadChildren.length;
-
-            while (dl--) {
-                deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-                deadChildren.splice(dl, 1);
-            }
-        }, 5);
+        while (dl--) {
+            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+            deadChildren.splice(dl, 1);
+        }
     }
 }
 

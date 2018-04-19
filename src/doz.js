@@ -1,4 +1,5 @@
 const extend = require('./utils/extend');
+const bind = require('./utils/bind');
 const component = require('./component/index');
 const {TAG, REGEX} = require('./constants');
 
@@ -25,7 +26,8 @@ class Doz {
         }
 
         this.cfg = extend(cfg, {
-            components: []
+            components: [],
+            actions: {}
         });
 
         Object.defineProperties(this, {
@@ -40,6 +42,9 @@ class Doz {
             _stores: {
                 value: {},
                 writable: true
+            },
+            _actions: {
+                value: bind(this.cfg.actions, this)
             }
         });
 
@@ -58,10 +63,7 @@ class Doz {
             }
         };
 
-        console.time('render instances');
         this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
-        console.timeEnd('render instances');
-
     }
 
     getComponent(alias) {

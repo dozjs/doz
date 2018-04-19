@@ -204,32 +204,38 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
+        action: {
+            value: cfg.view._actions,
+            enumerable: true
+        },
         render: {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                console.time('get template');
+                //console.time('into render');
+                //console.time('get template');
                 const template = this.template().trim();
-                console.timeEnd('get template');
+                //console.timeEnd('get template');
 
                 //console.log(template);
 
-                console.time('render tpl');
+                //console.time('render tpl');
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
-                console.timeEnd('render tpl');
+                //console.timeEnd('render tpl');
 
-                console.time('transform tpl');
+                //console.time('transform tpl');
                 let next = transform(tpl);
-                console.timeEnd('transform tpl');
+                //console.timeEnd('transform tpl');
 
-                console.time('update');
+                //console.time('update');
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
-                console.timeEnd('update');
+                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
+                //console.timeEnd('into render');
 
             },
             enumerable: true
