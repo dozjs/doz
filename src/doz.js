@@ -45,6 +45,10 @@ class Doz {
             },
             _actions: {
                 value: bind(this.cfg.actions, this)
+            },
+            _ids: {
+                value: {},
+                writable: true
             }
         });
 
@@ -68,6 +72,10 @@ class Doz {
 
     getComponent(alias) {
         return this._usedComponents[0].children[alias];
+    }
+
+    getComponentById(id) {
+        return this._ids[id];
     }
 
     getStore(store) {

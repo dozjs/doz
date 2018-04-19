@@ -10,7 +10,7 @@ function serializeProps(node) {
         //Array.from(node.attributes).forEach(attr => {
         let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
         if (isComponentListener) {
-            if (!props.hasOwnProperty(ATTR.LISTENER))
+            if (props[ATTR.LISTENER] === undefined)
                 props[ATTR.LISTENER] = {};
             props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
             delete props[attr.name];

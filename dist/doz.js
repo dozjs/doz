@@ -112,7 +112,8 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        STATIC: 'd:static'
+        STATIC: 'd:static',
+        ID: 'd:id'
     }
 };
 
@@ -305,8 +306,9 @@ var _require3 = __webpack_require__(7),
 var update = __webpack_require__(8).updateElement;
 var castStringTo = __webpack_require__(2);
 var store = __webpack_require__(18);
+var ids = __webpack_require__(19);
 
-var _require4 = __webpack_require__(19),
+var _require4 = __webpack_require__(20),
     extract = _require4.extract;
 
 function component(tag) {
@@ -392,10 +394,8 @@ function getInstances(root, template, view, parentCmp) {
 
                             Object.keys(cmps).forEach(function (i) {
                                 var n = i;
-                                if (newElement.children.hasOwnProperty(n)) {
-                                    if (typeof castStringTo(n) === 'number') {
-                                        n++;
-                                    }
+                                if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                                    n++;
                                 }
                                 newElement.children[n] = cmps[i];
                             });
@@ -466,7 +466,7 @@ function createInstance(cmp, cfg) {
         },
         emit: {
             value: function value(name) {
-                if (this._callback && this._callback.hasOwnProperty(name) && this.parent.hasOwnProperty(this._callback[name]) && typeof this.parent[this._callback[name]] === 'function') {
+                if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
                     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                         args[_key - 1] = arguments[_key];
                     }
@@ -501,6 +501,12 @@ function createInstance(cmp, cfg) {
         getStore: {
             value: function value(storeName) {
                 return this._view.getStore(storeName);
+            },
+            enumerable: true
+        },
+        getComponentById: {
+            value: function value(id) {
+                return this._view.getComponentById(id);
             },
             enumerable: true
         },
@@ -554,7 +560,9 @@ function createInstance(cmp, cfg) {
     // Create observer to props
     observer.create(instance, props);
     // Create shared store
-    store.create(instance, props);
+    store.create(instance);
+    // Create ID
+    ids.create(instance);
     // Call create
     events.callCreate(instance);
     // Now instance is created
@@ -568,6 +576,8 @@ function extendInstance(instance, cfg, dProps) {
 
     // Overwrite store name with that passed though props
     if (dProps.store) instance.store = dProps.store;
+    // Overwrite id with that passed though props
+    if (dProps.id) instance.id = dProps.id;
 }
 
 module.exports = {
@@ -719,7 +729,7 @@ function serializeProps(node) {
         //Array.from(node.attributes).forEach(attr => {
         var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
         if (isComponentListener) {
-            if (!props.hasOwnProperty(ATTR.LISTENER)) props[ATTR.LISTENER] = {};
+            if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
             props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
             delete props[attr.name];
         } else {
@@ -899,6 +909,10 @@ var Doz = function () {
             },
             _actions: {
                 value: bind(this.cfg.actions, this)
+            },
+            _ids: {
+                value: {},
+                writable: true
             }
         });
 
@@ -924,6 +938,11 @@ var Doz = function () {
         key: 'getComponent',
         value: function getComponent(alias) {
             return this._usedComponents[0].children[alias];
+        }
+    }, {
+        key: 'getComponentById',
+        value: function getComponentById(id) {
+            return this._ids[id];
         }
     }, {
         key: 'getStore',
@@ -1829,7 +1848,7 @@ module.exports = getByPath;
 function create(instance) {
 
     if (typeof instance.store === 'string') {
-        if (instance._view._stores.hasOwnProperty(instance.store)) {
+        if (instance._view._stores[instance.store] !== undefined) {
             throw new Error('Store already defined: ' + instance.store);
         }
         instance._view._stores[instance.store] = instance.props;
@@ -1847,6 +1866,27 @@ module.exports = {
 "use strict";
 
 
+function create(instance) {
+
+    if (typeof instance.id === 'string') {
+        if (instance._view._ids[instance.id] !== undefined) {
+            throw new Error('ID already defined: ' + instance.id);
+        }
+        instance._view._ids[instance.id] = instance;
+    }
+}
+
+module.exports = {
+    create: create
+};
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _require = __webpack_require__(0),
     ATTR = _require.ATTR;
 
@@ -1854,24 +1894,29 @@ function extract(props) {
 
     var dProps = {};
 
-    if (props.hasOwnProperty(ATTR.ALIAS)) {
+    if (props[ATTR.ALIAS] !== undefined) {
         dProps['alias'] = props[ATTR.ALIAS];
         delete props[ATTR.ALIAS];
     }
 
-    if (props.hasOwnProperty(ATTR.STORE)) {
+    if (props[ATTR.STORE] !== undefined) {
         dProps['store'] = props[ATTR.STORE];
         delete props[ATTR.STORE];
     }
 
-    if (props.hasOwnProperty(ATTR.LISTENER)) {
+    if (props[ATTR.LISTENER] !== undefined) {
         dProps['callback'] = props[ATTR.LISTENER];
         delete props[ATTR.LISTENER];
     }
 
-    if (props.hasOwnProperty(ATTR.CLASS)) {
+    if (props[ATTR.CLASS] !== undefined) {
         dProps['class'] = props[ATTR.CLASS];
         delete props[ATTR.CLASS];
+    }
+
+    if (props[ATTR.ID] !== undefined) {
+        dProps['id'] = props[ATTR.ID];
+        delete props[ATTR.ID];
     }
 
     return dProps;

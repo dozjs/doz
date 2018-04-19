@@ -29,6 +29,7 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        STATIC: 'd:static'
+        STATIC: 'd:static',
+        ID: 'd:id'
     }
 };

@@ -9,6 +9,7 @@ const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 const castStringTo = require('../utils/cast-string-to');
 const store = require('./store');
+const ids = require('./ids');
 const {extract} = require('./d-props');
 
 function component(tag, cfg = {}) {
@@ -93,10 +94,8 @@ function getInstances(root, template, view, parentCmp) {
 
                         Object.keys(cmps).forEach(i => {
                             let n = i;
-                            if (newElement.children.hasOwnProperty(n)) {
-                                if (typeof castStringTo(n) === 'number') {
-                                    n++
-                                }
+                            if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                                n++
                             }
                             newElement.children[n] = cmps[i]
                         })
@@ -169,8 +168,8 @@ function createInstance(cmp, cfg) {
         },
         emit: {
             value: function (name, ...args) {
-                if (this._callback && this._callback.hasOwnProperty(name)
-                    && this.parent.hasOwnProperty(this._callback[name])
+                if (this._callback && this._callback[name] !== undefined
+                    && this.parent[this._callback[name]] !== undefined
                     && typeof this.parent[this._callback[name]] === 'function') {
                     this.parent[this._callback[name]].apply(this.parent, args);
                 }
@@ -201,6 +200,12 @@ function createInstance(cmp, cfg) {
         getStore: {
             value: function (storeName) {
                 return this._view.getStore(storeName);
+            },
+            enumerable: true
+        },
+        getComponentById: {
+            value: function (id) {
+                return this._view.getComponentById(id);
             },
             enumerable: true
         },
@@ -255,7 +260,9 @@ function createInstance(cmp, cfg) {
     // Create observer to props
     observer.create(instance, props);
     // Create shared store
-    store.create(instance, props);
+    store.create(instance);
+    // Create ID
+    ids.create(instance);
     // Call create
     events.callCreate(instance);
     // Now instance is created
@@ -270,6 +277,9 @@ function extendInstance(instance, cfg, dProps) {
     // Overwrite store name with that passed though props
     if (dProps.store)
         instance.store = dProps.store;
+    // Overwrite id with that passed though props
+    if (dProps.id)
+        instance.id = dProps.id;
 }
 
 module.exports = {
