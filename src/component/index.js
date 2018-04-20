@@ -42,13 +42,10 @@ function getInstances(root, template, view, parentCmp) {
         ? html.create(template)
         : template;
 
-    //console.time('getAllNodes');
     const nodes = html.getAllNodes(template);
-    //console.timeEnd('getAllNodes');
     let components = {};
     let index = 0;
 
-    //nodes.forEach(child => {
     for (let j = nodes.length - 1; j >= 0; --j) {
         let child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
@@ -60,6 +57,9 @@ function getInstances(root, template, view, parentCmp) {
                 index++;
                 const props = serializeProps(child);
                 const dProps = extract(props);
+
+                const inner = child.innerHTML.trim();
+                //console.log('child inner',inner);
 
                 const newElement = createInstance(cmp, {
                     root,
@@ -76,14 +76,13 @@ function getInstances(root, template, view, parentCmp) {
 
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
+                if (inner) {
+                    newElement._rootElement.appendChild(html.create(inner));
+                }
+
                 const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
-                //console.log('nested.length', nested)
                 nested.forEach(item => {
-                    /*for (let jj = nested.length - 1; jj >= 0; --jj){
-                        let item = nested[jj];
-
-                        console.log('ITEM', item)*/
 
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
@@ -100,12 +99,10 @@ function getInstances(root, template, view, parentCmp) {
                             newElement.children[n] = cmps[i]
                         })
                     }
-                    //}
                 });
             }
         }
     }
-    //});
 
     return components;
 }
@@ -216,32 +213,20 @@ function createInstance(cmp, cfg) {
         render: {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                //console.time('into render');
-                //console.time('get template');
+
                 const template = this.template().trim();
-                //console.timeEnd('get template');
 
-                //console.log(template);
-
-                //console.time('render tpl');
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
-                //console.timeEnd('render tpl');
 
-                //console.time('transform tpl');
                 let next = transform(tpl);
-                //console.timeEnd('transform tpl');
 
-                //console.time('update');
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
-                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
-                //console.timeEnd('into render');
-
             },
             enumerable: true
         },

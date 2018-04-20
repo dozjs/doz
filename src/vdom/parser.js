@@ -27,33 +27,6 @@ function transform(node) {
 
     let root = {};
 
-    /*
-        function walking(node, parent) {
-            do {
-                let obj;
-                if (node.nodeType === 3) {
-                    obj = node.nodeValue;
-                } else {
-                    obj = {};
-                    obj.type = node.nodeName.toLowerCase();
-                    obj.children = [];
-                    obj.props = serializeProps(node);
-                }
-
-                if (!Object.keys(root).length)
-                    root = obj;
-
-                if (parent && parent.children) {
-                    parent.children.push(obj);
-                }
-
-                if (node.hasChildNodes()) {
-                    walking(ne.firstChild, obj);
-                }
-            } while (node = node.nextSibling)
-
-        }/*
-    */
     function walking(node, parent) {
         while (node) {
             let obj;

@@ -35,7 +35,7 @@ function setAttribute($target, name, value, cmp) {
         $target.setAttribute(name, value);
 
         for (let i in $target.dataset) {
-            if ($target.dataset.hasOwnProperty(i)&& REGEX.IS_LISTENER.test(i)) {
+            if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
                 addEventListener($target, i, $target.dataset[i], cmp);
             }
         }

@@ -342,13 +342,10 @@ function getInstances(root, template, view, parentCmp) {
 
     template = typeof template === 'string' ? html.create(template) : template;
 
-    //console.time('getAllNodes');
     var nodes = html.getAllNodes(template);
-    //console.timeEnd('getAllNodes');
     var components = {};
     var index = 0;
 
-    //nodes.forEach(child => {
     for (var j = nodes.length - 1; j >= 0; --j) {
         var child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
@@ -361,6 +358,9 @@ function getInstances(root, template, view, parentCmp) {
                     index++;
                     var props = serializeProps(child);
                     var dProps = extract(props);
+
+                    var inner = child.innerHTML.trim();
+                    //console.log('child inner',inner);
 
                     var newElement = createInstance(cmp, {
                         root: root,
@@ -377,13 +377,13 @@ function getInstances(root, template, view, parentCmp) {
 
                     components[dProps.alias ? dProps.alias : alias] = newElement;
 
+                    if (inner) {
+                        newElement._rootElement.appendChild(html.create(inner));
+                    }
+
                     var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
-                    //console.log('nested.length', nested)
                     nested.forEach(function (item) {
-                        /*for (let jj = nested.length - 1; jj >= 0; --jj){
-                            let item = nested[jj];
-                              console.log('ITEM', item)*/
 
                         if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
@@ -400,13 +400,11 @@ function getInstances(root, template, view, parentCmp) {
                                 newElement.children[n] = cmps[i];
                             });
                         }
-                        //}
                     });
                 })();
             }
         }
     }
-    //});
 
     return components;
 }
@@ -517,31 +515,20 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value() {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-                //console.time('into render');
-                //console.time('get template');
+
                 var template = this.template().trim();
-                //console.timeEnd('get template');
 
-                //console.log(template);
-
-                //console.time('render tpl');
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
-                //console.timeEnd('render tpl');
 
-                //console.time('transform tpl');
                 var next = transform(tpl);
-                //console.timeEnd('transform tpl');
 
-                //console.time('update');
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
-                //console.timeEnd('update');
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
                 }
 
                 this._prev = next;
-                //console.timeEnd('into render');
             },
             enumerable: true
         },
@@ -592,23 +579,24 @@ module.exports = {
 "use strict";
 
 
+var regexN = /\n/g;
+var regexS = /\s+/g;
+var replace = ' ';
+
 var html = {
     /**
      * Create DOM element
-     * @param str html string or a single tag
+     * @param str html string
      * @returns {Element | Node | null}
      */
     create: function create(str) {
         var element = void 0;
-        str = str.replace(/\n/g, ' ');
-        str = str.replace(/\s+/g, ' ');
-        if (/<.*>/g.test(str)) {
-            var template = document.createElement('div');
-            template.innerHTML = str;
-            element = template.firstChild;
-        } else {
-            element = document.createElement(str);
-        }
+        str = str.replace(regexN, replace);
+        str = str.replace(regexS, replace);
+
+        var template = document.createElement('div');
+        template.innerHTML = str;
+        element = template.firstChild;
 
         if (!this.isValidNode(element)) throw new Error('Element not valid');
         return element;
@@ -626,15 +614,6 @@ var html = {
     getAllNodes: function getAllNodes(el) {
 
         var nodes = [];
-
-        /*function scanner(n) {
-            do {
-                nodes.push(n);
-                if (n.hasChildNodes()) {
-                    scanner(n.firstChild)
-                }
-              } while (n = n.nextSibling)
-        }*/
 
         function scanner(n) {
             while (n) {
@@ -745,29 +724,6 @@ function transform(node) {
 
     var root = {};
 
-    /*
-        function walking(node, parent) {
-            do {
-                let obj;
-                if (node.nodeType === 3) {
-                    obj = node.nodeValue;
-                } else {
-                    obj = {};
-                    obj.type = node.nodeName.toLowerCase();
-                    obj.children = [];
-                    obj.props = serializeProps(node);
-                }
-                  if (!Object.keys(root).length)
-                    root = obj;
-                  if (parent && parent.children) {
-                    parent.children.push(obj);
-                }
-                  if (node.hasChildNodes()) {
-                    walking(ne.firstChild, obj);
-                }
-            } while (node = node.nextSibling)
-          }/*
-    */
     function walking(node, parent) {
         while (node) {
             var obj = void 0;

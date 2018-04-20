@@ -1,20 +1,21 @@
+const regexN = /\n/g;
+const regexS = /\s+/g;
+const replace = ' ';
+
 const html = {
     /**
      * Create DOM element
-     * @param str html string or a single tag
+     * @param str html string
      * @returns {Element | Node | null}
      */
     create: function (str) {
         let element;
-        str = str.replace(/\n/g,' ');
-        str = str.replace(/\s+/g,' ');
-        if (/<.*>/g.test(str)) {
-            let template = document.createElement('div');
-            template.innerHTML = str;
-            element = template.firstChild;
-        } else {
-            element = document.createElement(str);
-        }
+        str = str.replace(regexN, replace);
+        str = str.replace(regexS, replace);
+
+        let template = document.createElement('div');
+        template.innerHTML = str;
+        element = template.firstChild;
 
         if (!this.isValidNode(element))
             throw new Error('Element not valid');
@@ -33,16 +34,6 @@ const html = {
     getAllNodes: function (el) {
 
         const nodes = [];
-
-        /*function scanner(n) {
-            do {
-                nodes.push(n);
-                if (n.hasChildNodes()) {
-                    scanner(n.firstChild)
-                }
-
-            } while (n = n.nextSibling)
-        }*/
 
         function scanner(n) {
             while (n) {

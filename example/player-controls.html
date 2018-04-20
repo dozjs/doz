@@ -42,7 +42,7 @@
         },
         play() {
             this.props.state = 'loading';
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.props.state = 'play';
             }, 1000);
         },
@@ -51,9 +51,25 @@
         }
     });
 
+    Doz.component('volume-control', {
+        props: {
+            state: false
+        },
+        template: function () {
+            if (this.props.state)
+                return `<button forceupdate onclick="this.toggle()"><i class="fa fa-volume-off"></i></button>`;
+            else
+                return `<button forceupdate onclick="this.toggle()"><i class="fa fa-volume-up"></i></button>`;
+
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        }
+    });
+
     new Doz({
         root: '#app',
-        template: `<play-pause></play-pause>`
+        template: `<play-pause></play-pause><volume-control></volume-control>`
     });
 
 
