@@ -10,6 +10,50 @@
     <style>
         body {
             font-family: sans-serif;
+            background: peachpuff;
+        }
+
+        .todo-input {
+            margin-bottom: 10px;
+        }
+
+        .todo-input input[type=text] {
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .todo-input button {
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 0;
+            background: coral;
+            color: #fff;
+        }
+
+        .todo-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: bisque;
+            border-radius: 5px;
+        }
+
+        .todo-item.done {
+            opacity: .5;
+        }
+
+        .todo-item button {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        .todo-info {
+            margin-top: 20px;
         }
 
     </style>
@@ -20,39 +64,93 @@
 
 <script>
 
-    Doz.component('doz-label', {
-        template() {
-            return `<div>${this.props.fieldname}</div>`;
-        }
-    });
+    const actions = {
+        done(index) {
+            const store = this.getStore('todo');
+            store.record[index].done = !store.record[index].done;
+        },
 
-    Doz.component('doz-field', {
+        doneAll() {
+            const store = this.getStore('todo');
+            if (confirm('Mark everything as done?'))
+                store.record.forEach(item => item.done = true);
+        },
+
+        add() {
+            const store = this.getStore('todo');
+            if (store.todo) {
+                store.record.push({
+                    title: store.todo,
+                    done: false
+                });
+                store.todo = '';
+            }
+        },
+
+        remove(index) {
+            const store = this.getStore('todo');
+            if (confirm(`Remove ${store.record[index].title}?`))
+                store.record.splice(index, 1);
+        },
+
+        removeAll() {
+            const store = this.getStore('todo');
+            if (confirm(`Remove everything?`))
+                store.record = [];
+        },
+
+        updateTotal() {
+            const store = this.getStore('todo');
+            let totalDone = 0;
+            store.total = store.record.length;
+            store.record.forEach(item => item.done ? totalDone++ : '');
+            store.totalDone = totalDone;
+        }
+    };
+
+    Doz.component('doz-todo-field', {
+        props: {
+            arrow: '>'
+        },
         template() {
-            return `<span>${this.props.title}</span>`
+            return `
+                <span style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                    ${this.props.arrow} <strong>${this.props.title}</strong>
+                </span>
+            `
         }
     });
 
     Doz.component('doz-todo-item', {
         template() {
             return `
-                <div>
-                    <button onclick="this.removeItem(${this.props.id})">&cross;</button>
-                    <button disabled=${this.props.done} onclick="this.markAsRead(${this.props.id})">&check;</button> #${this.props.id} <strong><doz-field title="${this.props.title}"></doz-field></strong>
+                <div class="todo-item ${this.props.done ? 'done' : ''} ">
+                    <button onclick="this.action.remove(${this.props.id})">&cross;</button>
+                    <button onclick="this.action.done(${this.props.id})">&check;</button> #${this.props.id}
+                    <doz-todo-field done="${this.props.done}" title="${this.props.title}"></doz-todo-field>
                 </div>`;
         }
     });
 
     Doz.component('doz-todo', {
+        store: 'todo',
         template() {
             return `
                 <div>
-                    <doz-label d-alias="label" fieldname="Write an item"></doz-label> <input d-ref="todo-field" d-bind="todo" type="text">
-                    <button onclick="this.addItem()" >Add</button> <button onclick="this.destroy()" >Destroy component</button> <button onclick="this.reverse()" >Reverse</button>
+                    <div class="todo-input">
+                        <input d-ref="todo-field" d-bind="todo" type="text" placeholder="Write a to-do">
+                        <button onclick="this.action.add()" >Add</button>
+                        <button onclick="this.action.doneAll()" >Done all</button>
+                        <button onclick="this.action.removeAll()" >Remove all</button>
+                    </div>
                     <div>${
-                            this.each(this.props.record, (item, i) =>
-                                `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
-                            )
-                        }
+                this.each(this.props.record, (item, i) =>
+                    `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                )
+                }
+                    </div>
+                    <div class="todo-info">
+                        Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
                 </div>
             `;
@@ -60,48 +158,29 @@
 
         props: {
             record: [],
-            todo: ''
-        },
-
-        markAsRead(index) {
-            let record = this.props.record[index];
-            if (record.done) return;
-            record.title = `<s>${record.title}</s>`;
-            record.done = true;
-        },
-
-        addItem() {
-            if (this.props.todo) {
-                this.props.record.push({
-                    title: this.props.todo,
-                    done: false
-                });
-            }
-
-            this.props.todo = '';
-        },
-
-        reverse() {
-            this.props.record.reverse();
-        },
-
-        removeItem(index) {
-            this.props.record.splice(index, 1);
-        },
-
-        onBeforeDestroy() {
-            return confirm('Destroy component?');
+            todo: '',
+            total: 0,
+            totalDone: 0
         },
 
         onRender() {
-            this.props.record = [{title:"Buy milk", done:false},{title:"Buy cigarettes", done:false}];
+            this.props.record = [
+                {title: "Buy milk", done: false},
+                {title: "Buy cigarettes", done: false}
+            ];
+            this.action.updateTotal();
+        },
+
+        onUpdate() {
+            this.action.updateTotal();
         }
     });
 
     new Doz({
+        actions,
         root: document.getElementById('app'),
         template: `
-            <h1>TODO list</h1>
+            <h1>TO-DO list</h1>
             <doz-todo d-alias="todo-list"></doz-todo>
         `
     });
