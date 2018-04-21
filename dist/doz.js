@@ -954,6 +954,10 @@ module.exports = bind;
 var proxy = __webpack_require__(14);
 var events = __webpack_require__(6);
 
+function delay() {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame;else return window.setTimeout;
+}
+
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
         instance.render();
@@ -966,7 +970,7 @@ function create(instance, props) {
         });
 
         if (instance._isCreated) {
-            window.requestAnimationFrame(function () {
+            delay(function () {
                 events.callUpdate(instance);
             });
         }

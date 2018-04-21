@@ -10,7 +10,7 @@
         "release:patch": "webpack --env.patch && npm run-script release:publish",
         "release:publish": "echo git commit -a -m BUILD && version-to-tag.sh && npm publish",
         "build": "webpack --progress",
-        "test": "npm run-script build && mocha test",
+        "test": "mocha test",
         "doc": "jsdoc2md --template README.hbs --no-gfm --files src/Component.js src/DOM.js > README.md"
     },
     "repository": {

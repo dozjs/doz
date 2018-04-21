@@ -1,6 +1,13 @@
 const proxy = require('../utils/proxy');
 const events = require('./events');
 
+function delay() {
+    if (window.requestAnimationFrame !== undefined)
+        return window.requestAnimationFrame;
+    else
+        return window.setTimeout;
+}
+
 function create(instance, props) {
     instance.props = proxy.create(props, true, changes => {
         instance.render();
@@ -13,7 +20,7 @@ function create(instance, props) {
         });
 
         if (instance._isCreated) {
-            window.requestAnimationFrame(()=>{
+            delay(()=>{
                 events.callUpdate(instance);
             });
         }
