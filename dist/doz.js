@@ -654,7 +654,7 @@ function callRender(context) {
 
 function callBeforeUpdate(context) {
     if (typeof context.onBeforeUpdate === 'function') {
-        return context.onBeforeUpdate.call(context);
+        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
     }
 }
 
@@ -956,11 +956,7 @@ var events = __webpack_require__(6);
 
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
-        //console.time('render in observer');
         instance.render();
-        //console.timeEnd('render in observer');
-
-        //console.time('changes');
         changes.forEach(function (item) {
             if (instance._boundElements.hasOwnProperty(item.property)) {
                 instance._boundElements[item.property].forEach(function (element) {
@@ -968,15 +964,16 @@ function create(instance, props) {
                 });
             }
         });
-        //console.timeEnd('changes');
 
         if (instance._isCreated) {
-            events.callUpdate(instance);
+            window.requestAnimationFrame(function () {
+                events.callUpdate(instance);
+            });
         }
     });
 
     proxy.beforeChange(instance.props, function () {
-        var res = events.callBeforeUpdate(Object.assign({}, instance.props));
+        var res = events.callBeforeUpdate(instance);
         if (res === false) return false;
     });
 }

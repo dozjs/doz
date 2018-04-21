@@ -3,11 +3,7 @@ const events = require('./events');
 
 function create(instance, props) {
     instance.props = proxy.create(props, true, changes => {
-        //console.time('render in observer');
         instance.render();
-        //console.timeEnd('render in observer');
-
-        //console.time('changes');
         changes.forEach(item => {
             if (instance._boundElements.hasOwnProperty(item.property)) {
                 instance._boundElements[item.property].forEach(element => {
@@ -15,15 +11,16 @@ function create(instance, props) {
                 })
             }
         });
-        //console.timeEnd('changes');
 
         if (instance._isCreated) {
-            events.callUpdate(instance);
+            window.requestAnimationFrame(()=>{
+                events.callUpdate(instance);
+            });
         }
     });
 
     proxy.beforeChange(instance.props, () => {
-        const res = events.callBeforeUpdate(Object.assign({}, instance.props));
+        const res = events.callBeforeUpdate(instance);
         if (res === false)
             return false;
     });

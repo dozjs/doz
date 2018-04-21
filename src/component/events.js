@@ -12,7 +12,7 @@ function callRender(context) {
 
 function callBeforeUpdate(context) {
     if(typeof context.onBeforeUpdate === 'function'){
-        return context.onBeforeUpdate.call(context);
+        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
     }
 }
 
