@@ -43,12 +43,12 @@ class Doz {
                 value: {},
                 writable: true
             },
-            _actions: {
-                value: bind(this.cfg.actions, this)
-            },
             _ids: {
                 value: {},
                 writable: true
+            },
+            action: {
+                value: bind(this.cfg.actions, this)
             }
         });
 

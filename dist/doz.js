@@ -519,7 +519,7 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         action: {
-            value: cfg.view._actions,
+            value: cfg.view.action,
             enumerable: true
         },
         render: {
@@ -882,12 +882,12 @@ var Doz = function () {
                 value: {},
                 writable: true
             },
-            _actions: {
-                value: bind(this.cfg.actions, this)
-            },
             _ids: {
                 value: {},
                 writable: true
+            },
+            action: {
+                value: bind(this.cfg.actions, this)
             }
         });
 

@@ -217,7 +217,7 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         action: {
-            value: cfg.view._actions,
+            value: cfg.view.action,
             enumerable: true
         },
         render: {

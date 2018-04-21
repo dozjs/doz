@@ -105,21 +105,34 @@
             store.total = store.record.length;
             store.record.forEach(item => item.done ? totalDone++ : '');
             store.totalDone = totalDone;
+        },
+
+        showInput(e) {
+            const text = e.target;
+            const input = e.target.nextElementSibling;
+            if (!input) return;
+            input.style.display = 'inline';
+            text.style.display = 'none';
+        },
+
+        hideInput(index, e) {
+            const input = e.target;
+            const text = e.target.previousElementSibling;
+            if (!text) return;
+            input.style.display = 'none';
+            text.style.display = 'inline';
+            const store = this.getStore('todo');
+            store.record[index].title = input.value;
+        },
+
+        enterPress(e) {
+            if(e.keyCode === 13) {
+                console.log(this);
+                this.action.add();
+                e.target.value = '';
+            }
         }
     };
-
-    Doz.component('doz-todo-field', {
-        props: {
-            arrow: '>'
-        },
-        template() {
-            return `
-                <span style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                    ${this.props.arrow} <strong>${this.props.title}</strong>
-                </span>
-            `
-        }
-    });
 
     Doz.component('doz-todo-item', {
         template() {
@@ -128,7 +141,11 @@
                     <button onclick="this.action.remove(${this.props.id})">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})">&check;</button> #${this.props.id}
                     <doz-todo-field done="${this.props.done}" title="${this.props.title}"></doz-todo-field>
-                </div>`;
+                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                        <strong>${this.props.title}</strong> <input onblur="this.action.hideInput(${this.props.id})" style="display: none" type="text" value="${this.props.title}">
+                    </span>
+                </div>
+            `;
         }
     });
 
@@ -138,7 +155,7 @@
             return `
                 <div>
                     <div class="todo-input">
-                        <input onkeypress="this.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
+                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
                         <button onclick="this.action.add()" >Add</button>
                         <button onclick="this.action.doneAll()" >Done all</button>
                         <button onclick="this.action.removeAll()" >Remove all</button>
@@ -162,19 +179,13 @@
             totalDone: 0
         },
 
-        enterPress(e) {
-            if(e.keyCode === 13) {
-                this.action.add();
-                e.target.value = '';
-            }
-        },
-
         onRender() {
-            /*this.props.record = [
+            this.props.record = [
                 {title: "Buy milk", done: false},
                 {title: "Buy cigarettes", done: false}
-            ];*/
+            ];
 
+            /*
             const record = [];
             for (let i = 0; i < 1000; i++) {
                 record.push({
@@ -184,6 +195,7 @@
             }
 
             this.props.record = record;
+            */
         },
 
         onUpdate() {
