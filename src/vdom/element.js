@@ -52,7 +52,8 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
         updateAttributes(
             $parent.childNodes[index],
             newNode.props,
-            oldNode.props
+            oldNode.props,
+            cmp
         );
 
         const newLength = newNode.children.length;

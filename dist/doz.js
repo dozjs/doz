@@ -1600,7 +1600,7 @@ function update($parent, newNode, oldNode) {
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props);
+        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
@@ -1667,14 +1667,7 @@ function setAttribute($target, name, value, cmp) {
             $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {}
     } else {
-
         $target.setAttribute(name, value);
-
-        for (var i in $target.dataset) {
-            if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
-                addEventListener($target, i, $target.dataset[i], cmp);
-            }
-        }
     }
 }
 
@@ -1698,8 +1691,8 @@ function updateAttribute($target, name, newVal, oldVal) {
 
 function updateAttributes($target, newProps) {
     var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var cmp = arguments[3];
 
-    //console.log('update att')
     var props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(function (name) {
         updateAttribute($target, name, newProps[name], oldProps[name]);
@@ -1720,7 +1713,6 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
-    //if(!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }
@@ -1731,7 +1723,7 @@ function extractEventName(name) {
 
 function addEventListener($target, name, value, cmp) {
 
-    if (!isEventAttribute(name)) return;
+    if (!isEventAttribute(name) /*|| $target.dataset[name] !== undefined*/) return;
 
     var match = value.match(REGEX.GET_LISTENER);
 
@@ -1792,6 +1784,13 @@ function attach($target, props, cmp) {
         setBind($target, name, props[name], cmp);
         setRef($target, name, props[name], cmp);
     });
+
+    //TODO Bisogna creare l'evento solo per i componenti statici
+    for (var i in $target.dataset) {
+        if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
+            addEventListener($target, i, $target.dataset[i], cmp);
+        }
+    }
 }
 
 module.exports = {

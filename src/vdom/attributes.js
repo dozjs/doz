@@ -31,14 +31,7 @@ function setAttribute($target, name, value, cmp) {
 
         }
     } else {
-
         $target.setAttribute(name, value);
-
-        for (let i in $target.dataset) {
-            if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
-                addEventListener($target, i, $target.dataset[i], cmp);
-            }
-        }
     }
 }
 
@@ -61,8 +54,7 @@ function updateAttribute($target, name, newVal, oldVal) {
     }
 }
 
-function updateAttributes($target, newProps, oldProps = {}) {
-    //console.log('update att')
+function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
     Object.keys(props).forEach(name => {
         updateAttribute($target, name, newProps[name], oldProps[name]);
@@ -86,7 +78,6 @@ function setBooleanAttribute($target, name, value) {
 }
 
 function removeBooleanAttribute($target, name) {
-    //if(!$target) return;
     $target.removeAttribute(name);
     $target[name] = false;
 }
@@ -97,7 +88,7 @@ function extractEventName(name) {
 
 function addEventListener($target, name, value, cmp) {
 
-    if (!isEventAttribute(name)) return;
+    if (!isEventAttribute(name) /*|| $target.dataset[name] !== undefined*/) return;
 
     let match = value.match(REGEX.GET_LISTENER);
 
@@ -164,6 +155,14 @@ function attach($target, props, cmp) {
         setBind($target, name, props[name], cmp);
         setRef($target, name, props[name], cmp);
     });
+
+
+    //TODO Bisogna creare l'evento solo per i componenti statici
+    for (let i in $target.dataset) {
+        if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
+            addEventListener($target, i, $target.dataset[i], cmp);
+        }
+    }
 }
 
 module.exports = {
