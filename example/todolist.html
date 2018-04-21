@@ -170,10 +170,20 @@
         },
 
         onRender() {
-            this.props.record = [
+            /*this.props.record = [
                 {title: "Buy milk", done: false},
                 {title: "Buy cigarettes", done: false}
-            ];
+            ];*/
+
+            const record = [];
+            for (let i = 0; i < 1000; i++) {
+                record.push({
+                    title: 'Buy ' + i,
+                    done: false
+                })
+            }
+
+            this.props.record = record;
         },
 
         onUpdate() {

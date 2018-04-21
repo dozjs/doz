@@ -444,6 +444,9 @@ function createInstance(cmp, cfg) {
         _view: {
             value: cfg.view
         },
+        _cache: {
+            value: new Map()
+        },
         parent: {
             value: cfg.parentCmp,
             enumerable: true
@@ -483,12 +486,21 @@ function createInstance(cmp, cfg) {
                     stringEl = stringEl.trim();
 
                     if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
-                        var el = html.create(stringEl);
-                        el.setAttribute(ATTR.STATIC, 'each');
-                        stringEl = el.outerHTML;
-                        var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this);
-                        stringEl = _cmp[0]._rootElement.innerHTML;
-                        _cmp[0].destroy();
+                        var key = stringEl;
+                        var value = _this._cache.get(key);
+                        if (value !== undefined) {
+                            console.log('prendo la cache');
+                            stringEl = value;
+                        } else {
+                            console.log('non in cache');
+                            var el = html.create(stringEl);
+                            el.setAttribute(ATTR.STATIC, 'each');
+                            stringEl = el.outerHTML;
+                            var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this);
+                            stringEl = _cmp[0]._rootElement.innerHTML;
+                            _cmp[0].destroy();
+                            _this._cache.set(key, stringEl);
+                        }
                     }
 
                     return stringEl;
