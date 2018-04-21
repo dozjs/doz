@@ -225,10 +225,20 @@ function createInstance(cmp, cfg) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 const template = this.template().trim();
+                /*
+                                const key = template;
+                                const value = this._cache.get(key);
+                                let next;
 
+                                if (value !== undefined) {
+                                  console.log('cache');
+                                    next = value;
+                                /*} else {
+                                    console.log('no cache')*/
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
-
                 let next = transform(tpl);
+                /*this._cache.set(key, value);
+            }*/
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 

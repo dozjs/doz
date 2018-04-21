@@ -489,10 +489,8 @@ function createInstance(cmp, cfg) {
                         var key = stringEl;
                         var value = _this._cache.get(key);
                         if (value !== undefined) {
-                            console.log('prendo la cache');
                             stringEl = value;
                         } else {
-                            console.log('non in cache');
                             var el = html.create(stringEl);
                             el.setAttribute(ATTR.STATIC, 'each');
                             stringEl = el.outerHTML;
@@ -529,10 +527,19 @@ function createInstance(cmp, cfg) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 var template = this.template().trim();
-
+                /*
+                                const key = template;
+                                const value = this._cache.get(key);
+                                let next;
+                                  if (value !== undefined) {
+                                  console.log('cache');
+                                    next = value;
+                                /*} else {
+                                    console.log('no cache')*/
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
-
                 var next = transform(tpl);
+                /*this._cache.set(key, value);
+                }*/
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -966,8 +973,8 @@ module.exports = bind;
 var proxy = __webpack_require__(14);
 var events = __webpack_require__(6);
 
-function delay() {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame;else return window.setTimeout;
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
 
 function create(instance, props) {
