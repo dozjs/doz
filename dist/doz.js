@@ -1560,6 +1560,8 @@ var _require = __webpack_require__(16),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
+var deadChildren = [];
+
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
@@ -1567,14 +1569,10 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp) {
     if (typeof node === 'undefined') return;
 
-    //console.time('create element');
-
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
     var $el = document.createElement(node.type);
-
-    //console.log('CREATE');
 
     attach($el, node.props, cmp);
 
@@ -1582,11 +1580,8 @@ function create(node, cmp) {
         return create(item, cmp);
     }).forEach($el.appendChild.bind($el));
 
-    //console.timeEnd('create element');
     return $el;
 }
-
-var deadChildren = [];
 
 function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
@@ -1615,12 +1610,16 @@ function update($parent, newNode, oldNode) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
         }
 
-        var dl = deadChildren.length;
+        clearDead();
+    }
+}
 
-        while (dl--) {
-            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-            deadChildren.splice(dl, 1);
-        }
+function clearDead() {
+    var dl = deadChildren.length;
+
+    while (dl--) {
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        deadChildren.splice(dl, 1);
     }
 }
 
@@ -1729,10 +1728,11 @@ function extractEventName(name) {
 
 function addEventListener($target, name, value, cmp) {
 
-    if (!isEventAttribute(name) /*|| $target.dataset[name] !== undefined*/) return;
+    if (!isEventAttribute(name)) return;
 
     var match = value.match(REGEX.GET_LISTENER);
 
+    // Add only if is a static component
     if (cmp._isStatic) $target.dataset[name] = value;
 
     if (match) {

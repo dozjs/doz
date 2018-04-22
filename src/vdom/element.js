@@ -1,4 +1,5 @@
 const {attach, updateAttributes} = require('./attributes');
+const deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -10,14 +11,10 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp) {
     if (typeof node === 'undefined') return;
 
-    //console.time('create element');
-
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
     const $el = document.createElement(node.type);
-
-    //console.log('CREATE');
 
     attach($el, node.props, cmp);
 
@@ -25,11 +22,8 @@ function create(node, cmp) {
         .map(item => create(item, cmp))
         .forEach($el.appendChild.bind($el));
 
-    //console.timeEnd('create element');
     return $el;
 }
-
-const deadChildren = [];
 
 function update($parent, newNode, oldNode, index = 0, cmp) {
 
@@ -69,12 +63,16 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
             );
         }
 
-        let dl = deadChildren.length;
+        clearDead();
+    }
+}
 
-        while (dl--) {
-            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-            deadChildren.splice(dl, 1);
-        }
+function clearDead() {
+    let dl = deadChildren.length;
+
+    while (dl--) {
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        deadChildren.splice(dl, 1);
     }
 }
 
