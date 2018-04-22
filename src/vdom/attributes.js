@@ -88,11 +88,13 @@ function extractEventName(name) {
 
 function addEventListener($target, name, value, cmp) {
 
-    if (!isEventAttribute(name) /*|| $target.dataset[name] !== undefined*/) return;
+    if (!isEventAttribute(name)) return;
 
     let match = value.match(REGEX.GET_LISTENER);
 
-    $target.dataset[name] = value;
+    // Add only if is a static component
+    if (cmp._isStatic)
+        $target.dataset[name] = value;
 
     if (match) {
         let args = null;
@@ -156,8 +158,8 @@ function attach($target, props, cmp) {
         setRef($target, name, props[name], cmp);
     });
 
-
     //TODO Bisogna creare l'evento solo per i componenti statici
+    //console.log('fffffffffffffffffffffffff', $target);
     for (let i in $target.dataset) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);

@@ -36,7 +36,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, view, parentCmp) {
+function getInstances(root, template, view, parentCmp, isStatic = false) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -66,7 +66,8 @@ function getInstances(root, template, view, parentCmp) {
                     view,
                     props,
                     dProps,
-                    parentCmp
+                    parentCmp,
+                    isStatic
                 });
 
                 // Remove old
@@ -89,7 +90,7 @@ function getInstances(root, template, view, parentCmp) {
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances(rootElement, template, view, newElement);
+                        const cmps = getInstances(rootElement, template, view, newElement, isStatic);
 
                         Object.keys(cmps).forEach(i => {
                             let n = i;
@@ -148,6 +149,9 @@ function createInstance(cmp, cfg) {
         _cache: {
             value: new Map()
         },
+        _isStatic: {
+            value: cfg.isStatic
+        },
         parent: {
             value: cfg.parentCmp,
             enumerable: true
@@ -192,7 +196,7 @@ function createInstance(cmp, cfg) {
                                 const el = html.create(stringEl);
                                 el.setAttribute(ATTR.STATIC, 'each');
                                 stringEl = el.outerHTML;
-                                let cmp = getInstances(document.createElement(TAG.ROOT), stringEl, this._view, this);
+                                let cmp = getInstances(document.createElement(TAG.ROOT), stringEl, this._view, this, true);
                                 stringEl = cmp[0]._rootElement.innerHTML;
                                 cmp[0].destroy();
                                 this._cache.set(key, stringEl);

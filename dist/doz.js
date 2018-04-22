@@ -339,6 +339,8 @@ function component(tag) {
 }
 
 function getInstances(root, template, view, parentCmp) {
+    var isStatic = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+
 
     template = typeof template === 'string' ? html.create(template) : template;
 
@@ -367,7 +369,8 @@ function getInstances(root, template, view, parentCmp) {
                         view: view,
                         props: props,
                         dProps: dProps,
-                        parentCmp: parentCmp
+                        parentCmp: parentCmp,
+                        isStatic: isStatic
                     });
 
                     // Remove old
@@ -390,7 +393,7 @@ function getInstances(root, template, view, parentCmp) {
                             var _template = item.outerHTML;
                             var rootElement = document.createElement(item.nodeName);
                             item.parentNode.replaceChild(rootElement, item);
-                            var cmps = getInstances(rootElement, _template, view, newElement);
+                            var cmps = getInstances(rootElement, _template, view, newElement, isStatic);
 
                             Object.keys(cmps).forEach(function (i) {
                                 var n = i;
@@ -447,6 +450,9 @@ function createInstance(cmp, cfg) {
         _cache: {
             value: new Map()
         },
+        _isStatic: {
+            value: cfg.isStatic
+        },
         parent: {
             value: cfg.parentCmp,
             enumerable: true
@@ -494,7 +500,7 @@ function createInstance(cmp, cfg) {
                             var el = html.create(stringEl);
                             el.setAttribute(ATTR.STATIC, 'each');
                             stringEl = el.outerHTML;
-                            var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this);
+                            var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this, true);
                             stringEl = _cmp[0]._rootElement.innerHTML;
                             _cmp[0].destroy();
                             _this._cache.set(key, stringEl);
@@ -1727,7 +1733,7 @@ function addEventListener($target, name, value, cmp) {
 
     var match = value.match(REGEX.GET_LISTENER);
 
-    $target.dataset[name] = value;
+    if (cmp._isStatic) $target.dataset[name] = value;
 
     if (match) {
         var args = null;
@@ -1786,6 +1792,7 @@ function attach($target, props, cmp) {
     });
 
     //TODO Bisogna creare l'evento solo per i componenti statici
+    //console.log('fffffffffffffffffffffffff', $target);
     for (var i in $target.dataset) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
