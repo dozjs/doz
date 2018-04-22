@@ -40,6 +40,10 @@
             border-radius: 5px;
         }
 
+        .todo-item:hover {
+            background: #feffb3;
+        }
+
         .todo-item.done {
             opacity: .5;
         }
@@ -47,7 +51,7 @@
         .todo-item button {
             width: 30px;
             height: 30px;
-            border-radius: 5px;
+            border-radius: 50%;
             border: 1px solid #ccc;
             background: white;
         }
@@ -115,6 +119,7 @@
             if (!input) return;
             input.style.display = 'inline';
             text.style.display = 'none';
+            input.focus();
         },
 
         hideInput(index, e) {
@@ -145,8 +150,8 @@
         template() {
             return `
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})">&cross;</button>
-                    <button onclick="this.action.done(${this.props.id})">&check;</button> #${this.props.id}
+                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
+                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <doz-todo-field done="${this.props.done}" title="${this.props.title}"></doz-todo-field>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
