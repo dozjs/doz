@@ -27,18 +27,31 @@
 
     Doz.component('fist-component', {
         template() {
-            return `<button forceupdate onclick="this.drawOther()">Mount second</i></button>
-                    <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
-                    <div id="root-second"></div>`;
+            return `
+                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+            `;
         },
         drawOther() {
-            this.other = this.mount('<second-component></second-component><thirty-component></thirty-component>', '#root-second');
-            this.other.onDestroy = function() {
+            if (this.other) return;
+
+            this.other = this.mount(`
+                <div>
+                    <second-component></second-component>
+                    <thirty-component></thirty-component>
+                </div>
+            `);
+
+            console.log('component mounted');
+            this.other.onDestroy = function () {
                 console.log('component destroyed');
             };
         },
         removeOther() {
-            this.other.destroy();
+            if (this.other) {
+                this.other.destroy();
+                this.other = null;
+            }
         }
     });
 

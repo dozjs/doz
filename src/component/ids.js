@@ -1,10 +1,10 @@
 function create(instance) {
 
     if (typeof instance.id === 'string') {
-        if (instance._view._ids[instance.id] !== undefined) {
+        if (instance.view._ids[instance.id] !== undefined) {
             throw new Error(`ID already defined: ${instance.id}`);
         }
-        instance._view._ids[instance.id] = instance;
+        instance.view._ids[instance.id] = instance;
     }
 }
 

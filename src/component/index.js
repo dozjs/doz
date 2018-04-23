@@ -148,14 +148,14 @@ function createInstance(cmp, cfg) {
             value: cfg.dProps['callback'],
             writable: true
         },
-        _view: {
-            value: cfg.view
-        },
         _cache: {
             value: new Map()
         },
         _isStatic: {
             value: cfg.isStatic
+        },
+        view: {
+            value: cfg.view
         },
         parent: {
             value: cfg.parentCmp,
@@ -208,7 +208,7 @@ function createInstance(cmp, cfg) {
                                     cmp = getInstances(
                                         document.createElement(TAG.ROOT),
                                         stringEl,
-                                        this._view,
+                                        this.view,
                                         this,
                                         true
                                     );
@@ -227,7 +227,7 @@ function createInstance(cmp, cfg) {
                                     cmp = getInstances(
                                         document.createElement(TAG.ROOT),
                                         `<${TAG.EACH}></${TAG.EACH}>`,
-                                        this._view,
+                                        this.view,
                                         this,
                                         true,
                                         autoCmp
@@ -247,13 +247,13 @@ function createInstance(cmp, cfg) {
         },
         getStore: {
             value: function (storeName) {
-                return this._view.getStore(storeName);
+                return this.view.getStore(storeName);
             },
             enumerable: true
         },
         getComponentById: {
             value: function (id) {
-                return this._view.getComponentById(id);
+                return this.view.getComponentById(id);
             },
             enumerable: true
         },
@@ -266,8 +266,6 @@ function createInstance(cmp, cfg) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 const template = this.template().trim();
-
-                //console.log(template);
 
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 let next = transform(tpl);
@@ -283,33 +281,8 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         mount: {
-            value: function (template, root) {
-
-                if(typeof root === 'string') {
-                    root = document.querySelector(root);
-                }
-
-                if (!(root instanceof HTMLElement)) {
-                    throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
-                }
-
-                const autoCmp = {
-                    tag: TAG.ROOT,
-                    cfg: {
-                        props: {},
-                        template() {
-                            return template;
-                        }
-                    }
-                };
-                return getInstances(
-                    root,
-                    `<${TAG.ROOT}></${TAG.ROOT}>`,
-                    this._view,
-                    this,
-                    false,
-                    autoCmp
-                )[0];
+            value: function (template, root = this._rootElement) {
+                return this.view.mount(template, root);
 
             },
             enumerable: true

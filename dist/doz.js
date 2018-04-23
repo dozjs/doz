@@ -449,14 +449,14 @@ function createInstance(cmp, cfg) {
             value: cfg.dProps['callback'],
             writable: true
         },
-        _view: {
-            value: cfg.view
-        },
         _cache: {
             value: new Map()
         },
         _isStatic: {
             value: cfg.isStatic
+        },
+        view: {
+            value: cfg.view
         },
         parent: {
             value: cfg.parentCmp,
@@ -509,7 +509,7 @@ function createInstance(cmp, cfg) {
                             if (isCustomTagString.index === 0) {
                                 var el = html.create(stringEl);
                                 stringEl = el.outerHTML;
-                                _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this, true);
+                                _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this.view, _this, true);
 
                                 // Is into standard HTML
                             } else {
@@ -522,7 +522,7 @@ function createInstance(cmp, cfg) {
                                         }
                                     }
                                 };
-                                _cmp = getInstances(document.createElement(TAG.ROOT), '<' + TAG.EACH + '></' + TAG.EACH + '>', _this._view, _this, true, autoCmp);
+                                _cmp = getInstances(document.createElement(TAG.ROOT), '<' + TAG.EACH + '></' + TAG.EACH + '>', _this.view, _this, true, autoCmp);
                             }
 
                             stringEl = _cmp[0]._rootElement.innerHTML;
@@ -538,13 +538,13 @@ function createInstance(cmp, cfg) {
         },
         getStore: {
             value: function value(storeName) {
-                return this._view.getStore(storeName);
+                return this.view.getStore(storeName);
             },
             enumerable: true
         },
         getComponentById: {
             value: function value(id) {
-                return this._view.getComponentById(id);
+                return this.view.getComponentById(id);
             },
             enumerable: true
         },
@@ -557,8 +557,6 @@ function createInstance(cmp, cfg) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 var template = this.template().trim();
-
-                //console.log(template);
 
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 var next = transform(tpl);
@@ -574,26 +572,10 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         mount: {
-            value: function value(_template2, root) {
+            value: function value(template) {
+                var root = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._rootElement;
 
-                if (typeof root === 'string') {
-                    root = document.querySelector(root);
-                }
-
-                if (!(root instanceof HTMLElement)) {
-                    throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
-                }
-
-                var autoCmp = {
-                    tag: TAG.ROOT,
-                    cfg: {
-                        props: {},
-                        template: function template() {
-                            return _template2;
-                        }
-                    }
-                };
-                return getInstances(root, '<' + TAG.ROOT + '></' + TAG.ROOT + '>', this._view, this, false, autoCmp)[0];
+                return this.view.mount(template, root);
             },
             enumerable: true
         },
@@ -933,7 +915,37 @@ var Doz = function () {
                 writable: true
             },
             action: {
-                value: bind(this.cfg.actions, this)
+                value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            mount: {
+                value: function value(_template, root) {
+                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._usedComponents[0];
+
+
+                    if (typeof root === 'string') {
+                        root = document.querySelector(root);
+                    }
+
+                    root = root || parent._rootElement;
+
+                    if (!(root instanceof HTMLElement)) {
+                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                    }
+
+                    var autoCmp = {
+                        tag: TAG.ROOT,
+                        cfg: {
+                            props: {},
+                            template: function template() {
+                                return _template;
+                            }
+                        }
+                    };
+
+                    return component.getInstances(root, '<' + TAG.ROOT + '></' + TAG.ROOT + '>', this, parent, false, autoCmp)[0];
+                },
+                enumerable: true
             }
         });
 
@@ -1873,10 +1885,10 @@ module.exports = getByPath;
 function create(instance) {
 
     if (typeof instance.store === 'string') {
-        if (instance._view._stores[instance.store] !== undefined) {
+        if (instance.view._stores[instance.store] !== undefined) {
             throw new Error('Store already defined: ' + instance.store);
         }
-        instance._view._stores[instance.store] = instance.props;
+        instance.view._stores[instance.store] = instance.props;
     }
 }
 
@@ -1894,10 +1906,10 @@ module.exports = {
 function create(instance) {
 
     if (typeof instance.id === 'string') {
-        if (instance._view._ids[instance.id] !== undefined) {
+        if (instance.view._ids[instance.id] !== undefined) {
             throw new Error('ID already defined: ' + instance.id);
         }
-        instance._view._ids[instance.id] = instance;
+        instance.view._ids[instance.id] = instance;
     }
 }
 

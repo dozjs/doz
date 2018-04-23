@@ -48,7 +48,42 @@ class Doz {
                 writable: true
             },
             action: {
-                value: bind(this.cfg.actions, this)
+                value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            mount: {
+                value: function (template, root, parent = this._usedComponents[0]) {
+
+                    if (typeof root === 'string') {
+                        root = document.querySelector(root);
+                    }
+
+                    root = root || parent._rootElement;
+
+                    if (!(root instanceof HTMLElement)) {
+                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                    }
+
+                    const autoCmp = {
+                        tag: TAG.ROOT,
+                        cfg: {
+                            props: {},
+                            template() {
+                                return template;
+                            }
+                        }
+                    };
+
+                    return component.getInstances(
+                        root,
+                        `<${TAG.ROOT}></${TAG.ROOT}>`,
+                        this,
+                        parent,
+                        false,
+                        autoCmp
+                    )[0];
+                },
+                enumerable: true
             }
         });
 
