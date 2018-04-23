@@ -59,6 +59,7 @@ class Doz {
         });
 
         this._components[TAG.VIEW] = {
+            tag: TAG.VIEW,
             cfg: {
                 props: cfg.props || {},
                 template() {

@@ -133,13 +133,13 @@
         },
 
         inputEnterPress(index, e) {
-            if(e.keyCode === 13) {
+            if (e.keyCode === 13) {
                 this.action.hideInput(index, e);
             }
         },
 
         enterPress(e) {
-            if(e.keyCode === 13) {
+            if (e.keyCode === 13) {
                 this.action.add();
                 e.target.value = '';
             }
@@ -152,15 +152,15 @@
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
-                    <doz-todo-field done="${this.props.done}" title="${this.props.title}"></doz-todo-field>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                        onblur="this.action.hideInput(${this.props.id})"
-                        onkeypress="this.action.inputEnterPress(${this.props.id})"
-                        style="display: none"
-                        type="text"
-                        value="${this.props.title}">
+                            onblur="this.action.hideInput(${this.props.id})"
+                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            style="display: none"
+                            type="text"
+                            value="${this.props.title}"
+                        >
                     </span>
                 </div>
             `;
@@ -178,11 +178,9 @@
                         <button onclick="this.action.doneAll()" >Done all</button>
                         <button onclick="this.action.removeAll()" >Remove all</button>
                     </div>
-                    <div>
-                        ${this.each(this.props.record, (item, i) =>
-                            `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
-                        )}
-                    </div>
+                    ${this.each(this.props.record, (item, i) =>
+                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                    )}
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>

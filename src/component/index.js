@@ -36,7 +36,7 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, view, parentCmp, isStatic = false) {
+function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
 
     template = typeof template === 'string'
         ? html.create(template)
@@ -50,9 +50,9 @@ function getInstances(root, template, view, parentCmp, isStatic = false) {
         let child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
-            const cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
-            if (cmp) {
+            const cmp = autoCmp || collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
 
+            if (cmp) {
                 let alias = index;
                 index++;
                 const props = serializeProps(child);
@@ -78,7 +78,13 @@ function getInstances(root, template, view, parentCmp, isStatic = false) {
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
                 if (inner) {
-                    newElement._rootElement.appendChild(html.create(inner));
+                    //console.log(newElement._rootElement, isStatic);
+                    const innerEl = html.create(inner);
+                    if (isStatic && newElement._rootElement.firstChild) {
+                        newElement._rootElement.firstChild.appendChild(innerEl);
+                    } else {
+                        newElement._rootElement.appendChild(innerEl);
+                    }
                 }
 
                 const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
@@ -187,16 +193,48 @@ function createInstance(cmp, cfg) {
 
                         stringEl = stringEl.trim();
 
-                        if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
+                        const isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
+
+                        if (isCustomTagString) {
                             const key = stringEl;
                             const value = this._cache.get(key);
                             if (value !== undefined) {
                                 stringEl = value;
                             } else {
-                                const el = html.create(stringEl);
-                                el.setAttribute(ATTR.STATIC, 'each');
-                                stringEl = el.outerHTML;
-                                let cmp = getInstances(document.createElement(TAG.ROOT), stringEl, this._view, this, true);
+                                let cmp;
+                                // Is wrapper component
+                                if (isCustomTagString.index === 0) {
+                                    const el = html.create(stringEl);
+                                    stringEl = el.outerHTML;
+                                    cmp = getInstances(
+                                        document.createElement(TAG.ROOT),
+                                        stringEl,
+                                        this._view,
+                                        this,
+                                        true
+                                    );
+
+                                    // Is into standard HTML
+                                } else {
+                                    const autoCmp = {
+                                        tag: TAG.EACH,
+                                        cfg: {
+                                            props: {},
+                                            template() {
+                                                return stringEl;
+                                            }
+                                        }
+                                    };
+                                    cmp = getInstances(
+                                        document.createElement(TAG.ROOT),
+                                        `<${TAG.EACH}></${TAG.EACH}>`,
+                                        this._view,
+                                        this,
+                                        true,
+                                        autoCmp
+                                    );
+                                }
+
                                 stringEl = cmp[0]._rootElement.innerHTML;
                                 cmp[0].destroy();
                                 this._cache.set(key, stringEl);
@@ -229,20 +267,8 @@ function createInstance(cmp, cfg) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 const template = this.template().trim();
-                /*
-                                const key = template;
-                                const value = this._cache.get(key);
-                                let next;
-
-                                if (value !== undefined) {
-                                  console.log('cache');
-                                    next = value;
-                                /*} else {
-                                    console.log('no cache')*/
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 let next = transform(tpl);
-                /*this._cache.set(key, value);
-            }*/
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -251,6 +277,12 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
+            },
+            enumerable: true
+        },
+        mount: {
+            value: function (template, root) {
+                getInstances(root, template, this._view);
             },
             enumerable: true
         },

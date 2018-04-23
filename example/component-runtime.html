@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component at runtime</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <script src="../dist/doz.js?589654888"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            height: 50px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Component at runtime</h1>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('fist-component', {
+        template() {
+            return `<button forceupdate onclick="this.drawOther()">Mount second</i></button>`;
+        },
+        drawOther() {
+            console.log(this._view);
+            this.mount('<second-component></second-component>', '#app');
+        }
+    });
+
+    Doz.component('second-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `<fist-component></fist-component>`
+    });
+
+
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@ module.exports = {
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
-        IS_CUSTOM_TAG_STRING: /^<\w+-[\w-]+/,
+        IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
@@ -29,7 +29,6 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        STATIC: 'd:static',
         ID: 'd:id'
     }
 };

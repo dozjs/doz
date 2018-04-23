@@ -91,7 +91,7 @@ module.exports = {
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
-        IS_CUSTOM_TAG_STRING: /^<\w+-[\w-]+/,
+        IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
         IS_ALIAS: /^d:alias$/,
@@ -112,7 +112,6 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        STATIC: 'd:static',
         ID: 'd:id'
     }
 };
@@ -340,6 +339,7 @@ function component(tag) {
 
 function getInstances(root, template, view, parentCmp) {
     var isStatic = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var autoCmp = arguments[5];
 
 
     template = typeof template === 'string' ? html.create(template) : template;
@@ -352,10 +352,10 @@ function getInstances(root, template, view, parentCmp) {
         var child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
-            var cmp = collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
+            var cmp = autoCmp || collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
+
             if (cmp) {
                 (function () {
-
                     var alias = index;
                     index++;
                     var props = serializeProps(child);
@@ -381,7 +381,13 @@ function getInstances(root, template, view, parentCmp) {
                     components[dProps.alias ? dProps.alias : alias] = newElement;
 
                     if (inner) {
-                        newElement._rootElement.appendChild(html.create(inner));
+                        //console.log(newElement._rootElement, isStatic);
+                        var innerEl = html.create(inner);
+                        if (isStatic && newElement._rootElement.firstChild) {
+                            newElement._rootElement.firstChild.appendChild(innerEl);
+                        } else {
+                            newElement._rootElement.appendChild(innerEl);
+                        }
                     }
 
                     var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
@@ -491,16 +497,35 @@ function createInstance(cmp, cfg) {
 
                     stringEl = stringEl.trim();
 
-                    if (REGEX.IS_CUSTOM_TAG_STRING.test(stringEl)) {
+                    var isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
+
+                    if (isCustomTagString) {
                         var key = stringEl;
                         var value = _this._cache.get(key);
                         if (value !== undefined) {
                             stringEl = value;
                         } else {
-                            var el = html.create(stringEl);
-                            el.setAttribute(ATTR.STATIC, 'each');
-                            stringEl = el.outerHTML;
-                            var _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this, true);
+                            var _cmp = void 0;
+                            // Is wrapper component
+                            if (isCustomTagString.index === 0) {
+                                var el = html.create(stringEl);
+                                stringEl = el.outerHTML;
+                                _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this._view, _this, true);
+
+                                // Is into standard HTML
+                            } else {
+                                var autoCmp = {
+                                    tag: TAG.EACH,
+                                    cfg: {
+                                        props: {},
+                                        template: function template() {
+                                            return stringEl;
+                                        }
+                                    }
+                                };
+                                _cmp = getInstances(document.createElement(TAG.ROOT), '<' + TAG.EACH + '></' + TAG.EACH + '>', _this._view, _this, true, autoCmp);
+                            }
+
                             stringEl = _cmp[0]._rootElement.innerHTML;
                             _cmp[0].destroy();
                             _this._cache.set(key, stringEl);
@@ -533,19 +558,8 @@ function createInstance(cmp, cfg) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 var template = this.template().trim();
-                /*
-                                const key = template;
-                                const value = this._cache.get(key);
-                                let next;
-                                  if (value !== undefined) {
-                                  console.log('cache');
-                                    next = value;
-                                /*} else {
-                                    console.log('no cache')*/
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 var next = transform(tpl);
-                /*this._cache.set(key, value);
-                }*/
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this);
 
@@ -554,6 +568,12 @@ function createInstance(cmp, cfg) {
                 }
 
                 this._prev = next;
+            },
+            enumerable: true
+        },
+        mount: {
+            value: function value(template, root) {
+                getInstances(root, template, this._view);
             },
             enumerable: true
         },
@@ -904,6 +924,7 @@ var Doz = function () {
         });
 
         this._components[TAG.VIEW] = {
+            tag: TAG.VIEW,
             cfg: {
                 props: cfg.props || {},
                 template: function template() {
