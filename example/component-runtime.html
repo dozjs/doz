@@ -27,11 +27,18 @@
 
     Doz.component('fist-component', {
         template() {
-            return `<button forceupdate onclick="this.drawOther()">Mount second</i></button>`;
+            return `<button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                    <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+                    <div id="root-second"></div>`;
         },
         drawOther() {
-            console.log(this._view);
-            this.mount('<second-component></second-component>', '#app');
+            this.other = this.mount('<second-component></second-component><thirty-component></thirty-component>', '#root-second');
+            this.other.onDestroy = function() {
+                console.log('component destroyed');
+            };
+        },
+        removeOther() {
+            this.other.destroy();
         }
     });
 
@@ -41,6 +48,18 @@
         },
         template() {
             return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        }
+    });
+
+    Doz.component('thirty-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;

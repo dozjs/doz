@@ -59,7 +59,6 @@ function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp
                 const dProps = extract(props);
 
                 const inner = child.innerHTML.trim();
-                //console.log('child inner',inner);
 
                 const newElement = createInstance(cmp, {
                     root,
@@ -267,6 +266,9 @@ function createInstance(cmp, cfg) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 const template = this.template().trim();
+
+                //console.log(template);
+
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 let next = transform(tpl);
 
@@ -282,7 +284,33 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function (template, root) {
-                getInstances(root, template, this._view);
+
+                if(typeof root === 'string') {
+                    root = document.querySelector(root);
+                }
+
+                if (!(root instanceof HTMLElement)) {
+                    throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                }
+
+                const autoCmp = {
+                    tag: TAG.ROOT,
+                    cfg: {
+                        props: {},
+                        template() {
+                            return template;
+                        }
+                    }
+                };
+                return getInstances(
+                    root,
+                    `<${TAG.ROOT}></${TAG.ROOT}>`,
+                    this._view,
+                    this,
+                    false,
+                    autoCmp
+                )[0];
+
             },
             enumerable: true
         },

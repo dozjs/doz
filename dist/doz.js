@@ -362,7 +362,6 @@ function getInstances(root, template, view, parentCmp) {
                     var dProps = extract(props);
 
                     var inner = child.innerHTML.trim();
-                    //console.log('child inner',inner);
 
                     var newElement = createInstance(cmp, {
                         root: root,
@@ -558,6 +557,9 @@ function createInstance(cmp, cfg) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
 
                 var template = this.template().trim();
+
+                //console.log(template);
+
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 var next = transform(tpl);
 
@@ -572,8 +574,26 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         mount: {
-            value: function value(template, root) {
-                getInstances(root, template, this._view);
+            value: function value(_template2, root) {
+
+                if (typeof root === 'string') {
+                    root = document.querySelector(root);
+                }
+
+                if (!(root instanceof HTMLElement)) {
+                    throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                }
+
+                var autoCmp = {
+                    tag: TAG.ROOT,
+                    cfg: {
+                        props: {},
+                        template: function template() {
+                            return _template2;
+                        }
+                    }
+                };
+                return getInstances(root, '<' + TAG.ROOT + '></' + TAG.ROOT + '>', this._view, this, false, autoCmp)[0];
             },
             enumerable: true
         },
@@ -1608,6 +1628,8 @@ function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
 
+
+    //console.log($parent)
 
     if (!oldNode) {
         var rootElement = create(newNode, cmp);
