@@ -36,13 +36,18 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
+//function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
+function getInstances(cfg = {}) {
 
-    template = typeof template === 'string'
-        ? html.create(template)
-        : template;
+    cfg = extend.copy(cfg, {
+        isStatic: false
+    });
 
-    const nodes = html.getAllNodes(template);
+    cfg.template = typeof cfg.template === 'string'
+        ? html.create(cfg.template)
+        : cfg.template;
+
+    const nodes = html.getAllNodes(cfg.template);
     let components = {};
     let index = 0;
 
@@ -50,23 +55,21 @@ function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp
         let child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
-            const cmp = autoCmp || collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
+            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
-                let alias = index;
-                index++;
+                let alias = index++;
                 const props = serializeProps(child);
                 const dProps = extract(props);
-
                 const inner = child.innerHTML.trim();
 
                 const newElement = createInstance(cmp, {
-                    root,
-                    view,
+                    root: cfg.root,
+                    view: cfg.view,
                     props,
                     dProps,
-                    parentCmp,
-                    isStatic
+                    parentCmp: cfg.parentCmp,
+                    isStatic: cfg.isStatic
                 });
 
                 // Remove old
@@ -79,7 +82,7 @@ function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp
                 if (inner) {
                     //console.log(newElement._rootElement, isStatic);
                     const innerEl = html.create(inner);
-                    if (isStatic && newElement._rootElement.firstChild) {
+                    if (cfg.isStatic && newElement._rootElement.firstChild) {
                         newElement._rootElement.firstChild.appendChild(innerEl);
                     } else {
                         newElement._rootElement.appendChild(innerEl);
@@ -95,7 +98,13 @@ function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances(rootElement, template, view, newElement, isStatic);
+                        const cmps = getInstances({
+                            root: rootElement,
+                            template: template,
+                            view: cfg.view,
+                            parentCmp: newElement,
+                            isStatic: cfg.isStatic
+                        });
 
                         Object.keys(cmps).forEach(i => {
                             let n = i;
@@ -205,13 +214,13 @@ function createInstance(cmp, cfg) {
                                 if (isCustomTagString.index === 0) {
                                     const el = html.create(stringEl);
                                     stringEl = el.outerHTML;
-                                    cmp = getInstances(
-                                        document.createElement(TAG.ROOT),
-                                        stringEl,
-                                        this.view,
-                                        this,
-                                        true
-                                    );
+                                    cmp = getInstances({
+                                        root: document.createElement(TAG.ROOT),
+                                        template: stringEl,
+                                        view: this.view,
+                                        parentCmp: this,
+                                        isStatic: true
+                                    });
 
                                     // Is into standard HTML
                                 } else {
@@ -224,14 +233,14 @@ function createInstance(cmp, cfg) {
                                             }
                                         }
                                     };
-                                    cmp = getInstances(
-                                        document.createElement(TAG.ROOT),
-                                        `<${TAG.EACH}></${TAG.EACH}>`,
-                                        this.view,
-                                        this,
-                                        true,
+                                    cmp = getInstances({
+                                        root: document.createElement(TAG.ROOT),
+                                        template: `<${TAG.EACH}></${TAG.EACH}>`,
+                                        view: this.view,
+                                        parentCmp: this,
+                                        isStatic: true,
                                         autoCmp
-                                    );
+                                    });
                                 }
 
                                 stringEl = cmp[0]._rootElement.innerHTML;
@@ -264,9 +273,7 @@ function createInstance(cmp, cfg) {
         render: {
             value: function () {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-
                 const template = this.template().trim();
-
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 let next = transform(tpl);
 
@@ -281,9 +288,11 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         mount: {
-            value: function (template, root = this._rootElement) {
-                return this.view.mount(template, root);
-
+            value: function (template, cfg = {}) {
+                let root = this._rootElement;
+                if (typeof cfg.selector === 'string')
+                    root = root.querySelector(cfg.selector);
+                return this.view.mount(template, root, this);
             },
             enumerable: true
         },

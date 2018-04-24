@@ -119,6 +119,7 @@
             if (!input) return;
             input.style.display = 'inline';
             text.style.display = 'none';
+            input.value = text.innerText;
             input.focus();
         },
 
@@ -159,7 +160,6 @@
                             onkeypress="this.action.inputEnterPress(${this.props.id})"
                             style="display: none"
                             type="text"
-                            value="${this.props.title}"
                         >
                     </span>
                 </div>

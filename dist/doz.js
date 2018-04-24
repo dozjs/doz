@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 0.0.5  
+// [DOZ]  Build version: 0.0.6  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -337,14 +337,18 @@ function component(tag) {
     register(cmp);
 }
 
-function getInstances(root, template, view, parentCmp) {
-    var isStatic = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-    var autoCmp = arguments[5];
+//function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
+function getInstances() {
+    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
-    template = typeof template === 'string' ? html.create(template) : template;
+    cfg = extend.copy(cfg, {
+        isStatic: false
+    });
 
-    var nodes = html.getAllNodes(template);
+    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+
+    var nodes = html.getAllNodes(cfg.template);
     var components = {};
     var index = 0;
 
@@ -352,24 +356,22 @@ function getInstances(root, template, view, parentCmp) {
         var child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
 
-            var cmp = autoCmp || collection.get(child.nodeName) || view._components[child.nodeName.toLowerCase()];
+            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
                 (function () {
-                    var alias = index;
-                    index++;
+                    var alias = index++;
                     var props = serializeProps(child);
                     var dProps = extract(props);
-
                     var inner = child.innerHTML.trim();
 
                     var newElement = createInstance(cmp, {
-                        root: root,
-                        view: view,
+                        root: cfg.root,
+                        view: cfg.view,
                         props: props,
                         dProps: dProps,
-                        parentCmp: parentCmp,
-                        isStatic: isStatic
+                        parentCmp: cfg.parentCmp,
+                        isStatic: cfg.isStatic
                     });
 
                     // Remove old
@@ -382,7 +384,7 @@ function getInstances(root, template, view, parentCmp) {
                     if (inner) {
                         //console.log(newElement._rootElement, isStatic);
                         var innerEl = html.create(inner);
-                        if (isStatic && newElement._rootElement.firstChild) {
+                        if (cfg.isStatic && newElement._rootElement.firstChild) {
                             newElement._rootElement.firstChild.appendChild(innerEl);
                         } else {
                             newElement._rootElement.appendChild(innerEl);
@@ -395,10 +397,16 @@ function getInstances(root, template, view, parentCmp) {
 
                         if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
-                            var _template = item.outerHTML;
+                            var template = item.outerHTML;
                             var rootElement = document.createElement(item.nodeName);
                             item.parentNode.replaceChild(rootElement, item);
-                            var cmps = getInstances(rootElement, _template, view, newElement, isStatic);
+                            var cmps = getInstances({
+                                root: rootElement,
+                                template: template,
+                                view: cfg.view,
+                                parentCmp: newElement,
+                                isStatic: cfg.isStatic
+                            });
 
                             Object.keys(cmps).forEach(function (i) {
                                 var n = i;
@@ -509,7 +517,13 @@ function createInstance(cmp, cfg) {
                             if (isCustomTagString.index === 0) {
                                 var el = html.create(stringEl);
                                 stringEl = el.outerHTML;
-                                _cmp = getInstances(document.createElement(TAG.ROOT), stringEl, _this.view, _this, true);
+                                _cmp = getInstances({
+                                    root: document.createElement(TAG.ROOT),
+                                    template: stringEl,
+                                    view: _this.view,
+                                    parentCmp: _this,
+                                    isStatic: true
+                                });
 
                                 // Is into standard HTML
                             } else {
@@ -522,7 +536,14 @@ function createInstance(cmp, cfg) {
                                         }
                                     }
                                 };
-                                _cmp = getInstances(document.createElement(TAG.ROOT), '<' + TAG.EACH + '></' + TAG.EACH + '>', _this.view, _this, true, autoCmp);
+                                _cmp = getInstances({
+                                    root: document.createElement(TAG.ROOT),
+                                    template: '<' + TAG.EACH + '></' + TAG.EACH + '>',
+                                    view: _this.view,
+                                    parentCmp: _this,
+                                    isStatic: true,
+                                    autoCmp: autoCmp
+                                });
                             }
 
                             stringEl = _cmp[0]._rootElement.innerHTML;
@@ -555,9 +576,7 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value() {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
-
                 var template = this.template().trim();
-
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 var next = transform(tpl);
 
@@ -573,9 +592,11 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function value(template) {
-                var root = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._rootElement;
+                var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-                return this.view.mount(template, root);
+                var root = this._rootElement;
+                if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);
+                return this.view.mount(template, root, this);
             },
             enumerable: true
         },
@@ -943,7 +964,14 @@ var Doz = function () {
                         }
                     };
 
-                    return component.getInstances(root, '<' + TAG.ROOT + '></' + TAG.ROOT + '>', this, parent, false, autoCmp)[0];
+                    return component.getInstances({
+                        root: root,
+                        template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
+                        view: this,
+                        parentCmp: parent,
+                        isStatic: false,
+                        autoCmp: autoCmp
+                    })[0];
                 },
                 enumerable: true
             }
@@ -965,7 +993,7 @@ var Doz = function () {
             }
         };
 
-        this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
+        this._usedComponents = component.getInstances({ root: this.cfg.root, template: template, view: this }) || [];
     }
 
     _createClass(Doz, [{

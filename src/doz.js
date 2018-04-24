@@ -8,11 +8,11 @@ class Doz {
     constructor(cfg = {}) {
         const template = `<${TAG.VIEW}></${TAG.VIEW}>`;
 
-        if(REGEX.IS_ID_SELECTOR.test(cfg.root)) {
+        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
         }
 
-        if(REGEX.IS_ID_SELECTOR.test(cfg.template)) {
+        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
             cfg.template = document.getElementById(cfg.template.substring(1));
             cfg.template = cfg.template.innerHTML;
         }
@@ -74,14 +74,14 @@ class Doz {
                         }
                     };
 
-                    return component.getInstances(
+                    return component.getInstances({
                         root,
-                        `<${TAG.ROOT}></${TAG.ROOT}>`,
-                        this,
-                        parent,
-                        false,
+                        template: `<${TAG.ROOT}></${TAG.ROOT}>`,
+                        view: this,
+                        parentCmp: parent,
+                        isStatic: false,
                         autoCmp
-                    )[0];
+                    })[0];
                 },
                 enumerable: true
             }
@@ -103,7 +103,7 @@ class Doz {
             }
         };
 
-        this._usedComponents = component.getInstances(this.cfg.root, template, this) || [];
+        this._usedComponents = component.getInstances({root: this.cfg.root, template, view: this}) || [];
     }
 
     getComponent(alias) {
