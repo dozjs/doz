@@ -123,6 +123,7 @@ function getInstances(cfg = {}) {
 }
 
 function createInstance(cmp, cfg) {
+    //console.log(cfg.props);
     const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
         ? cmp.cfg.props()
         : cmp.cfg.props
@@ -163,8 +164,12 @@ function createInstance(cmp, cfg) {
         _isStatic: {
             value: cfg.isStatic
         },
+        _publicProps: {
+            value: Object.assign({}, cfg.props)
+        },
         view: {
-            value: cfg.view
+            value: cfg.view,
+            enumerable: true
         },
         parent: {
             value: cfg.parentCmp,

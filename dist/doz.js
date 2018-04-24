@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -295,14 +295,14 @@ var _require2 = __webpack_require__(0),
     ATTR = _require2.ATTR;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(13);
+var observer = __webpack_require__(14);
 var events = __webpack_require__(6);
 
-var _require3 = __webpack_require__(7),
+var _require3 = __webpack_require__(8),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(8).updateElement;
+var update = __webpack_require__(9).updateElement;
 var castStringTo = __webpack_require__(2);
 var store = __webpack_require__(18);
 var ids = __webpack_require__(19);
@@ -426,6 +426,7 @@ function getInstances() {
 }
 
 function createInstance(cmp, cfg) {
+    //console.log(cfg.props);
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
     var instance = Object.defineProperties({}, {
@@ -463,8 +464,12 @@ function createInstance(cmp, cfg) {
         _isStatic: {
             value: cfg.isStatic
         },
+        _publicProps: {
+            value: Object.assign({}, cfg.props)
+        },
         view: {
-            value: cfg.view
+            value: cfg.view,
+            enumerable: true
         },
         parent: {
             value: cfg.parentCmp,
@@ -761,6 +766,21 @@ module.exports = {
 "use strict";
 
 
+function getByPath(path, obj) {
+        return path.split('.').reduce(function (res, prop) {
+                return res ? res[prop] : undefined;
+        }, obj);
+}
+
+module.exports = getByPath;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var castStringTo = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
@@ -830,26 +850,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var element = __webpack_require__(15);
-
-module.exports = {
-    updateElement: element.update
-};
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(10);
+var element = __webpack_require__(16);
+
+module.exports = {
+    updateElement: element.update
+};
 
 /***/ }),
 /* 10 */
@@ -859,14 +870,23 @@ module.exports = __webpack_require__(10);
 
 
 module.exports = __webpack_require__(11);
-module.exports.component = __webpack_require__(4).component;
-module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(8).updateElement;
-module.exports.transform = __webpack_require__(7).transform;
-module.exports.html = __webpack_require__(5);
 
 /***/ }),
 /* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(12);
+module.exports.component = __webpack_require__(4).component;
+module.exports.collection = __webpack_require__(1);
+module.exports.update = __webpack_require__(9).updateElement;
+module.exports.transform = __webpack_require__(8).transform;
+module.exports.html = __webpack_require__(5);
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -879,7 +899,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(3);
-var bind = __webpack_require__(12);
+var bind = __webpack_require__(13);
 var component = __webpack_require__(4);
 
 var _require = __webpack_require__(0),
@@ -1019,7 +1039,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1051,32 +1071,55 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var proxy = __webpack_require__(14);
+var proxy = __webpack_require__(15);
 var events = __webpack_require__(6);
+var objectPath = __webpack_require__(7);
 
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
 
+function updateChildren(instance, changes) {
+
+    var children = Object.keys(instance.children);
+
+    children.forEach(function (i) {
+        console.log(instance.children[i]._publicProps);
+    });
+
+    /*changes.forEach(item => {
+        if (instance._boundElements.hasOwnProperty(item.property)) {
+            instance._boundElements[item.property].forEach(element => {
+                element.value = item.newValue;
+            })
+        }
+    });*/
+}
+
+function updateBound(instance, changes) {
+    changes.forEach(function (item) {
+        if (instance._boundElements.hasOwnProperty(item.property)) {
+            instance._boundElements[item.property].forEach(function (element) {
+                element.value = item.newValue;
+            });
+        }
+    });
+}
+
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
         instance.render();
-        changes.forEach(function (item) {
-            if (instance._boundElements.hasOwnProperty(item.property)) {
-                instance._boundElements[item.property].forEach(function (element) {
-                    element.value = item.newValue;
-                });
-            }
-        });
+        updateBound(instance, changes);
 
         if (instance._isCreated) {
             delay(function () {
+                updateChildren(instance, changes);
                 events.callUpdate(instance);
             });
         }
@@ -1093,7 +1136,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1629,7 +1672,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1637,7 +1680,7 @@ try {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(16),
+var _require = __webpack_require__(17),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1712,7 +1755,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1727,7 +1770,7 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(2);
-var objectPath = __webpack_require__(17);
+var objectPath = __webpack_require__(7);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -1887,21 +1930,6 @@ module.exports = {
     attach: attach,
     updateAttributes: updateAttributes
 };
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function getByPath(path, obj) {
-        return path.split('.').reduce(function (res, prop) {
-                return res ? res[prop] : undefined;
-        }, obj);
-}
-
-module.exports = getByPath;
 
 /***/ }),
 /* 18 */
