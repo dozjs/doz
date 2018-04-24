@@ -38,13 +38,17 @@
         pause() {
             const store = this.getStore('player');
             store.state = 'pause';
+        },
+
+        mute() {
+            const store = this.getStore('player');
+            store.mute = !store.mute;
         }
     };
 
     Doz.component('play-pause', {
         props: {
-            state: 'pause',
-            state2: 'test'
+            state: 'pause'
         },
         template: function () {
             switch (this.props.state) {
@@ -55,6 +59,9 @@
                 case 'loading':
                     return `<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
+        },
+        onUpdate() {
+            console.log('UPDATE play-pause', this.props)
         }
     });
 
@@ -63,16 +70,16 @@
             mute: false
         },
         template: function () {
-            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
-        },
-        toggle() {
-            this.props.mute = !this.props.mute;
+            return `<button onclick="this.action.mute()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
         }
     });
 
     Doz.component('bar-control', {
         template() {
-            return `<volume-control mute="${this.props.mute}"></volume-control>`
+            return `
+                    <play-pause state="${this.props.state}"></play-pause>
+                    <volume-control mute="${this.props.mute}"></volume-control>
+            `
         },
         onUpdate() {
             console.log('UPDATE bar-control', this.props)
@@ -82,9 +89,7 @@
     Doz.component('my-player', {
         store: 'player',
         template() {
-            let tpl = `<play-pause state="${this.props.state}"></play-pause><bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
-            //console.log(tpl);
-            return tpl;
+            return `<bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
         },
         onUpdate() {
             console.log('UPDATE my-player', this.props)

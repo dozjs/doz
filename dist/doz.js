@@ -327,11 +327,11 @@ function component(tag) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
+        updateChildrenProps: true,
+        props: {},
         template: function template() {
             return '<div></div>';
-        },
-
-        props: {}
+        }
     });
 
     register(cmp);
@@ -767,12 +767,22 @@ module.exports = {
 
 
 function getByPath(path, obj) {
-        return path.split('.').reduce(function (res, prop) {
-                return res ? res[prop] : undefined;
-        }, obj);
+    return path.split('.').reduce(function (res, prop) {
+        return res ? res[prop] : undefined;
+    }, obj);
+}
+
+function getLast(path, obj) {
+    if (path.indexOf('.') !== -1) {
+        path = path.split('.');
+        path.pop();
+        path = path.join('.');
+    }
+    return getByPath(path, obj);
 }
 
 module.exports = getByPath;
+module.exports.getLast = getLast;
 
 /***/ }),
 /* 8 */
@@ -1087,19 +1097,15 @@ function delay(cb) {
 
 function updateChildren(instance, changes) {
 
+    if (!instance.updateChildrenProps) return;
+
     var children = Object.keys(instance.children);
 
     children.forEach(function (i) {
-        console.log(instance.children[i]._publicProps);
+        changes.forEach(function (item) {
+            if (instance.children[i]._publicProps.hasOwnProperty(item.currentPath) && instance.children[i].props.hasOwnProperty(item.currentPath)) instance.children[i].props[item.currentPath] = item.newValue;
+        });
     });
-
-    /*changes.forEach(item => {
-        if (instance._boundElements.hasOwnProperty(item.property)) {
-            instance._boundElements[item.property].forEach(element => {
-                element.value = item.newValue;
-            })
-        }
-    });*/
 }
 
 function updateBound(instance, changes) {

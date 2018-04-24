@@ -27,10 +27,11 @@ function component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
+        updateChildrenProps: true,
+        props: {},
         template() {
             return '<div></div>'
-        },
-        props: {}
+        }
     });
 
     register(cmp);
