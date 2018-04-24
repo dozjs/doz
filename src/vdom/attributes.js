@@ -158,8 +158,6 @@ function attach($target, props, cmp) {
         setRef($target, name, props[name], cmp);
     });
 
-    //TODO Bisogna creare l'evento solo per i componenti statici
-    //console.log('fffffffffffffffffffffffff', $target);
     for (let i in $target.dataset) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);

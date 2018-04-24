@@ -1,6 +1,5 @@
 const proxy = require('../utils/proxy');
 const events = require('./events');
-const objectPath = require('../utils/object-path');
 
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined)
