@@ -1846,7 +1846,8 @@ function addEventListener($target, name, value, cmp) {
         var stringArgs = match[2];
         if (stringArgs) {
             args = stringArgs.split(',').map(function (item) {
-                return castStringTo(item.trim());
+                item = item.trim();
+                return item === 'this' ? cmp : castStringTo(item);
             });
         }
 

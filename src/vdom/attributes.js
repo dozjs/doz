@@ -101,7 +101,10 @@ function addEventListener($target, name, value, cmp) {
         let handler = match[1];
         let stringArgs = match[2];
         if (stringArgs) {
-            args = stringArgs.split(',').map(item => castStringTo(item.trim()))
+            args = stringArgs.split(',').map(item => {
+                item = item.trim();
+                return item === 'this' ? cmp : castStringTo(item)
+            })
         }
 
         let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
