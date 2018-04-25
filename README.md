@@ -1,11 +1,11 @@
 <div align="center">
 <br/><br/>
-<img width="300" src="https://raw.githubusercontent.com/fabioricali/doz/master/extra/doz.png" title="doz"/>
+<img width="300" src="https://raw.githubusercontent.com/dozjs/doz/master/extra/doz.png" title="doz"/>
 <br/><br/>
 <br/><br/>
 A JavaScript framework for building UI, almost like writing in VanillaJS.
 <br/><br/>
-<a href="https://travis-ci.org/fabioricali/doz" target="_blank"><img src="https://travis-ci.org/fabioricali/doz.svg?branch=master" title="Build Status"/></a>
+<a href="https://travis-ci.org/dozjs/doz" target="_blank"><img src="https://travis-ci.org/dozjs/doz.svg?branch=master" title="Build Status"/></a>
 <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" title="License: MIT"/></a>
 <br/><br/>
 </div>
@@ -48,4 +48,4 @@ new Doz({
 
 ## Demo
 
-<a href="https://fabioricali.github.io/doz/example/">Try now</a>
+<a href="https://dozjs.github.io/doz/example/">Try now</a>
