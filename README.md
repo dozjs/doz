@@ -3,7 +3,7 @@
 <img width="300" src="https://raw.githubusercontent.com/fabioricali/doz/master/extra/doz.png" title="doz"/>
 <br/><br/>
 <br/><br/>
-A JavaScript framework for building UI, almost like VanillaJS.
+A JavaScript framework for building UI, almost like writing in VanillaJS.
 <br/><br/>
 <a href="https://travis-ci.org/fabioricali/doz" target="_blank"><img src="https://travis-ci.org/fabioricali/doz.svg?branch=master" title="Build Status"/></a>
 <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" title="License: MIT"/></a>
@@ -22,6 +22,9 @@ npm install --save doz
 
 ```javascript
 Doz.component('doz-button-counter', {
+    props: {
+        counter: 0
+    },
     template(){
         return `
             <div>
@@ -29,9 +32,6 @@ Doz.component('doz-button-counter', {
                 <span class="counter">${this.props.counter}</span>
             </div>
         `
-    },
-    props: {
-        counter: 0
     },
     click() {
         this.props.counter += 1;
