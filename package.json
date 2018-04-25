@@ -1,6 +1,6 @@
 {
     "name": "doz",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Build UI, so simple",
     "main": "dist/doz.js",
     "scripts": {
