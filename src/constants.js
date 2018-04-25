@@ -3,7 +3,7 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view-component',
+        VIEW: 'doz-view',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {

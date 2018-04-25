@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -86,7 +86,7 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view-component',
+        VIEW: 'doz-view',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {
@@ -291,18 +291,17 @@ var html = __webpack_require__(5);
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
-    TAG = _require2.TAG,
-    ATTR = _require2.ATTR;
+    TAG = _require2.TAG;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(14);
+var observer = __webpack_require__(13);
 var events = __webpack_require__(6);
 
-var _require3 = __webpack_require__(8),
+var _require3 = __webpack_require__(7),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(9).updateElement;
+var update = __webpack_require__(8).updateElement;
 var castStringTo = __webpack_require__(2);
 var store = __webpack_require__(18);
 var ids = __webpack_require__(19);
@@ -766,31 +765,6 @@ module.exports = {
 "use strict";
 
 
-function getByPath(path, obj) {
-    return path.split('.').reduce(function (res, prop) {
-        return res ? res[prop] : undefined;
-    }, obj);
-}
-
-function getLast(path, obj) {
-    if (path.indexOf('.') !== -1) {
-        path = path.split('.');
-        path.pop();
-        path = path.join('.');
-    }
-    return getByPath(path, obj);
-}
-
-module.exports = getByPath;
-module.exports.getLast = getLast;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var castStringTo = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
@@ -860,17 +834,26 @@ module.exports = {
 };
 
 /***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var element = __webpack_require__(15);
+
+module.exports = {
+    updateElement: element.update
+};
+
+/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(16);
-
-module.exports = {
-    updateElement: element.update
-};
+module.exports = __webpack_require__(10);
 
 /***/ }),
 /* 10 */
@@ -880,23 +863,14 @@ module.exports = {
 
 
 module.exports = __webpack_require__(11);
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(12);
 module.exports.component = __webpack_require__(4).component;
 module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(9).updateElement;
-module.exports.transform = __webpack_require__(8).transform;
+module.exports.update = __webpack_require__(8).updateElement;
+module.exports.transform = __webpack_require__(7).transform;
 module.exports.html = __webpack_require__(5);
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -909,7 +883,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(3);
-var bind = __webpack_require__(13);
+var bind = __webpack_require__(12);
 var component = __webpack_require__(4);
 
 var _require = __webpack_require__(0),
@@ -1049,7 +1023,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1081,15 +1055,14 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var proxy = __webpack_require__(15);
+var proxy = __webpack_require__(14);
 var events = __webpack_require__(6);
-var objectPath = __webpack_require__(7);
 
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
@@ -1142,7 +1115,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1678,7 +1651,7 @@ try {
 } catch (err) {};
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1686,7 +1659,7 @@ try {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(17),
+var _require = __webpack_require__(16),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1761,7 +1734,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1776,7 +1749,7 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(2);
-var objectPath = __webpack_require__(7);
+var objectPath = __webpack_require__(17);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -1923,8 +1896,6 @@ function attach($target, props, cmp) {
         setRef($target, name, props[name], cmp);
     });
 
-    //TODO Bisogna creare l'evento solo per i componenti statici
-    //console.log('fffffffffffffffffffffffff', $target);
     for (var i in $target.dataset) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
@@ -1936,6 +1907,31 @@ module.exports = {
     attach: attach,
     updateAttributes: updateAttributes
 };
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function getByPath(path, obj) {
+    return path.split('.').reduce(function (res, prop) {
+        return res ? res[prop] : undefined;
+    }, obj);
+}
+
+function getLast(path, obj) {
+    if (path.indexOf('.') !== -1) {
+        path = path.split('.');
+        path.pop();
+        path = path.join('.');
+    }
+    return getByPath(path, obj);
+}
+
+module.exports = getByPath;
+module.exports.getLast = getLast;
 
 /***/ }),
 /* 18 */
