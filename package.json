@@ -1,7 +1,7 @@
 {
     "name": "doz",
     "version": "0.0.8",
-    "description": "Build UI, so simple",
+    "description": "A JavaScript framework for building UI, almost like writing in VanillaJS.",
     "main": "dist/doz.js",
     "scripts": {
         "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
@@ -15,7 +15,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/fabioricali/doz.git"
+        "url": "git+https://github.com/dozjs/doz.git"
     },
     "keywords": [
         "html",
@@ -27,9 +27,9 @@
     "author": "Fabio Ricali",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/fabioricali/doz/issues"
+        "url": "https://github.com/dozjs/doz/issues"
     },
-    "homepage": "https://github.com/fabioricali/doz#readme",
+    "homepage": "https://github.com/dozjs/doz#readme",
     "dependencies": {},
     "devDependencies": {
         "babel-core": "^6.26.0",
