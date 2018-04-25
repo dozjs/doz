@@ -21,7 +21,7 @@ npm install --save doz
 ```
 
 ```javascript
-Doz.component('doz-button-counter', {
+Doz.component('button-counter', {
     props: {
         counter: 0
     },
@@ -41,7 +41,7 @@ Doz.component('doz-button-counter', {
 new Doz({
     root: '#app',
     template: `
-        <doz-button-counter title="Click me!"></doz-button-counter>
+        <button-counter title="Click me!"></button-counter>
     `
 });
 ```
