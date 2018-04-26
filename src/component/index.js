@@ -61,7 +61,7 @@ function getInstances(cfg = {}) {
         let alias = index;
         const props = serializeProps(child);
         const dProps = extract(props);
-        //const inner = child.innerHTML.trim();
+        const inner = child.innerHTML.trim();
 
         const newElement = createInstance(cmp, {
             root: cfg.root,
@@ -74,29 +74,28 @@ function getInstances(cfg = {}) {
 
         if (newElement === undefined) return;
 
-
         // Remove old
         child.parentNode.removeChild(child);
         newElement.render();
         //newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('inner', inner, newElement.tag);
-/*
+        //console.log('inner', inner, 'tag', newElement.tag);
+/**/
         if (inner) {
-            console.log('INNER', inner);
+            //console.log('INNER', inner);
             const innerEl = html.create(inner);
             //if (innerEl.firstChild)
-            console.log('INNEREL', innerEl.outerHTML);
+            //console.log('INNEREL', innerEl.outerHTML);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
-                console.log('OUTER1', newElement._rootElement.outerHTML);
+                //console.log('OUTER1', newElement._rootElement.outerHTML);
                 newElement._rootElement.appendChild(innerEl);
-                console.log('OUTER2', newElement._rootElement.outerHTML);
+                //console.log('OUTER2', newElement._rootElement.outerHTML);
                 //console.log('INNER2', newElement._rootElement.innerHTML);
             }
-        }*/
+        }
 
         const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
