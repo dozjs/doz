@@ -91,10 +91,11 @@ describe('Doz.store', function () {
                     return `<div>${this.props.repeater}</div>`
                 },
                 onBeforeCreate() {
-                    console.log('caller-o, before create')
+                    console.log('caller-o, before create');
+                    if (this.getStore('caller')) return false;
                 },
                 onCreate() {
-                    console.log('caller-o, created')
+                    console.log('caller-o, created');
                 }
             });
 

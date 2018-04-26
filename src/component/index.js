@@ -77,6 +77,8 @@ function getInstances(cfg = {}) {
                     isStatic: cfg.isStatic
                 });
 
+                if (newElement === undefined) continue;
+
                 // Remove old
                 child.parentNode.removeChild(child);
                 newElement.render();
