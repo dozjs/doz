@@ -75,13 +75,25 @@ describe('Doz.store', function () {
 
     describe('create view with component with nested component with store', function () {
 
-        it('should be ok', function () {
+        it('should be ok', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
+            Doz.component('side-bar', {
+                template() {
+                    return `<div>my side</div>`
+                }
+            });
+
             Doz.component('salutation-card', {
                 template() {
-                    return `<div>Hello</div>`
+                    return `<salutation-label>Hello</salutation-label>`
+                }
+            });
+
+            Doz.component('salutation-label', {
+                template() {
+                    return `<div>label</div>`
                 }
             });
 
@@ -96,11 +108,21 @@ describe('Doz.store', function () {
                 root: '#app',
                 template: `
                     <salutation-card>
-                        <div>ciao</div>
-                        <caller-o></caller-o>
+                        ciao
+                        <div>bye</div>
+                        <caller-o>nested</caller-o>
                     </salutation-card>
                 `
             });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                //console.log(view);
+                be.err.true(/nested/g.test(html));
+                be.err.true(/bye/g.test(html));
+                be.err(done).true(/I'M CALLER/g.test(html));
+            },100);
         });
     });
 });

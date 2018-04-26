@@ -346,6 +346,8 @@ function getInstances() {
         isStatic: false
     });
 
+    //console.log('TEMPLATE', cfg.template);
+
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
     var components = {};
@@ -359,7 +361,7 @@ function getInstances() {
         var alias = index;
         var props = serializeProps(child);
         var dProps = extract(props);
-        var inner = child.innerHTML.trim();
+        //const inner = child.innerHTML.trim();
 
         var newElement = createInstance(cmp, {
             root: cfg.root,
@@ -375,25 +377,35 @@ function getInstances() {
         // Remove old
         child.parentNode.removeChild(child);
         newElement.render();
+        //newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
-
         components[dProps.alias ? dProps.alias : alias] = newElement;
-
-        if (inner) {
-            var innerEl = html.create(inner);
-            if (cfg.isStatic && newElement._rootElement.firstChild) {
-                newElement._rootElement.firstChild.appendChild(innerEl);
-            } else {
-                newElement._rootElement.appendChild(innerEl);
-            }
-        }
+        //console.log('inner', inner, newElement.tag);
+        /*
+                if (inner) {
+                    console.log('INNER', inner);
+                    const innerEl = html.create(inner);
+                    //if (innerEl.firstChild)
+                    console.log('INNEREL', innerEl.outerHTML);
+                    if (cfg.isStatic && newElement._rootElement.firstChild) {
+                        newElement._rootElement.firstChild.appendChild(innerEl);
+                    } else {
+                        console.log('OUTER1', newElement._rootElement.outerHTML);
+                        newElement._rootElement.appendChild(innerEl);
+                        console.log('OUTER2', newElement._rootElement.outerHTML);
+                        //console.log('INNER2', newElement._rootElement.innerHTML);
+                    }
+                }*/
 
         var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
         nested.forEach(function (item) {
             if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
 
+                //console.log('TEMPLATE ITEM', item.outerHTML)
+
                 var template = item.outerHTML;
+                if (!template) return;
                 var rootElement = document.createElement(item.nodeName);
                 item.parentNode.replaceChild(rootElement, item);
                 var cmps = getInstances({
@@ -412,6 +424,9 @@ function getInstances() {
                     }
                     newElement.children[n] = cmps[i];
                 });
+            } else {
+                //console.log('no custom tag', item.outerHTML)
+                //newElement._rootElement.appendChild(item);
             }
         });
     }
