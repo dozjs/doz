@@ -86,6 +86,10 @@ function extractEventName(name) {
     return name.slice(2).toLowerCase();
 }
 
+function trimQuotes(str) {
+    return str.replace(REGEX.TRIM_QUOTES, '$1');
+}
+
 function addEventListener($target, name, value, cmp) {
 
     if (!isEventAttribute(name)) return;
@@ -103,7 +107,7 @@ function addEventListener($target, name, value, cmp) {
         if (stringArgs) {
             args = stringArgs.split(',').map(item => {
                 item = item.trim();
-                return item === 'this' ? cmp : castStringTo(item)
+                return item === 'this' ? cmp : castStringTo(trimQuotes(item))
             })
         }
 

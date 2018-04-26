@@ -100,7 +100,8 @@ module.exports = {
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
-        GET_LISTENER: /^this.(.*)\((.*)\)/
+        GET_LISTENER: /^this.(.*)\((.*)\)/,
+        TRIM_QUOTES: /^["'](.*)["']$/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -1831,6 +1832,10 @@ function extractEventName(name) {
     return name.slice(2).toLowerCase();
 }
 
+function trimQuotes(str) {
+    return str.replace(REGEX.TRIM_QUOTES, '$1');
+}
+
 function addEventListener($target, name, value, cmp) {
 
     if (!isEventAttribute(name)) return;
@@ -1847,7 +1852,7 @@ function addEventListener($target, name, value, cmp) {
         if (stringArgs) {
             args = stringArgs.split(',').map(function (item) {
                 item = item.trim();
-                return item === 'this' ? cmp : castStringTo(item);
+                return item === 'this' ? cmp : castStringTo(trimQuotes(item));
             });
         }
 

@@ -17,7 +17,8 @@ module.exports = {
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
-        GET_LISTENER: /^this.(.*)\((.*)\)/
+        GET_LISTENER: /^this.(.*)\((.*)\)/,
+        TRIM_QUOTES: /^["'](.*)["']$/
     },
     ATTR: {
         // Attributes for HTMLElement
