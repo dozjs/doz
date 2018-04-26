@@ -48,93 +48,73 @@ function getInstances(cfg = {}) {
         ? html.create(cfg.template)
         : cfg.template;
 
-    const nodes = html.getAllNodes(cfg.template);
     let components = {};
     let index = 0;
 
-    for (let j = nodes.length - 1; j >= 0; --j) {
-        let child = nodes[j];
-        if (child.nodeType === 1 && child.parentNode) {
-            /*console.log('aaaa', child.nodeName)
-            if (child.dataset.processed === 'true') {
-                console.log('1) ALREADY P', child.nodeName)
-                //return;
-            }*/
-            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+    let child = cfg.template;
 
-            if (cmp) {
-                let alias = index++;
-                const props = serializeProps(child);
-                const dProps = extract(props);
-                const inner = child.innerHTML.trim();
+    const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
-                const newElement = createInstance(cmp, {
-                    root: cfg.root,
+    if (cmp) {
+        let alias = index;
+        const props = serializeProps(child);
+        const dProps = extract(props);
+        const inner = child.innerHTML.trim();
+
+        const newElement = createInstance(cmp, {
+            root: cfg.root,
+            view: cfg.view,
+            props,
+            dProps,
+            parentCmp: cfg.parentCmp,
+            isStatic: cfg.isStatic
+        });
+
+        if (newElement === undefined) return;
+
+        // Remove old
+        child.parentNode.removeChild(child);
+        newElement.render();
+        events.callRender(newElement);
+
+        components[dProps.alias ? dProps.alias : alias] = newElement;
+
+        if (inner) {
+            const innerEl = html.create(inner);
+            if (cfg.isStatic && newElement._rootElement.firstChild) {
+                newElement._rootElement.firstChild.appendChild(innerEl);
+            } else {
+                newElement._rootElement.appendChild(innerEl);
+            }
+        }
+
+        const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
+
+        nested.forEach(item => {
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+
+                const template = item.outerHTML;
+                const rootElement = document.createElement(item.nodeName);
+                item.parentNode.replaceChild(rootElement, item);
+                const cmps = getInstances({
+                    root: rootElement,
+                    template: template,
                     view: cfg.view,
-                    props,
-                    dProps,
-                    parentCmp: cfg.parentCmp,
+                    parentCmp: newElement,
                     isStatic: cfg.isStatic
                 });
 
-                if (newElement === undefined) continue;
-
-                // Remove old
-                child.parentNode.removeChild(child);
-                newElement.render();
-                events.callRender(newElement);
-                child.dataset.processed = true;
-
-                components[dProps.alias ? dProps.alias : alias] = newElement;
-
-                if (inner) {
-                    //console.log(newElement._rootElement, isStatic);
-                    const innerEl = html.create(inner);
-                    if (cfg.isStatic && newElement._rootElement.firstChild) {
-                        newElement._rootElement.firstChild.appendChild(innerEl);
-                    } else {
-                        newElement._rootElement.appendChild(innerEl);
+                Object.keys(cmps).forEach(i => {
+                    if (cmps[i] === undefined) return;
+                    let n = i;
+                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                        n++
                     }
-                }
-
-                const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
-
-                //console.log(child.nodeName, newElement._rootElement.innerHTML)
-
-                nested.forEach(item => {
-                    //console.log ('PROCESSED', item.nodeName, item.dataset.processed, item.dataset.processed === 'true', item.dataset.processed !== undefined);
-                    /*if (item.dataset.processed === 'true') {
-                        console.log('2) ALREADY P', item.nodeName)
-                        return;
-                    }*/
-                    if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-                        //console.log('dddd', item.nodeName);
-                        const template = item.outerHTML;
-                        const rootElement = document.createElement(item.nodeName);
-                        item.parentNode.replaceChild(rootElement, item);
-                        const cmps = getInstances({
-                            root: rootElement,
-                            template: template,
-                            view: cfg.view,
-                            parentCmp: newElement,
-                            isStatic: cfg.isStatic
-                        });
-
-                        Object.keys(cmps).forEach(i => {
-                            let n = i;
-                            if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                                n++
-                            }
-                            newElement.children[n] = cmps[i]
-                        })
-                    }
-                });
-
-                //child.parentNode.removeChild(child);
+                    newElement.children[n] = cmps[i]
+                })
             }
-        }
+        });
     }
-
     return components;
 }
 
@@ -325,7 +305,6 @@ function createInstance(cmp, cfg) {
             enumerable: true
         }
     });
-
 
 
     // Assign cfg to instance

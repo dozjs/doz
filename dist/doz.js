@@ -348,85 +348,77 @@ function getInstances() {
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
-    var nodes = html.getAllNodes(cfg.template);
     var components = {};
     var index = 0;
 
-    for (var j = nodes.length - 1; j >= 0; --j) {
-        var child = nodes[j];
-        if (child.nodeType === 1 && child.parentNode) {
+    var child = cfg.template;
 
-            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+    var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
-            if (cmp) {
-                (function () {
-                    var alias = index++;
-                    var props = serializeProps(child);
-                    var dProps = extract(props);
-                    var inner = child.innerHTML.trim();
+    if (cmp) {
+        var alias = index;
+        var props = serializeProps(child);
+        var dProps = extract(props);
+        var inner = child.innerHTML.trim();
 
-                    var newElement = createInstance(cmp, {
-                        root: cfg.root,
-                        view: cfg.view,
-                        props: props,
-                        dProps: dProps,
-                        parentCmp: cfg.parentCmp,
-                        isStatic: cfg.isStatic
-                    });
+        var newElement = createInstance(cmp, {
+            root: cfg.root,
+            view: cfg.view,
+            props: props,
+            dProps: dProps,
+            parentCmp: cfg.parentCmp,
+            isStatic: cfg.isStatic
+        });
 
-                    // Remove old
-                    child.parentNode.removeChild(child);
-                    newElement.render();
-                    events.callRender(newElement);
+        if (newElement === undefined) return;
 
-                    components[dProps.alias ? dProps.alias : alias] = newElement;
+        // Remove old
+        child.parentNode.removeChild(child);
+        newElement.render();
+        events.callRender(newElement);
 
-                    if (inner) {
-                        //console.log(newElement._rootElement, isStatic);
-                        var innerEl = html.create(inner);
-                        if (cfg.isStatic && newElement._rootElement.firstChild) {
-                            newElement._rootElement.firstChild.appendChild(innerEl);
-                        } else {
-                            newElement._rootElement.appendChild(innerEl);
-                        }
-                    }
+        components[dProps.alias ? dProps.alias : alias] = newElement;
 
-                    var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
-
-                    nested.forEach(function (item) {
-
-                        if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-
-                            var template = item.outerHTML;
-                            var rootElement = document.createElement(item.nodeName);
-                            item.parentNode.replaceChild(rootElement, item);
-                            var cmps = getInstances({
-                                root: rootElement,
-                                template: template,
-                                view: cfg.view,
-                                parentCmp: newElement,
-                                isStatic: cfg.isStatic
-                            });
-
-                            Object.keys(cmps).forEach(function (i) {
-                                var n = i;
-                                if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                                    n++;
-                                }
-                                newElement.children[n] = cmps[i];
-                            });
-                        }
-                    });
-                })();
+        if (inner) {
+            var innerEl = html.create(inner);
+            if (cfg.isStatic && newElement._rootElement.firstChild) {
+                newElement._rootElement.firstChild.appendChild(innerEl);
+            } else {
+                newElement._rootElement.appendChild(innerEl);
             }
         }
-    }
 
+        var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
+
+        nested.forEach(function (item) {
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+
+                var template = item.outerHTML;
+                var rootElement = document.createElement(item.nodeName);
+                item.parentNode.replaceChild(rootElement, item);
+                var cmps = getInstances({
+                    root: rootElement,
+                    template: template,
+                    view: cfg.view,
+                    parentCmp: newElement,
+                    isStatic: cfg.isStatic
+                });
+
+                Object.keys(cmps).forEach(function (i) {
+                    if (cmps[i] === undefined) return;
+                    var n = i;
+                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                        n++;
+                    }
+                    newElement.children[n] = cmps[i];
+                });
+            }
+        });
+    }
     return components;
 }
 
 function createInstance(cmp, cfg) {
-    //console.log(cfg.props);
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
     var instance = Object.defineProperties({}, {
@@ -617,6 +609,10 @@ function createInstance(cmp, cfg) {
 
     // Assign cfg to instance
     extendInstance(instance, cmp.cfg, cfg.dProps);
+
+    var beforeCreate = events.callBeforeCreate(instance);
+    if (beforeCreate === false) return undefined;
+
     // Create observer to props
     observer.create(instance, props);
     // Create shared store
@@ -713,6 +709,12 @@ module.exports = html;
 "use strict";
 
 
+function callBeforeCreate(context) {
+    if (typeof context.onBeforeCreate === 'function') {
+        return context.onBeforeCreate.call(context);
+    }
+}
+
 function callCreate(context) {
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
@@ -751,6 +753,7 @@ function callDestroy(context) {
 }
 
 module.exports = {
+    callBeforeCreate: callBeforeCreate,
     callCreate: callCreate,
     callRender: callRender,
     callBeforeUpdate: callBeforeUpdate,

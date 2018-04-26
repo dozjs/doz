@@ -75,52 +75,32 @@ describe('Doz.store', function () {
 
     describe('create view with component with nested component with store', function () {
 
-        it('should be ok', function (done) {
+        it('should be ok', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('salutation-card', {
                 template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                    return `<div>Hello</div>`
                 }
             });
 
             Doz.component('caller-o', {
                 store: 'caller',
                 template() {
-                    return `<div>${this.props.repeater}</div>`
-                },
-                onBeforeCreate() {
-                    console.log('caller-o, before create');
-                    if (this.getStore('caller')) return false;
-                },
-                onCreate() {
-                    console.log('caller-o, created');
+                    return `<div>I'M CALLER</div>`
                 }
             });
 
-            const view = new Doz({
+            new Doz({
                 root: '#app',
                 template: `
                     <salutation-card>
+                        <div>ciao</div>
                         <caller-o></caller-o>
                     </salutation-card>
                 `
             });
-
-            done();
-
-            /*setTimeout(()=>{
-                const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(view);
-                be.err.true(/Hi by repeater</g.test(html));
-                be.err.true(/Hi by repeater Teddy</g.test(html));
-                be.err(done).true(/MRS. Tina/g.test(html));
-            },100);*/
-
-
         });
-
     });
 });
