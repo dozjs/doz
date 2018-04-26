@@ -11,10 +11,14 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 </div>
 
 ## This project is still under develop.
+Please don't use in production projects.
 
+## Installation
 ```
 npm install --save doz
 ```
+
+## Example
 
 ```html
 <div id="app"></div>
