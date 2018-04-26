@@ -1,3 +1,9 @@
+function callBeforeCreate(context) {
+    if(typeof context.onBeforeCreate === 'function'){
+        return context.onBeforeCreate.call(context);
+    }
+}
+
 function callCreate(context) {
     if(typeof context.onCreate === 'function'){
         context.onCreate.call(context);
@@ -36,6 +42,7 @@ function callDestroy(context) {
 }
 
 module.exports = {
+    callBeforeCreate,
     callCreate,
     callRender,
     callBeforeUpdate,

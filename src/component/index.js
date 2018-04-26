@@ -55,7 +55,11 @@ function getInstances(cfg = {}) {
     for (let j = nodes.length - 1; j >= 0; --j) {
         let child = nodes[j];
         if (child.nodeType === 1 && child.parentNode) {
-
+            /*console.log('aaaa', child.nodeName)
+            if (child.dataset.processed === 'true') {
+                console.log('1) ALREADY P', child.nodeName)
+                //return;
+            }*/
             const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
@@ -77,6 +81,7 @@ function getInstances(cfg = {}) {
                 child.parentNode.removeChild(child);
                 newElement.render();
                 events.callRender(newElement);
+                child.dataset.processed = true;
 
                 components[dProps.alias ? dProps.alias : alias] = newElement;
 
@@ -92,10 +97,16 @@ function getInstances(cfg = {}) {
 
                 const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
+                //console.log(child.nodeName, newElement._rootElement.innerHTML)
+
                 nested.forEach(item => {
-
+                    //console.log ('PROCESSED', item.nodeName, item.dataset.processed, item.dataset.processed === 'true', item.dataset.processed !== undefined);
+                    /*if (item.dataset.processed === 'true') {
+                        console.log('2) ALREADY P', item.nodeName)
+                        return;
+                    }*/
                     if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-
+                        //console.log('dddd', item.nodeName);
                         const template = item.outerHTML;
                         const rootElement = document.createElement(item.nodeName);
                         item.parentNode.replaceChild(rootElement, item);
@@ -116,6 +127,8 @@ function getInstances(cfg = {}) {
                         })
                     }
                 });
+
+                //child.parentNode.removeChild(child);
             }
         }
     }
@@ -124,7 +137,6 @@ function getInstances(cfg = {}) {
 }
 
 function createInstance(cmp, cfg) {
-    //console.log(cfg.props);
     const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
         ? cmp.cfg.props()
         : cmp.cfg.props
@@ -312,8 +324,15 @@ function createInstance(cmp, cfg) {
         }
     });
 
+
+
     // Assign cfg to instance
     extendInstance(instance, cmp.cfg, cfg.dProps);
+
+    const beforeCreate = events.callBeforeCreate(instance);
+    if (beforeCreate === false)
+        return undefined;
+
     // Create observer to props
     observer.create(instance, props);
     // Create shared store

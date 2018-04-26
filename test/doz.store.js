@@ -72,4 +72,54 @@ describe('Doz.store', function () {
         });
 
     });
+
+    describe('create view with component with nested component with store', function () {
+
+        it('should be ok', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.component('salutation-card', {
+                template() {
+                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                }
+            });
+
+            Doz.component('caller-o', {
+                store: 'caller',
+                template() {
+                    return `<div>${this.props.repeater}</div>`
+                },
+                onBeforeCreate() {
+                    console.log('caller-o, before create')
+                },
+                onCreate() {
+                    console.log('caller-o, created')
+                }
+            });
+
+            const view = new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card>
+                        <caller-o></caller-o>
+                    </salutation-card>
+                `
+            });
+
+            done();
+
+            /*setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                //console.log(view);
+                be.err.true(/Hi by repeater</g.test(html));
+                be.err.true(/Hi by repeater Teddy</g.test(html));
+                be.err(done).true(/MRS. Tina/g.test(html));
+            },100);*/
+
+
+        });
+
+    });
 });
