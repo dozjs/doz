@@ -55,21 +55,8 @@ describe('parser', function () {
         it('tree walker', function () {
             document.body.innerHTML = `<div id="app"><span>ciao</span><div><ul><li></li></ul></div></div>`;
             const appRoot = document.getElementById('app');
-            let newDom;
-            function scanner(n, p) {
-                while (n) {
-                    console.log(n, p ? p.id : '');
-                    if (p) {
-                        p.replaceChild(document.createElement('doz-e'), n)
-                    }
-                    if (n.hasChildNodes()) {
-                        scanner(n.firstChild, n)
-                    }
-                    n = n.nextSibling;
-                }
-            }
 
-            scanner(appRoot);
+            console.log(appRoot.children)
 
             console.log(document.body.innerHTML);
         });

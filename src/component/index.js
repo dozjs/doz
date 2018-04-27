@@ -43,7 +43,9 @@ function getInstances(cfg = {}) {
         isStatic: false
     });
 
-    console.log('TEMPLATE', cfg.template);
+    console.log('_______________');
+    console.log('               ');
+    console.log('TPL          ->', cfg.template);
 
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
@@ -62,7 +64,7 @@ function getInstances(cfg = {}) {
         const props = serializeProps(child);
         const dProps = extract(props);
         const inner = child.innerHTML.trim();
-        //child.innerHTML = '';
+        child.innerHTML = '';
 
         newElement = createInstance(cmp, {
             root: cfg.root,
@@ -82,46 +84,54 @@ function getInstances(cfg = {}) {
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
 
+
         if (inner) {
-            const innerEl = html.create(inner);
+            console.log('INNER        ->', inner);
+            const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
                 newElement._rootElement.appendChild(innerEl);
             }
+            console.log('INNER OUT    ->', newElement._rootElement.outerHTML);
         }
+        /*       */
     }
 
     const nested = Array.from(newElement ? newElement._rootElement.children : child.children);
 
+    console.log('COUNT        ->', nested.length);
+    nested.forEach(item => console.log('............ ->', item.nodeName));
+
     nested.forEach((item, i) => {
-        console.log(i, item.outerHTML);
 
         //if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) /*&& item.nodeName.toLowerCase() !== TAG.ROOT*/) {
 
-            const template = item.outerHTML;
-            if (!template) return;
-            const rootElement = document.createElement(item.nodeName);
-            item.parentNode.replaceChild(rootElement, item);
+        const template = item.outerHTML;
 
-            //console.log('hhhhhhhhhhhhhh',item.outerHTML)
+        console.log('NEXT TPL     ->', template);
 
-            const cmps = getInstances({
-                root: rootElement,
-                template: template,
-                view: cfg.view,
-                parentCmp: newElement,
-                isStatic: cfg.isStatic
-            });
+        if (!template) return;
+        const rootElement = document.createElement(item.nodeName);
+        item.parentNode.replaceChild(rootElement, item);
 
-            Object.keys(cmps).forEach(i => {
-                if (cmps[i] === undefined) return;
-                let n = i;
-                if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                    n++
-                }
-                newElement.children[n] = cmps[i]
-            })
+        const cmps = getInstances({
+            root: rootElement,
+            template: template,
+            view: cfg.view,
+            parentCmp: newElement,
+            isStatic: cfg.isStatic
+        });
+        //console.log('CMPS         ->', cmps);
+        /*
+                Object.keys(cmps).forEach(i => {
+                    if (cmps[i] === undefined) return;
+                    let n = i;
+                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                        n++
+                    }
+                    newElement.children[n] = cmps[i]
+                })*/
         //}
 
     });
