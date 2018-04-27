@@ -43,16 +43,7 @@ function getInstances(cfg = {}) {
         isStatic: false
     });
 
-    /*console.log('________________');
-    console.log('                ');
-    console.log('TEMPLATE      ->', cfg.template);*/
-    const originTpl = cfg.template;
-
-    let cached = cfg.view._cache.get(originTpl);
-
-    if (cached) {
-        return cached;
-    }
+    console.log('TEMPLATE', cfg.template);
 
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
@@ -60,6 +51,7 @@ function getInstances(cfg = {}) {
 
     let components = {};
     let index = 0;
+    let newElement;
 
     let child = cfg.template;
 
@@ -70,9 +62,9 @@ function getInstances(cfg = {}) {
         const props = serializeProps(child);
         const dProps = extract(props);
         const inner = child.innerHTML.trim();
-        child.innerHTML = '';
+        //child.innerHTML = '';
 
-        const newElement = createInstance(cmp, {
+        newElement = createInstance(cmp, {
             root: cfg.root,
             view: cfg.view,
             props,
@@ -83,73 +75,57 @@ function getInstances(cfg = {}) {
 
         if (newElement === undefined) return;
 
-        //console.log(child.parentNode);
         // Remove old
         child.parentNode.removeChild(child);
-        //console.log(child.parentNode);
         newElement.render();
-        newElement._rootElement.dataset.root = 'true';
+        //newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('INNER BEFORE  ->', inner);
 
         if (inner) {
-            const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
-            //const innerEl = html.create(`${inner}`);
+            const innerEl = html.create(inner);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
                 newElement._rootElement.appendChild(innerEl);
             }
         }
-
-        const nested = newElement._rootElement.querySelectorAll('*');
-        //const nested = Array.from(newElement._rootElement.children);
-        //console.log('NESTED        ->', nested);
-        /*console.log('COUNT NESTED  ->', nested.length);
-        nested.forEach(item => console.log('............  ->', item.nodeName));
-        console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
-        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);*/
-
-        nested.forEach(item => {
-            //const item = innerEl;
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
-
-                /*
-                console.log('PARENT NODE   ->', item.parentNode.nodeName);
-                console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
-                console.log('PREV TEMPLATE ->', cfg.prevTemplate);
-                console.log('PARENT EQ     ->', item.outerHTML === originTpl);
-                console.log('NODENAME      ->', item.nodeName);
-                console.log('ORIG TEMPLATE ->', originTpl);
-                console.log('N-OU TEMPLATE ->', item.outerHTML);
-                */
-
-                const template = item.outerHTML;
-                if (!template) return;
-                const rootElement = document.createElement(item.nodeName);
-                item.parentNode.replaceChild(rootElement, item);
-                const cmps = getInstances({
-                    root: rootElement,
-                    template: template,
-                    view: cfg.view,
-                    parentCmp: newElement,
-                    isStatic: cfg.isStatic
-                });
-
-                Object.keys(cmps).forEach(i => {
-                    if (cmps[i] === undefined) return;
-                    let n = i;
-                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                        n++
-                    }
-                    newElement.children[n] = cmps[i]
-                })
-            }
-        });
-
-        cfg.view._cache.set(originTpl, newElement);
     }
+
+    const nested = Array.from(newElement ? newElement._rootElement.children : child.children);
+
+    nested.forEach((item, i) => {
+        console.log(i, item.outerHTML);
+
+        //if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) /*&& item.nodeName.toLowerCase() !== TAG.ROOT*/) {
+
+            const template = item.outerHTML;
+            if (!template) return;
+            const rootElement = document.createElement(item.nodeName);
+            item.parentNode.replaceChild(rootElement, item);
+
+            //console.log('hhhhhhhhhhhhhh',item.outerHTML)
+
+            const cmps = getInstances({
+                root: rootElement,
+                template: template,
+                view: cfg.view,
+                parentCmp: newElement,
+                isStatic: cfg.isStatic
+            });
+
+            Object.keys(cmps).forEach(i => {
+                if (cmps[i] === undefined) return;
+                let n = i;
+                if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                    n++
+                }
+                newElement.children[n] = cmps[i]
+            })
+        //}
+
+    });
+
     return components;
 }
 
