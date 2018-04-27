@@ -37,14 +37,16 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-//function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
 function getInstances(cfg = {}) {
 
     cfg = extend.copy(cfg, {
         isStatic: false
     });
 
-    //console.log('TEMPLATE', cfg.template);
+    console.log('________________');
+    console.log('                ');
+    console.log('TEMPLATE      ->', cfg.template);
+    const originTpl = cfg.template;
 
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
@@ -62,6 +64,7 @@ function getInstances(cfg = {}) {
         const props = serializeProps(child);
         const dProps = extract(props);
         const inner = child.innerHTML.trim();
+        child.innerHTML = '';
 
         const newElement = createInstance(cmp, {
             root: cfg.root,
@@ -74,35 +77,49 @@ function getInstances(cfg = {}) {
 
         if (newElement === undefined) return;
 
+        //console.log(child.parentNode);
         // Remove old
         child.parentNode.removeChild(child);
+        //console.log(child.parentNode);
         newElement.render();
-        //newElement._rootElement.dataset.root = 'true';
+        newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('inner', inner, 'tag', newElement.tag);
-/**/
+        console.log('INNER BEFORE  ->', inner);
+
+
         if (inner) {
-            //console.log('INNER', inner);
-            const innerEl = html.create(inner);
-            //if (innerEl.firstChild)
-            //console.log('INNEREL', innerEl.outerHTML);
+            const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
+            //const innerEl = html.create(`${inner}`);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
-                //console.log('OUTER1', newElement._rootElement.outerHTML);
                 newElement._rootElement.appendChild(innerEl);
-                //console.log('OUTER2', newElement._rootElement.outerHTML);
-                //console.log('INNER2', newElement._rootElement.innerHTML);
             }
         }
 
-        const nested = Array.from(newElement._rootElement.querySelectorAll('*'));
+        const nested = newElement._rootElement.querySelectorAll('*');
+        //const nested = Array.from(newElement._rootElement.children);
+        //console.log('NESTED        ->', nested);
+        console.log('COUNT NESTED  ->', nested.length);
+        nested.forEach(item => console.log('............  ->', item.nodeName));
+        console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
+        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);
 
-        nested.forEach(item => {
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
+        nested.forEach((item, x) => {
+            //const item = innerEl;
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
 
-                //console.log('TEMPLATE ITEM', item.outerHTML)
+                console.log('PARENT NODE   ->', item.parentNode.nodeName);
+                console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
+                console.log('PARENT EQ     ->', item.outerHTML === originTpl);
+                console.log('NODENAME      ->', item.nodeName);
+                console.log('ORIG TEMPLATE ->', originTpl);
+                console.log('N-OU TEMPLATE ->', item.outerHTML);
+                //console.log('N-IN TEMPLATE ->', item.innerHTML);
+                //console.log('NEXT ITEM     ->', nested[x+1].outerHTML);
+
+                //console.log('DATASET       ->', item.parentNode.dataset);
 
                 const template = item.outerHTML;
                 if (!template) return;
@@ -124,9 +141,6 @@ function getInstances(cfg = {}) {
                     }
                     newElement.children[n] = cmps[i]
                 })
-            } else {
-                //console.log('no custom tag', item.outerHTML)
-                //newElement._rootElement.appendChild(item);
             }
         });
     }

@@ -337,7 +337,6 @@ function component(tag) {
     register(cmp);
 }
 
-//function getInstances(root, template, view, parentCmp, isStatic = false, autoCmp) {
 function getInstances() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -346,7 +345,7 @@ function getInstances() {
         isStatic: false
     });
 
-    //console.log('TEMPLATE', cfg.template);
+    console.log('TEMPLATE      ->', cfg.template);
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
@@ -361,7 +360,8 @@ function getInstances() {
         var alias = index;
         var props = serializeProps(child);
         var dProps = extract(props);
-        //const inner = child.innerHTML.trim();
+        var inner = child.innerHTML.trim();
+        child.innerHTML = '';
 
         var newElement = createInstance(cmp, {
             root: cfg.root,
@@ -374,60 +374,59 @@ function getInstances() {
 
         if (newElement === undefined) return;
 
+        //console.log(child.parentNode);
         // Remove old
         child.parentNode.removeChild(child);
+        //console.log(child.parentNode);
         newElement.render();
         //newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('inner', inner, newElement.tag);
-        /*
-                if (inner) {
-                    console.log('INNER', inner);
-                    const innerEl = html.create(inner);
-                    //if (innerEl.firstChild)
-                    console.log('INNEREL', innerEl.outerHTML);
-                    if (cfg.isStatic && newElement._rootElement.firstChild) {
-                        newElement._rootElement.firstChild.appendChild(innerEl);
-                    } else {
-                        console.log('OUTER1', newElement._rootElement.outerHTML);
-                        newElement._rootElement.appendChild(innerEl);
-                        console.log('OUTER2', newElement._rootElement.outerHTML);
-                        //console.log('INNER2', newElement._rootElement.innerHTML);
-                    }
-                }*/
+        //console.log('INNER BEFORE  ->', inner);
 
-        var nested = Array.from(newElement._rootElement.querySelectorAll('*'));
 
-        nested.forEach(function (item) {
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT) {
-
-                //console.log('TEMPLATE ITEM', item.outerHTML)
-
-                var template = item.outerHTML;
-                if (!template) return;
-                var rootElement = document.createElement(item.nodeName);
-                item.parentNode.replaceChild(rootElement, item);
-                var cmps = getInstances({
-                    root: rootElement,
-                    template: template,
-                    view: cfg.view,
-                    parentCmp: newElement,
-                    isStatic: cfg.isStatic
-                });
-
-                Object.keys(cmps).forEach(function (i) {
-                    if (cmps[i] === undefined) return;
-                    var n = i;
-                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                        n++;
-                    }
-                    newElement.children[n] = cmps[i];
-                });
+        if (inner) {
+            var innerEl = html.create('<' + TAG.ROOT + '>' + inner + '</' + TAG.ROOT + '>');
+            //const innerEl = html.create(`${inner}`);
+            if (cfg.isStatic && newElement._rootElement.firstChild) {
+                newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
-                //console.log('no custom tag', item.outerHTML)
-                //newElement._rootElement.appendChild(item);
+                newElement._rootElement.appendChild(innerEl);
             }
+        }
+
+        var nested = Array.from(newElement._rootElement.firstChild.querySelectorAll('*'));
+        //const nested = Array.from(newElement._rootElement.children);
+        //console.log('NESTED        ->', nested);
+        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);
+        nested.forEach(function (item) {
+            //const item = innerEl;
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /**/) {
+
+                    console.log('TEMPLATE ITEM ->', item.nodeName, item.outerHTML);
+                    //console.log('DATASET       ->', item.parentNode.dataset);
+
+                    var template = item.outerHTML;
+                    if (!template) return;
+                    var rootElement = document.createElement(item.nodeName);
+                    item.parentNode.replaceChild(rootElement, item);
+                    var cmps = getInstances({
+                        root: rootElement,
+                        template: template,
+                        view: cfg.view,
+                        parentCmp: newElement,
+                        isStatic: cfg.isStatic
+                    });
+
+                    Object.keys(cmps).forEach(function (i) {
+                        if (cmps[i] === undefined) return;
+                        var n = i;
+                        if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
+                            n++;
+                        }
+                        newElement.children[n] = cmps[i];
+                    });
+                }
         });
     }
     return components;
