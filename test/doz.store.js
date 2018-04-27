@@ -110,6 +110,7 @@ describe('Doz.store', function () {
                     <salutation-card>
                         <div>bye</div>
                         <caller-o><div>nested</div></caller-o>
+                        <caller-o><div>nested</div></caller-o>
                     </salutation-card>
                 `
             });

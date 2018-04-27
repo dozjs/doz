@@ -345,7 +345,16 @@ function getInstances() {
         isStatic: false
     });
 
-    console.log('TEMPLATE      ->', cfg.template);
+    /*console.log('________________');
+    console.log('                ');
+    console.log('TEMPLATE      ->', cfg.template);*/
+    var originTpl = cfg.template;
+
+    var cached = cfg.view._cache.get(originTpl);
+
+    if (cached) {
+        return cached;
+    }
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
@@ -379,11 +388,10 @@ function getInstances() {
         child.parentNode.removeChild(child);
         //console.log(child.parentNode);
         newElement.render();
-        //newElement._rootElement.dataset.root = 'true';
+        newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
         //console.log('INNER BEFORE  ->', inner);
-
 
         if (inner) {
             var innerEl = html.create('<' + TAG.ROOT + '>' + inner + '</' + TAG.ROOT + '>');
@@ -395,16 +403,27 @@ function getInstances() {
             }
         }
 
-        var nested = Array.from(newElement._rootElement.firstChild.querySelectorAll('*'));
+        var nested = newElement._rootElement.querySelectorAll('*');
         //const nested = Array.from(newElement._rootElement.children);
         //console.log('NESTED        ->', nested);
-        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);
+        /*console.log('COUNT NESTED  ->', nested.length);
+        nested.forEach(item => console.log('............  ->', item.nodeName));
+        console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
+        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);*/
+
         nested.forEach(function (item) {
             //const item = innerEl;
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /**/) {
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
 
-                    console.log('TEMPLATE ITEM ->', item.nodeName, item.outerHTML);
-                    //console.log('DATASET       ->', item.parentNode.dataset);
+                    /*
+                    console.log('PARENT NODE   ->', item.parentNode.nodeName);
+                    console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
+                    console.log('PREV TEMPLATE ->', cfg.prevTemplate);
+                    console.log('PARENT EQ     ->', item.outerHTML === originTpl);
+                    console.log('NODENAME      ->', item.nodeName);
+                    console.log('ORIG TEMPLATE ->', originTpl);
+                    console.log('N-OU TEMPLATE ->', item.outerHTML);
+                    */
 
                     var template = item.outerHTML;
                     if (!template) return;
@@ -428,6 +447,8 @@ function getInstances() {
                     });
                 }
         });
+
+        cfg.view._cache.set(originTpl, newElement);
     }
     return components;
 }
@@ -953,6 +974,9 @@ var Doz = function () {
                 value: {},
                 writable: true
             },
+            _cache: {
+                value: new Map()
+            },
             _ids: {
                 value: {},
                 writable: true
@@ -1021,7 +1045,7 @@ var Doz = function () {
     _createClass(Doz, [{
         key: 'getComponent',
         value: function getComponent(alias) {
-            return this._usedComponents[0].children[alias];
+            return this._usedComponents[0] ? this._usedComponents[0].children[alias] : undefined;
         }
     }, {
         key: 'getComponentById',

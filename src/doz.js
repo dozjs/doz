@@ -43,6 +43,9 @@ class Doz {
                 value: {},
                 writable: true
             },
+            _cache: {
+                value: new Map()
+            },
             _ids: {
                 value: {},
                 writable: true
@@ -107,7 +110,9 @@ class Doz {
     }
 
     getComponent(alias) {
-        return this._usedComponents[0].children[alias];
+        return this._usedComponents[0]
+            ? this._usedComponents[0].children[alias]
+            : undefined;
     }
 
     getComponentById(id) {

@@ -43,10 +43,16 @@ function getInstances(cfg = {}) {
         isStatic: false
     });
 
-    console.log('________________');
+    /*console.log('________________');
     console.log('                ');
-    console.log('TEMPLATE      ->', cfg.template);
+    console.log('TEMPLATE      ->', cfg.template);*/
     const originTpl = cfg.template;
+
+    let cached = cfg.view._cache.get(originTpl);
+
+    if (cached) {
+        return cached;
+    }
 
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
@@ -85,8 +91,7 @@ function getInstances(cfg = {}) {
         newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        console.log('INNER BEFORE  ->', inner);
-
+        //console.log('INNER BEFORE  ->', inner);
 
         if (inner) {
             const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
@@ -101,25 +106,24 @@ function getInstances(cfg = {}) {
         const nested = newElement._rootElement.querySelectorAll('*');
         //const nested = Array.from(newElement._rootElement.children);
         //console.log('NESTED        ->', nested);
-        console.log('COUNT NESTED  ->', nested.length);
+        /*console.log('COUNT NESTED  ->', nested.length);
         nested.forEach(item => console.log('............  ->', item.nodeName));
         console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
-        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);
+        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);*/
 
-        nested.forEach((item, x) => {
+        nested.forEach(item => {
             //const item = innerEl;
             if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
 
+                /*
                 console.log('PARENT NODE   ->', item.parentNode.nodeName);
                 console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
+                console.log('PREV TEMPLATE ->', cfg.prevTemplate);
                 console.log('PARENT EQ     ->', item.outerHTML === originTpl);
                 console.log('NODENAME      ->', item.nodeName);
                 console.log('ORIG TEMPLATE ->', originTpl);
                 console.log('N-OU TEMPLATE ->', item.outerHTML);
-                //console.log('N-IN TEMPLATE ->', item.innerHTML);
-                //console.log('NEXT ITEM     ->', nested[x+1].outerHTML);
-
-                //console.log('DATASET       ->', item.parentNode.dataset);
+                */
 
                 const template = item.outerHTML;
                 if (!template) return;
@@ -143,6 +147,8 @@ function getInstances(cfg = {}) {
                 })
             }
         });
+
+        cfg.view._cache.set(originTpl, newElement);
     }
     return components;
 }

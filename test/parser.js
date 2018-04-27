@@ -53,24 +53,25 @@ describe('parser', function () {
             console.log(document.body.innerHTML);
         });
         it('tree walker', function () {
-            document.body.innerHTML = `<div id="app"></div>`;
+            document.body.innerHTML = `<div id="app"><span>ciao</span><div><ul><li></li></ul></div></div>`;
             const appRoot = document.getElementById('app');
-            const initial = transform(html.create(`
-                <div>hello world
-                    <button disabled>testo</button>
-                    </div>`));
+            let newDom;
+            function scanner(n, p) {
+                while (n) {
+                    console.log(n, p ? p.id : '');
+                    if (p) {
+                        p.replaceChild(document.createElement('doz-e'), n)
+                    }
+                    if (n.hasChildNodes()) {
+                        scanner(n.firstChild, n)
+                    }
+                    n = n.nextSibling;
+                }
+            }
 
-            var treeWalker = document.createTreeWalker(
-                document.getElementById('app'),
-                NodeFilter.SHOW_ALL,
-                { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
-                false
-            );
+            scanner(appRoot);
 
-            var nodeList = [];
-
-            while(treeWalker.nextNode()) nodeList.push(treeWalker.currentNode);
-            console.log(nodeList)
+            console.log(document.body.innerHTML);
         });
 
 
