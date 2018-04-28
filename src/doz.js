@@ -67,6 +67,7 @@ class Doz {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
+                    //console.log('ROOT', root.innerHTML);
                     const autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {
@@ -76,6 +77,10 @@ class Doz {
                             }
                         }
                     };
+
+                    //const rootEl = document.createElement('div');
+
+                    //root.appendChild(rootEl);
 
                     return component.getInstances({
                         root,

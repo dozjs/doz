@@ -345,6 +345,8 @@ function getInstances() {
 
     cfg.root.appendChild(cfg.template);
 
+    //console.log(cfg.template.outerHTML);
+
     var component = {};
     var parentElement = void 0;
 
@@ -369,7 +371,10 @@ function getInstances() {
                     isStatic: cfg.isStatic
                 });
 
-                if (newElement === undefined) continue;
+                if (!newElement) {
+                    continue;
+                }
+
                 newElement.render();
 
                 if (!Object.keys(component).length) {
@@ -378,6 +383,11 @@ function getInstances() {
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
                 events.callRender(newElement);
+
+                //newElement._rootElement.dataset.draw = 'true';
+
+                //if (newElement.parentCmp)
+                //console.log('creaaaaaaaaaaaaa', newElement.tag, newElement.parentCmp.tag)
 
                 parentElement = newElement;
 
@@ -1024,6 +1034,7 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
+                    //console.log('ROOT', root.innerHTML);
                     var autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {
@@ -1033,6 +1044,10 @@ var Doz = function () {
                             }
                         }
                     };
+
+                    //const rootEl = document.createElement('div');
+
+                    //root.appendChild(rootEl);
 
                     return component.getInstances({
                         root: root,

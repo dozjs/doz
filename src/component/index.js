@@ -46,6 +46,8 @@ function getInstances(cfg = {}) {
 
     cfg.root.appendChild(cfg.template);
 
+    //console.log(cfg.template.outerHTML);
+
     let component = {};
     let parentElement;
 
@@ -68,7 +70,10 @@ function getInstances(cfg = {}) {
                     isStatic: cfg.isStatic
                 });
 
-                if (newElement === undefined) continue;
+                if (!newElement) {
+                    continue;
+                }
+
                 newElement.render();
 
                 if (!Object.keys(component).length) {
@@ -77,6 +82,11 @@ function getInstances(cfg = {}) {
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
                 events.callRender(newElement);
+
+                //newElement._rootElement.dataset.draw = 'true';
+
+                //if (newElement.parentCmp)
+                //console.log('creaaaaaaaaaaaaa', newElement.tag, newElement.parentCmp.tag)
 
                 parentElement = newElement;
 
@@ -88,7 +98,6 @@ function getInstances(cfg = {}) {
 
             if (child.hasChildNodes()) {
                 walk(child.firstChild, {cmp: parentElement})
-
             }
 
             child = child.nextSibling;
