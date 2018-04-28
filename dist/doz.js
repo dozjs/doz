@@ -346,7 +346,7 @@ function getInstances() {
     cfg.root.appendChild(cfg.template);
 
     var component = {};
-    //let alias = 0;
+    var parentElement = void 0;
 
     function walk(child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -354,13 +354,13 @@ function getInstances() {
         while (child) {
 
             var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
-            var newElement = void 0;
+
             if (cmp) {
 
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
-                newElement = createInstance(cmp, {
+                var newElement = createInstance(cmp, {
                     root: child,
                     view: cfg.view,
                     props: props,
@@ -372,29 +372,23 @@ function getInstances() {
                 if (newElement === undefined) continue;
                 newElement.render();
 
-                //console.log(newElement.tag);
-                //console.log(newElement._rootElement.parentNode);
-                //console.log(newElement._rootElement.innerHTML);
-                //console.log(child);
-
                 if (!Object.keys(component).length) {
                     component[0] = newElement;
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
                 events.callRender(newElement);
-                //components[dProps.alias ? dProps.alias : alias] = newElement;
+
+                parentElement = newElement;
 
                 if (parent.cmp) {
-                    console.log(parent.cmp);
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
             }
 
             if (child.hasChildNodes()) {
-                //console.log('gg',newElement);
-                walk(child.firstChild, { newElement: newElement });
+                walk(child.firstChild, { cmp: parentElement });
             }
 
             child = child.nextSibling;
@@ -698,12 +692,7 @@ function createInstance(cmp, cfg) {
 }
 
 function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg);
-
-    // Overwrite store name with that passed though props
-    if (dProps.store) instance.store = dProps.store;
-    // Overwrite id with that passed though props
-    if (dProps.id) instance.id = dProps.id;
+    Object.assign(instance, cfg, dProps);
 }
 
 module.exports = {

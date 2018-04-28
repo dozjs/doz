@@ -47,19 +47,19 @@ function getInstances(cfg = {}) {
     cfg.root.appendChild(cfg.template);
 
     let component = {};
-    //let alias = 0;
+    let parentElement;
 
     function walk(child, parent = {}) {
         while (child) {
 
             const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
-            let newElement;
+
             if (cmp) {
 
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
-                newElement = createInstance(cmp, {
+                const newElement = createInstance(cmp, {
                     root: child,
                     view: cfg.view,
                     props,
@@ -71,29 +71,23 @@ function getInstances(cfg = {}) {
                 if (newElement === undefined) continue;
                 newElement.render();
 
-                //console.log(newElement.tag);
-                //console.log(newElement._rootElement.parentNode);
-                //console.log(newElement._rootElement.innerHTML);
-                //console.log(child);
-
                 if (!Object.keys(component).length) {
                     component[0] = newElement;
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
                 events.callRender(newElement);
-                //components[dProps.alias ? dProps.alias : alias] = newElement;
+
+                parentElement = newElement;
 
                 if (parent.cmp) {
-                    console.log(parent.cmp)
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
             }
 
             if (child.hasChildNodes()) {
-                //console.log('gg',newElement);
-                walk(child.firstChild, {newElement})
+                walk(child.firstChild, {cmp: parentElement})
 
             }
 
@@ -377,7 +371,6 @@ function createInstance(cmp, cfg) {
         }
     });
 
-
     // Assign cfg to instance
     extendInstance(instance, cmp.cfg, cfg.dProps);
 
@@ -400,14 +393,7 @@ function createInstance(cmp, cfg) {
 }
 
 function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg);
-
-    // Overwrite store name with that passed though props
-    if (dProps.store)
-        instance.store = dProps.store;
-    // Overwrite id with that passed though props
-    if (dProps.id)
-        instance.id = dProps.id;
+    Object.assign(instance, cfg, dProps);
 }
 
 module.exports = {

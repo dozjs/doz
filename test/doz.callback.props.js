@@ -39,6 +39,7 @@ describe('Doz.callback', function () {
                     return `<div>Callback</div>`
                 },
                 onCreate() {
+                    console.log('created');
                     setTimeout(()=>{
                         this.emit('mycallback', 'hello');
                     },1000);
