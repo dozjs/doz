@@ -78,10 +78,6 @@ class Doz {
                         }
                     };
 
-                    //const rootEl = document.createElement('div');
-
-                    //root.appendChild(rootEl);
-
                     return component.getInstances({
                         root,
                         template: `<${TAG.ROOT}></${TAG.ROOT}>`,

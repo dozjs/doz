@@ -59,6 +59,7 @@ describe('Doz.runtime.mount', function () {
                 onCreate() {
                     setTimeout(()=>{
                         this.drawOther();
+                        console.log('AFTER', document.body.innerHTML);
                     },1000);
                 }
             });
@@ -92,6 +93,7 @@ describe('Doz.runtime.mount', function () {
                 template: `<fist-component></fist-component>`
             });
 
+            //console.log(document.body.innerHTML)
         });
 
     });

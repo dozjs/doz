@@ -345,8 +345,6 @@ function getInstances() {
 
     cfg.root.appendChild(cfg.template);
 
-    //console.log(cfg.template.outerHTML);
-
     var component = {};
     var parentElement = void 0;
 
@@ -383,11 +381,6 @@ function getInstances() {
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
                 events.callRender(newElement);
-
-                //newElement._rootElement.dataset.draw = 'true';
-
-                //if (newElement.parentCmp)
-                //console.log('creaaaaaaaaaaaaa', newElement.tag, newElement.parentCmp.tag)
 
                 parentElement = newElement;
 
@@ -1044,10 +1037,6 @@ var Doz = function () {
                             }
                         }
                     };
-
-                    //const rootEl = document.createElement('div');
-
-                    //root.appendChild(rootEl);
 
                     return component.getInstances({
                         root: root,
