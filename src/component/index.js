@@ -37,15 +37,80 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
+
 function getInstances(cfg = {}) {
+
+    cfg.template = typeof cfg.template === 'string'
+        ? html.create(cfg.template)
+        : cfg.template;
+
+    cfg.root.appendChild(cfg.template);
+
+    let component = {};
+    //let alias = 0;
+
+    function walk(child, parent = {}) {
+        while (child) {
+
+            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+            let newElement;
+            if (cmp) {
+
+                const props = serializeProps(child);
+                const dProps = extract(props);
+
+                newElement = createInstance(cmp, {
+                    root: child,
+                    view: cfg.view,
+                    props,
+                    dProps,
+                    parentCmp: parent.cmp,
+                    isStatic: cfg.isStatic
+                });
+
+                if (newElement === undefined) continue;
+                newElement.render();
+
+                //console.log(newElement.tag);
+                //console.log(newElement._rootElement.parentNode);
+                //console.log(newElement._rootElement.innerHTML);
+                //console.log(child);
+
+                if (!Object.keys(component).length) {
+                    component[0] = newElement;
+                }
+
+                child.insertBefore(newElement._rootElement, child.firstChild);
+                events.callRender(newElement);
+                //components[dProps.alias ? dProps.alias : alias] = newElement;
+
+                if (parent.cmp) {
+                    console.log(parent.cmp)
+                    let n = Object.keys(parent.cmp.children).length;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                }
+            }
+
+            if (child.hasChildNodes()) {
+                //console.log('gg',newElement);
+                walk(child.firstChild, {newElement})
+
+            }
+
+            child = child.nextSibling;
+        }
+    }
+
+    walk(cfg.template);
+
+    return component;
+}
+
+function _getInstances(cfg = {}) {
 
     cfg = extend.copy(cfg, {
         isStatic: false
     });
-
-    console.log('_______________');
-    console.log('               ');
-    console.log('TPL          ->', cfg.template);
 
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
@@ -53,7 +118,6 @@ function getInstances(cfg = {}) {
 
     let components = {};
     let index = 0;
-    let newElement;
 
     let child = cfg.template;
 
@@ -64,9 +128,8 @@ function getInstances(cfg = {}) {
         const props = serializeProps(child);
         const dProps = extract(props);
         const inner = child.innerHTML.trim();
-        child.innerHTML = '';
 
-        newElement = createInstance(cmp, {
+        const newElement = createInstance(cmp, {
             root: cfg.root,
             view: cfg.view,
             props,
@@ -80,50 +143,37 @@ function getInstances(cfg = {}) {
         // Remove old
         child.parentNode.removeChild(child);
         newElement.render();
-        //newElement._rootElement.dataset.root = 'true';
+        newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
 
-
         if (inner) {
-            console.log('INNER        ->', inner);
             const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
                 newElement._rootElement.appendChild(innerEl);
             }
-            console.log('INNER OUT    ->', newElement._rootElement.outerHTML);
         }
-        /*       */
-    }
 
-    const nested = Array.from(newElement ? newElement._rootElement.children : child.children);
+        const nested = newElement._rootElement.querySelectorAll('*');
 
-    console.log('COUNT        ->', nested.length);
-    nested.forEach(item => console.log('............ ->', item.nodeName));
+        nested.forEach(item => {
+            //const item = innerEl;
+            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
 
-    nested.forEach((item, i) => {
+                const template = item.outerHTML;
+                if (!template) return;
+                const rootElement = document.createElement(item.nodeName);
+                item.parentNode.replaceChild(rootElement, item);
+                const cmps = getInstances({
+                    root: rootElement,
+                    template: template,
+                    view: cfg.view,
+                    parentCmp: newElement,
+                    isStatic: cfg.isStatic
+                });
 
-        //if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) /*&& item.nodeName.toLowerCase() !== TAG.ROOT*/) {
-
-        const template = item.outerHTML;
-
-        console.log('NEXT TPL     ->', template);
-
-        if (!template) return;
-        const rootElement = document.createElement(item.nodeName);
-        item.parentNode.replaceChild(rootElement, item);
-
-        const cmps = getInstances({
-            root: rootElement,
-            template: template,
-            view: cfg.view,
-            parentCmp: newElement,
-            isStatic: cfg.isStatic
-        });
-        //console.log('CMPS         ->', cmps);
-        /*
                 Object.keys(cmps).forEach(i => {
                     if (cmps[i] === undefined) return;
                     let n = i;
@@ -131,11 +181,11 @@ function getInstances(cfg = {}) {
                         n++
                     }
                     newElement.children[n] = cmps[i]
-                })*/
-        //}
+                })
+            }
+        });
 
-    });
-
+    }
     return components;
 }
 

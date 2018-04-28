@@ -54,6 +54,8 @@ describe('Doz.callback', function () {
                     </salutation-card>
                 `
             });
+
+            console.log(document.body.innerHTML)
         });
     });
 });

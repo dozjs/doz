@@ -341,20 +341,78 @@ function getInstances() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
+    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+
+    cfg.root.appendChild(cfg.template);
+
+    var component = {};
+    //let alias = 0;
+
+    function walk(child) {
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        while (child) {
+
+            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+            var newElement = void 0;
+            if (cmp) {
+
+                var props = serializeProps(child);
+                var dProps = extract(props);
+
+                newElement = createInstance(cmp, {
+                    root: child,
+                    view: cfg.view,
+                    props: props,
+                    dProps: dProps,
+                    parentCmp: parent.cmp,
+                    isStatic: cfg.isStatic
+                });
+
+                if (newElement === undefined) continue;
+                newElement.render();
+
+                //console.log(newElement.tag);
+                //console.log(newElement._rootElement.parentNode);
+                //console.log(newElement._rootElement.innerHTML);
+                //console.log(child);
+
+                if (!Object.keys(component).length) {
+                    component[0] = newElement;
+                }
+
+                child.insertBefore(newElement._rootElement, child.firstChild);
+                events.callRender(newElement);
+                //components[dProps.alias ? dProps.alias : alias] = newElement;
+
+                if (parent.cmp) {
+                    console.log(parent.cmp);
+                    var n = Object.keys(parent.cmp.children).length;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                }
+            }
+
+            if (child.hasChildNodes()) {
+                //console.log('gg',newElement);
+                walk(child.firstChild, { newElement: newElement });
+            }
+
+            child = child.nextSibling;
+        }
+    }
+
+    walk(cfg.template);
+
+    return component;
+}
+
+function _getInstances() {
+    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+
     cfg = extend.copy(cfg, {
         isStatic: false
     });
-
-    /*console.log('________________');
-    console.log('                ');
-    console.log('TEMPLATE      ->', cfg.template);*/
-    var originTpl = cfg.template;
-
-    var cached = cfg.view._cache.get(originTpl);
-
-    if (cached) {
-        return cached;
-    }
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
@@ -370,7 +428,6 @@ function getInstances() {
         var props = serializeProps(child);
         var dProps = extract(props);
         var inner = child.innerHTML.trim();
-        child.innerHTML = '';
 
         var newElement = createInstance(cmp, {
             root: cfg.root,
@@ -383,19 +440,15 @@ function getInstances() {
 
         if (newElement === undefined) return;
 
-        //console.log(child.parentNode);
         // Remove old
         child.parentNode.removeChild(child);
-        //console.log(child.parentNode);
         newElement.render();
         newElement._rootElement.dataset.root = 'true';
         events.callRender(newElement);
         components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('INNER BEFORE  ->', inner);
 
         if (inner) {
             var innerEl = html.create('<' + TAG.ROOT + '>' + inner + '</' + TAG.ROOT + '>');
-            //const innerEl = html.create(`${inner}`);
             if (cfg.isStatic && newElement._rootElement.firstChild) {
                 newElement._rootElement.firstChild.appendChild(innerEl);
             } else {
@@ -404,26 +457,10 @@ function getInstances() {
         }
 
         var nested = newElement._rootElement.querySelectorAll('*');
-        //const nested = Array.from(newElement._rootElement.children);
-        //console.log('NESTED        ->', nested);
-        /*console.log('COUNT NESTED  ->', nested.length);
-        nested.forEach(item => console.log('............  ->', item.nodeName));
-        console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
-        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);*/
 
         nested.forEach(function (item) {
             //const item = innerEl;
             if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
-
-                    /*
-                    console.log('PARENT NODE   ->', item.parentNode.nodeName);
-                    console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
-                    console.log('PREV TEMPLATE ->', cfg.prevTemplate);
-                    console.log('PARENT EQ     ->', item.outerHTML === originTpl);
-                    console.log('NODENAME      ->', item.nodeName);
-                    console.log('ORIG TEMPLATE ->', originTpl);
-                    console.log('N-OU TEMPLATE ->', item.outerHTML);
-                    */
 
                     var template = item.outerHTML;
                     if (!template) return;
@@ -447,8 +484,6 @@ function getInstances() {
                     });
                 }
         });
-
-        cfg.view._cache.set(originTpl, newElement);
     }
     return components;
 }
