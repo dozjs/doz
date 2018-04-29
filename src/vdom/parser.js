@@ -7,7 +7,6 @@ function serializeProps(node) {
         const attributes = Array.from(node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-            //Array.from(node.attributes).forEach(attr => {
             let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
             if (isComponentListener) {
                 if (props[ATTR.LISTENER] === undefined)

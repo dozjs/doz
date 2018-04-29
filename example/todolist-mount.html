@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../dist/doz.js?589654888"></script>
+    <script src="../dist/doz.js?5896548884"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -170,9 +170,7 @@
                         <button onclick="this.action.add()" >Add</button>
                         <button onclick="this.action.removeAll()" >Remove all</button>
                     </div>
-                    ${this.each(this.props.record, (item, i) =>
-                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
-                    )}
+
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
@@ -194,8 +192,20 @@
             ];
         },
 
+        mounted: [],
+
         onUpdate() {
-            //console.log(this.props.record);
+
+            this.mounted.forEach(cmp => {
+                cmp.destroy();
+            });
+
+            this.props.record.forEach((item, i) => {
+                this.mounted.push(
+                    this.mount(`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`)
+                );
+            });
+
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }

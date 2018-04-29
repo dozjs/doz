@@ -7,7 +7,6 @@ const observer = require('./observer');
 const events = require('./events');
 const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
-const castStringTo = require('../utils/cast-string-to');
 const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
@@ -78,9 +77,7 @@ function getInstances(cfg = {}) {
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
-
                 events.callRender(newElement);
-
                 parentElement = newElement;
 
                 if (parent.cmp) {
@@ -187,7 +184,6 @@ function createInstance(cmp, cfg) {
                     return obj.map(func).map(stringEl => {
 
                         stringEl = stringEl.trim();
-
                         const isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
 
                         if (isCustomTagString) {
@@ -285,7 +281,8 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function () {
-                if (!this._rootElement || events.callBeforeDestroy(this) === false) return;
+                if (!this._rootElement || events.callBeforeDestroy(this) === false
+                    || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) return;
                 this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
                 events.callDestroy(this);
             },

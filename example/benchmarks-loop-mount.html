@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - vdom">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - benchmark</title>
+    <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
+    <script src="../dist/doz.js?589654888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            border: 1px;
+            padding: 15px;
+            color: white;
+            background: firebrick;
+            transition: all .1s;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: red;
+        }
+
+        button:active {
+            background: hotpink;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    let currentBench = "";
+
+    let actions = {
+        add(num) {
+            console.time(currentBench = 'add items ' + num);
+            const record = Object.assign([], this.getStore('list').record);
+            const initLength = this.getStore('list').record.length;
+
+            for(let i = 0; i < num; i++)
+                record.push('item - ' + (initLength + i));
+
+            this.getStore('list').record = record;
+        },
+
+        clear() {
+            console.time(currentBench = 'clear');
+            this.getStore('list').record = [];
+        },
+
+        reverse() {
+            console.time(currentBench = 'reverse');
+            let record = Object.assign([], this.getStore('list').record);
+            this.getStore('list').record = record.reverse();
+        },
+
+        sort() {
+            console.time(currentBench = 'sort');
+            let record = Object.assign([], this.getStore('list').record);
+            this.getStore('list').record = record.sort();
+        },
+
+        remove() {
+            console.time(currentBench = 'remove');
+            let record = Object.assign([], this.getStore('list').record);
+            record.splice(Math.floor(Math.random()*record.length), 1);
+            this.getStore('list').record = record;
+        },
+
+        swap() {
+            if (!this.getStore('list').record.length) return;
+            let record = Object.assign([], this.getStore('list').record);
+            let i1 = Math.floor(Math.random()*record.length);
+            let i2 = Math.floor(Math.random()*record.length);
+            let tmp = record[i1];
+            record[i1] = record[i2];
+            record[i2] = tmp;
+            console.time(currentBench = "swap");
+            this.getStore('list').record = record;
+        }
+    };
+
+    Doz.component('doz-label', {
+        template() {
+            return `<h1>${this.props.title}</h1>`
+        }
+    });
+
+    Doz.component('doz-buttons', {
+        template() {
+            return (
+                `<div>
+                    <button onclick="this.action.add(1000)" >Add 1000</button>
+                    <button onclick="this.action.add(10000)" >Add 10000</button>
+                    <button onclick="this.action.reverse()" >Reverse</button>
+                    <button onclick="this.action.sort()" >Sort</button>
+                    <button onclick="this.action.remove()" >Remove</button>
+                    <button onclick="this.action.swap()" >Swap</button>
+                    <button onclick="this.action.clear()" >Clear</button>
+                </div>`
+            );
+        }
+    });
+
+    Doz.component('doz-list-item', {
+        template() {
+            return `<div onclick="this.click('${this.props.title}')">${this.props.title}</div>`
+        },
+        click(t) {
+            console.log(t);
+        }
+    });
+
+    Doz.component('doz-list', {
+        store: 'list',
+        template() {
+            return (
+                `<div></div>`
+            );
+        },
+
+        props: {
+            record: []
+        },
+
+        mounted: [],
+
+        onBeforeUpdate() {
+            console.log('before');
+        },
+
+        onUpdate() {
+            console.log('update');
+
+            this.mounted.forEach(cmp => {
+                cmp.destroy();
+            });
+
+            this.props.record.forEach(item => {
+                this.mounted.push(
+                    this.mount(`<doz-list-item title="${item}"></doz-list-item>`)
+                );
+            });
+
+            console.timeEnd(currentBench);
+        }
+
+    });
+
+    new Doz({
+        actions,
+        root: document.getElementById('app'),
+        template: `
+            <doz-label title="Loop"></doz-label>
+            <doz-buttons></doz-buttons>
+            <doz-list></doz-list>
+        `
+    });
+
+</script>
+</body>
+</html>
