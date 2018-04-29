@@ -588,7 +588,7 @@ function createInstance(cmp, cfg) {
         destroy: {
             value: function value() {
                 if (!this._rootElement || events.callBeforeDestroy(this) === false) return;
-                this._rootElement.parentNode.removeChild(this._rootElement);
+                this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
                 events.callDestroy(this);
             },
             enumerable: true
