@@ -24,6 +24,8 @@ npm install --save doz
 <div id="app"></div>
 ```
 
+Component definition
+
 ```javascript
 Doz.component('button-counter', {
     props: {
@@ -41,7 +43,11 @@ Doz.component('button-counter', {
         this.props.counter += 1;
     }
 });
+```
 
+Put component into view
+
+```javascript
 new Doz({
     root: '#app',
     template: `
