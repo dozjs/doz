@@ -3,23 +3,22 @@ const {REGEX, ATTR} = require('../constants');
 
 function serializeProps(node) {
     const props = {};
-    const attributes = Array.from(node.attributes);
-    //if (node.attributes.length) {
-    for (let j = attributes.length - 1; j >= 0; --j) {
-        let attr = attributes[j];
-        //Array.from(node.attributes).forEach(attr => {
-        let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-        if (isComponentListener) {
-            if (props[ATTR.LISTENER] === undefined)
-                props[ATTR.LISTENER] = {};
-            props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-            delete props[attr.name];
-        } else {
-            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+    if (node.attributes) {
+        const attributes = Array.from(node.attributes);
+        for (let j = attributes.length - 1; j >= 0; --j) {
+            let attr = attributes[j];
+            //Array.from(node.attributes).forEach(attr => {
+            let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+            if (isComponentListener) {
+                if (props[ATTR.LISTENER] === undefined)
+                    props[ATTR.LISTENER] = {};
+                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+                delete props[attr.name];
+            } else {
+                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            }
         }
-        //});
     }
-
     return props;
 }
 

@@ -341,116 +341,69 @@ function getInstances() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
-    cfg = extend.copy(cfg, {
-        isStatic: false
-    });
-
-    /*console.log('________________');
-    console.log('                ');
-    console.log('TEMPLATE      ->', cfg.template);*/
-    var originTpl = cfg.template;
-
-    var cached = cfg.view._cache.get(originTpl);
-
-    if (cached) {
-        return cached;
-    }
-
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
-    var components = {};
-    var index = 0;
+    cfg.root.appendChild(cfg.template);
 
-    var child = cfg.template;
+    var component = {};
+    var parentElement = void 0;
 
-    var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+    function walk(child) {
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    if (cmp) {
-        var alias = index;
-        var props = serializeProps(child);
-        var dProps = extract(props);
-        var inner = child.innerHTML.trim();
-        child.innerHTML = '';
+        while (child) {
 
-        var newElement = createInstance(cmp, {
-            root: cfg.root,
-            view: cfg.view,
-            props: props,
-            dProps: dProps,
-            parentCmp: cfg.parentCmp,
-            isStatic: cfg.isStatic
-        });
+            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
 
-        if (newElement === undefined) return;
+            if (cmp) {
 
-        //console.log(child.parentNode);
-        // Remove old
-        child.parentNode.removeChild(child);
-        //console.log(child.parentNode);
-        newElement.render();
-        newElement._rootElement.dataset.root = 'true';
-        events.callRender(newElement);
-        components[dProps.alias ? dProps.alias : alias] = newElement;
-        //console.log('INNER BEFORE  ->', inner);
+                var props = serializeProps(child);
+                var dProps = extract(props);
 
-        if (inner) {
-            var innerEl = html.create('<' + TAG.ROOT + '>' + inner + '</' + TAG.ROOT + '>');
-            //const innerEl = html.create(`${inner}`);
-            if (cfg.isStatic && newElement._rootElement.firstChild) {
-                newElement._rootElement.firstChild.appendChild(innerEl);
-            } else {
-                newElement._rootElement.appendChild(innerEl);
-            }
-        }
+                var newElement = createInstance(cmp, {
+                    root: child,
+                    view: cfg.view,
+                    props: props,
+                    dProps: dProps,
+                    parentCmp: parent.cmp,
+                    isStatic: cfg.isStatic
+                });
 
-        var nested = newElement._rootElement.querySelectorAll('*');
-        //const nested = Array.from(newElement._rootElement.children);
-        //console.log('NESTED        ->', nested);
-        /*console.log('COUNT NESTED  ->', nested.length);
-        nested.forEach(item => console.log('............  ->', item.nodeName));
-        console.log('OUTER AFTER   ->', newElement._rootElement.outerHTML);
-        console.log('INNER AFTER   ->', newElement._rootElement.innerHTML);*/
-
-        nested.forEach(function (item) {
-            //const item = innerEl;
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
-
-                    /*
-                    console.log('PARENT NODE   ->', item.parentNode.nodeName);
-                    console.log('PARENTCMP     ->', cfg.parentCmp ? cfg.parentCmp._rootElement.innerHTML : null);
-                    console.log('PREV TEMPLATE ->', cfg.prevTemplate);
-                    console.log('PARENT EQ     ->', item.outerHTML === originTpl);
-                    console.log('NODENAME      ->', item.nodeName);
-                    console.log('ORIG TEMPLATE ->', originTpl);
-                    console.log('N-OU TEMPLATE ->', item.outerHTML);
-                    */
-
-                    var template = item.outerHTML;
-                    if (!template) return;
-                    var rootElement = document.createElement(item.nodeName);
-                    item.parentNode.replaceChild(rootElement, item);
-                    var cmps = getInstances({
-                        root: rootElement,
-                        template: template,
-                        view: cfg.view,
-                        parentCmp: newElement,
-                        isStatic: cfg.isStatic
-                    });
-
-                    Object.keys(cmps).forEach(function (i) {
-                        if (cmps[i] === undefined) return;
-                        var n = i;
-                        if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                            n++;
-                        }
-                        newElement.children[n] = cmps[i];
-                    });
+                if (!newElement) {
+                    continue;
                 }
-        });
 
-        cfg.view._cache.set(originTpl, newElement);
+                newElement.render();
+
+                if (!Object.keys(component).length) {
+                    component[0] = newElement;
+                }
+
+                child.insertBefore(newElement._rootElement, child.firstChild);
+
+                events.callRender(newElement);
+
+                parentElement = newElement;
+
+                if (parent.cmp) {
+                    var n = Object.keys(parent.cmp.children).length;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                }
+
+                cfg.autoCmp = null;
+            }
+
+            if (child.hasChildNodes()) {
+                walk(child.firstChild, { cmp: parentElement });
+            }
+
+            child = child.nextSibling;
+        }
     }
-    return components;
+
+    walk(cfg.template);
+
+    return component;
 }
 
 function createInstance(cmp, cfg) {
@@ -663,12 +616,7 @@ function createInstance(cmp, cfg) {
 }
 
 function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg);
-
-    // Overwrite store name with that passed though props
-    if (dProps.store) instance.store = dProps.store;
-    // Overwrite id with that passed though props
-    if (dProps.id) instance.id = dProps.id;
+    Object.assign(instance, cfg, dProps);
 }
 
 module.exports = {
@@ -812,22 +760,21 @@ var _require = __webpack_require__(0),
 
 function serializeProps(node) {
     var props = {};
-    var attributes = Array.from(node.attributes);
-    //if (node.attributes.length) {
-    for (var j = attributes.length - 1; j >= 0; --j) {
-        var attr = attributes[j];
-        //Array.from(node.attributes).forEach(attr => {
-        var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-        if (isComponentListener) {
-            if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
-            props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-            delete props[attr.name];
-        } else {
-            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+    if (node.attributes) {
+        var attributes = Array.from(node.attributes);
+        for (var j = attributes.length - 1; j >= 0; --j) {
+            var attr = attributes[j];
+            //Array.from(node.attributes).forEach(attr => {
+            var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+            if (isComponentListener) {
+                if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
+                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+                delete props[attr.name];
+            } else {
+                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            }
         }
-        //});
     }
-
     return props;
 }
 
@@ -1000,6 +947,7 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
+                    //console.log('ROOT', root.innerHTML);
                     var autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {
@@ -1009,14 +957,14 @@ var Doz = function () {
                             }
                         }
                     };
-
                     return component.getInstances({
                         root: root,
                         template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
                         view: this,
                         parentCmp: parent,
                         isStatic: false,
-                        autoCmp: autoCmp
+                        autoCmp: autoCmp,
+                        mount: true
                     })[0];
                 },
                 enumerable: true

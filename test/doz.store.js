@@ -107,9 +107,9 @@ describe('Doz.store', function () {
             new Doz({
                 root: '#app',
                 template: `
+                    <span>è uno span</span>
                     <salutation-card>
                         <div>bye</div>
-                        <caller-o><div>nested</div></caller-o>
                         <caller-o><div>nested</div></caller-o>
                     </salutation-card>
                 `

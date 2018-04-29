@@ -53,25 +53,51 @@ describe('parser', function () {
             console.log(document.body.innerHTML);
         });
         it('tree walker', function () {
-            document.body.innerHTML = `<div id="app"><span>ciao</span><div><ul><li></li></ul></div></div>`;
+
+            const collections = {
+                'doz-cmp1': '<div>CMP1</div>',
+                'doz-cmp2': '<div>CMP2</div>',
+                'doz-cmp3': '<div>CMP3</div>',
+                'doz-cmp4': '<div>CMP4</div>',
+                'doz-cmp5': '<doz-cmp4></doz-cmp4>'
+            };
+
+            document.body.innerHTML = `
+                <div id="app">
+                    <doz-cmp1>ciao</doz-cmp1>
+                    <doz-cmp2>
+                        <doz-cmp3></doz-cmp3>
+                        <ul>
+                            <li>mondo</li>
+                        </ul>
+                    </doz-cmp2>
+                    <doz-cmp5>
+                        <doz-cmp5>
+                            <doz-cmp4></doz-cmp4>
+                        </doz-cmp5>
+                    </doz-cmp5>
+                    <doz-cmp5></doz-cmp5>
+                </div>`;
+
             const appRoot = document.getElementById('app');
-            let newDom;
-            function scanner(n, p) {
+
+            function getInstances(n) {
                 while (n) {
-                    console.log(n, p ? p.id : '');
-                    if (p) {
-                        p.replaceChild(document.createElement('doz-e'), n)
+                    const isCmp = collections[n.nodeName.toLowerCase()];
+                    if (isCmp) {
+                        const newNode = html.create(isCmp);
+                        n.insertBefore(newNode, n.firstChild);
+                        console.log('mounted', n.nodeName);
                     }
                     if (n.hasChildNodes()) {
-                        scanner(n.firstChild, n)
+                        getInstances(n.firstChild)
                     }
                     n = n.nextSibling;
                 }
             }
-
-            scanner(appRoot);
-
-            console.log(document.body.innerHTML);
+            console.log(appRoot.innerHTML);
+            getInstances(appRoot);
+            console.log(appRoot.innerHTML);
         });
 
 

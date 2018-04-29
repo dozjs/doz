@@ -55,7 +55,7 @@ describe('Doz.alias', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                console.log(html);
                 be.err.object(view.getComponent('salutation1'));
                 be.err.object(view.getComponent('salutation2'));
                 be.err(done).object(view.getComponent('caller'));
