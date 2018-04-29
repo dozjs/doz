@@ -24,7 +24,7 @@ npm install --save doz
 <div id="app"></div>
 ```
 
-Component definition
+#### Component definition
 
 ```javascript
 Doz.component('button-counter', {
@@ -45,7 +45,7 @@ Doz.component('button-counter', {
 });
 ```
 
-Put component into view
+#### Make a view with the component defined above
 
 ```javascript
 new Doz({
