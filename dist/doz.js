@@ -380,6 +380,7 @@ function getInstances() {
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
+
                 events.callRender(newElement);
 
                 parentElement = newElement;
@@ -388,6 +389,8 @@ function getInstances() {
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
+
+                cfg.autoCmp = null;
             }
 
             if (child.hasChildNodes()) {
@@ -401,88 +404,6 @@ function getInstances() {
     walk(cfg.template);
 
     return component;
-}
-
-function _getInstances() {
-    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-
-    cfg = extend.copy(cfg, {
-        isStatic: false
-    });
-
-    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
-
-    var components = {};
-    var index = 0;
-
-    var child = cfg.template;
-
-    var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
-
-    if (cmp) {
-        var alias = index;
-        var props = serializeProps(child);
-        var dProps = extract(props);
-        var inner = child.innerHTML.trim();
-
-        var newElement = createInstance(cmp, {
-            root: cfg.root,
-            view: cfg.view,
-            props: props,
-            dProps: dProps,
-            parentCmp: cfg.parentCmp,
-            isStatic: cfg.isStatic
-        });
-
-        if (newElement === undefined) return;
-
-        // Remove old
-        child.parentNode.removeChild(child);
-        newElement.render();
-        newElement._rootElement.dataset.root = 'true';
-        events.callRender(newElement);
-        components[dProps.alias ? dProps.alias : alias] = newElement;
-
-        if (inner) {
-            var innerEl = html.create('<' + TAG.ROOT + '>' + inner + '</' + TAG.ROOT + '>');
-            if (cfg.isStatic && newElement._rootElement.firstChild) {
-                newElement._rootElement.firstChild.appendChild(innerEl);
-            } else {
-                newElement._rootElement.appendChild(innerEl);
-            }
-        }
-
-        var nested = newElement._rootElement.querySelectorAll('*');
-
-        nested.forEach(function (item) {
-            //const item = innerEl;
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
-
-                    var template = item.outerHTML;
-                    if (!template) return;
-                    var rootElement = document.createElement(item.nodeName);
-                    item.parentNode.replaceChild(rootElement, item);
-                    var cmps = getInstances({
-                        root: rootElement,
-                        template: template,
-                        view: cfg.view,
-                        parentCmp: newElement,
-                        isStatic: cfg.isStatic
-                    });
-
-                    Object.keys(cmps).forEach(function (i) {
-                        if (cmps[i] === undefined) return;
-                        var n = i;
-                        if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                            n++;
-                        }
-                        newElement.children[n] = cmps[i];
-                    });
-                }
-        });
-    }
-    return components;
 }
 
 function createInstance(cmp, cfg) {
@@ -839,22 +760,21 @@ var _require = __webpack_require__(0),
 
 function serializeProps(node) {
     var props = {};
-    var attributes = Array.from(node.attributes);
-    //if (node.attributes.length) {
-    for (var j = attributes.length - 1; j >= 0; --j) {
-        var attr = attributes[j];
-        //Array.from(node.attributes).forEach(attr => {
-        var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-        if (isComponentListener) {
-            if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
-            props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-            delete props[attr.name];
-        } else {
-            props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+    if (node.attributes) {
+        var attributes = Array.from(node.attributes);
+        for (var j = attributes.length - 1; j >= 0; --j) {
+            var attr = attributes[j];
+            //Array.from(node.attributes).forEach(attr => {
+            var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
+            if (isComponentListener) {
+                if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
+                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
+                delete props[attr.name];
+            } else {
+                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+            }
         }
-        //});
     }
-
     return props;
 }
 
@@ -1037,14 +957,14 @@ var Doz = function () {
                             }
                         }
                     };
-
                     return component.getInstances({
                         root: root,
                         template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
                         view: this,
                         parentCmp: parent,
                         isStatic: false,
-                        autoCmp: autoCmp
+                        autoCmp: autoCmp,
+                        mount: true
                     })[0];
                 },
                 enumerable: true

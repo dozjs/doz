@@ -37,7 +37,6 @@ function component(tag, cfg = {}) {
     register(cmp);
 }
 
-
 function getInstances(cfg = {}) {
 
     cfg.template = typeof cfg.template === 'string'
@@ -79,6 +78,7 @@ function getInstances(cfg = {}) {
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
+
                 events.callRender(newElement);
 
                 parentElement = newElement;
@@ -87,11 +87,14 @@ function getInstances(cfg = {}) {
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
+
+                cfg.autoCmp = null;
             }
 
             if (child.hasChildNodes()) {
                 walk(child.firstChild, {cmp: parentElement})
             }
+
 
             child = child.nextSibling;
         }
@@ -100,89 +103,6 @@ function getInstances(cfg = {}) {
     walk(cfg.template);
 
     return component;
-}
-
-function _getInstances(cfg = {}) {
-
-    cfg = extend.copy(cfg, {
-        isStatic: false
-    });
-
-    cfg.template = typeof cfg.template === 'string'
-        ? html.create(cfg.template)
-        : cfg.template;
-
-    let components = {};
-    let index = 0;
-
-    let child = cfg.template;
-
-    const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
-
-    if (cmp) {
-        let alias = index;
-        const props = serializeProps(child);
-        const dProps = extract(props);
-        const inner = child.innerHTML.trim();
-
-        const newElement = createInstance(cmp, {
-            root: cfg.root,
-            view: cfg.view,
-            props,
-            dProps,
-            parentCmp: cfg.parentCmp,
-            isStatic: cfg.isStatic
-        });
-
-        if (newElement === undefined) return;
-
-        // Remove old
-        child.parentNode.removeChild(child);
-        newElement.render();
-        newElement._rootElement.dataset.root = 'true';
-        events.callRender(newElement);
-        components[dProps.alias ? dProps.alias : alias] = newElement;
-
-        if (inner) {
-            const innerEl = html.create(`<${TAG.ROOT}>${inner}</${TAG.ROOT}>`);
-            if (cfg.isStatic && newElement._rootElement.firstChild) {
-                newElement._rootElement.firstChild.appendChild(innerEl);
-            } else {
-                newElement._rootElement.appendChild(innerEl);
-            }
-        }
-
-        const nested = newElement._rootElement.querySelectorAll('*');
-
-        nested.forEach(item => {
-            //const item = innerEl;
-            if (REGEX.IS_CUSTOM_TAG.test(item.nodeName) && item.nodeName.toLowerCase() !== TAG.ROOT /*&& item.parentNode.nodeName === TAG.ROOT*/) {
-
-                const template = item.outerHTML;
-                if (!template) return;
-                const rootElement = document.createElement(item.nodeName);
-                item.parentNode.replaceChild(rootElement, item);
-                const cmps = getInstances({
-                    root: rootElement,
-                    template: template,
-                    view: cfg.view,
-                    parentCmp: newElement,
-                    isStatic: cfg.isStatic
-                });
-
-                Object.keys(cmps).forEach(i => {
-                    if (cmps[i] === undefined) return;
-                    let n = i;
-                    if (newElement.children[n] !== undefined && typeof castStringTo(n) === 'number') {
-                        n++
-                    }
-                    newElement.children[n] = cmps[i]
-                })
-            }
-        });
-
-    }
-    return components;
 }
 
 function createInstance(cmp, cfg) {

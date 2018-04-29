@@ -44,6 +44,10 @@ describe('Doz.runtime.mount', function () {
                         </div>
                     `);
 
+                    /*this.other = this.mount(`
+                        HELLO
+                    `);*/
+
                     console.log('component mounted');
                     done();
                     this.other.onDestroy = function () {

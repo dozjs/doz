@@ -77,14 +77,14 @@ class Doz {
                             }
                         }
                     };
-
                     return component.getInstances({
                         root,
                         template: `<${TAG.ROOT}></${TAG.ROOT}>`,
                         view: this,
                         parentCmp: parent,
                         isStatic: false,
-                        autoCmp
+                        autoCmp,
+                        mount: true
                     })[0];
                 },
                 enumerable: true
