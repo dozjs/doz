@@ -171,7 +171,7 @@
                         <button onclick="this.action.removeAll()" >Remove all</button>
                     </div>
                     ${this.each(this.props.record, (item, i) =>
-                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        `hello<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}

@@ -123,9 +123,7 @@
         store: 'list',
         template() {
             return (
-                `<div>
-                    <ul>${this.each(this.props.record, item => `<doz-list-item title="${item}"></doz-list-item>`)}</ul>
-                </div>`
+                `<ul class="list"></ul>`
             );
         },
 
@@ -133,12 +131,25 @@
             record: []
         },
 
+        mounted: [],
+
         onBeforeUpdate() {
             console.log('before');
         },
 
         onUpdate() {
             console.log('update');
+
+            this.mounted.forEach(cmp => {
+                cmp.destroy();
+            });
+
+            this.props.record.forEach(item => {
+                this.mounted.push(
+                    this.mount(`<doz-list-item title="${item}"></doz-list-item>`, {selector: '.list'})
+                );
+            });
+
             console.timeEnd(currentBench);
         }
 
@@ -148,7 +159,7 @@
         actions,
         root: document.getElementById('app'),
         template: `
-            <doz-label title="Loop mount component"></doz-label>
+            <doz-label title="Loop mount component after update"></doz-label>
             <doz-buttons></doz-buttons>
             <doz-list></doz-list>
         `

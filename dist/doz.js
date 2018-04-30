@@ -264,7 +264,7 @@ var _require4 = __webpack_require__(20),
     extract = _require4.extract;
 
 function makeId() {
-    return ('doz-' + performance.now() + '-' + Math.random()).replace(/\./g, '-');
+    return ('#doz-' + performance.now() + '-' + Math.random()).replace(/\./g, '-');
 }
 
 function component(tag) {
@@ -397,7 +397,8 @@ function createInstance(cmp, cfg) {
             value: new Map()
         },
         _loops: {
-            value: new Map()
+            value: {},
+            writable: true
         },
         _isStatic: {
             value: cfg.isStatic
@@ -443,33 +444,34 @@ function createInstance(cmp, cfg) {
             value: function value(obj, func) {
                 var _this = this;
 
-                console.log('ID', makeId());
-                if (Array.isArray(obj)) return obj.map(func).map(function (stringEl) {
-
-                    stringEl = stringEl.trim();
-                    var isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
-
-                    if (isCustomTagString) {
-                        var key = stringEl;
-                        var value = _this._cache.get(key);
-                        if (value !== undefined) {
-                            stringEl = value;
-                        } else {
-                            var _cmp = getInstances({
-                                root: document.createElement(TAG.ROOT),
-                                template: stringEl,
-                                view: _this.view,
-                                parentCmp: _this,
-                                isStatic: true
-                            });
-                            stringEl = _cmp._rootElement.innerHTML;
-                            _cmp.destroy();
-                            _this._cache.set(key, stringEl);
+                Object.keys(this._loops).forEach(function (ID) {
+                    _this._loops[ID].forEach(function (cmp) {
+                        if (cmp.instance) {
+                            cmp.instance.destroy();
                         }
-                    }
+                    });
+                });
 
-                    return stringEl;
-                }).join('').trim();
+                this._loops = {};
+                var ID = makeId();
+                this._loops[ID] = [];
+
+                if (Array.isArray(obj)) {
+                    var isCustomTagString = void 0;
+                    var res = obj.map(func).map(function (stringEl) {
+
+                        stringEl = stringEl.trim();
+                        isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
+
+                        if (isCustomTagString) {
+                            _this._loops[ID].push({ tpl: stringEl, instance: null });
+                        } else {
+                            return stringEl;
+                        }
+                    }).join('').trim();
+
+                    return res ? res : '<' + TAG.EACH + ' id="' + ID.substr(1) + '"></' + TAG.EACH + '>';
+                }
             },
             enumerable: true
         },
@@ -511,7 +513,7 @@ function createInstance(cmp, cfg) {
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
                 var root = this._rootElement;
-                if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);
+                if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
                 return this.view.mount(template, root, this);
             },
             enumerable: true
@@ -1060,11 +1062,23 @@ function updateBound(instance, changes) {
     });
 }
 
+function drawIterated(instance) {
+    Object.keys(instance._loops).forEach(function (ID) {
+        var root = document.querySelector(ID);
+        if (root) {
+            instance._loops[ID].forEach(function (cmp) {
+                cmp.instance = instance.mount(cmp.tpl, { selector: root.parentNode });
+            });
+            root.parentNode.removeChild(root);
+        }
+    });
+}
+
 function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
         instance.render();
         updateBound(instance, changes);
-
+        drawIterated(instance);
         if (instance._isCreated) {
             delay(function () {
                 updateChildren(instance, changes);

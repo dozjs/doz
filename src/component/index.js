@@ -12,7 +12,7 @@ const ids = require('./ids');
 const {extract} = require('./d-props');
 
 function makeId() {
-    return `doz-${performance.now()}-${Math.random()}`.replace(/\./g,'-');
+    return `#doz-${performance.now()}-${Math.random()}`.replace(/\./g,'-');
 }
 
 function component(tag, cfg = {}) {
@@ -144,7 +144,8 @@ function createInstance(cmp, cfg) {
             value: new Map()
         },
         _loops: {
-            value: new Map()
+            value: {},
+            writable: true
         },
         _isStatic: {
             value: cfg.isStatic
@@ -186,34 +187,36 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function (obj, func) {
-                console.log('ID', makeId());
-                if (Array.isArray(obj))
-                    return obj.map(func).map(stringEl => {
+
+                Object.keys(this._loops).forEach(ID => {
+                    this._loops[ID].forEach(cmp => {
+                        if(cmp.instance) {
+                            cmp.instance.destroy()
+                        }
+                    });
+                });
+
+                this._loops = {};
+                let ID = makeId();
+                this._loops[ID] = [];
+
+                if (Array.isArray(obj)) {
+                    let isCustomTagString;
+                    let res = obj.map(func).map(stringEl => {
 
                         stringEl = stringEl.trim();
-                        const isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
+                        isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
 
                         if (isCustomTagString) {
-                            const key = stringEl;
-                            const value = this._cache.get(key);
-                            if (value !== undefined) {
-                                stringEl = value;
-                            } else {
-                                const cmp = getInstances({
-                                    root: document.createElement(TAG.ROOT),
-                                    template: stringEl,
-                                    view: this.view,
-                                    parentCmp: this,
-                                    isStatic: true
-                                });
-                                stringEl = cmp._rootElement.innerHTML;
-                                cmp.destroy();
-                                this._cache.set(key, stringEl);
-                            }
+                            this._loops[ID].push({tpl: stringEl, instance: null});
+                        } else {
+                            return stringEl;
                         }
 
-                        return stringEl
                     }).join('').trim();
+
+                    return res ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
+                }
             },
             enumerable: true
         },
@@ -255,6 +258,8 @@ function createInstance(cmp, cfg) {
                 let root = this._rootElement;
                 if (typeof cfg.selector === 'string')
                     root = root.querySelector(cfg.selector);
+                else if (cfg.selector instanceof HTMLElement)
+                    root = cfg.selector;
                 return this.view.mount(template, root, this);
             },
             enumerable: true

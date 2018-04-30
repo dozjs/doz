@@ -33,11 +33,23 @@ function updateBound(instance, changes) {
     });
 }
 
+function drawIterated(instance) {
+    Object.keys(instance._loops).forEach(ID => {
+        let root = document.querySelector(ID);
+        if (root) {
+            instance._loops[ID].forEach(cmp => {
+                cmp.instance = instance.mount(cmp.tpl, {selector: root.parentNode});
+            });
+            root.parentNode.removeChild(root);
+        }
+    });
+}
+
 function create(instance, props) {
     instance.props = proxy.create(props, true, changes => {
         instance.render();
         updateBound(instance, changes);
-
+        drawIterated(instance);
         if (instance._isCreated) {
             delay(() => {
                 updateChildren(instance, changes);
