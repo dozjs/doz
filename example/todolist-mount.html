@@ -196,6 +196,8 @@
 
         onUpdate() {
 
+            console.log('draw');
+
             this.mounted.forEach(cmp => {
                 cmp.destroy();
             });

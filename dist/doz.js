@@ -436,6 +436,7 @@ function createInstance(cmp, cfg) {
             value: function value(obj, func) {
                 var _this = this;
 
+                console.log('rrr');
                 if (Array.isArray(obj)) return obj.map(func).map(function (stringEl) {
 
                     stringEl = stringEl.trim();

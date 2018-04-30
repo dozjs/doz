@@ -144,6 +144,8 @@
                 cmp.destroy();
             });
 
+            this.mounted = [];
+
             this.props.record.forEach(item => {
                 this.mounted.push(
                     this.mount(`<doz-list-item title="${item}"></doz-list-item>`)

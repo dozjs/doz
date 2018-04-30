@@ -138,6 +138,9 @@ function createInstance(cmp, cfg) {
         },
         _cache: {
             value: new Map()
+        }
+        _loops: {
+            value: new Map()
         },
         _isStatic: {
             value: cfg.isStatic
@@ -179,6 +182,7 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function (obj, func) {
+                console.log('rrr')
                 if (Array.isArray(obj))
                     return obj.map(func).map(stringEl => {
 
