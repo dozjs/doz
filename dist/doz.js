@@ -263,6 +263,10 @@ var ids = __webpack_require__(19);
 var _require4 = __webpack_require__(20),
     extract = _require4.extract;
 
+function makeId() {
+    return ('doz-' + performance.now() + '-' + Math.random()).replace(/\./g, '-');
+}
+
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -392,6 +396,9 @@ function createInstance(cmp, cfg) {
         _cache: {
             value: new Map()
         },
+        _loops: {
+            value: new Map()
+        },
         _isStatic: {
             value: cfg.isStatic
         },
@@ -436,7 +443,7 @@ function createInstance(cmp, cfg) {
             value: function value(obj, func) {
                 var _this = this;
 
-                console.log('rrr');
+                console.log('ID', makeId());
                 if (Array.isArray(obj)) return obj.map(func).map(function (stringEl) {
 
                     stringEl = stringEl.trim();
@@ -448,40 +455,13 @@ function createInstance(cmp, cfg) {
                         if (value !== undefined) {
                             stringEl = value;
                         } else {
-                            var _cmp = void 0;
-                            // Is wrapper component
-                            if (isCustomTagString.index === 0) {
-                                var el = html.create(stringEl);
-                                stringEl = el.outerHTML;
-                                _cmp = getInstances({
-                                    root: document.createElement(TAG.ROOT),
-                                    template: stringEl,
-                                    view: _this.view,
-                                    parentCmp: _this,
-                                    isStatic: true
-                                });
-
-                                // Is into standard HTML
-                            } else {
-                                var autoCmp = {
-                                    tag: TAG.EACH,
-                                    cfg: {
-                                        props: {},
-                                        template: function template() {
-                                            return stringEl;
-                                        }
-                                    }
-                                };
-                                _cmp = getInstances({
-                                    root: document.createElement(TAG.ROOT),
-                                    template: '<' + TAG.EACH + '></' + TAG.EACH + '>',
-                                    view: _this.view,
-                                    parentCmp: _this,
-                                    isStatic: true,
-                                    autoCmp: autoCmp
-                                });
-                            }
-
+                            var _cmp = getInstances({
+                                root: document.createElement(TAG.ROOT),
+                                template: stringEl,
+                                view: _this.view,
+                                parentCmp: _this,
+                                isStatic: true
+                            });
                             stringEl = _cmp._rootElement.innerHTML;
                             _cmp.destroy();
                             _this._cache.set(key, stringEl);

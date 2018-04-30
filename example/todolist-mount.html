@@ -170,7 +170,7 @@
                         <button onclick="this.action.add()" >Add</button>
                         <button onclick="this.action.removeAll()" >Remove all</button>
                     </div>
-
+                    <ul class="todo-each"></ul>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
@@ -206,7 +206,9 @@
 
             this.props.record.forEach((item, i) => {
                 this.mounted.push(
-                    this.mount(`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`)
+                    this.mount(`<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`, {
+                        selector: '.todo-each'
+                    })
                 );
             });
 

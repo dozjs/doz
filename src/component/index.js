@@ -11,6 +11,10 @@ const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
 
+function makeId() {
+    return `doz-${performance.now()}-${Math.random()}`.replace(/\./g,'-');
+}
+
 function component(tag, cfg = {}) {
 
     if (typeof tag !== 'string') {
@@ -182,7 +186,7 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function (obj, func) {
-                console.log('rrr')
+                console.log('ID', makeId());
                 if (Array.isArray(obj))
                     return obj.map(func).map(stringEl => {
 
@@ -195,40 +199,13 @@ function createInstance(cmp, cfg) {
                             if (value !== undefined) {
                                 stringEl = value;
                             } else {
-                                let cmp;
-                                // Is wrapper component
-                                if (isCustomTagString.index === 0) {
-                                    const el = html.create(stringEl);
-                                    stringEl = el.outerHTML;
-                                    cmp = getInstances({
-                                        root: document.createElement(TAG.ROOT),
-                                        template: stringEl,
-                                        view: this.view,
-                                        parentCmp: this,
-                                        isStatic: true
-                                    });
-
-                                    // Is into standard HTML
-                                } else {
-                                    const autoCmp = {
-                                        tag: TAG.EACH,
-                                        cfg: {
-                                            props: {},
-                                            template() {
-                                                return stringEl;
-                                            }
-                                        }
-                                    };
-                                    cmp = getInstances({
-                                        root: document.createElement(TAG.ROOT),
-                                        template: `<${TAG.EACH}></${TAG.EACH}>`,
-                                        view: this.view,
-                                        parentCmp: this,
-                                        isStatic: true,
-                                        autoCmp
-                                    });
-                                }
-
+                                const cmp = getInstances({
+                                    root: document.createElement(TAG.ROOT),
+                                    template: stringEl,
+                                    view: this.view,
+                                    parentCmp: this,
+                                    isStatic: true
+                                });
                                 stringEl = cmp._rootElement.innerHTML;
                                 cmp.destroy();
                                 this._cache.set(key, stringEl);
