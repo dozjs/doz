@@ -10,7 +10,7 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 <br/><br/>
 </div>
 
-Minify + GZip = 7KB
+Tiny size: 7KB (gzip)
 
 ## This project is still under develop.
 Please don't use in production projects.
