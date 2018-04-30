@@ -1067,9 +1067,8 @@ function drawIterated(instance) {
         var root = document.querySelector(ID);
         if (root) {
             instance._loops[ID].forEach(function (cmp) {
-                cmp.instance = instance.mount(cmp.tpl, { selector: root.parentNode });
+                cmp.instance = instance.mount(cmp.tpl, { selector: root });
             });
-            root.parentNode.removeChild(root);
         }
     });
 }
