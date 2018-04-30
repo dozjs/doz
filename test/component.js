@@ -32,7 +32,7 @@ describe('component', function () {
             try {
                 component(tag);
             } catch (e) {
-                be.err.equal(e.message, 'Tag must contain a dash (-): my-component');
+                be.err.equal(e.message, 'Tag must contain a dash (-) like my-component');
             }
         });
 
