@@ -138,7 +138,7 @@ function createInstance(cmp, cfg) {
         },
         _cache: {
             value: new Map()
-        }
+        },
         _loops: {
             value: new Map()
         },
