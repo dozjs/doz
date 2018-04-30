@@ -44,7 +44,7 @@ function getInstances(cfg = {}) {
 
     cfg.root.appendChild(cfg.template);
 
-    let component = {};
+    let component = null;
     let parentElement;
 
     function walk(child, parent = {}) {
@@ -72,8 +72,8 @@ function getInstances(cfg = {}) {
 
                 newElement.render();
 
-                if (!Object.keys(component).length) {
-                    component[0] = newElement;
+                if (!component) {
+                    component = newElement;
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
@@ -91,7 +91,6 @@ function getInstances(cfg = {}) {
             if (child.hasChildNodes()) {
                 walk(child.firstChild, {cmp: parentElement})
             }
-
 
             child = child.nextSibling;
         }
@@ -226,8 +225,8 @@ function createInstance(cmp, cfg) {
                                     });
                                 }
 
-                                stringEl = cmp[0]._rootElement.innerHTML;
-                                cmp[0].destroy();
+                                stringEl = cmp._rootElement.innerHTML;
+                                cmp.destroy();
                                 this._cache.set(key, stringEl);
                             }
                         }
@@ -282,7 +281,10 @@ function createInstance(cmp, cfg) {
         destroy: {
             value: function () {
                 if (!this._rootElement || events.callBeforeDestroy(this) === false
-                    || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) return;
+                    || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) {
+                    console.warn('destroy failed');
+                    return;
+                }
                 this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
                 events.callDestroy(this);
             },

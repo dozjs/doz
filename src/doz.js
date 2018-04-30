@@ -55,7 +55,7 @@ class Doz {
                 enumerable: true
             },
             mount: {
-                value: function (template, root, parent = this._usedComponents[0]) {
+                value: function (template, root, parent = this._tree) {
 
                     if (typeof root === 'string') {
                         root = document.querySelector(root);
@@ -85,7 +85,7 @@ class Doz {
                         isStatic: false,
                         autoCmp,
                         mount: true
-                    })[0];
+                    });
                 },
                 enumerable: true
             }
@@ -107,12 +107,12 @@ class Doz {
             }
         };
 
-        this._usedComponents = component.getInstances({root: this.cfg.root, template, view: this}) || [];
+        this._tree = component.getInstances({root: this.cfg.root, template, view: this}) || [];
     }
 
     getComponent(alias) {
-        return this._usedComponents[0]
-            ? this._usedComponents[0].children[alias]
+        return this._tree
+            ? this._tree.children[alias]
             : undefined;
     }
 

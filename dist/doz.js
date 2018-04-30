@@ -298,7 +298,7 @@ function getInstances() {
 
     cfg.root.appendChild(cfg.template);
 
-    var component = {};
+    var component = null;
     var parentElement = void 0;
 
     function walk(child) {
@@ -328,8 +328,8 @@ function getInstances() {
 
                 newElement.render();
 
-                if (!Object.keys(component).length) {
-                    component[0] = newElement;
+                if (!component) {
+                    component = newElement;
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
@@ -481,8 +481,8 @@ function createInstance(cmp, cfg) {
                                 });
                             }
 
-                            stringEl = _cmp[0]._rootElement.innerHTML;
-                            _cmp[0].destroy();
+                            stringEl = _cmp._rootElement.innerHTML;
+                            _cmp.destroy();
                             _this._cache.set(key, stringEl);
                         }
                     }
@@ -537,7 +537,10 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value() {
-                if (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) return;
+                if (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) {
+                    console.warn('destroy failed');
+                    return;
+                }
                 this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
                 events.callDestroy(this);
             },
@@ -929,7 +932,7 @@ var Doz = function () {
             },
             mount: {
                 value: function value(_template, root) {
-                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._usedComponents[0];
+                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
 
 
                     if (typeof root === 'string') {
@@ -960,7 +963,7 @@ var Doz = function () {
                         isStatic: false,
                         autoCmp: autoCmp,
                         mount: true
-                    })[0];
+                    });
                 },
                 enumerable: true
             }
@@ -982,13 +985,13 @@ var Doz = function () {
             }
         };
 
-        this._usedComponents = component.getInstances({ root: this.cfg.root, template: template, view: this }) || [];
+        this._tree = component.getInstances({ root: this.cfg.root, template: template, view: this }) || [];
     }
 
     _createClass(Doz, [{
         key: 'getComponent',
         value: function getComponent(alias) {
-            return this._usedComponents[0] ? this._usedComponents[0].children[alias] : undefined;
+            return this._tree ? this._tree.children[alias] : undefined;
         }
     }, {
         key: 'getComponentById',
