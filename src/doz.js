@@ -77,6 +77,7 @@ class Doz {
                             }
                         }
                     };
+
                     return component.getInstances({
                         root,
                         template: `<${TAG.ROOT}></${TAG.ROOT}>`,
@@ -125,6 +126,5 @@ class Doz {
     }
 
 }
-
 
 module.exports = Doz;

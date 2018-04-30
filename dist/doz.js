@@ -276,7 +276,7 @@ function component(tag) {
     }
 
     if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
-        throw new TypeError('Tag must contain a dash (-): my-component');
+        throw new TypeError('Tag must contain a dash (-) like my-component');
     }
 
     var cmp = {};
@@ -938,6 +938,7 @@ var Doz = function () {
                             }
                         }
                     };
+
                     return component.getInstances({
                         root: root,
                         template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
