@@ -58,8 +58,6 @@ function getInstances(cfg = {}) {
 
             if (cmp) {
 
-                //console.log(cmp.tag);
-
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
@@ -76,7 +74,7 @@ function getInstances(cfg = {}) {
                     continue;
                 }
 
-                newElement.render();
+                newElement.render(true);
 
                 if (!component) {
                     component = newElement;
@@ -87,7 +85,6 @@ function getInstances(cfg = {}) {
                 parentElement = newElement;
 
                 if (parent.cmp) {
-                    console.log('TAG',parent.cmp.tag);
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
@@ -96,7 +93,6 @@ function getInstances(cfg = {}) {
             }
 
             if (child.hasChildNodes()) {
-                //console.log('dentro child', child.firstChild)
                 walk(child.firstChild, {cmp: parentElement})
             }
 
@@ -157,6 +153,10 @@ function createInstance(cmp, cfg) {
         _publicProps: {
             value: Object.assign({}, cfg.props)
         },
+        _processing: {
+            value: [],
+            writable: true
+        },
         view: {
             value: cfg.view,
             enumerable: true
@@ -191,26 +191,8 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function (obj, func) {
-
-                /*Object.keys(this._loops).forEach(ID => {
-                    this._loops[ID].forEach(cmp => {
-                        if(cmp.instance) {
-                            cmp.instance.destroy()
-                        }
-                    });
-                });
-
-                this._loops = {};*/
-                //let ID = makeId();
-                //this._loops[ID] = [];
-
                 if (Array.isArray(obj)) {
-                    //let isCustomTagString;
-                    return obj.map(func)/*.map((stringEl) => {
-                        return stringEl.trim();
-                    })*/.join('').trim();
-
-                    //return res;// ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
+                    return obj.map(func).join('').trim();
                 }
             },
             enumerable: true
@@ -232,17 +214,25 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         render: {
-            value: function () {
+            value: function (initial) {
                 const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 const template = this.template().trim();
                 const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 let next = transform(tpl);
 
-                const rootElement = update(cfg.root, next, this._prev, 0, this);
+                const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
+
+                let index = this._processing.length - 1;
+
+                while (index >= 0) {
+                    console.log(this._processing[index]);
+                    getInstances({root: this._processing[index].parentNode, template: this._processing[index].outerHTML, view: this.view});
+                    this._processing.splice(index, 1);
+                    index -= 1;
+                }
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
-                    this._rootElement[KEY] = template;
                 }
 
                 this._prev = next;

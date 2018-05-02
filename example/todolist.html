@@ -179,15 +179,9 @@
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
-                    <div>
-                    <doz-todo-buttons></doz-todo-buttons>
-                    <doz-todo-buttons></doz-todo-buttons>
-                    <doz-todo-buttons></doz-todo-buttons>
-                    <doz-todo-buttons></doz-todo-buttons>
                     ${this.each(this.props.record, (item, i) =>
                         `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
-                    </div>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
@@ -197,7 +191,7 @@
 
         props: {
             record: [],
-            record2: [{title: 'r2', done: false}],
+            //record: [{title: 'r2', done: false}],
             todo: '',
             total: 0,
             totalDone: 0

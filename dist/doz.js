@@ -317,8 +317,6 @@ function getInstances() {
 
             if (cmp) {
 
-                //console.log(cmp.tag);
-
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
@@ -335,7 +333,7 @@ function getInstances() {
                     continue;
                 }
 
-                newElement.render();
+                newElement.render(true);
 
                 if (!component) {
                     component = newElement;
@@ -346,7 +344,6 @@ function getInstances() {
                 parentElement = newElement;
 
                 if (parent.cmp) {
-                    console.log('TAG', parent.cmp.tag);
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
@@ -355,7 +352,6 @@ function getInstances() {
             }
 
             if (child.hasChildNodes()) {
-                //console.log('dentro child', child.firstChild)
                 walk(child.firstChild, { cmp: parentElement });
             }
 
@@ -413,6 +409,10 @@ function createInstance(cmp, cfg) {
         _publicProps: {
             value: Object.assign({}, cfg.props)
         },
+        _processing: {
+            value: [],
+            writable: true
+        },
         view: {
             value: cfg.view,
             enumerable: true
@@ -449,25 +449,8 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-
-                /*Object.keys(this._loops).forEach(ID => {
-                    this._loops[ID].forEach(cmp => {
-                        if(cmp.instance) {
-                            cmp.instance.destroy()
-                        }
-                    });
-                });
-                  this._loops = {};*/
-                //let ID = makeId();
-                //this._loops[ID] = [];
-
                 if (Array.isArray(obj)) {
-                    //let isCustomTagString;
-                    return obj.map(func) /*.map((stringEl) => {
-                                         return stringEl.trim();
-                                         })*/.join('').trim();
-
-                    //return res;// ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
+                    return obj.map(func).join('').trim();
                 }
             },
             enumerable: true
@@ -489,17 +472,25 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         render: {
-            value: function value() {
+            value: function value(initial) {
                 var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 var template = this.template().trim();
                 var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
                 var next = transform(tpl);
 
-                var rootElement = update(cfg.root, next, this._prev, 0, this);
+                var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
+
+                var index = this._processing.length - 1;
+
+                while (index >= 0) {
+                    console.log(this._processing[index]);
+                    getInstances({ root: this._processing[index].parentNode, template: this._processing[index].outerHTML, view: this.view });
+                    this._processing.splice(index, 1);
+                    index -= 1;
+                }
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
-                    this._rootElement[KEY] = template;
                 }
 
                 this._prev = next;
@@ -1061,19 +1052,6 @@ function updateBound(instance, changes) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(function (element) {
                 element.value = item.newValue;
-            });
-        }
-    });
-}
-
-function drawIterated(instance) {
-    //console.log('LOOPS', instance._loops)
-    Object.keys(instance._loops).forEach(function (ID) {
-        var root = document.querySelector(ID);
-        if (root) {
-            instance._loops[ID].forEach(function (cmp) {
-                cmp.instance = instance.mount(cmp.tpl, { selector: root });
-                console.log(cmp.instance._rootElement[KEY]);
             });
         }
     });
@@ -1657,7 +1635,7 @@ function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
-function create(node, cmp) {
+function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
@@ -1665,15 +1643,15 @@ function create(node, cmp) {
     }
     var $el = document.createElement(node.type);
 
-    //component.getInstances({root: document.createElement('div'), template: $el.outerHTML, view: cmp.view});
-
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
-        return create(item, cmp);
+        return create(item, cmp, initial);
     }).forEach($el.appendChild.bind($el));
 
-    console.log(cmp, node.type, $el.parentNode);
+    if (node.type.indexOf('-') !== -1 && !initial) {
+        cmp._processing.push($el);
+    }
 
     return $el;
 }
@@ -1681,12 +1659,11 @@ function create(node, cmp) {
 function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
+    var initial = arguments[5];
 
-
-    //console.log($parent)
 
     if (!oldNode) {
-        var rootElement = create(newNode, cmp);
+        var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
@@ -1694,7 +1671,7 @@ function update($parent, newNode, oldNode) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        var _rootElement = create(newNode, cmp);
+        var _rootElement = create(newNode, cmp, initial);
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
@@ -1704,7 +1681,7 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp);
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
         clearDead();

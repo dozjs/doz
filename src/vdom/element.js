@@ -8,7 +8,7 @@ function isChanged(nodeA, nodeB) {
         nodeA.props && nodeA.props.forceupdate;
 }
 
-function create(node, cmp) {
+function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
@@ -16,26 +16,23 @@ function create(node, cmp) {
     }
     const $el = document.createElement(node.type);
 
-
-    //component.getInstances({root: document.createElement('div'), template: $el.outerHTML, view: cmp.view});
-
     attach($el, node.props, cmp);
 
     node.children
-        .map(item => create(item, cmp))
+        .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
 
-    console.log(cmp, node.type, $el.parentNode)
+    if (node.type.indexOf('-')!== -1 && !initial) {
+        cmp._processing.push($el);
+    }
 
     return $el;
 }
 
-function update($parent, newNode, oldNode, index = 0, cmp) {
-
-    //console.log($parent)
+function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!oldNode) {
-        const rootElement = create(newNode, cmp);
+        const rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
@@ -43,7 +40,7 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        const rootElement = create(newNode, cmp);
+        const rootElement = create(newNode, cmp, initial);
         $parent.replaceChild(
             rootElement,
             $parent.childNodes[index]
@@ -66,7 +63,8 @@ function update($parent, newNode, oldNode, index = 0, cmp) {
                 newNode.children[i],
                 oldNode.children[i],
                 i,
-                cmp
+                cmp,
+                initial
             );
         }
 
