@@ -303,7 +303,7 @@ function getInstances() {
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
-    cfg.root.appendChild(cfg.template);
+    if (!cfg.transform) cfg.root.appendChild(cfg.template);
 
     var component = null;
     var parentElement = void 0;
@@ -340,6 +340,7 @@ function getInstances() {
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
+
                 events.callRender(newElement);
                 parentElement = newElement;
 
@@ -483,8 +484,12 @@ function createInstance(cmp, cfg) {
                 var index = this._processing.length - 1;
 
                 while (index >= 0) {
-                    console.log(this._processing[index]);
-                    getInstances({ root: this._processing[index].parentNode, template: this._processing[index].outerHTML, view: this.view });
+                    var item = this._processing[index];
+                    var root = item.node.parentNode;
+                    item.node.innerHTML = '';
+                    var inst = getInstances({ root: root, template: item.node.outerHTML, view: this.view });
+                    root.replaceChild(inst._rootElement.parentNode, item.node);
+
                     this._processing.splice(index, 1);
                     index -= 1;
                 }
@@ -1632,6 +1637,8 @@ var _require = __webpack_require__(16),
 var deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
+    /*if (nodeB && nodeB.props)
+    console.log(nodeB.props.updatepls)*/
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
@@ -1643,6 +1650,8 @@ function create(node, cmp, initial) {
     }
     var $el = document.createElement(node.type);
 
+    //console.log(node);
+
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
@@ -1650,7 +1659,8 @@ function create(node, cmp, initial) {
     }).forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-') !== -1 && !initial) {
-        cmp._processing.push($el);
+        //$el.dataset.processed = true;
+        cmp._processing.push({ node: $el, action: 'create' });
     }
 
     return $el;
@@ -1663,24 +1673,35 @@ function update($parent, newNode, oldNode) {
 
 
     if (!oldNode) {
+        console.log('create');
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
+        console.log('remove');
         if ($parent.childNodes[index]) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
+        console.log('changed', newNode);
         var _rootElement = create(newNode, cmp, initial);
+        //console.log(rootElement);
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
+        console.log('update');
+        var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
+
+        if (newNode.props.dynamic && updated) {
+            cmp._processing.push({ node: $parent.childNodes[index], action: 'update' });
+            return;
+        }
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
+            //console.log(newNode.children[i].props);
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
@@ -1773,9 +1794,14 @@ function updateAttributes($target, newProps) {
     var cmp = arguments[3];
 
     var props = Object.assign({}, newProps, oldProps);
+    var updated = false;
     Object.keys(props).forEach(function (name) {
+        var res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
+        if (res) updated = true;
     });
+
+    return updated;
 }
 
 function isCustomAttribute(name) {

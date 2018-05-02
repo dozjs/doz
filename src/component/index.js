@@ -46,7 +46,8 @@ function getInstances(cfg = {}) {
         ? html.create(cfg.template)
         : cfg.template;
 
-    cfg.root.appendChild(cfg.template);
+    if (!cfg.transform)
+        cfg.root.appendChild(cfg.template);
 
     let component = null;
     let parentElement;
@@ -81,6 +82,7 @@ function getInstances(cfg = {}) {
                 }
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
+
                 events.callRender(newElement);
                 parentElement = newElement;
 
@@ -225,8 +227,12 @@ function createInstance(cmp, cfg) {
                 let index = this._processing.length - 1;
 
                 while (index >= 0) {
-                    console.log(this._processing[index]);
-                    getInstances({root: this._processing[index].parentNode, template: this._processing[index].outerHTML, view: this.view});
+                    let item = this._processing[index];
+                    let root = item.node.parentNode;
+                    item.node.innerHTML = '';
+                    const inst = getInstances({root, template: item.node.outerHTML, view: this.view});
+                    root.replaceChild(inst._rootElement.parentNode, item.node);
+
                     this._processing.splice(index, 1);
                     index -= 1;
                 }

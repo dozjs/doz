@@ -24,7 +24,7 @@ function setAttribute($target, name, value, cmp) {
         $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
-    } else if (typeof value === 'object'){
+    } else if (typeof value === 'object') {
         try {
             $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {
@@ -56,9 +56,14 @@ function updateAttribute($target, name, newVal, oldVal) {
 
 function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
+    let updated = false;
     Object.keys(props).forEach(name => {
+        const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
+        if (res) updated = true;
     });
+
+    return updated;
 }
 
 function isCustomAttribute(name) {
