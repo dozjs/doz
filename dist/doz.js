@@ -83,7 +83,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
-    KEY: '__DOZ_KEY__',
+    INSTANCE: '__DOZ_INSTANCE__',
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
@@ -102,7 +102,8 @@ module.exports = {
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/
+        TRIM_QUOTES: /^["'](.*)["']$/,
+        SET_DYNAMIC: /(^<.*)(>)(.*<)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -115,7 +116,7 @@ module.exports = {
         CLASS: 'd:class',
         STYLE: 'd:style',
         ID: 'd:id',
-        KEY: 'key'
+        DYNAMIC: 'd:dynamic'
     }
 };
 
@@ -249,7 +250,8 @@ var html = __webpack_require__(4);
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
     TAG = _require2.TAG,
-    KEY = _require2.KEY;
+    INSTANCE = _require2.INSTANCE,
+    ATTR = _require2.ATTR;
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(13);
@@ -265,10 +267,6 @@ var ids = __webpack_require__(19);
 
 var _require4 = __webpack_require__(20),
     extract = _require4.extract;
-
-function makeId() {
-    return ('#doz-' + performance.now() + '-' + Math.random()).replace(/\./g, '-');
-}
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -451,7 +449,9 @@ function createInstance(cmp, cfg) {
         each: {
             value: function value(obj, func) {
                 if (Array.isArray(obj)) {
-                    return obj.map(func).join('').trim();
+                    return obj.map(func).map(function (stringEl) {
+                        return stringEl.replace(REGEX.SET_DYNAMIC, '$1 ' + ATTR.DYNAMIC + '="true">$3').trim();
+                    }).join('');
                 }
             },
             enumerable: true
@@ -481,18 +481,7 @@ function createInstance(cmp, cfg) {
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
-                var index = this._processing.length - 1;
-
-                while (index >= 0) {
-                    var item = this._processing[index];
-                    var root = item.node.parentNode;
-                    item.node.innerHTML = '';
-                    var inst = getInstances({ root: root, template: item.node.outerHTML, view: this.view });
-                    root.replaceChild(inst._rootElement.parentNode, item.node);
-
-                    this._processing.splice(index, 1);
-                    index -= 1;
-                }
+                drawDynamic(this);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -514,11 +503,14 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value() {
+                var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
                 if (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) {
                     console.warn('destroy failed');
                     return;
                 }
-                this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                if (!onlyInstance) this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);else this._rootElement.parentNode.innerHTML = '';
+
                 events.callDestroy(this);
             },
             enumerable: true
@@ -547,6 +539,25 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+}
+
+function drawDynamic(instance) {
+    var index = instance._processing.length - 1;
+
+    while (index >= 0) {
+        var item = instance._processing[index];
+        var root = item.node.parentNode;
+
+        if (item.node[INSTANCE]) {
+            item.node[INSTANCE].destroy(true);
+        }
+        var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, view: instance.view });
+        root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+        dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+
+        instance._processing.splice(index, 1);
+        index -= 1;
+    }
 }
 
 module.exports = {
@@ -774,8 +785,8 @@ function castStringTo(obj) {
             return true;
         case 'false':
             return false;
-        /*case '0':
-            return '0';*/
+        case '0':
+            return obj;
         default:
             try {
                 return JSON.parse(obj);
@@ -1031,9 +1042,6 @@ module.exports = bind;
 
 var proxy = __webpack_require__(14);
 var events = __webpack_require__(5);
-
-var _require = __webpack_require__(0),
-    KEY = _require.KEY;
 
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
@@ -1636,6 +1644,9 @@ var _require = __webpack_require__(16),
 
 var deadChildren = [];
 
+var _require2 = __webpack_require__(0),
+    ATTR = _require2.ATTR;
+
 function isChanged(nodeA, nodeB) {
     /*if (nodeB && nodeB.props)
     console.log(nodeB.props.updatepls)*/
@@ -1650,8 +1661,6 @@ function create(node, cmp, initial) {
     }
     var $el = document.createElement(node.type);
 
-    //console.log(node);
-
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
@@ -1659,7 +1668,6 @@ function create(node, cmp, initial) {
     }).forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-') !== -1 && !initial) {
-        //$el.dataset.processed = true;
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -1673,26 +1681,21 @@ function update($parent, newNode, oldNode) {
 
 
     if (!oldNode) {
-        console.log('create');
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('remove');
         if ($parent.childNodes[index]) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log('changed', newNode);
         var _rootElement = create(newNode, cmp, initial);
-        //console.log(rootElement);
         $parent.replaceChild(_rootElement, $parent.childNodes[index]);
         return _rootElement;
     } else if (newNode.type) {
-        console.log('update');
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
-        if (newNode.props.dynamic && updated) {
+        if (newNode.props[ATTR.DYNAMIC] && updated) {
             cmp._processing.push({ node: $parent.childNodes[index], action: 'update' });
             return;
         }
@@ -1701,7 +1704,6 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            //console.log(newNode.children[i].props);
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 

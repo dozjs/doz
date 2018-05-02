@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG, KEY} = require('../constants');
+const {REGEX, TAG, INSTANCE, ATTR} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');
@@ -10,10 +10,6 @@ const update = require('../vdom').updateElement;
 const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
-
-function makeId() {
-    return `#doz-${performance.now()}-${Math.random()}`.replace(/\./g,'-');
-}
 
 function component(tag, cfg = {}) {
 
@@ -194,7 +190,9 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
                 if (Array.isArray(obj)) {
-                    return obj.map(func).join('').trim();
+                    return obj.map(func).map(stringEl => {
+                        return stringEl.replace(REGEX.SET_DYNAMIC, `$1 ${ATTR.DYNAMIC}="true">$3`).trim()
+                    }).join('');
                 }
             },
             enumerable: true
@@ -224,18 +222,7 @@ function createInstance(cmp, cfg) {
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
-                let index = this._processing.length - 1;
-
-                while (index >= 0) {
-                    let item = this._processing[index];
-                    let root = item.node.parentNode;
-                    item.node.innerHTML = '';
-                    const inst = getInstances({root, template: item.node.outerHTML, view: this.view});
-                    root.replaceChild(inst._rootElement.parentNode, item.node);
-
-                    this._processing.splice(index, 1);
-                    index -= 1;
-                }
+                drawDynamic(this);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -257,13 +244,17 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         destroy: {
-            value: function () {
+            value: function (onlyInstance = false) {
                 if (!this._rootElement || events.callBeforeDestroy(this) === false
                     || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) {
                     console.warn('destroy failed');
                     return;
                 }
-                this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                if (!onlyInstance)
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                else
+                    this._rootElement.parentNode.innerHTML = '';
+
                 events.callDestroy(this);
             },
             enumerable: true
@@ -293,6 +284,25 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+}
+
+function drawDynamic(instance) {
+    let index = instance._processing.length - 1;
+
+    while (index >= 0) {
+        let item = instance._processing[index];
+        let root = item.node.parentNode;
+
+        if(item.node[INSTANCE]){
+            item.node[INSTANCE].destroy(true);
+        }
+        const dynamicInstance = getInstances({root, template: item.node.outerHTML, view: instance.view});
+        root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+        dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+
+        instance._processing.splice(index, 1);
+        index -= 1;
+    }
 }
 
 module.exports = {

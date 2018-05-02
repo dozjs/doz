@@ -1,5 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
+const {ATTR} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     /*if (nodeB && nodeB.props)
@@ -18,8 +19,6 @@ function create(node, cmp, initial) {
     }
     const $el = document.createElement(node.type);
 
-    //console.log(node);
-
     attach($el, node.props, cmp);
 
     node.children
@@ -27,7 +26,6 @@ function create(node, cmp, initial) {
         .forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-')!== -1 && !initial) {
-        //$el.dataset.processed = true;
         cmp._processing.push({node: $el, action: 'create'});
     }
 
@@ -37,26 +35,21 @@ function create(node, cmp, initial) {
 function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!oldNode) {
-        console.log('create')
         const rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('remove')
         if ($parent.childNodes[index]) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log('changed', newNode)
         const rootElement = create(newNode, cmp, initial);
-        //console.log(rootElement);
         $parent.replaceChild(
             rootElement,
             $parent.childNodes[index]
         );
         return rootElement;
     } else if (newNode.type) {
-        console.log('update')
         let updated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -64,7 +57,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        if (newNode.props.dynamic && updated) {
+        if (newNode.props[ATTR.DYNAMIC] && updated) {
             cmp._processing.push({node: $parent.childNodes[index], action: 'update'});
             return;
         }
@@ -73,7 +66,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         const oldLength = oldNode.children.length;
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
-            //console.log(newNode.children[i].props);
             update(
                 $parent.childNodes[index],
                 newNode.children[i],

@@ -1,6 +1,6 @@
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
-    KEY: '__DOZ_KEY__',
+    INSTANCE: '__DOZ_INSTANCE__',
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
@@ -19,7 +19,8 @@ module.exports = {
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/
+        TRIM_QUOTES: /^["'](.*)["']$/,
+        SET_DYNAMIC: /(^<.*)(>)(.*<)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -32,6 +33,6 @@ module.exports = {
         CLASS: 'd:class',
         STYLE: 'd:style',
         ID: 'd:id',
-        KEY: 'key'
+        DYNAMIC: 'd:dynamic'
     }
 };
