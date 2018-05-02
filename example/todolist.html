@@ -87,6 +87,7 @@
         },
 
         remove(index) {
+            console.log(index)
             const store = this.getStore('todo');
             if (confirm(`Remove ${store.record[index].title}?`))
                 store.record.splice(index, 1);
@@ -160,6 +161,15 @@
         }
     });
 
+    Doz.component('doz-todo-buttons', {
+        template() {
+            return `
+                <button onclick="this.action.add()" >Add</button>
+                <button onclick="this.action.removeAll()" >Remove all</button>
+            `;
+        }
+    });
+
     Doz.component('doz-todo', {
         store: 'todo',
         template() {
@@ -167,12 +177,17 @@
                 <div>
                     <div class="todo-input">
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
-                        <button onclick="this.action.add()" >Add</button>
-                        <button onclick="this.action.removeAll()" >Remove all</button>
+                        <doz-todo-buttons></doz-todo-buttons>
                     </div>
+                    <div>
+                    <doz-todo-buttons></doz-todo-buttons>
+                    <doz-todo-buttons></doz-todo-buttons>
+                    <doz-todo-buttons></doz-todo-buttons>
+                    <doz-todo-buttons></doz-todo-buttons>
                     ${this.each(this.props.record, (item, i) =>
                         `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
+                    </div>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
@@ -182,6 +197,7 @@
 
         props: {
             record: [],
+            record2: [{title: 'r2', done: false}],
             todo: '',
             total: 0,
             totalDone: 0

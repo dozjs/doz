@@ -83,6 +83,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    KEY: '__DOZ_KEY__',
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
@@ -113,7 +114,8 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        ID: 'd:id'
+        ID: 'd:id',
+        KEY: 'key'
     }
 };
 
@@ -246,7 +248,8 @@ var html = __webpack_require__(4);
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
-    TAG = _require2.TAG;
+    TAG = _require2.TAG,
+    KEY = _require2.KEY;
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(13);
@@ -314,6 +317,8 @@ function getInstances() {
 
             if (cmp) {
 
+                //console.log(cmp.tag);
+
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
@@ -341,6 +346,7 @@ function getInstances() {
                 parentElement = newElement;
 
                 if (parent.cmp) {
+                    console.log('TAG', parent.cmp.tag);
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
@@ -349,6 +355,7 @@ function getInstances() {
             }
 
             if (child.hasChildNodes()) {
+                //console.log('dentro child', child.firstChild)
                 walk(child.firstChild, { cmp: parentElement });
             }
 
@@ -442,35 +449,25 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
-                var _this = this;
 
-                Object.keys(this._loops).forEach(function (ID) {
-                    _this._loops[ID].forEach(function (cmp) {
-                        if (cmp.instance) {
-                            cmp.instance.destroy();
+                /*Object.keys(this._loops).forEach(ID => {
+                    this._loops[ID].forEach(cmp => {
+                        if(cmp.instance) {
+                            cmp.instance.destroy()
                         }
                     });
                 });
-
-                this._loops = {};
-                var ID = makeId();
-                this._loops[ID] = [];
+                  this._loops = {};*/
+                //let ID = makeId();
+                //this._loops[ID] = [];
 
                 if (Array.isArray(obj)) {
-                    var isCustomTagString = void 0;
-                    var res = obj.map(func).map(function (stringEl) {
+                    //let isCustomTagString;
+                    return obj.map(func) /*.map((stringEl) => {
+                                         return stringEl.trim();
+                                         })*/.join('').trim();
 
-                        stringEl = stringEl.trim();
-                        isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
-
-                        if (isCustomTagString) {
-                            _this._loops[ID].push({ tpl: stringEl, instance: null });
-                        } else {
-                            return stringEl;
-                        }
-                    }).join('').trim();
-
-                    return res ? res : '<' + TAG.EACH + ' id="' + ID.substr(1) + '"></' + TAG.EACH + '>';
+                    //return res;// ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
                 }
             },
             enumerable: true
@@ -502,6 +499,7 @@ function createInstance(cmp, cfg) {
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
+                    this._rootElement[KEY] = template;
                 }
 
                 this._prev = next;
@@ -780,6 +778,8 @@ function castStringTo(obj) {
             return true;
         case 'false':
             return false;
+        /*case '0':
+            return '0';*/
         default:
             try {
                 return JSON.parse(obj);
@@ -1036,6 +1036,9 @@ module.exports = bind;
 var proxy = __webpack_require__(14);
 var events = __webpack_require__(5);
 
+var _require = __webpack_require__(0),
+    KEY = _require.KEY;
+
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
@@ -1064,11 +1067,13 @@ function updateBound(instance, changes) {
 }
 
 function drawIterated(instance) {
+    //console.log('LOOPS', instance._loops)
     Object.keys(instance._loops).forEach(function (ID) {
         var root = document.querySelector(ID);
         if (root) {
             instance._loops[ID].forEach(function (cmp) {
                 cmp.instance = instance.mount(cmp.tpl, { selector: root });
+                console.log(cmp.instance._rootElement[KEY]);
             });
         }
     });
@@ -1078,7 +1083,7 @@ function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
         instance.render();
         updateBound(instance, changes);
-        drawIterated(instance);
+        //drawIterated(instance);
         if (instance._isCreated) {
             delay(function () {
                 updateChildren(instance, changes);
@@ -1660,11 +1665,15 @@ function create(node, cmp) {
     }
     var $el = document.createElement(node.type);
 
+    //component.getInstances({root: document.createElement('div'), template: $el.outerHTML, view: cmp.view});
+
     attach($el, node.props, cmp);
 
     node.children.map(function (item) {
         return create(item, cmp);
     }).forEach($el.appendChild.bind($el));
+
+    console.log(cmp, node.type, $el.parentNode);
 
     return $el;
 }

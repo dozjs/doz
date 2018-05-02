@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG} = require('../constants');
+const {REGEX, TAG, KEY} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');
@@ -58,6 +58,8 @@ function getInstances(cfg = {}) {
 
             if (cmp) {
 
+                //console.log(cmp.tag);
+
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
@@ -85,6 +87,7 @@ function getInstances(cfg = {}) {
                 parentElement = newElement;
 
                 if (parent.cmp) {
+                    console.log('TAG',parent.cmp.tag);
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
                 }
@@ -93,6 +96,7 @@ function getInstances(cfg = {}) {
             }
 
             if (child.hasChildNodes()) {
+                //console.log('dentro child', child.firstChild)
                 walk(child.firstChild, {cmp: parentElement})
             }
 
@@ -188,7 +192,7 @@ function createInstance(cmp, cfg) {
         each: {
             value: function (obj, func) {
 
-                Object.keys(this._loops).forEach(ID => {
+                /*Object.keys(this._loops).forEach(ID => {
                     this._loops[ID].forEach(cmp => {
                         if(cmp.instance) {
                             cmp.instance.destroy()
@@ -196,26 +200,17 @@ function createInstance(cmp, cfg) {
                     });
                 });
 
-                this._loops = {};
-                let ID = makeId();
-                this._loops[ID] = [];
+                this._loops = {};*/
+                //let ID = makeId();
+                //this._loops[ID] = [];
 
                 if (Array.isArray(obj)) {
-                    let isCustomTagString;
-                    let res = obj.map(func).map(stringEl => {
+                    //let isCustomTagString;
+                    return obj.map(func)/*.map((stringEl) => {
+                        return stringEl.trim();
+                    })*/.join('').trim();
 
-                        stringEl = stringEl.trim();
-                        isCustomTagString = stringEl.match(REGEX.IS_CUSTOM_TAG_STRING);
-
-                        if (isCustomTagString) {
-                            this._loops[ID].push({tpl: stringEl, instance: null});
-                        } else {
-                            return stringEl;
-                        }
-
-                    }).join('').trim();
-
-                    return res ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
+                    //return res;// ? res : `<${TAG.EACH} id="${ID.substr(1)}"></${TAG.EACH}>`
                 }
             },
             enumerable: true
@@ -247,6 +242,7 @@ function createInstance(cmp, cfg) {
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
+                    this._rootElement[KEY] = template;
                 }
 
                 this._prev = next;

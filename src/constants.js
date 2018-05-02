@@ -1,5 +1,6 @@
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    KEY: '__DOZ_KEY__',
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
@@ -30,6 +31,7 @@ module.exports = {
         LISTENER: 'd:on',
         CLASS: 'd:class',
         STYLE: 'd:style',
-        ID: 'd:id'
+        ID: 'd:id',
+        KEY: 'key'
     }
 };

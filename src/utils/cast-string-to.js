@@ -17,6 +17,8 @@ function castStringTo(obj) {
             return true;
         case 'false':
             return false;
+        /*case '0':
+            return '0';*/
         default:
             try {
                 return JSON.parse(obj)

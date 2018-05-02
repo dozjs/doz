@@ -16,11 +16,16 @@ function create(node, cmp) {
     }
     const $el = document.createElement(node.type);
 
+
+    //component.getInstances({root: document.createElement('div'), template: $el.outerHTML, view: cmp.view});
+
     attach($el, node.props, cmp);
 
     node.children
         .map(item => create(item, cmp))
         .forEach($el.appendChild.bind($el));
+
+    console.log(cmp, node.type, $el.parentNode)
 
     return $el;
 }

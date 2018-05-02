@@ -1,5 +1,6 @@
 const proxy = require('../utils/proxy');
 const events = require('./events');
+const {KEY} = require('../constants');
 
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined)
@@ -34,11 +35,13 @@ function updateBound(instance, changes) {
 }
 
 function drawIterated(instance) {
+    //console.log('LOOPS', instance._loops)
     Object.keys(instance._loops).forEach(ID => {
         let root = document.querySelector(ID);
         if (root) {
             instance._loops[ID].forEach(cmp => {
                 cmp.instance = instance.mount(cmp.tpl, {selector: root});
+                console.log(cmp.instance._rootElement[KEY])
             });
         }
     });
@@ -48,7 +51,7 @@ function create(instance, props) {
     instance.props = proxy.create(props, true, changes => {
         instance.render();
         updateBound(instance, changes);
-        drawIterated(instance);
+        //drawIterated(instance);
         if (instance._isCreated) {
             delay(() => {
                 updateChildren(instance, changes);
