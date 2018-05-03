@@ -84,7 +84,6 @@ return /******/ (function(modules) { // webpackBootstrap
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     INSTANCE: '__DOZ_INSTANCE__',
-    SELF_INSTANCE: '__DOZ_SELF_INSTANCE__',
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
@@ -103,8 +102,8 @@ module.exports = {
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/,
-        SET_DYNAMIC: /^(<\w+)(.*)/
+        TRIM_QUOTES: /^["'](.*)["']$/
+        //SET_DYNAMIC: /^(<[\w-]+)(.*)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -114,10 +113,8 @@ module.exports = {
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
-        CLASS: 'd:class',
-        STYLE: 'd:style',
-        ID: 'd:id',
-        DYNAMIC: 'd:dyn'
+        ID: 'd:id'
+        //DYNAMIC: 'd:dyn'
     }
 };
 
@@ -251,9 +248,7 @@ var html = __webpack_require__(4);
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
     TAG = _require2.TAG,
-    INSTANCE = _require2.INSTANCE,
-    ATTR = _require2.ATTR,
-    SELF_INSTANCE = _require2.SELF_INSTANCE;
+    INSTANCE = _require2.INSTANCE;
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(13);
@@ -339,7 +334,7 @@ function getInstances() {
                     component = newElement;
                 }
 
-                newElement._rootElement[SELF_INSTANCE] = newElement;
+                //newElement._rootElement[SELF_INSTANCE] = newElement;
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
@@ -416,6 +411,10 @@ function createInstance(cmp, cfg) {
             value: [],
             writable: true
         },
+        _dynamicChildren: {
+            value: [],
+            writable: true
+        },
         view: {
             value: cfg.view,
             enumerable: true
@@ -454,7 +453,7 @@ function createInstance(cmp, cfg) {
             value: function value(obj, func) {
                 if (Array.isArray(obj)) {
                     return obj.map(func).map(function (stringEl) {
-                        stringEl = stringEl.trim().replace(REGEX.SET_DYNAMIC, '$1 ' + ATTR.DYNAMIC + '="true" $2');
+                        stringEl = stringEl.trim(); //.replace(REGEX.SET_DYNAMIC, `$1 ${ATTR.DYNAMIC}="true" $2`);
                         return stringEl;
                     }).join('');
                 }
@@ -510,7 +509,10 @@ function createInstance(cmp, cfg) {
             value: function value() {
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-                if (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode) {
+                /*console.log('this._rootElement', this._rootElement)
+                console.log('this._rootElement.parentNode', this._rootElement.parentNode)
+                console.log('this._rootElement.parentNode.parentNode', this._rootElement.parentNode.parentNode)*/
+                if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode /*|| !this._rootElement.parentNode.parentNode*/)) {
                     console.warn('destroy failed');
                     return;
                 }
@@ -546,10 +548,24 @@ function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
 }
 
-function drawDynamic(instance) {
-    var index = instance._processing.length - 1;
+function clearDynamic(instance) {
+    var index = instance._dynamicChildren.length - 1;
 
-    //console.log(instance._processing[index])
+    while (index >= 0) {
+        var item = instance._dynamicChildren[index];
+
+        if (!document.body.contains(item) && item[INSTANCE]) {
+            item[INSTANCE].destroy(true);
+            instance._dynamicChildren.splice(index, 1);
+        }
+        index -= 1;
+    }
+}
+
+function drawDynamic(instance) {
+    clearDynamic(instance);
+
+    var index = instance._processing.length - 1;
 
     while (index >= 0) {
         var item = instance._processing[index];
@@ -561,9 +577,10 @@ function drawDynamic(instance) {
 
         var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, view: instance.view });
 
+        instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+
         root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
         dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-        console.dir(dynamicInstance._rootElement);
         instance._processing.splice(index, 1);
         index -= 1;
     }
@@ -1654,7 +1671,6 @@ var _require = __webpack_require__(16),
 var deadChildren = [];
 
 var _require2 = __webpack_require__(0),
-    ATTR = _require2.ATTR,
     INSTANCE = _require2.INSTANCE;
 
 function isChanged(nodeA, nodeB) {
@@ -1703,18 +1719,23 @@ function update($parent, newNode, oldNode) {
     } else if (newNode.type) {
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
-        //console.log('UPDATE', updated, newNode.props);
-        //console.log('SELF_INSTANCE', updated, $parent.childNodes[index][SELF_INSTANCE]);
-        //console.log($parent.childNodes[index][INSTANCE]);
-        var dynInstance = $parent.childNodes[index][INSTANCE];
-        if (dynInstance && updated.length) {
-            console.log(dynInstance, updated);
+        if ($parent.childNodes[index]) {
+            var dynInstance = $parent.childNodes[index][INSTANCE];
+            if (dynInstance && updated.length) {
+                updated.forEach(function (props) {
+                    Object.keys(props).forEach(function (name) {
+                        dynInstance.props[name] = props[name];
+                    });
+                });
+
+                return;
+            }
         }
 
-        if (newNode.props[ATTR.DYNAMIC] && updated.length) {
-            cmp._processing.push({ node: $parent.childNodes[index], action: 'update' });
+        /*if (newNode.props[ATTR.DYNAMIC] && updated.length) {
+            cmp._processing.push({node: $parent.childNodes[index], action: 'update'});
             return;
-        }
+        }*/
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
@@ -1817,7 +1838,8 @@ function updateAttributes($target, newProps) {
         //const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
         if (newProps[name] !== oldProps[name]) {
-            var obj = { name: name, value: newProps[name] };
+            var obj = {};
+            obj[name] = newProps[name];
             updated.push(obj);
         }
     });

@@ -61,7 +61,8 @@ function updateAttributes($target, newProps, oldProps = {}, cmp) {
         //const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
         if (newProps[name] !== oldProps[name]){
-            let obj = {name, value: newProps[name]};
+            let obj = {};
+            obj[name] = newProps[name];
             updated.push(obj);
         }
     });

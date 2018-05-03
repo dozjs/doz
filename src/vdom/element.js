@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {ATTR, INSTANCE} = require('../constants');
+const {INSTANCE} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -55,18 +55,23 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        //console.log('UPDATE', updated, newNode.props);
-        //console.log('SELF_INSTANCE', updated, $parent.childNodes[index][SELF_INSTANCE]);
-        //console.log($parent.childNodes[index][INSTANCE]);
-        const dynInstance = $parent.childNodes[index][INSTANCE];
-        if (dynInstance && updated.length) {
-            console.log(dynInstance, updated);
+        if ($parent.childNodes[index]) {
+            const dynInstance = $parent.childNodes[index][INSTANCE];
+            if (dynInstance && updated.length) {
+                updated.forEach(props => {
+                    Object.keys(props).forEach(name => {
+                        dynInstance.props[name] = props[name]
+                    })
+                });
+
+                return;
+            }
         }
 
-        if (newNode.props[ATTR.DYNAMIC] && updated.length) {
+        /*if (newNode.props[ATTR.DYNAMIC] && updated.length) {
             cmp._processing.push({node: $parent.childNodes[index], action: 'update'});
             return;
-        }
+        }*/
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;

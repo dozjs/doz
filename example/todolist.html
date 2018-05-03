@@ -146,7 +146,7 @@
         },
         template() {
             return `
-                <div class="todo-item ${this.props.done ? 'done' : ''} " onclick="this.click()">
+                <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
@@ -161,13 +161,9 @@
                 </div>
             `;
         },
-/*
-        click() {
-            //this.props.title = Math.random().toString();
-        },
 
         onUpdate() {
-            console.log('UPDATE eeeeee')
+            console.log('UPDATE')
         },
 
         onCreate() {
@@ -180,7 +176,7 @@
 
         onDestroy() {
             console.log('DESTROY')
-        }*/
+        }/**/
     });
 
     Doz.component('doz-todo-buttons', {
@@ -189,6 +185,15 @@
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
             `;
+        }
+    });
+
+    Doz.component('doz-todo-details', {
+        template() {
+            return `<h3>${this.props.name}</h3>`
+        },
+        onDestroy() {
+            console.log('DESTROY DETAILS')
         }
     });
 
@@ -201,11 +206,9 @@
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
-                    <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        `<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`
+                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
-                    </ul>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
@@ -215,7 +218,6 @@
 
         props: {
             record: [],
-            //record: [{title: 'r2', done: false}],
             todo: '',
             total: 0,
             totalDone: 0
