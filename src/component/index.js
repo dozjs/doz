@@ -220,10 +220,14 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function (initial) {
-                const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
+                //const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 const template = this.template().trim();
-                const tpl = html.create(`<${tag}>${template}</${tag}>`);
+                //const tpl = html.create(`<${tag}>${template}</${tag}>`);
+                const tpl = html.create(template, TAG.ROOT);
+                //console.log(tpl.outerHTML)
                 let next = transform(tpl);
+
+                //console.log(cfg.root.parentNode);
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 

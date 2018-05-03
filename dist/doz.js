@@ -476,10 +476,14 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value(initial) {
-                var tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
+                //const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 var template = this.template().trim();
-                var tpl = html.create('<' + tag + '>' + template + '</' + tag + '>');
+                //const tpl = html.create(`<${tag}>${template}</${tag}>`);
+                var tpl = html.create(template, TAG.ROOT);
+                //console.log(tpl.outerHTML)
                 var next = transform(tpl);
+
+                //console.log(cfg.root.parentNode);
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
@@ -608,16 +612,23 @@ var html = {
     /**
      * Create DOM element
      * @param str html string
+     * @param wrapper tag string
      * @returns {Element | Node | null}
      */
-    create: function create(str) {
+    create: function create(str, wrapper) {
         var element = void 0;
         str = str.replace(regexN, replace);
         str = str.replace(regexS, replace);
 
         var template = document.createElement('div');
         template.innerHTML = str;
-        element = template.firstChild;
+
+        if (template.children.length > 1) {
+            element = document.createElement(wrapper);
+            element.innerHTML = template.innerHTML;
+        } else {
+            element = template.firstChild || document.createTextNode('');
+        }
 
         if (!this.isValidNode(element)) throw new Error('Element not valid');
         return element;

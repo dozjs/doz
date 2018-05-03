@@ -6,16 +6,23 @@ const html = {
     /**
      * Create DOM element
      * @param str html string
+     * @param wrapper tag string
      * @returns {Element | Node | null}
      */
-    create: function (str) {
+    create: function (str, wrapper) {
         let element;
         str = str.replace(regexN, replace);
         str = str.replace(regexS, replace);
 
         let template = document.createElement('div');
         template.innerHTML = str;
-        element = template.firstChild;
+
+        if(template.children.length > 1) {
+            element = document.createElement(wrapper);
+            element.innerHTML = template.innerHTML;
+        } else {
+            element = template.firstChild || document.createTextNode('');
+        }
 
         if (!this.isValidNode(element))
             throw new Error('Element not valid');
