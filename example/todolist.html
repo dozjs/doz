@@ -141,9 +141,6 @@
     };
 
     Doz.component('doz-todo-item', {
-        props: {
-            title: 'w'
-        },
         template() {
             return `
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
@@ -176,7 +173,7 @@
 
         onDestroy() {
             console.log('DESTROY')
-        }/**/
+        }
     });
 
     Doz.component('doz-todo-buttons', {
@@ -231,7 +228,6 @@
         },
 
         onUpdate() {
-            //console.log(this.props.record);
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }

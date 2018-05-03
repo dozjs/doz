@@ -334,8 +334,6 @@ function getInstances() {
                     component = newElement;
                 }
 
-                //newElement._rootElement[SELF_INSTANCE] = newElement;
-
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
                 events.callRender(newElement);
@@ -453,7 +451,7 @@ function createInstance(cmp, cfg) {
             value: function value(obj, func) {
                 if (Array.isArray(obj)) {
                     return obj.map(func).map(function (stringEl) {
-                        stringEl = stringEl.trim(); //.replace(REGEX.SET_DYNAMIC, `$1 ${ATTR.DYNAMIC}="true" $2`);
+                        stringEl = stringEl.trim();
                         return stringEl;
                     }).join('');
                 }
@@ -507,15 +505,19 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value() {
+                var _this = this;
+
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-                /*console.log('this._rootElement', this._rootElement)
-                console.log('this._rootElement.parentNode', this._rootElement.parentNode)
-                console.log('this._rootElement.parentNode.parentNode', this._rootElement.parentNode.parentNode)*/
-                if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode /*|| !this._rootElement.parentNode.parentNode*/)) {
+                if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
                 }
+
+                Object.keys(this.children).forEach(function (child) {
+                    _this.children[child].destroy();
+                });
+
                 if (!onlyInstance) this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);else this._rootElement.parentNode.innerHTML = '';
 
                 events.callDestroy(this);
