@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG, INSTANCE, ATTR} = require('../constants');
+const {REGEX, TAG, INSTANCE, ATTR, SELF_INSTANCE} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');
@@ -76,6 +76,8 @@ function getInstances(cfg = {}) {
                 if (!component) {
                     component = newElement;
                 }
+
+                newElement._rootElement[SELF_INSTANCE] = newElement;
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
@@ -191,7 +193,8 @@ function createInstance(cmp, cfg) {
             value: function (obj, func) {
                 if (Array.isArray(obj)) {
                     return obj.map(func).map(stringEl => {
-                        return stringEl.replace(REGEX.SET_DYNAMIC, `$1 ${ATTR.DYNAMIC}="true">$3`).trim()
+                        stringEl = stringEl.trim().replace(REGEX.SET_DYNAMIC, `$1 ${ATTR.DYNAMIC}="true" $2`);
+                        return stringEl
                     }).join('');
                 }
             },
@@ -289,17 +292,21 @@ function extendInstance(instance, cfg, dProps) {
 function drawDynamic(instance) {
     let index = instance._processing.length - 1;
 
+    //console.log(instance._processing[index])
+
     while (index >= 0) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        if(item.node[INSTANCE]){
+        if (item.node[INSTANCE]) {
             item.node[INSTANCE].destroy(true);
         }
+
         const dynamicInstance = getInstances({root, template: item.node.outerHTML, view: instance.view});
+
         root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
         dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-
+        console.dir(dynamicInstance._rootElement)
         instance._processing.splice(index, 1);
         index -= 1;
     }

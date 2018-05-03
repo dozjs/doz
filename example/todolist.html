@@ -141,9 +141,12 @@
     };
 
     Doz.component('doz-todo-item', {
+        props: {
+            title: 'w'
+        },
         template() {
             return `
-                <div class="todo-item ${this.props.done ? 'done' : ''} ">
+                <div class="todo-item ${this.props.done ? 'done' : ''} " onclick="this.click()">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
@@ -157,7 +160,27 @@
                     </span>
                 </div>
             `;
-        }
+        },
+/*
+        click() {
+            //this.props.title = Math.random().toString();
+        },
+
+        onUpdate() {
+            console.log('UPDATE eeeeee')
+        },
+
+        onCreate() {
+            console.log('CREATE')
+        },
+
+        onRender() {
+            console.log('RENDER')
+        },
+
+        onDestroy() {
+            console.log('DESTROY')
+        }*/
     });
 
     Doz.component('doz-todo-buttons', {
@@ -178,9 +201,11 @@
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
+                    <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        `<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`
                     )}
+                    </ul>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>

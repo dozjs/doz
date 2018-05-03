@@ -56,11 +56,14 @@ function updateAttribute($target, name, newVal, oldVal) {
 
 function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
-    let updated = false;
+    let updated = [];
     Object.keys(props).forEach(name => {
-        const res = newProps[name] !== oldProps[name];
+        //const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
-        if (res) updated = true;
+        if (newProps[name] !== oldProps[name]){
+            let obj = {name, value: newProps[name]};
+            updated.push(obj);
+        }
     });
 
     return updated;
