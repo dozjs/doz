@@ -19,8 +19,7 @@ module.exports = {
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/,
-        //SET_DYNAMIC: /^(<[\w-]+)(.*)/
+        TRIM_QUOTES: /^["'](.*)["']$/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -30,7 +29,6 @@ module.exports = {
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
-        ID: 'd:id',
-        //DYNAMIC: 'd:dyn'
+        ID: 'd:id'
     }
 };

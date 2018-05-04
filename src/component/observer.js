@@ -37,7 +37,6 @@ function create(instance, props) {
     instance.props = proxy.create(props, true, changes => {
         instance.render();
         updateBound(instance, changes);
-        //drawIterated(instance);
         if (instance._isCreated) {
             delay(() => {
                 updateChildren(instance, changes);
