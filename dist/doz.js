@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 0.0.17  
+// [DOZ]  Build version: 0.0.18  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -103,7 +103,6 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/
-        //SET_DYNAMIC: /^(<[\w-]+)(.*)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -114,7 +113,6 @@ module.exports = {
         STORE: 'd:store',
         LISTENER: 'd:on',
         ID: 'd:id'
-        //DYNAMIC: 'd:dyn'
     }
 };
 
@@ -298,7 +296,7 @@ function getInstances() {
 
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
-    if (!cfg.transform) cfg.root.appendChild(cfg.template);
+    cfg.root.appendChild(cfg.template);
 
     var component = null;
     var parentElement = void 0;
@@ -476,14 +474,9 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value(initial) {
-                //const tag = this.tag ? this.tag + TAG.SUFFIX_ROOT : TAG.ROOT;
                 var template = this.template().trim();
-                //const tpl = html.create(`<${tag}>${template}</${tag}>`);
                 var tpl = html.create(template, TAG.ROOT);
-                //console.log(tpl.outerHTML)
                 var next = transform(tpl);
-
-                //console.log(cfg.root.parentNode);
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
@@ -1113,7 +1106,6 @@ function create(instance, props) {
     instance.props = proxy.create(props, true, function (changes) {
         instance.render();
         updateBound(instance, changes);
-        //drawIterated(instance);
         if (instance._isCreated) {
             delay(function () {
                 updateChildren(instance, changes);
