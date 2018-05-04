@@ -157,22 +157,6 @@
                     </span>
                 </div>
             `;
-        },
-
-        onUpdate() {
-            console.log('UPDATE')
-        },
-
-        onCreate() {
-            console.log('CREATE')
-        },
-
-        onRender() {
-            console.log('RENDER')
-        },
-
-        onDestroy() {
-            console.log('DESTROY')
         }
     });
 
@@ -182,15 +166,6 @@
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
             `;
-        }
-    });
-
-    Doz.component('doz-todo-details', {
-        template() {
-            return `<h3>${this.props.name}</h3>`
-        },
-        onDestroy() {
-            console.log('DESTROY DETAILS')
         }
     });
 

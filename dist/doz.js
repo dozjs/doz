@@ -623,7 +623,7 @@ var html = {
         var template = document.createElement('div');
         template.innerHTML = str;
 
-        if (template.children.length > 1) {
+        if (template.childNodes.length > 1) {
             element = document.createElement(wrapper);
             element.innerHTML = template.innerHTML;
         } else {
