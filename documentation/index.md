@@ -19,9 +19,9 @@ Below some basic concepts:
     - [Lifecycle methods](#lifecycle-methods)
     - [Local component](#local-component)
     - [Async mount](#async-mount)
-- Directives
-    - HTML element
-    - DOZ component
+    - [Directives](#directives)
+        - [HTML element](#html-element)
+        - [DOZ component](#doz-component)
 - Loops,
 - Actions
 - Develop and production
@@ -433,3 +433,21 @@ new Doz({
 ```
 
 [Result](https://jsfiddle.net/fabioricali/uLb9nw2d/)
+
+### Directives
+The directives are special attributes that are specified inside component tag.
+There are two types:
+
+#### HTML element
+Directives that works only on HTML element
+
+##### d-bind
+##### d-ref
+
+#### DOZ component
+Directives that works only on component
+
+##### d:alias
+##### d:id
+##### d:store
+##### d:on
