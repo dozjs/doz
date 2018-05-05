@@ -42,7 +42,7 @@ import Doz from 'doz'
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <h2>Hello World</h2>
     `
 });
@@ -66,7 +66,7 @@ Doz.component('hello-world', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <hello-world></hello-world>
     `
 });
@@ -96,7 +96,7 @@ Doz.component('my-clock', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <my-clock title="it's"></my-clock>
     `
 });
@@ -178,7 +178,7 @@ Doz.component('my-button', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <my-button></my-button>
     `
 });
@@ -207,7 +207,7 @@ Doz.component('my-button', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <my-button></my-button>
     `
 });
@@ -307,7 +307,7 @@ Doz.component('hello-world', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <hello-world></hello-world>
     `
 });
@@ -335,7 +335,7 @@ new Doz({
     components: [helloWorld],
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <hello-world></hello-world>
     `
 });
@@ -369,7 +369,7 @@ Doz.component('my-wrapper', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <my-wrapper></my-wrapper>
     `
 });
@@ -405,7 +405,7 @@ Doz.component('my-wrapper', {
 new Doz({
     root: '#app',
     template: `
-        <h1>Welcome my app:</h1>
+        <h1>Welcome to my app:</h1>
         <my-wrapper></my-wrapper>
     `
 });
