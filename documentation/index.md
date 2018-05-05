@@ -12,7 +12,8 @@ Below some basic concepts:
     - [Props](#props)
     - [Methods](#methods)
         - [Inherited](#inherited)
-    - Handlers
+    - [Handlers](#handlers)
+        - [Passing arguments](#passing-arguments)
     - Emitter
     - Events
     - Local component
@@ -143,3 +144,64 @@ When a component is defined this inheritance some methods and properties:
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
 | `view` | object | The view object | no | no |
+
+### Handlers
+All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).
+
+```javascript
+
+import Doz from 'doz'
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button onclick="this.clickme()">Click me!</button>
+        `
+    },
+    clickme(e) {
+        alert(e)
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/v0ejbsLs/)
+
+#### Passing arguments
+The method passed to event is transformed by Doz (in reality it's a string) so the arguments are automatically casted.
+`this` is a special placeholder that identify current instance.
+
+```javascript
+
+import Doz from 'doz'
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button onclick="this.clickme('hello', 'world', this)">Click me!</button>
+        `
+    },
+    clickme(myArg, otherArg, me, e) {
+        alert(myArg + ' ' + otherArg);
+        alert(e);
+        console.log(me);
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/1wj852pd/)
