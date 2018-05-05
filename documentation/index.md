@@ -11,8 +11,9 @@ Below some basic concepts:
 - [Component definition](#component-definition)
     - [Props](#props)
     - [Methods](#methods)
-        - Inherited
+        - [Inherited](#inherited)
     - Handlers
+    - Emitter
     - Events
     - Local component
 - View component
@@ -25,6 +26,7 @@ Below some basic concepts:
 
 ## Component definition
 The method `component` defines an component globally that can be added to any view of the project.
+The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)
 
 ```javascript
 
@@ -63,7 +65,7 @@ Doz.component('my-clock', {
     },
     template() {
         return `
-            <h2>${this.props.time}</h2>
+            <h2>${this.props.title} <span>${this.props.time}</span></h2>
         `
     },
     onRender() {
@@ -75,7 +77,7 @@ new Doz({
     root: '#app',
     template: `
         <h1>Welcome my app:</h1>
-        <my-clock></my-clock>
+        <my-clock title="it's"></my-clock>
     `
 });
 ```
@@ -108,3 +110,22 @@ Doz.component('my-component', {
 });
 
 ```
+
+#### Inherited
+When a component is defined this inheritance some methods and properties:
+
+| Name | Type | Description | Required | Editable |
+| ---- | ---- | ----------- | -------- | -------- |
+| `template` | `function` | This method must be return the component template literals | yes | yes |
+| `props` | `object` | This object can contains all component props | no | yes |
+| `store` | `string` | An unique store name to expose the props with other components of the view | no | yes |
+| `id` | `string` | A unique name that identify the component inside the view. More info on [directives](#directives) | no | yes |
+| `alias` | `string` | A name that identify the children component. More info on [directives](#directives) | no | yes |
+| `view` | `object` | The view object | no | no |
+| `parent` | `object` | The parent object | no | no |
+| `children` | `object` | An object that contains all children components | no | no |
+| `ref` | `object` | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
+| `tag` | `string` | Component tag name | no | no |
+| `each` | `function` | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no |
+| `emit` | `function` | This method call a callback given an event name. More info on [emitter](#emitter) | no | no |
+| `action` | `object` | This object contains all view actions. More info on [actions](#actions) | no | no |
