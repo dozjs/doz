@@ -17,7 +17,7 @@ Below some basic concepts:
     - [Emitter](#emitter)
     - [Lifecycle methods](#lifecycle-methods)
     - [Local component](#local-component)
-    - Async mount
+    - [Async mount](#async-mount)
 - View component
 - Directives
     - HTML element
@@ -341,3 +341,77 @@ new Doz({
 ```
 
 [Result](https://jsfiddle.net/fabioricali/Lkeonppk/)
+
+### Async mount
+Doz component instance provide a method called `mount`,
+this method allows you to "append" a new component inside another.
+
+```javascript
+import Doz from 'doz'
+
+Doz.component('hello-world', {
+    template() {
+        return `
+            <h2>Hello World</h2>
+        `
+    }
+});
+
+Doz.component('my-wrapper', {
+    template() {
+        return `
+            <div>
+                <button onclick="this.mount('<hello-world></hello-world>')">Mount</button>
+            </div>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <my-wrapper></my-wrapper>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/c4kaoc95/)
+
+Mount component in a specific root inside a parent
+
+```javascript
+import Doz from 'doz'
+
+Doz.component('hello-world', {
+    template() {
+        return `
+            <h2>Hello World</h2>
+        `
+    }
+});
+
+Doz.component('my-wrapper', {
+    template() {
+        return `
+            <div>
+                <button onclick="this.append()">Mount</button>
+                <div class="my-root" style="border: 1px solid #000"></div>
+            </div>
+        `
+    },
+    append() {
+        this.mount('<hello-world></hello-world>', {selector: '.my-root'});
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <my-wrapper></my-wrapper>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/uLb9nw2d/)
