@@ -21,10 +21,16 @@ Below some basic concepts:
     - [Async mount](#async-mount)
     - [Directives](#directives)
         - [HTML element](#html-element)
+            - [d-bind](#d-bind)
+            - [d-ref](#d-ref)
         - [DOZ component](#doz-component)
-- Loops,
-- Actions
-- Develop and production
+            - [d:alias](#dalias)
+            - [d:id](#did)
+            - [d:store](#dstore)
+            - [d:on](#don)
+- [Loops](#loops),
+- [Actions](#actions)
+- [Develop and production](#develop-and-production)
 
 ## View
 A view can be considered as a main component that embed other components.
@@ -49,9 +55,6 @@ The method `component` defines an component globally that can be added to any vi
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('hello-world', {
     template() {
         return `
@@ -76,9 +79,6 @@ All props are stored into `props` property of the component and they are accessi
 Doz uses [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to build the component UI then the props are injected inside the string.
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('my-clock', {
     props: {
         time: '--:--:--'
@@ -109,9 +109,6 @@ The methods are defined inside a single object where there are also props and ev
 **Why this choice?** Because during development it's essential to have an exact reference of `this` context.
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('my-component', {
     props: {
         title: 'Hello World'
@@ -167,9 +164,6 @@ When a component is defined this inheritance some methods and properties:
 All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('my-button', {
     template() {
         return `
@@ -197,9 +191,6 @@ The method passed to event is transformed by Doz (in reality it's a string) so t
 `this` is a special placeholder that identify current instance.
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('my-button', {
     template() {
         return `
@@ -228,9 +219,6 @@ new Doz({
 Any component can emit a custom event. See also [component directives](#doz-component).
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('salutation-card', {
     template() {
         return `<caller-o d:on-mycallback="aCallback"></caller-o>`
@@ -282,9 +270,6 @@ Any event with prefix "onBefore" if returns `false` the next event will not call
 A complete example
 
 ```javascript
-
-import Doz from 'doz'
-
 Doz.component('hello-world', {
     props: {
         salutation: 'Hello World'
@@ -335,8 +320,6 @@ As said previously, when define a component with `component` this will be global
 Doz also allows you to create local components:
 
 ```javascript
-import Doz from 'doz'
-
 const helloWorld = {
     tag: 'hello-world',
     cfg: {
@@ -365,8 +348,6 @@ Doz component instance provide a method called `mount`,
 this method allows you to "append" a new component inside another.
 
 ```javascript
-import Doz from 'doz'
-
 Doz.component('hello-world', {
     template() {
         return `
@@ -399,8 +380,6 @@ new Doz({
 Mount component in a specific root inside a parent:
 
 ```javascript
-import Doz from 'doz'
-
 Doz.component('hello-world', {
     template() {
         return `
@@ -439,9 +418,36 @@ The directives are special attributes that are specified inside component tag.
 There are two types:
 
 #### HTML element
-Directives that works only on HTML element
+Directives that works only on HTML element.
 
 ##### d-bind
+This directive bind an input element to a props:
+
+```javascript
+Doz.component('input-message', {
+    template(){
+        return `
+            <div>
+                <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
+                <p>${this.props.message}</p>
+            </div>
+        `
+    },
+    props: {
+        message: ''
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <input-message placeholder="write a message"></input-message>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/2eeop7c5/)
+
 ##### d-ref
 
 #### DOZ component
@@ -451,3 +457,9 @@ Directives that works only on component
 ##### d:id
 ##### d:store
 ##### d:on
+
+### Loops
+
+### Actions
+
+### Develop and production
