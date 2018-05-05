@@ -6,15 +6,42 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 </div>
 
 # Documentation
-Below some basic concepts
+Below some basic concepts:
 
-- Component definition
+- [Component definition](#component-definition)
+    - Props
     - Methods
     - Events
     - Local component
-- Mount component
 - View component
 - Directives
     - HTML element
     - DOZ component
 - Loops
+
+## Component definition
+The method `component` defines an component globally that can be added to any view of the project.
+
+```jvascript
+
+import Doz from 'doz'
+
+Doz.component('hello-world', {
+    template() {
+        return `
+            <h2>Hello World</h2>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <hello-world></hello-world>
+    `
+});
+
+```
+
+<a href="https://jsfiddle.net/fabioricali/ut18kyy1/" target="_blank">Result</a>
