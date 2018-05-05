@@ -14,7 +14,7 @@ Below some basic concepts:
         - [Inherited](#inherited)
     - [Handlers](#handlers)
         - [Passing arguments](#passing-arguments)
-    - Emitter
+    - [Emitter](#emitter)
     - Events
     - Local component
     - Async mount
@@ -205,3 +205,35 @@ new Doz({
 ```
 
 [Result](https://jsfiddle.net/fabioricali/1wj852pd/)
+
+### Emitter
+Any component can emit a custom event. See also [component directives](#doz-component).
+
+```javascript
+
+import Doz from 'doz'
+
+Doz.component('salutation-card', {
+    template() {
+        return `<caller-o d:on-mycallback="aCallback"></caller-o>`
+    },
+    aCallback: function(arg) {
+        alert('callback is called: ' + arg);
+    }
+});
+
+Doz.component('caller-o', {
+    template() {
+        return `<button onclick="this.emit('mycallback', 'hello world')">Callback</button>`
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <salutation-card></salutation-card>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/2spdq60k/)
