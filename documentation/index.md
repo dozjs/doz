@@ -15,7 +15,7 @@ Below some basic concepts:
     - [Handlers](#handlers)
         - [Passing arguments](#passing-arguments)
     - [Emitter](#emitter)
-    - [Events](#events)
+    - [Lifecycle methods](#lifecycle-methods)
     - Local component
     - Async mount
 - View component
@@ -238,7 +238,7 @@ new Doz({
 
 [Result](https://jsfiddle.net/fabioricali/2spdq60k/)
 
-### Events
+### Lifecycle methods
 In order all events:
 - `onBeforeCreate`: called before that instance is created.
 - `onCreate`: called after that instance is created.
