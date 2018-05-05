@@ -66,6 +66,15 @@
                 }
                 this.props.record = name;
             }, 1000);
+
+            setTimeout(()=>{
+                console.time('update');
+                let name = [];
+                for (let i = 0; i < 10; i++) {
+                    name.push('ciao' + i)
+                }
+                this.props.record = name;
+            }, 5000);
         },
 
         onUpdate() {

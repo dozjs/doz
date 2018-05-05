@@ -1,2 +1,0 @@
-## Component definition
-## Mount component
