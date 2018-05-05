@@ -16,7 +16,7 @@ Below some basic concepts:
         - [Passing arguments](#passing-arguments)
     - [Emitter](#emitter)
     - [Lifecycle methods](#lifecycle-methods)
-    - Local component
+    - [Local component](#local-component)
     - Async mount
 - View component
 - Directives
@@ -311,3 +311,33 @@ new Doz({
 ```
 
 [Result](https://jsfiddle.net/fabioricali/77o4e7nL/)
+
+### Local component
+As said previously, when define a component with `component` this will be global.
+Doz also allows you to create local components:
+
+```javascript
+import Doz from 'doz'
+
+const helloWorld = {
+    tag: 'hello-world',
+    cfg: {
+        template() {
+            return `
+                <h2>Hello World</h2>
+            `
+        }
+    }
+}
+
+new Doz({
+    components: [helloWorld],
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <hello-world></hello-world>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/Lkeonppk/)
