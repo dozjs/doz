@@ -15,7 +15,7 @@ Below some basic concepts:
     - [Handlers](#handlers)
         - [Passing arguments](#passing-arguments)
     - [Emitter](#emitter)
-    - Events
+    - [Events](#events)
     - Local component
     - Async mount
 - View component
@@ -237,3 +237,77 @@ new Doz({
 ```
 
 [Result](https://jsfiddle.net/fabioricali/2spdq60k/)
+
+### Events
+In order all events:
+- `onBeforeCreate`: called before that instance is created.
+- `onCreate`: called after that instance is created.
+- `onRender`: called after that instance is mounted on DOM.
+- `onBeforeUpdate`: called before that instance is updated.
+- `onUpdate`: called after that instance is updated.
+- `onBeforeDestroy`: called before that instance is destroyed.
+- `onDestroy`: called after that instance is destroyed.
+
+Any event with prefix "onBefore" if returns `false` the next event will not called.
+
+```javascript
+//..
+    onBeforeUpdate() {
+        if (this.props.counter >= 10) return false;
+    },
+    onUpdate() {
+        console.log('update', this.props.counter);
+    },
+//..
+```
+
+A complete example
+
+```javascript
+
+import Doz from 'doz'
+
+Doz.component('hello-world', {
+    props: {
+        salutation: 'Hello World'
+    },
+    template() {
+        return `
+            <h2>${this.props.salutation}</h2>
+        `
+    },
+    onBeforeCreate() {
+        console.log('before create');
+    },
+    onCreate() {
+        console.log('create');
+    },
+    onRender() {
+        console.log('render');
+        setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
+    },
+    onBeforeUpdate() {
+        console.log('before update', this.props.salutation);
+    },
+    onUpdate() {
+        console.log('update', this.props.salutation);
+        setTimeout(()=> this.destroy(), 1000)
+    },
+    onBeforeDestroy() {
+        console.log('before destroy');
+    },
+    onDestroy() {
+        console.log('destroy');
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <hello-world></hello-world>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/77o4e7nL/)
