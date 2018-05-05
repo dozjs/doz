@@ -22,7 +22,7 @@ Below some basic concepts:
 ## Component definition
 The method `component` defines an component globally that can be added to any view of the project.
 
-```jvascript
+```javascript
 
 import Doz from 'doz'
 
