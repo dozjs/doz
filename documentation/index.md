@@ -8,6 +8,7 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 # Documentation
 Below some basic concepts:
 
+- [View](#view)
 - [Component definition](#component-definition)
     - [Props](#props)
     - [Methods](#methods)
@@ -18,7 +19,6 @@ Below some basic concepts:
     - [Lifecycle methods](#lifecycle-methods)
     - [Local component](#local-component)
     - [Async mount](#async-mount)
-- View component
 - Directives
     - HTML element
     - DOZ component
@@ -26,9 +26,27 @@ Below some basic concepts:
 - Actions
 - Develop and production
 
+## View
+A view can be considered as a main component that embed other components.
+
+```javascript
+
+import Doz from 'doz'
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome my app:</h1>
+        <h2>Hello World</h2>
+    `
+});
+```
+
+[Result](https://jsfiddle.net/fabioricali/rx9ps5s4/)
+
 ## Component definition
 The method `component` defines an component globally that can be added to any view of the project.
-The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)
+The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
 
 ```javascript
 
@@ -88,7 +106,7 @@ new Doz({
 
 ### Methods
 The methods are defined inside a single object where there are also props and events.
-Why this choice? Because during development it's essential to have an exact reference of `this`.
+**Why this choice?** Because during development it's essential to have an exact reference of `this` context.
 
 ```javascript
 
@@ -378,7 +396,7 @@ new Doz({
 
 [Result](https://jsfiddle.net/fabioricali/c4kaoc95/)
 
-Mount component in a specific root inside a parent
+Mount component in a specific root inside a parent:
 
 ```javascript
 import Doz from 'doz'
