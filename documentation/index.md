@@ -117,28 +117,29 @@ When a component is defined this inheritance some methods and properties:
 
 | Name | Type | Description | Required | Editable |
 | ---- | ---- | ----------- | -------- | -------- |
-| `template` | function | This method must be return the component template literals | yes | yes |
-| `props` | object | This object can contains all component props | no | yes |
-| `store` | string | An unique store name to expose the props with other components of the view | no | yes |
-| `getStore` | function | Get store by name | no | no |
-| `id` | string | A unique name that identify the component inside the view. More info on [directives](#directives) | no | yes |
-| `getComponentById` | function | Get component by id | no | no |
+| `action` | object | This object contains all view actions. More info on [actions](#actions) | no | no |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
-| `view` | object | The view object | no | no |
-| `parent` | object | The parent object | no | no |
 | `children` | object | An object that contains all children components | no | no |
-| `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
-| `tag` | string | Component tag name | no | no |
+| `destroy` | function | Destroy component and his children | no | no |
 | `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no |
 | `emit` | function | This method call a callback given an event name. More info on [emitter](#emitter) | no | no |
-| `action` | object | This object contains all view actions. More info on [actions](#actions) | no | no |
-| `render` | function | This method is called after changes detected, then updates the component part | no | no |
-| `mount` | function | This method can mount a new component as child | no | no |
-| `destroy` | function | Destroy component and his children | no | no |
+| `getComponent` | function | Get child component by alias | no | yes |
+| `getComponentById` | function | Get component by id | no | no |
+| `getStore` | function | Get store by name | no | no |
+| `id` | string | A unique name that identify the component inside the view. More info on [directives](#directives) | no | yes |
+| `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no |
 | `onBeforeCreate`| function | This method is called before that component instance is created. More info on [events](#events) | no | no |
-| `onCreate`| function | This method is called after that component instance is created. More info on [events](#events) | no | no |
-| `onRender`| function | This method is called after that component instance is mounted. More info on [events](#events) | no | no |
-| `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [events](#events) | no | no |
-| `onUpdate`| function | This method is called after that component instance is updated. More info on [events](#events) | no | no |
 | `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [events](#events) | no | no |
+| `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [events](#events) | no | no |
+| `onCreate`| function | This method is called after that component instance is created. More info on [events](#events) | no | no |
 | `onDestroy`| function | This method is called after that component instance is destroyed. More info on [events](#events) | no | no |
+| `onRender`| function | This method is called after that component instance is mounted. More info on [events](#events) | no | no |
+| `onUpdate`| function | This method is called after that component instance is updated. More info on [events](#events) | no | no |
+| `parent` | object | The parent object | no | no |
+| `props` | object | This object can contains all component props | no | yes |
+| `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
+| `render` | function | This method is called after changes detected, then updates the component part | no | no |
+| `store` | string | An unique store name to expose the props with other components of the view | no | yes |
+| `tag` | string | Component tag name | no | no |
+| `template` | function | This method must be return the component template literals | yes | yes |
+| `view` | object | The view object | no | no |
