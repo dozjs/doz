@@ -136,7 +136,7 @@ Doz.component('my-component', {
 ```
 
 #### Inherited
-When a component is defined this inheritance some methods and properties:
+When a component is defined it inherits some methods and properties:
 
 | Name | Type | Description | Required | Editable |
 | ---- | ---- | ----------- | -------- | -------- |
