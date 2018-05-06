@@ -693,5 +693,42 @@ new Doz({
 ---
 
 ### Actions
+The actions allow to better organize the logic of the various components in the view,
+and they are global so can be called in all components.
+
+```javascript
+const actions = {
+    toggleColor() {
+        const store = this.getStore('my-button');
+        store.done = !store.done;
+    }
+};
+
+Doz.component('my-button', {
+    store: 'my-button',
+    props: {
+        done: true
+    },
+    template() {
+        return `
+            <h2 style="color:${this.props.done ? 'red' : 'green' }">I'm a color</h2>
+            <button onclick="this.action.toggleColor()">Toggle color</button>
+        `
+    }
+});
+
+new Doz({
+    actions,
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/je6ggukd/)
+
+---
 
 ### Develop and production
