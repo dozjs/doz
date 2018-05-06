@@ -51,6 +51,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/rx9ps5s4/)
 
+---
+
 ## Component definition
 The method `component` defines an component globally that can be added to any view of the project.
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
@@ -74,6 +76,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/ut18kyy1/)
+
+---
 
 ### Props
 All props are stored into `props` property of the component and they are accessible through a proxy that detect changes. When there are changes Doz update only the node that containing the updated prop.
@@ -104,6 +108,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/)
+
+---
 
 ### Methods
 The methods are defined inside a single object where there are also props and events.
@@ -187,6 +193,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/v0ejbsLs/)
 
+---
+
 #### Passing arguments
 The method passed to event is transformed by Doz (in reality it's a string) so the arguments are automatically casted.
 `this` is a special placeholder that identify current instance.
@@ -216,6 +224,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/1wj852pd/)
 
+---
+
 ### Emitter
 Any component can emit a custom event. See also [component directives](#doz-component).
 
@@ -244,6 +254,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/2spdq60k/)
+
+---
 
 ### Lifecycle methods
 In order all events:
@@ -316,6 +328,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/77o4e7nL/)
 
+---
+
 ### Local component
 As said previously, when define a component with `component` this will be global.
 Doz also allows you to create local components:
@@ -343,6 +357,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lkeonppk/)
+
+---
 
 ### Async mount
 Doz component instance provide a method called `mount`,
@@ -377,6 +393,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/c4kaoc95/)
+
+---
 
 Mount component in a specific root inside a parent:
 
@@ -414,6 +432,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/uLb9nw2d/)
 
+---
+
 ### Directives
 The directives are special attributes that are specified inside component tag.
 There are two types:
@@ -449,6 +469,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/2eeop7c5/)
 
+---
+
 ##### d-ref
 Sometimes it's necessary to have a easy reference to an HTML element in your component, this directive does it.
 
@@ -475,6 +497,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/2kk0L1r8/)
+
+---
 
 #### DOZ component
 Directives that works only on component
