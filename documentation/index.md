@@ -8,6 +8,8 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 # Documentation
 Below some basic concepts:
 
+- [Installation](#installation)
+    - [Import library](#import-library)
 - [View](#view)
 - [Component definition](#component-definition)
     - [Props](#props)
@@ -31,6 +33,20 @@ Below some basic concepts:
 - [Loops](#loops)
 - [Actions](#actions)
 - [Develop and production](#develop-and-production)
+
+## Installation
+```
+npm install --save doz
+```
+
+### Import library
+```javascript
+//ES6
+import Doz from 'doz'
+
+//ES5
+var Doz = require('doz');
+```
 
 ## View
 A view can be considered as a main component that embed other components.
@@ -732,3 +748,4 @@ new Doz({
 ---
 
 ### Develop and production
+The best way to build app with Doz is using the great [Parcel Bundler](https://github.com/parcel-bundler/parcel) with zero configuration.
