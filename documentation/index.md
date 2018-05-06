@@ -28,7 +28,8 @@ Below some basic concepts:
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
-- [Loops](#loops),
+- [Conditional statements](#conditional-statements)
+- [Loops](#loops)
 - [Actions](#actions)
 - [Develop and production](#develop-and-production)
 
@@ -449,6 +450,31 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/2eeop7c5/)
 
 ##### d-ref
+Sometimes it's necessary to have a easy reference to an HTML element in your component, this directive does it.
+
+```javascript
+Doz.component('my-button', {
+    template() {
+        return `
+            <h2 d-ref="title">I'm a title</h2>
+            <button onclick="this.clickme()">Get H2 ref!</button>
+        `
+    },
+    clickme(e) {
+        alert(this.ref.title);
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/2kk0L1r8/)
 
 #### DOZ component
 Directives that works only on component
@@ -457,6 +483,8 @@ Directives that works only on component
 ##### d:id
 ##### d:store
 ##### d:on
+
+### Conditional statements
 
 ### Loops
 
