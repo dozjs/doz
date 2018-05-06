@@ -540,6 +540,45 @@ new Doz({
 ---
 
 ##### d:store
+This attribute allow you to define an unique name that expose your component props globally.
+
+```javascript
+Doz.component('my-label', {
+    props: {
+        title: "I'm a label"
+    },
+    template() {
+        return `
+            <label>${this.props.title}</label>
+        `
+    }
+});
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button onclick="this.clickme()">Update label</button>
+        `
+    },
+    clickme(e) {
+        this.getStore('wowo').title = 'Hello world!';
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-label d:store="wowo"></my-label>
+        <my-button></my-button>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/yo6xeoc2/)
+
+---
+
 ##### d:on
 
 ### Conditional statements
