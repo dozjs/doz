@@ -653,7 +653,7 @@ new Doz({
 ---
 
 ### Loops
-Same situation as conditional statements:
+Same situation as conditional statements but using the method `each` provided by component:
 
 ```javascript
 Doz.component('my-list', {
@@ -673,7 +673,7 @@ Doz.component('my-list', {
     template() {
         return `
             <ul>
-                ${this.each(this.props.colors, color => `<li>${color.name}</li>`)}
+                ${this.each(this.props.colors, (color,  i) => `<li>${i}) ${color.name}</li>`)}
             </ul>
         `
     }
