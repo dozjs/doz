@@ -24,7 +24,6 @@ Below some basic concepts:
             - [d-bind](#d-bind)
             - [d-ref](#d-ref)
         - [DOZ component](#doz-component)
-            - [d:alias](#dalias)
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
@@ -503,8 +502,43 @@ new Doz({
 #### DOZ component
 Directives that works only on component
 
-##### d:alias
 ##### d:id
+This attribute allow you to define an unique name that identify the component globally.
+
+```javascript
+Doz.component('my-label', {
+    template() {
+        return `
+            <label>I'm a label</label>
+        `
+    }
+});
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button onclick="this.clickme()">Get component by alias!</button>
+        `
+    },
+    clickme(e) {
+        alert(this.getComponentById('wowo'));
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-label d:id="wowo"></my-label>
+        <my-button></my-button>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/w3dmq43a/)
+
+---
+
 ##### d:store
 ##### d:on
 
