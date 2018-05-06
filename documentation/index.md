@@ -580,6 +580,45 @@ new Doz({
 ---
 
 ##### d:on
+This attribute allow you to define an event name.
+
+```javascript
+Doz.component('salutation-card', {
+    template() {
+        return `<div>${this.props.salutation} ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="aCallback"></caller-o></div>`
+    },
+    aCallback: function(newSalutation) {
+        this.props.salutation = newSalutation;
+        alert(newSalutation);
+    }
+});
+
+Doz.component('caller-o', {
+    template() {
+        return `<div>This component emit an event</div>`
+    },
+    onCreate() {
+        setTimeout(()=>{
+            this.emit('mycallback', 'Ciao');
+        },1000);
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <salutation-card
+            salutation="Hello"
+            title="MR."
+            name="Doz">
+        </salutation-card>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/tkzv5obd/)
+
+---
 
 ### Conditional statements
 
