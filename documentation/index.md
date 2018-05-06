@@ -621,8 +621,76 @@ new Doz({
 ---
 
 ### Conditional statements
+As said previously Doz use [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals):
+
+```javascript
+Doz.component('my-button', {
+    props: {
+        done: true
+    },
+    template() {
+        return `
+            <h2 style="color:${this.props.done ? 'red' : 'green' }">I'm a color</h2>
+            <button onclick="this.clickme()">Toggle color</button>
+        `
+    },
+    clickme(e) {
+        this.props.done = !this.props.done;
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/sevzodnu/)
+
+---
 
 ### Loops
+Same situation as conditional statements:
+
+```javascript
+Doz.component('my-list', {
+    props: {
+        colors: [
+            {
+                name: 'Red'
+            },
+            {
+                name: 'Green'
+            },
+            {
+                name: 'Orange'
+            }
+        ]
+    },
+    template() {
+        return `
+            <ul>
+                ${this.each(this.props.colors, color => `<li>${color.name}</li>`)}
+            </ul>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-list></my-list>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
+
+---
 
 ### Actions
 
