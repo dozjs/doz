@@ -749,3 +749,11 @@ new Doz({
 
 ### Develop and production
 The best way to build app with Doz is using the great [Parcel Bundler](https://github.com/parcel-bundler/parcel) with zero configuration.
+
+---
+
+## License
+DOZ is open-sourced software licensed under the <a target="_blank" href="http://opensource.org/licenses/MIT">MIT license</a>
+
+## Author
+<a target="_blank" href="http://rica.li">Fabio Ricali</a>
