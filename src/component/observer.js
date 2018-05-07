@@ -45,7 +45,8 @@ function create(instance, props) {
         }
     });
 
-    proxy.beforeChange(instance.props, () => {
+    proxy.beforeChange(instance.props, (changes) => {
+        console.log(changes)
         const res = events.callBeforeUpdate(instance);
         if (res === false)
             return false;

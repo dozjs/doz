@@ -1114,7 +1114,8 @@ function create(instance, props) {
         }
     });
 
-    proxy.beforeChange(instance.props, function () {
+    proxy.beforeChange(instance.props, function (changes) {
+        console.log(changes);
         var res = events.callBeforeUpdate(instance);
         if (res === false) return false;
     });

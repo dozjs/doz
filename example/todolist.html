@@ -161,6 +161,11 @@
 
         sanitize(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        },
+
+        onBeforeUpdate(props) {
+            //console.log(props);
+            this.props.title = 'eeeeeee'
         }
     });
 
