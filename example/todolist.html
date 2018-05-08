@@ -163,8 +163,12 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         },
 
-        onBeforeUpdate(props, property, currentPath) {
-            //console.log('beforeUpdate');
+        onBeforeUpdate(props) {
+
+            if (this.props.title === 'pop') {
+                //console.log('beforeUpdate');
+                this.props.title = 'pope'
+            }
         },
 
         onUpdate(props, property, currentPath) {
