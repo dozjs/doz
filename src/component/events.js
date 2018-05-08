@@ -16,9 +16,9 @@ function callRender(context) {
     }
 }
 
-function callBeforeUpdate(context, property, currentPath) {
+function callBeforeUpdate(context) {
     if(typeof context.onBeforeUpdate === 'function'){
-        return context.onBeforeUpdate.call(context, Object.assign({}, context.props), property, currentPath);
+        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
     }
 }
 

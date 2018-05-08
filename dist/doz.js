@@ -683,9 +683,9 @@ function callRender(context) {
     }
 }
 
-function callBeforeUpdate(context, property, currentPath) {
+function callBeforeUpdate(context) {
     if (typeof context.onBeforeUpdate === 'function') {
-        return context.onBeforeUpdate.call(context, Object.assign({}, context.props), property, currentPath);
+        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
     }
 }
 
@@ -1114,13 +1114,8 @@ function create(instance, props) {
         }
     });
 
-    proxy.beforeChange(instance.props, function (changes, property, currentPath) {
-        proxy.pause(instance.props);
-        changes.forEach(function (change) {
-            console.log(change.target.title = 'ffff');
-        });
-        proxy.resume(instance.props);
-        var res = events.callBeforeUpdate(instance, property, currentPath);
+    proxy.beforeChange(instance.props, function (changes) {
+        var res = events.callBeforeUpdate(instance);
         if (res === false) return false;
     });
 }
