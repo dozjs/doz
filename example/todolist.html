@@ -161,20 +161,8 @@
 
         sanitize(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        },
-
-        onBeforeUpdate(props) {
-
-            if (this.props.title === 'pop') {
-                //console.log('beforeUpdate');
-                this.props.title = 'pope'
-            }
-        },
-
-        onUpdate(props, property, currentPath) {
-            //console.log('update');
-            //this.props.title = 'eeeeeee'
         }
+
     });
 
     Doz.component('doz-todo-buttons', {
@@ -205,11 +193,27 @@
             `;
         },
 
+        propsModel: {
+            todo: String,
+            total: Number,
+            totalDone: Object,
+            record: {
+                type: Array,
+                value: {
+                    title: String,
+                    done: Boolean
+                }
+            }
+        },
+
         props: {
             record: [],
             todo: '',
             total: 0,
             totalDone: 0
+        },
+
+        onBeforeUpdate() {
         },
 
         onRender() {
@@ -233,6 +237,14 @@
             <doz-todo></doz-todo>
         `
     });
+
+    console.dir(Array.toString());
+    console.dir(Object);
+    console.dir(Number);
+    console.dir(Function);
+    console.dir(String);
+    console.dir(Symbol);
+    console.dir(Date);
 
 </script>
 </body>
