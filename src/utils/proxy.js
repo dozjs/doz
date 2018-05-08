@@ -11,6 +11,10 @@
  *	reflecting changes in the model to the view. Observable Slim aspires to be as lightweight and easily
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
+/**
+ * ObservableSlim
+ * @type {{create, observe, pause, resume, remove, beforeChange}}
+ */
 const ObservableSlim = (function () {
 
     // An array that stores all of the observables created through the public create() method below.
@@ -47,15 +51,15 @@ const ObservableSlim = (function () {
     let _create = function (target, domDelay, originalObservable, originalPath) {
 
         let observable = originalObservable || null;
-        let path = originalPath || "";
+        let path = originalPath || '';
 
         let changes = [];
 
         let _getPath = function (target, property) {
             if (target instanceof Array) {
-                return (path !== "") ? (path) : property;
+                return (path !== '') ? (path) : property;
             } else {
-                return (path !== "") ? (path + "." + property) : property;
+                return (path !== '') ? (path + '.' + property) : property;
             }
         };
 
@@ -86,17 +90,17 @@ const ObservableSlim = (function () {
 
                 // implement a simple check for whether or not the object is a proxy, this helps the .create() method avoid
                 // creating Proxies of Proxies.
-                if (property === "__getTarget") {
+                if (property === '__getTarget') {
                     return target;
-                } else if (property === "__isProxy") {
+                } else if (property === '__isProxy') {
                     return true;
                     // from the perspective of a given observable on a parent object, return the parent object of the given nested object
-                } else if (property === "__getParent") {
+                } else if (property === '__getParent') {
                     return function (i) {
-                        if (typeof i === "undefined") i = 1;
-                        let parentPath = _getPath(target, "__getParent").split(".");
+                        if (typeof i === 'undefined') i = 1;
+                        let parentPath = _getPath(target, '__getParent').split('.');
                         parentPath.splice(-(i + 1), (i + 1));
-                        return _getProperty(observable.parentProxy, parentPath.join("."));
+                        return _getProperty(observable.parentProxy, parentPath.join('.'));
                     }
                 }
 
@@ -125,7 +129,7 @@ const ObservableSlim = (function () {
 
                     // if we're arrived here, then that means there is no proxy for the object the user just accessed, so we
                     // have to create a new proxy for it
-                    let newPath = (path !== "") ? (path + "." + property) : property;
+                    let newPath = (path !== '') ? (path + '.' + property) : property;
 
                     return _create(targetProp, domDelay, observable, newPath);
                 } else {
@@ -149,16 +153,16 @@ const ObservableSlim = (function () {
 
                 // record the deletion that just took place
                 changes.push({
-                    "type": "delete",
-                    "target": target,
-                    "property": property,
-                    "newValue": null,
-                    "previousValue": previousValue[property],
-                    "currentPath": currentPath,
-                    "proxy": proxy
+                    type: 'delete',
+                    target: target,
+                    property: property,
+                    newValue: null,
+                    previousValue: previousValue[property],
+                    currentPath: currentPath,
+                    proxy: proxy
                 });
 
-                if (typeof observable.beforeChange === "function") {
+                if (typeof observable.beforeChange === 'function') {
                     let res = observable.beforeChange(changes, property, currentPath);
                     if (res === false) return false;
                 }
@@ -215,21 +219,21 @@ const ObservableSlim = (function () {
                     let currentPath = _getPath(target, property);
 
                     // determine if we're adding something new or modifying somethat that already existed
-                    let type = "update";
-                    if (typeOfTargetProp === "undefined") type = "add";
+                    let type = 'update';
+                    if (typeOfTargetProp === 'undefined') type = 'add';
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
                     changes.push({
-                        "type": type,
-                        "target": target,
-                        "property": property,
-                        "newValue": value,
-                        "previousValue": receiver[property],
-                        "currentPath": currentPath,
-                        "proxy": proxy
+                        type: type,
+                        target: target,
+                        property: property,
+                        newValue: value,
+                        previousValue: receiver[property],
+                        currentPath: currentPath,
+                        proxy: proxy
                     });
 
-                    if (typeof observable.beforeChange === "function") {
+                    if (typeof observable.beforeChange === 'function') {
                         let res = observable.beforeChange(changes, property, currentPath);
                         if (res === false) return false;
                     }
@@ -264,7 +268,7 @@ const ObservableSlim = (function () {
                         // the UI rendering -- there's no need to execute the clean up immediately
                         setTimeout(function () {
 
-                            if (typeOfTargetProp === "object" && targetProp !== null) {
+                            if (typeOfTargetProp === 'object' && targetProp !== null) {
 
                                 // check if the to-be-overwritten target property still exists on the target object
                                 // if it does still exist on the object, then we don't want to stop observing it. this resolves
@@ -358,14 +362,14 @@ const ObservableSlim = (function () {
         // we don't want to create a new observable if this function was invoked recursively
         if (observable === null) {
             observable = {
-                "parentTarget": target,
-                "domDelay": domDelay,
-                "parentProxy": proxy,
-                "observers": [],
-                "targets": [target],
-                "proxies": [proxy],
-                "paused": false,
-                "path": path
+                parentTarget: target,
+                domDelay: domDelay,
+                parentProxy: proxy,
+                observers: [],
+                targets: [target],
+                proxies: [proxy],
+                paused: false,
+                path: path
             };
             observables.push(observable);
         } else {
@@ -374,7 +378,7 @@ const ObservableSlim = (function () {
         }
 
         // store the proxy we've created so it isn't re-created unnecessairly via get handler
-        let proxyItem = {"target": target, "proxy": proxy, "observable": observable};
+        let proxyItem = {target, proxy, observable};
 
         //let targetPosition = targets.indexOf(target);
         let targetPosition = -1;
@@ -407,7 +411,7 @@ const ObservableSlim = (function () {
          * @param target {Object} required, plain JavaScript object that we want to observe for changes.
          * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
-         * @returns Proxy
+         * @returns {Object}
          */
         create: function (target, domDelay, observer) {
 
@@ -417,14 +421,14 @@ const ObservableSlim = (function () {
                 target = target.__getTarget;
                 //if it is, then we should throw an error. we do not allow creating proxies of proxies
                 // because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
-                //throw new Error("ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.");
+                //throw new Error('ObservableSlim.create() cannot create a Proxy for a target object that is also a Proxy.');
             }
 
             // fire off the _create() method -- it will create a new observable and proxy and return the proxy
             let proxy = _create(target, domDelay);
 
             // assign the observer function
-            if (typeof observer === "function") this.observe(proxy, observer);
+            if (typeof observer === 'function') this.observe(proxy, observer);
 
             // recursively loop over all nested objects on the proxy we've just created
             // this will allow the top observable to observe any changes that occur on a nested object
@@ -438,7 +442,6 @@ const ObservableSlim = (function () {
             })(proxy);
 
             return proxy;
-
         },
 
         /**
@@ -472,7 +475,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error("ObseravableSlim could not pause observable -- matching proxy not found.");
+            if (foundMatch === false) throw new Error('ObseravableSlim could not pause observable -- matching proxy not found.');
         },
 
         /**
@@ -489,7 +492,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error("ObseravableSlim could not resume observable -- matching proxy not found.");
+            if (foundMatch === false) throw new Error('ObseravableSlim could not resume observable -- matching proxy not found.');
         },
 
         /**
@@ -536,7 +539,7 @@ const ObservableSlim = (function () {
          */
         beforeChange: function (proxy, callback) {
             if (typeof callback !== 'function')
-                throw new Error("Callback function is required");
+                throw new Error('Callback function is required');
 
             let i = observables.length;
             let foundMatch = false;
@@ -547,7 +550,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error("ObseravableSlim -- matching proxy not found.");
+            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
         }
     };
 })();

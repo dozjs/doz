@@ -46,7 +46,13 @@ function create(instance, props) {
     });
 
     proxy.beforeChange(instance.props, (changes, property, currentPath) => {
-        //console.log(changes, property, currentPath)
+        proxy.pause(instance.props);
+        changes.forEach(change => {
+            if(change.target.title === 'pop') {
+                change.target.title = 'P O P'
+            }
+        });
+        proxy.resume(instance.props);
         const res = events.callBeforeUpdate(instance, property, currentPath);
         if (res === false)
             return false;

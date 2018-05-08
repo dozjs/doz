@@ -164,7 +164,11 @@
         },
 
         onBeforeUpdate(props, property, currentPath) {
-            console.log(props, property, currentPath);
+            //console.log('beforeUpdate');
+        },
+
+        onUpdate(props, property, currentPath) {
+            //console.log('update');
             //this.props.title = 'eeeeeee'
         }
     });
