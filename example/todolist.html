@@ -163,9 +163,9 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         },
 
-        onBeforeUpdate(props) {
-            //console.log(props);
-            this.props.title = 'eeeeeee'
+        onBeforeUpdate(props, property, currentPath) {
+            console.log(props, property, currentPath);
+            //this.props.title = 'eeeeeee'
         }
     });
 

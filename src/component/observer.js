@@ -45,9 +45,9 @@ function create(instance, props) {
         }
     });
 
-    proxy.beforeChange(instance.props, (changes) => {
-        console.log(changes)
-        const res = events.callBeforeUpdate(instance);
+    proxy.beforeChange(instance.props, (changes, property, currentPath) => {
+        //console.log(changes, property, currentPath)
+        const res = events.callBeforeUpdate(instance, property, currentPath);
         if (res === false)
             return false;
     });
