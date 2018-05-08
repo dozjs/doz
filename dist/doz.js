@@ -1135,7 +1135,7 @@ module.exports = {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
- * 	Observable Slim
+ * 	Originally was Observable Slim
  *	Version 0.0.4
  * 	https://github.com/elliotnb/observable-slim
  *
@@ -1170,19 +1170,16 @@ var ObservableSlim = function () {
         }, obj || self);
     };
 
-    /*	Function: _create
-                Private internal function that is invoked to create a new ES6 Proxy whose changes we can observe through
-                the Observerable.observe() method.
-              Parameters:
-                target 				- required, plain JavaScript object that we want to observe for changes.
-                domDelay 			- batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
-                originalObservable 	- object, the original observable created by the user, exists for recursion purposes,
-                                      allows one observable to observe change on any nested/child objects.
-                originalPath 		- string, the path of the property in relation to the target on the original observable,
-                                      exists for recursion purposes, allows one observable to observe change on any nested/child objects.
-              Returns:
-                An ES6 Proxy object.
-    */
+    /**
+     * _create
+     * @description Private internal function that is invoked to create a new ES6 Proxy whose changes we can observe through the Observerable.observe() method.
+     * @param target {Object} required, plain JavaScript object that we want to observe for changes.
+     * @param domDelay {Boolean} batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
+     * @param originalObservable {Object} the original observable created by the user, exists for recursion purposes, allows one observable to observe change on any nested/child objects.
+     * @param originalPath {String} the path of the property in relation to the target on the original observable, exists for recursion purposes, allows one observable to observe change on any nested/child objects.
+     * @returns {Object}
+     * @private
+     */
     var _create = function _create(target, domDelay, originalObservable, originalPath) {
 
         var observable = originalObservable || null;
@@ -1538,16 +1535,14 @@ var ObservableSlim = function () {
     };
 
     return {
-        /*	Method:
-                Public method that is invoked to create a new ES6 Proxy whose changes we can observe
-                through the Observerable.observe() method.
-              Parameters
-                target - Object, required, plain JavaScript object that we want to observe for changes.
-                domDelay - Boolean, required, if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
-                observer - Function, optional, will be invoked when a change is made to the proxy.
-              Returns:
-                An ES6 Proxy object.
-        */
+        /**
+         * Create
+         * @description Public method that is invoked to create a new ES6 Proxy whose changes we can observe through the Observerable.observe() method.
+         * @param target {Object} required, plain JavaScript object that we want to observe for changes.
+         * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
+         * @param observer {Function} optional, will be invoked when a change is made to the proxy.
+         * @returns Proxy
+         */
         create: function create(target, domDelay, observer) {
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
@@ -1579,15 +1574,12 @@ var ObservableSlim = function () {
             return proxy;
         },
 
-        /*	Method: observe
-                This method is used to add a new observer function to an existing proxy.
-              Parameters:
-                proxy 	- the ES6 Proxy returned by the create() method. We want to observe changes made to this object.
-                observer 	- this function will be invoked when a change is made to the observable (not to be confused with the
-                              observer defined in the create() method).
-              Returns:
-                Nothing.
-        */
+        /**
+         * observe
+         * @description This method is used to add a new observer function to an existing proxy.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method. We want to observe changes made to this object.
+         * @param observer {Function} this function will be invoked when a change is made to the observable (not to be confused with the observer defined in the create() method).
+         */
         observe: function observe(proxy, observer) {
             // loop over all the observables created by the _create() function
             var i = observables.length;
@@ -1599,11 +1591,10 @@ var ObservableSlim = function () {
             }
         },
 
-        /*	Method: pause
-                This method will prevent any observer functions from being invoked when a change occurs to a proxy.
-              Parameters:
-                proxy 	- the ES6 Proxy returned by the create() method.
-        */
+        /**
+         * Pause
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method
+         */
         pause: function pause(proxy) {
             var i = observables.length;
             var foundMatch = false;
@@ -1614,14 +1605,13 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch == false) throw new Error("ObseravableSlim could not pause observable -- matching proxy not found.");
+            if (foundMatch === false) throw new Error("ObseravableSlim could not pause observable -- matching proxy not found.");
         },
 
-        /*	Method: resume
-                This method will resume execution of any observer functions when a change is made to a proxy.
-              Parameters:
-                proxy 	- the ES6 Proxy returned by the create() method.
-        */
+        /**
+         * Resume
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method
+         */
         resume: function resume(proxy) {
             var i = observables.length;
             var foundMatch = false;
@@ -1635,12 +1625,11 @@ var ObservableSlim = function () {
             if (foundMatch === false) throw new Error("ObseravableSlim could not resume observable -- matching proxy not found.");
         },
 
-        /*	Method: remove
-                This method will remove the observable and proxy thereby preventing any further callback observers for
-                changes occuring to the target object.
-              Parameters:
-                proxy 	- the ES6 Proxy returned by the create() method.
-        */
+        /**
+         * Remove
+         * @description this method will remove the observable and proxy thereby preventing any further callback observers for changes occuring to the target object.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method
+         */
         remove: function remove(proxy) {
 
             var matchedObservable = null;
@@ -1660,7 +1649,7 @@ var ObservableSlim = function () {
                 while (b--) {
                     if (targetsProxy[a][b].observable === matchedObservable) {
                         targetsProxy[a].splice(b, 1);
-                        if (targetsProxy[a].length == 0) {
+                        if (targetsProxy[a].length === 0) {
                             targetsProxy.splice(a, 1);
                             targets.splice(a, 1);
                         }
@@ -1672,12 +1661,12 @@ var ObservableSlim = function () {
             }
         },
 
-        /*	Method: beforeChange
-        This method accepts a function will be invoked before changes.
-        Parameters:
-        proxy 	- the ES6 Proxy returned by the create() method.
-        callback 	- Function, will be invoked before every change is made to the proxy, if it returns false no changes will be made.
-        */
+        /**
+         * beforeChange
+         * @description This method accepts a function will be invoked before changes.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         * @param callback {Function} will be invoked before every change is made to the proxy, if it returns false no changes will be made.
+         */
         beforeChange: function beforeChange(proxy, callback) {
             if (typeof callback !== 'function') throw new Error("Callback function is required");
 
@@ -1695,10 +1684,7 @@ var ObservableSlim = function () {
     };
 }();
 
-// Export in a try catch to prevent this from erroring out on older browsers
-try {
-    module.exports = ObservableSlim;
-} catch (err) {}
+module.exports = ObservableSlim;
 
 /***/ }),
 /* 15 */
