@@ -143,7 +143,7 @@ const ObservableSlim = (function () {
 
                     return _create(targetProp, domDelay, observable, newPath);
                 } else {
-                    return sanitize(targetProp);
+                    return observable.renderMode ? sanitize(targetProp) : targetProp;
                 }
             },
             deleteProperty: function (target, property) {
@@ -400,7 +400,7 @@ const ObservableSlim = (function () {
             observable.proxies.push(proxy);
         }
 
-        // store the proxy we've created so it isn't re-created unnecessairly via get handler
+        // store the proxy we've created so it isn't re-created unnecessary via get handler
         let proxyItem = {target, proxy, observable};
 
         //let targetPosition = targets.indexOf(target);
@@ -569,6 +569,42 @@ const ObservableSlim = (function () {
             while (i--) {
                 if (observables[i].parentProxy === proxy) {
                     observables[i].beforeChange = callback;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+        },
+
+        /**
+         * beginRender
+         * @description This method set renderMode to true so the param in get is sanitized.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         */
+        beginRender: function (proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].renderMode = true;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+        },
+
+        /**
+         * endRender
+         * @description This method set renderMode to false.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         */
+        endRender: function (proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].renderMode = false;
                     foundMatch = true;
                     break;
                 }

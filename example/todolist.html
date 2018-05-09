@@ -208,10 +208,6 @@
             totalDone: 0
         },
 
-        onBeforeUpdate() {
-
-        },
-
         onRender() {
             this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
                 {title: "Buy milk", done: false},

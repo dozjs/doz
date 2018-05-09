@@ -10,6 +10,7 @@ const update = require('../vdom').updateElement;
 const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
+const proxy = require('../utils/proxy');
 
 function component(tag, cfg = {}) {
 
@@ -219,7 +220,10 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function (initial) {
+                proxy.beginRender(this.props);
                 const template = this.template().trim();
+                proxy.endRender(this.props);
+
                 const tpl = html.create(template, TAG.ROOT);
                 let next = transform(tpl);
 
