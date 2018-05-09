@@ -220,12 +220,8 @@ function createInstance(cmp, cfg) {
         render: {
             value: function (initial) {
                 const template = this.template().trim();
-                console.log(template)
                 const tpl = html.create(template, TAG.ROOT);
-                console.log(tpl)
                 let next = transform(tpl);
-
-                console.log(next);
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 

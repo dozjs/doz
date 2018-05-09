@@ -475,12 +475,8 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value(initial) {
                 var template = this.template().trim();
-                console.log(template);
                 var tpl = html.create(template, TAG.ROOT);
-                console.log(tpl);
                 var next = transform(tpl);
-
-                console.log(next);
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
@@ -622,10 +618,10 @@ var html = {
 
         if (template.childNodes.length > 1) {
             element = document.createElement(wrapper);
-            console.log('TEMPLATE', template.innerHTML);
+            //console.log('TEMPLATE',template.innerHTML);
             element.innerHTML = template.innerHTML;
         } else {
-            console.log('TEMPLATE', template.innerHTML);
+            //console.log('TEMPLATE',template.innerHTML);
             element = template.firstChild || document.createTextNode('');
         }
 
@@ -749,6 +745,7 @@ function serializeProps(node) {
                 props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
                 delete props[attr.name];
             } else {
+                attr.nodeValue = attr.nodeValue.replace(/"/g, '&quot;');
                 props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
             }
         }
