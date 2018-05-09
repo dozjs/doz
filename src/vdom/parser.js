@@ -14,8 +14,10 @@ function serializeProps(node) {
                 props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
                 delete props[attr.name];
             } else {
-                attr.nodeValue = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+                let value = attr.nodeValue;
+                if(REGEX.IS_STRING_QUOTED.test(value))
+                    value = attr.nodeValue.replace(/"/g, '&quot;');
+                props[attr.name] = value === '' ? true : castStringTo(value);
             }
         }
     }

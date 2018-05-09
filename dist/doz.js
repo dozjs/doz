@@ -101,6 +101,7 @@ module.exports = {
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
+        IS_STRING_QUOTED: /^"\w+"/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/
     },
@@ -745,8 +746,9 @@ function serializeProps(node) {
                 props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
                 delete props[attr.name];
             } else {
-                attr.nodeValue = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = attr.nodeValue === '' ? true : castStringTo(attr.nodeValue);
+                var value = attr.nodeValue;
+                if (REGEX.IS_STRING_QUOTED.test(value)) value = attr.nodeValue.replace(/"/g, '&quot;');
+                props[attr.name] = value === '' ? true : castStringTo(value);
             }
         }
     }
@@ -2099,11 +2101,6 @@ function extract(props) {
     if (props[ATTR.LISTENER] !== undefined) {
         dProps['callback'] = props[ATTR.LISTENER];
         delete props[ATTR.LISTENER];
-    }
-
-    if (props[ATTR.CLASS] !== undefined) {
-        dProps['class'] = props[ATTR.CLASS];
-        delete props[ATTR.CLASS];
     }
 
     if (props[ATTR.ID] !== undefined) {

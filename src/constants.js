@@ -18,6 +18,7 @@ module.exports = {
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
+        IS_STRING_QUOTED: /^"\w+"/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/
     },
