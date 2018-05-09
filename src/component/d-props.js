@@ -15,13 +15,8 @@ function extract(props) {
     }
 
     if (props[ATTR.LISTENER] !== undefined) {
-        dProps['callback'] = props[ATTR.LISTENER];
+        dProps['callback'] = props[ATTR.LISTENER].replace(/&quot;/g, '"');
         delete  props[ATTR.LISTENER];
-    }
-
-    if (props[ATTR.CLASS] !== undefined) {
-        dProps['class'] = props[ATTR.CLASS];
-        delete  props[ATTR.CLASS];
     }
 
     if (props[ATTR.ID] !== undefined) {

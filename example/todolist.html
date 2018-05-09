@@ -157,22 +157,7 @@
                     </span>
                 </div>
             `;
-        },
-
-        sanitize(str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        },
-
-        /*onBeforeUpdate() {
-            console.log('beforeUpdate');
-            this.props.title = this.sanitize(this.props.title);
-        },
-
-        onCreate() {
-            console.log('Create');
-            this.props.title = this.sanitize(this.props.title);
-        }*/
-
+        }
     });
 
     Doz.component('doz-todo-buttons', {
