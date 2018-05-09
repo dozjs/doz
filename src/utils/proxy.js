@@ -11,6 +11,17 @@
  *	reflecting changes in the model to the view. Observable Slim aspires to be as lightweight and easily
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
+
+function sanitize(str) {
+    return typeof str === 'string'
+        ? str
+            .replace(/&(?!\w+;)/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+        : str;
+}
+
 /**
  * ObservableSlim
  * @type {{create, observe, pause, resume, remove, beforeChange}}
@@ -104,7 +115,7 @@ const ObservableSlim = (function () {
                 }
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
-                let targetProp = target[property];
+                let targetProp = sanitize(target[property]);
 
                 // if we are traversing into a new object, then we want to record path to that object and return a new observable.
                 // recursively returning a new observable allows us a single Observable.observe() to monitor all changes on
@@ -164,7 +175,10 @@ const ObservableSlim = (function () {
                 if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
                     observable.checkBeforeChange = currentPath;
                     let res = observable.beforeChange(changes);
-                    if (res === false) return false;
+                    if (res === false) {
+                        observable.checkBeforeChange = '';
+                        return false
+                    }
                 }
 
                 observable.checkBeforeChange = '';
@@ -238,7 +252,10 @@ const ObservableSlim = (function () {
                     if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
                         observable.checkBeforeChange = currentPath;
                         let res = observable.beforeChange(changes);
-                        if (res === false) return false;
+                        if (res === false) {
+                            observable.checkBeforeChange = '';
+                            return false
+                        }
                     }
 
                     observable.checkBeforeChange = '';

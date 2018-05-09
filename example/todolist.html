@@ -147,7 +147,7 @@
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                        <strong>${this.sanitize(this.props.title)}</strong>
+                        <strong>${this.props.title}</strong>
                         <input
                             onblur="this.action.hideInput(${this.props.id})"
                             onkeypress="this.action.inputEnterPress(${this.props.id})"
@@ -161,7 +161,17 @@
 
         sanitize(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
+        },
+
+        /*onBeforeUpdate() {
+            console.log('beforeUpdate');
+            this.props.title = this.sanitize(this.props.title);
+        },
+
+        onCreate() {
+            console.log('Create');
+            this.props.title = this.sanitize(this.props.title);
+        }*/
 
     });
 
@@ -214,6 +224,7 @@
         },
 
         onBeforeUpdate() {
+
         },
 
         onRender() {
@@ -237,14 +248,6 @@
             <doz-todo></doz-todo>
         `
     });
-
-    console.dir(Array.toString());
-    console.dir(Object);
-    console.dir(Number);
-    console.dir(Function);
-    console.dir(String);
-    console.dir(Symbol);
-    console.dir(Date);
 
 </script>
 </body>

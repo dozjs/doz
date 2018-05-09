@@ -475,8 +475,12 @@ function createInstance(cmp, cfg) {
         render: {
             value: function value(initial) {
                 var template = this.template().trim();
+                console.log(template);
                 var tpl = html.create(template, TAG.ROOT);
+                console.log(tpl);
                 var next = transform(tpl);
+
+                console.log(next);
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
@@ -618,8 +622,10 @@ var html = {
 
         if (template.childNodes.length > 1) {
             element = document.createElement(wrapper);
+            console.log('TEMPLATE', template.innerHTML);
             element.innerHTML = template.innerHTML;
         } else {
+            console.log('TEMPLATE', template.innerHTML);
             element = template.firstChild || document.createTextNode('');
         }
 
@@ -1146,6 +1152,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	reflecting changes in the model to the view. Observable Slim aspires to be as lightweight and easily
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
+
+function sanitize(str) {
+    return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
+}
+
 /**
  * ObservableSlim
  * @type {{create, observe, pause, resume, remove, beforeChange}}
@@ -1241,7 +1252,7 @@ var ObservableSlim = function () {
                 }
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
-                var targetProp = target[property];
+                var targetProp = sanitize(target[property]);
 
                 // if we are traversing into a new object, then we want to record path to that object and return a new observable.
                 // recursively returning a new observable allows us a single Observable.observe() to monitor all changes on
@@ -1301,7 +1312,10 @@ var ObservableSlim = function () {
                 if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
                     observable.checkBeforeChange = currentPath;
                     var res = observable.beforeChange(changes);
-                    if (res === false) return false;
+                    if (res === false) {
+                        observable.checkBeforeChange = '';
+                        return false;
+                    }
                 }
 
                 observable.checkBeforeChange = '';
@@ -1374,7 +1388,10 @@ var ObservableSlim = function () {
                     if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
                         observable.checkBeforeChange = currentPath;
                         var res = observable.beforeChange(changes);
-                        if (res === false) return false;
+                        if (res === false) {
+                            observable.checkBeforeChange = '';
+                            return false;
+                        }
                     }
 
                     observable.checkBeforeChange = '';
