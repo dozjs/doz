@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.0.20] - 2018-05-09
 - **Fixed** xss vulnerability
+- **Fixed** infinite loop issue when props are updated inside `onBeforeChange`
 
 ## [0.0.19] - 2018-05-06
 - First release
