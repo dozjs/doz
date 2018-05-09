@@ -15,7 +15,8 @@ function extract(props) {
     }
 
     if (props[ATTR.LISTENER] !== undefined) {
-        dProps['callback'] = props[ATTR.LISTENER].replace(/&quot;/g, '"');
+        dProps['callback'] = {mycallback:'aCallback'}; // props[ATTR.LISTENER].replace(/&quot;/g, '');
+        console.log(dProps['callback'])
         delete  props[ATTR.LISTENER];
     }
 
