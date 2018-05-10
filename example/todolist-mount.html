@@ -204,13 +204,13 @@
 
             this.mounted = [];
 
-            this.props.record.forEach((item, i) => {
+            this.each(this.props.record, (item, i) => {
                 this.mounted.push(
                     this.mount(`<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`, {
                         selector: '.todo-each'
                     })
                 );
-            });
+            }, true);
 
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));

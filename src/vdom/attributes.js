@@ -79,7 +79,6 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (value) {
-        console.log(name, value)
         $target.setAttribute(name, value);
         $target[name] = true;
     } else {

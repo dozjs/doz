@@ -414,6 +414,18 @@ function createInstance(cmp, cfg) {
             value: [],
             writable: true
         },
+        _beginRender: {
+            value: function value() {
+                proxy.beginRender(this.props);
+            },
+            enumerable: true
+        },
+        _endRender: {
+            value: function value() {
+                proxy.endRender(this.props);
+            },
+            enumerable: true
+        },
         view: {
             value: cfg.view,
             enumerable: true
@@ -450,12 +462,18 @@ function createInstance(cmp, cfg) {
         },
         each: {
             value: function value(obj, func) {
+                var safe = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+                var res = void 0;
                 if (Array.isArray(obj)) {
-                    return obj.map(func).map(function (stringEl) {
-                        stringEl = stringEl.trim();
+                    if (safe) this.beginRender();
+                    res = obj.map(func).map(function (stringEl) {
+                        if (stringEl) stringEl = stringEl.trim();
                         return stringEl;
                     }).join('');
+                    if (safe) this.endRender();
                 }
+                return res;
             },
             enumerable: true
         },
@@ -477,9 +495,9 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value(initial) {
-                proxy.beginRender(this.props);
+                this._beginRender();
                 var template = this.template().trim();
-                proxy.endRender(this.props);
+                this._endRender();
 
                 var tpl = html.create(template, TAG.ROOT);
                 var next = transform(tpl);
@@ -1595,11 +1613,6 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    console.log(_template);
-                    var d = document.createElement('div');
-                    d.innerHTML = _template;
-                    console.log(d);
-
                     var autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {
@@ -1949,7 +1962,6 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (value) {
-        console.log(name, value);
         $target.setAttribute(name, value);
         $target[name] = true;
     } else {

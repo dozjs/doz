@@ -67,11 +67,6 @@ class Doz {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    console.log(template)
-                    let d = document.createElement('div');
-                    d.innerHTML = template;
-                    console.log(d)
-
                     const autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {

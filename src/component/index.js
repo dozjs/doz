@@ -159,6 +159,14 @@ function createInstance(cmp, cfg) {
             value: [],
             writable: true
         },
+        _beginRender: {
+            value: function() { proxy.beginRender(this.props) },
+            enumerable: true
+        },
+        _endRender: {
+            value: function() { proxy.endRender(this.props) },
+            enumerable: true
+        },
         view: {
             value: cfg.view,
             enumerable: true
@@ -192,13 +200,18 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         each: {
-            value: function (obj, func) {
+            value: function (obj, func, safe = false) {
+                let res;
                 if (Array.isArray(obj)) {
-                    return obj.map(func).map(stringEl => {
-                        stringEl = stringEl.trim();
+                    if (safe) this.beginRender();
+                    res = obj.map(func).map(stringEl => {
+                        if (stringEl)
+                            stringEl = stringEl.trim();
                         return stringEl
                     }).join('');
+                    if (safe) this.endRender();
                 }
+                return res;
             },
             enumerable: true
         },
@@ -220,9 +233,9 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function (initial) {
-                proxy.beginRender(this.props);
+                this._beginRender();
                 const template = this.template().trim();
-                proxy.endRender(this.props);
+                this._endRender();
 
                 const tpl = html.create(template, TAG.ROOT);
                 let next = transform(tpl);
