@@ -270,20 +270,21 @@ const ObservableSlim = (function () {
 
                         // loop over each proxy and see if the target for this change has any other proxies
                         let currentTargetProxy = targetsProxy[a];
-                        for (let b = 0, l = currentTargetProxy.length; b < l; b++) {
-                            // if the same target has a different proxy
-                            if (currentTargetProxy[b].proxy !== proxy) {
+                        if (currentTargetProxy)
+                            for (let b = 0, l = currentTargetProxy.length; b < l; b++) {
+                                // if the same target has a different proxy
+                                if (currentTargetProxy[b].proxy !== proxy) {
 
-                                // !!IMPORTANT!! store the proxy as a duplicate proxy (dupProxy) -- this will adjust the behavior above appropriately (that is,
-                                // prevent a change on dupProxy from re-triggering the same change on other proxies)
-                                dupProxy = currentTargetProxy[b].proxy;
+                                    // !!IMPORTANT!! store the proxy as a duplicate proxy (dupProxy) -- this will adjust the behavior above appropriately (that is,
+                                    // prevent a change on dupProxy from re-triggering the same change on other proxies)
+                                    dupProxy = currentTargetProxy[b].proxy;
 
-                                // invoke the same change on the different proxy for the same target object. it is important that we make this change *after* we invoke the same change
-                                // on any other proxies so that the previousValue can show up correct for the other proxies
-                                currentTargetProxy[b].proxy[property] = value;
+                                    // invoke the same change on the different proxy for the same target object. it is important that we make this change *after* we invoke the same change
+                                    // on any other proxies so that the previousValue can show up correct for the other proxies
+                                    currentTargetProxy[b].proxy[property] = value;
 
+                                }
                             }
-                        }
 
                         // if the property being overwritten is an object, then that means this observable
                         // will need to stop monitoring this object and any nested objects underneath the overwritten object else they'll become

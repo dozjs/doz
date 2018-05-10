@@ -962,7 +962,7 @@ var ObservableSlim = function () {
                             if (target === targets[a]) break;
                         } // loop over each proxy and see if the target for this change has any other proxies
                         var currentTargetProxy = targetsProxy[a];
-                        for (var b = 0, _l = currentTargetProxy.length; b < _l; b++) {
+                        if (currentTargetProxy) for (var b = 0, _l = currentTargetProxy.length; b < _l; b++) {
                             // if the same target has a different proxy
                             if (currentTargetProxy[b].proxy !== proxy) {
 
