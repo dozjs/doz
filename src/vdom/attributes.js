@@ -79,6 +79,7 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (value) {
+        console.log(name, value)
         $target.setAttribute(name, value);
         $target[name] = true;
     } else {
@@ -106,8 +107,8 @@ function addEventListener($target, name, value, cmp) {
     let match = value.match(REGEX.GET_LISTENER);
 
     // Add only if is a static component
-    if (cmp._isStatic)
-        $target.dataset[name] = value;
+    /*if (cmp._isStatic)
+        $target.dataset[name] = value;*/
 
     if (match) {
         let args = null;

@@ -68,11 +68,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             }
         }
 
-        /*if (newNode.props[ATTR.DYNAMIC] && updated.length) {
-            cmp._processing.push({node: $parent.childNodes[index], action: 'update'});
-            return;
-        }*/
-
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
 

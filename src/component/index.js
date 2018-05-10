@@ -63,8 +63,8 @@ function getInstances(cfg = {}) {
                     view: cfg.view,
                     props,
                     dProps,
-                    parentCmp: parent.cmp,
-                    isStatic: cfg.isStatic
+                    parentCmp: parent.cmp/*,
+                    isStatic: cfg.isStatic*/
                 });
 
                 if (!newElement) {
@@ -145,9 +145,9 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
-        _isStatic: {
+        /*_isStatic: {
             value: cfg.isStatic
-        },
+        },*/
         _publicProps: {
             value: Object.assign({}, cfg.props)
         },

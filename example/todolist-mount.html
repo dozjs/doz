@@ -147,7 +147,7 @@
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                        <strong>${this.sanitize(this.props.title)}</strong>
+                        <strong>${this.props.title}</strong>
                         <input
                             onblur="this.action.hideInput(${this.props.id})"
                             onkeypress="this.action.inputEnterPress(${this.props.id})"
@@ -157,10 +157,6 @@
                     </span>
                 </div>
             `;
-        },
-
-        sanitize(str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
     });
 

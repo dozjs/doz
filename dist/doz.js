@@ -321,8 +321,8 @@ function getInstances() {
                     view: cfg.view,
                     props: props,
                     dProps: dProps,
-                    parentCmp: parent.cmp,
-                    isStatic: cfg.isStatic
+                    parentCmp: parent.cmp /*,
+                                          isStatic: cfg.isStatic*/
                 });
 
                 if (!newElement) {
@@ -400,9 +400,9 @@ function createInstance(cmp, cfg) {
             value: {},
             writable: true
         },
-        _isStatic: {
+        /*_isStatic: {
             value: cfg.isStatic
-        },
+        },*/
         _publicProps: {
             value: Object.assign({}, cfg.props)
         },
@@ -1595,7 +1595,11 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    //console.log('ROOT', root.innerHTML);
+                    console.log(_template);
+                    var d = document.createElement('div');
+                    d.innerHTML = _template;
+                    console.log(d);
+
                     var autoCmp = {
                         tag: TAG.ROOT,
                         cfg: {
@@ -1611,7 +1615,7 @@ var Doz = function () {
                         template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
                         view: this,
                         parentCmp: parent,
-                        isStatic: false,
+                        //isStatic: false,
                         autoCmp: autoCmp,
                         mount: true
                     });
@@ -1829,11 +1833,6 @@ function update($parent, newNode, oldNode) {
             }
         }
 
-        /*if (newNode.props[ATTR.DYNAMIC] && updated.length) {
-            cmp._processing.push({node: $parent.childNodes[index], action: 'update'});
-            return;
-        }*/
-
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
@@ -1950,6 +1949,7 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (value) {
+        console.log(name, value);
         $target.setAttribute(name, value);
         $target[name] = true;
     } else {
@@ -1977,7 +1977,8 @@ function addEventListener($target, name, value, cmp) {
     var match = value.match(REGEX.GET_LISTENER);
 
     // Add only if is a static component
-    if (cmp._isStatic) $target.dataset[name] = value;
+    /*if (cmp._isStatic)
+        $target.dataset[name] = value;*/
 
     if (match) {
         var args = null;
