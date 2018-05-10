@@ -159,12 +159,16 @@ function createInstance(cmp, cfg) {
             value: [],
             writable: true
         },
-        _beginRender: {
-            value: function() { proxy.beginRender(this.props) },
+        beginSafeRender: {
+            value: function () {
+                proxy.beginRender(this.props)
+            },
             enumerable: true
         },
-        _endRender: {
-            value: function() { proxy.endRender(this.props) },
+        endSafeRender: {
+            value: function () {
+                proxy.endRender(this.props)
+            },
             enumerable: true
         },
         view: {
@@ -203,13 +207,13 @@ function createInstance(cmp, cfg) {
             value: function (obj, func, safe = false) {
                 let res;
                 if (Array.isArray(obj)) {
-                    if (safe) this.beginRender();
+                    if (safe) this.beginSafeRender();
                     res = obj.map(func).map(stringEl => {
-                        if (stringEl)
-                            stringEl = stringEl.trim();
-                        return stringEl
+                        if (typeof stringEl === 'string') {
+                            return stringEl.trim()
+                        }
                     }).join('');
-                    if (safe) this.endRender();
+                    if (safe) this.endSafeRender();
                 }
                 return res;
             },
@@ -233,9 +237,9 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function (initial) {
-                this._beginRender();
+                this.beginSafeRender();
                 const template = this.template().trim();
-                this._endRender();
+                this.endSafeRender();
 
                 const tpl = html.create(template, TAG.ROOT);
                 let next = transform(tpl);

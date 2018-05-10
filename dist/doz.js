@@ -414,13 +414,13 @@ function createInstance(cmp, cfg) {
             value: [],
             writable: true
         },
-        _beginRender: {
+        beginSafeRender: {
             value: function value() {
                 proxy.beginRender(this.props);
             },
             enumerable: true
         },
-        _endRender: {
+        endSafeRender: {
             value: function value() {
                 proxy.endRender(this.props);
             },
@@ -466,12 +466,13 @@ function createInstance(cmp, cfg) {
 
                 var res = void 0;
                 if (Array.isArray(obj)) {
-                    if (safe) this.beginRender();
+                    if (safe) this.beginSafeRender();
                     res = obj.map(func).map(function (stringEl) {
-                        if (stringEl) stringEl = stringEl.trim();
-                        return stringEl;
+                        if (typeof stringEl === 'string') {
+                            return stringEl.trim();
+                        }
                     }).join('');
-                    if (safe) this.endRender();
+                    if (safe) this.endSafeRender();
                 }
                 return res;
             },
@@ -495,9 +496,9 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value(initial) {
-                this._beginRender();
+                this.beginSafeRender();
                 var template = this.template().trim();
-                this._endRender();
+                this.endSafeRender();
 
                 var tpl = html.create(template, TAG.ROOT);
                 var next = transform(tpl);
