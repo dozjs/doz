@@ -158,9 +158,11 @@ When a component is defined it inherits some methods and properties:
 | `action` | object | This object contains all view actions. More info on [actions](#actions) | no | no |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
 | `children` | object | An object that contains all children components | no | no |
+| `beginSafeRender` | function | This method enable encoding of props in HTML entities before they are called | no | no |
 | `destroy` | function | Destroy component and his children | no | no |
 | `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no |
 | `emit` | function | This method call a callback given an event name. More info on [emitter](#emitter) | no | no |
+| `endSafeRender` | function | This method disable encoding of props in HTML entities before they are called | no | no |
 | `getComponent` | function | Get child component by alias | no | yes |
 | `getComponentById` | function | Get component by id | no | no |
 | `getStore` | function | Get store by name | no | no |
