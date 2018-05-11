@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.0.22] - 2018-05-11
+- **Cleanup**
+- **Added** proxy polyfill
+
 ## [0.0.21] - 2018-05-11
 - **Improvement** security
 - **Fixed** observer issue
