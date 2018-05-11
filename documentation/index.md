@@ -521,7 +521,7 @@ new Doz({
 Directives that works only on component
 
 ##### d:id
-This attribute allow you to define an unique name that identify the component globally.
+This attribute allows you to define an unique name that identify the component globally.
 
 ```javascript
 Doz.component('my-label', {
@@ -558,7 +558,7 @@ new Doz({
 ---
 
 ##### d:store
-This attribute allow you to define an unique name that expose your component props globally.
+This attribute allows you to define an unique name that expose your component props globally.
 
 ```javascript
 Doz.component('my-label', {
@@ -598,7 +598,7 @@ new Doz({
 ---
 
 ##### d:on
-This attribute allow you to define an event name.
+This attribute allows you to define an event name.
 
 ```javascript
 Doz.component('salutation-card', {
@@ -671,7 +671,7 @@ new Doz({
 ---
 
 ### Loops
-Same situation as conditional statements but using the method `each` provided by component:
+Same situation like conditional statements but using the method `each` provided by component:
 
 ```javascript
 Doz.component('my-list', {
@@ -711,7 +711,7 @@ new Doz({
 ---
 
 ### Actions
-The actions allow to better organize the logic of the various components in the view,
+The actions allows to better organize the logic of the various components in the view,
 and they are global so can be called in all components.
 
 ```javascript
