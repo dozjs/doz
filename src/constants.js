@@ -30,6 +30,7 @@ module.exports = {
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
-        ID: 'd:id'
+        ID: 'd:id',
+        FORCE_UPDATE: 'forceupdate'
     }
 };

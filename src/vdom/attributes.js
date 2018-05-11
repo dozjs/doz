@@ -20,8 +20,6 @@ function canBind($target) {
 
 function setAttribute($target, name, value, cmp) {
     if (isCustomAttribute(name)) {
-    } else if (name === 'className') {
-        $target.setAttribute('class', value);
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
@@ -37,17 +35,13 @@ function setAttribute($target, name, value, cmp) {
 
 function removeAttribute($target, name, value) {
     if (isCustomAttribute(name)) {
-    } else if (name === 'className') {
-        $target.removeAttribute('class');
-    } else if (typeof value === 'boolean') {
-        removeBooleanAttribute($target, name);
     } else {
         $target.removeAttribute(name);
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal) {
-    if (!newVal) {
+    if (!newVal /*&& newVal !== false*/) {
         removeAttribute($target, name, oldVal);
     } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal);
@@ -58,7 +52,6 @@ function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
     Object.keys(props).forEach(name => {
-        //const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
         if (newProps[name] !== oldProps[name]){
             let obj = {};
@@ -74,21 +67,12 @@ function isCustomAttribute(name) {
     return isEventAttribute(name)
         || isBindAttribute(name)
         || isRefAttribute(name)
-        || name === 'forceupdate';
+        || name === ATTR.FORCE_UPDATE;
 }
 
 function setBooleanAttribute($target, name, value) {
-    if (value) {
-        $target.setAttribute(name, value);
-        $target[name] = true;
-    } else {
-        $target[name] = false;
-    }
-}
-
-function removeBooleanAttribute($target, name) {
-    $target.removeAttribute(name);
-    $target[name] = false;
+    $target.setAttribute(name, value);
+    $target[name] = value;
 }
 
 function extractEventName(name) {
@@ -104,10 +88,6 @@ function addEventListener($target, name, value, cmp) {
     if (!isEventAttribute(name)) return;
 
     let match = value.match(REGEX.GET_LISTENER);
-
-    // Add only if is a static component
-    /*if (cmp._isStatic)
-        $target.dataset[name] = value;*/
 
     if (match) {
         let args = null;

@@ -113,7 +113,8 @@ module.exports = {
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
-        ID: 'd:id'
+        ID: 'd:id',
+        FORCE_UPDATE: 'forceupdate'
     }
 };
 
@@ -1049,16 +1050,16 @@ var ObservableSlim = function () {
 
                         // if the value we've just set is an object, then we'll need to iterate over it in order to initialize the
                         // observers/proxies on all nested children of the object
-                        /* if (value instanceof Object && value !== null) {
+                        if (value instanceof Object && value !== null) {
                             (function iterate(proxy) {
-                                let target = proxy.__getTarget;
-                                let keys = Object.keys(target);
-                                for (let i = 0, l = keys.length; i < l; i++) {
-                                    let property = keys[i];
-                                    if (target[property] instanceof Object && target[property] !== null) iterate(proxy[property]);
-                                };
+                                var target = proxy.__getTarget;
+                                var keys = Object.keys(target);
+                                for (var i = 0, _l5 = keys.length; i < _l5; i++) {
+                                    var _property = keys[i];
+                                    if (target[_property] instanceof Object && target[_property] !== null) iterate(proxy[_property]);
+                                }
                             })(proxy[property]);
-                        }; */
+                        }
                     }
                     // notify the observer functions that the target has been modified
                     _notifyObservers(changes.length);
@@ -1390,7 +1391,7 @@ function serializeProps(node) {
             } else {
                 var value = attr.nodeValue;
                 if (REGEX.IS_STRING_QUOTED.test(value)) value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = value === '' ? true : castStringTo(value);
+                props[attr.name] = attr.name === ATTR.FORCE_UPDATE ? true : castStringTo(value);
             }
         }
     }
@@ -1760,7 +1761,7 @@ function create(instance, props) {
         }
     });
 
-    proxy.beforeChange(instance.props, function (changes) {
+    proxy.beforeChange(instance.props, function () {
         var res = events.callBeforeUpdate(instance);
         if (res === false) return false;
     });
@@ -1907,9 +1908,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if (isCustomAttribute(name)) {} else if (name === 'className') {
-        $target.setAttribute('class', value);
-    } else if (typeof value === 'boolean') {
+    if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
@@ -1921,19 +1920,15 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, value) {
-    if (isCustomAttribute(name)) {} else if (name === 'className') {
-        $target.removeAttribute('class');
-    } else if (typeof value === 'boolean') {
-        removeBooleanAttribute($target, name);
-    } else {
+    if (isCustomAttribute(name)) {} else {
         $target.removeAttribute(name);
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal) {
-    if (!newVal) {
-        removeAttribute($target, name, oldVal);
-    } else if (!oldVal || newVal !== oldVal) {
+    if (!newVal /*&& newVal !== false*/) {
+            removeAttribute($target, name, oldVal);
+        } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal);
     }
 }
@@ -1945,7 +1940,6 @@ function updateAttributes($target, newProps) {
     var props = Object.assign({}, newProps, oldProps);
     var updated = [];
     Object.keys(props).forEach(function (name) {
-        //const res = newProps[name] !== oldProps[name];
         updateAttribute($target, name, newProps[name], oldProps[name]);
         if (newProps[name] !== oldProps[name]) {
             var obj = {};
@@ -1958,21 +1952,12 @@ function updateAttributes($target, newProps) {
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === 'forceupdate';
+    return isEventAttribute(name) || isBindAttribute(name) || isRefAttribute(name) || name === ATTR.FORCE_UPDATE;
 }
 
 function setBooleanAttribute($target, name, value) {
-    if (value) {
-        $target.setAttribute(name, value);
-        $target[name] = true;
-    } else {
-        $target[name] = false;
-    }
-}
-
-function removeBooleanAttribute($target, name) {
-    $target.removeAttribute(name);
-    $target[name] = false;
+    $target.setAttribute(name, value);
+    $target[name] = value;
 }
 
 function extractEventName(name) {
@@ -1988,10 +1973,6 @@ function addEventListener($target, name, value, cmp) {
     if (!isEventAttribute(name)) return;
 
     var match = value.match(REGEX.GET_LISTENER);
-
-    // Add only if is a static component
-    /*if (cmp._isStatic)
-        $target.dataset[name] = value;*/
 
     if (match) {
         var args = null;

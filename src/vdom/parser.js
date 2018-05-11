@@ -17,7 +17,9 @@ function serializeProps(node) {
                 let value = attr.nodeValue;
                 if(REGEX.IS_STRING_QUOTED.test(value))
                     value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = value === '' ? true : castStringTo(value);
+                props[attr.name] = attr.name === ATTR.FORCE_UPDATE
+                    ? true
+                    : castStringTo(value);
             }
         }
     }
@@ -54,7 +56,6 @@ function transform(node) {
 
             node = node.nextSibling
         }
-
     }
 
     walking(node, root);

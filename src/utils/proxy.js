@@ -360,16 +360,16 @@ const ObservableSlim = (function () {
 
                         // if the value we've just set is an object, then we'll need to iterate over it in order to initialize the
                         // observers/proxies on all nested children of the object
-                        /* if (value instanceof Object && value !== null) {
+                        if (value instanceof Object && value !== null) {
                             (function iterate(proxy) {
                                 let target = proxy.__getTarget;
                                 let keys = Object.keys(target);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     let property = keys[i];
                                     if (target[property] instanceof Object && target[property] !== null) iterate(proxy[property]);
-                                };
+                                }
                             })(proxy[property]);
-                        }; */
+                        }
 
                     }
                     // notify the observer functions that the target has been modified
