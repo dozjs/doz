@@ -72,9 +72,6 @@
         },
         template: function () {
             return `<button onclick="this.action.mute()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
-        },
-        onRender() {
-            console.log(this.props.mute)
         }
     });
 
@@ -87,20 +84,17 @@
         },
         onUpdate() {
             console.log('UPDATE bar-control', this.props)
-        },
-        onRender() {
-            console.log(this.props.mute)
         }
     });
 
     Doz.component('my-player', {
         store: 'player',
         props: {
-            state: 'pause'
+            state: 'pause',
+            mute: true
         },
         template() {
-            //return `<bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
-            return `<bar-control state="${this.props.state}" mute="true"></bar-control>`;
+            return `<bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
         },
         onUpdate() {
             console.log('UPDATE my-player', this.props)
