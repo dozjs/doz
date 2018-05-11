@@ -364,8 +364,6 @@ function getInstances() {
 
 function createInstance(cmp, cfg) {
 
-    console.log(cmp.cfg.props);
-
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
     var instance = Object.defineProperties({}, {
