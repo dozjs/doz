@@ -15,6 +15,9 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 
 Tiny size: 7KB (gzip)
 
+## Why another framework?
+In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this", some introduce other syntaxes like JSX. All you need is Doz.
+
 ## Installation
 ```
 npm install --save doz
