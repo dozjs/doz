@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {INSTANCE, TAG} = require('../constants');
+const {INSTANCE, TAG, NS} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -20,7 +20,9 @@ function create(node, cmp, initial) {
         node.type = TAG.EMPTY;
     }
 
-    const $el = document.createElement(node.type);
+    const $el = node.isSVG
+        ? document.createElementNS(NS.SVG, node.type)
+        : document.createElement(node.type);
 
     attach($el, node.props, cmp);
 

@@ -1,6 +1,9 @@
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     INSTANCE: '__DOZ_INSTANCE__',
+    NS: {
+        SVG: 'http://www.w3.org/2000/svg'
+    },
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',

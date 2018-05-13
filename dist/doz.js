@@ -84,10 +84,14 @@ return /******/ (function(modules) { // webpackBootstrap
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     INSTANCE: '__DOZ_INSTANCE__',
+    NS: {
+        SVG: 'http://www.w3.org/2000/svg'
+    },
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
         VIEW: 'doz-view',
+        EMPTY: 'doz-empty',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {
@@ -1411,6 +1415,7 @@ function transform(node) {
                 obj.type = node.nodeName.toLowerCase();
                 obj.children = [];
                 obj.props = serializeProps(node);
+                obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
             }
 
             if (!Object.keys(root).length) root = obj;
@@ -1785,7 +1790,9 @@ var _require = __webpack_require__(16),
 var deadChildren = [];
 
 var _require2 = __webpack_require__(0),
-    INSTANCE = _require2.INSTANCE;
+    INSTANCE = _require2.INSTANCE,
+    TAG = _require2.TAG,
+    NS = _require2.NS;
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -1797,7 +1804,12 @@ function create(node, cmp, initial) {
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
-    var $el = document.createElement(node.type);
+
+    if (node.type[0] === '#') {
+        node.type = TAG.EMPTY;
+    }
+
+    var $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
 
     attach($el, node.props, cmp);
 
