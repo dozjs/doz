@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {INSTANCE} = require('../constants');
+const {INSTANCE, TAG} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -15,6 +15,11 @@ function create(node, cmp, initial) {
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
+
+    if (node.type[0] === '#') {
+        node.type = TAG.EMPTY;
+    }
+
     const $el = document.createElement(node.type);
 
     attach($el, node.props, cmp);

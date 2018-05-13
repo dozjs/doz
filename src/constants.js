@@ -5,6 +5,7 @@ module.exports = {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
         VIEW: 'doz-view',
+        EMPTY: 'doz-empty',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {
