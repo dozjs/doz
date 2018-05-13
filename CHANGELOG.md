@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.0.23] - 2018-05-13
+- **Added** support to SVG element
 - **Fixed** issue when inside the template there are no tag element like comment for example
 
 ## [0.0.22] - 2018-05-11
