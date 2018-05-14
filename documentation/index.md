@@ -10,7 +10,7 @@ Below some basic concepts:
 
 - [Installation](#installation)
     - [Import library](#import-library)
-- [View](#view)
+- [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
     - [Methods](#methods)
@@ -48,8 +48,8 @@ import Doz from 'doz'
 var Doz = require('doz');
 ```
 
-## View
-A view can be considered as a main component that embed other components.
+## Make an app
+An app is a main component that embed other components.
 
 ```javascript
 
@@ -69,7 +69,7 @@ new Doz({
 ---
 
 ## Component definition
-The method `component` defines an component globally that can be added to any view of the project.
+The method `component` defines an component globally that can be added to any other component of the project.
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
 
 ```javascript
@@ -155,7 +155,7 @@ When a component is defined it inherits some methods and properties:
 
 | Name | Type | Description | Required | Editable |
 | ---- | ---- | ----------- | -------- | -------- |
-| `action` | object | This object contains all view actions. More info on [actions](#actions) | no | no |
+| `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
 | `children` | object | An object that contains all children components | no | no |
 | `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no |
@@ -166,7 +166,7 @@ When a component is defined it inherits some methods and properties:
 | `getComponent` | function | Get child component by alias | no | yes |
 | `getComponentById` | function | Get component by id | no | no |
 | `getStore` | function | Get store by name | no | no |
-| `id` | string | A unique name that identify the component inside the view. More info on [directives](#directives) | no | yes |
+| `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes |
 | `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no |
 | `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
@@ -179,7 +179,7 @@ When a component is defined it inherits some methods and properties:
 | `props` | object | This object can contains all component props | no | yes |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
 | `render` | function | This method is called after changes detected, then updates the component part | no | no |
-| `store` | string | An unique store name to expose the props with other components of the view | no | yes |
+| `store` | string | An unique store name to expose the props with other components of the app | no | yes |
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
 | `view` | object | The view object | no | no |
@@ -711,7 +711,7 @@ new Doz({
 ---
 
 ### Actions
-The actions allows to better organize the logic of the various components in the view,
+The actions allows to better organize the logic of the various components in the app,
 and they are global so can be called in all components.
 
 ```javascript
