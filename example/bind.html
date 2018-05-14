@@ -32,35 +32,79 @@
 <h2>JavaScript</h2>
 <pre class="prettyprint">
     <code class="lang-js">
-    Doz.component(&apos;doz-input-message&apos;, {
+    Doz.component(&apos;doz-text&apos;, {
         template(){
-            return &grave;&lt;div&gt;&lt;input type=&quot;text&quot; d-bind=&quot;message&quot; placeholder=&quot;${this.props.placeholder}&quot;/&gt;&lt;p&gt;${this.props.message}&lt;/p&gt;&lt;/div&gt;&grave;
+            return &grave;&lt;div&gt;&lt;input type=&quot;text&quot; d-bind=&quot;message&quot; placeholder=&quot;${this.props.placeholder}&quot;/&gt;&lt;p&gt;Text: ${this.props.message}&lt;/p&gt;&lt;/div&gt;&grave;
         },
         props: {
             message: &apos;&apos;
         }
     });
 
+    Doz.component(&apos;doz-select&apos;, {
+        template(){
+            return &grave;
+                &lt;div&gt;
+                    &lt;select d-bind=&quot;item&quot;&gt;
+                        &lt;option value=&quot;&quot; disabled=&quot;true&quot; selected=&quot;true&quot; hidden=&quot;true&quot;&gt;Please Choose...&lt;/option&gt;
+                        &lt;option value=&quot;Milk&quot;&gt;Milk&lt;/option&gt;
+                        &lt;option value=&quot;Tomato&quot;&gt;Tomato&lt;/option&gt;
+                        &lt;option value=&quot;Chicken&quot;&gt;Chicken&lt;/option&gt;
+                    &lt;/select&gt;
+                    &lt;p&gt;Select: ${this.props.item}&lt;/p&gt;
+                &lt;/div&gt;
+            &grave;
+        },
+        props: {
+            item: &apos;&apos;
+        }
+    });
+
     new Doz({
         root: document.getElementById(&apos;app&apos;),
-        template: &grave;&lt;doz-input-message placeholder=&quot;write a message&quot;&gt;&lt;/doz-input-message&gt;&grave;
+        template: &grave;
+            &lt;doz-text placeholder=&quot;write a message&quot;&gt;&lt;/doz-text&gt;
+            &lt;doz-select&gt;&lt;/doz-select&gt;
+        &grave;
     });
     </code>
 </pre>
 <script>
 
-    Doz.component('doz-input-message', {
+    Doz.component('doz-text', {
         template(){
-            return `<div><input type="text" d-bind="message" placeholder="${this.props.placeholder}"/><p>${this.props.message}</p></div>`
+            return `<div><input type="text" d-bind="message" placeholder="${this.props.placeholder}"/><p>Text: ${this.props.message}</p></div>`
         },
         props: {
             message: ''
         }
     });
 
+    Doz.component('doz-select', {
+        template(){
+            return `
+                <div>
+                    <select d-bind="item">
+                        <option value="" disabled="true" selected="true" hidden="true">Please Choose...</option>
+                        <option value="Milk">Milk</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Chicken">Chicken</option>
+                    </select>
+                    <p>Select: ${this.props.item}</p>
+                </div>
+            `
+        },
+        props: {
+            item: ''
+        }
+    });
+
     new Doz({
         root: document.getElementById('app'),
-        template: `<doz-input-message placeholder="write a message"></doz-input-message>`
+        template: `
+            <doz-text placeholder="write a message"></doz-text>
+            <doz-select></doz-select>
+        `
     });
 
 </script>

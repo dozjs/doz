@@ -1914,7 +1914,7 @@ function isRefAttribute(name) {
 }
 
 function canBind($target) {
-    return ['INPUT', 'TEXTAREA'].indexOf($target.nodeName) !== -1;
+    return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
 }
 
 function setAttribute($target, name, value, cmp) {
