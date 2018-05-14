@@ -26,18 +26,10 @@ describe('Doz.css.class', function () {
 
             Doz.component('salutation-card', {
                 template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name} <caller-o d:class="my-class"></caller-o></div>`
-                }
-            });
-
-            Doz.component('caller-o', {
-                template() {
-                    return `<div>Callback</div>`
-                },
-                onCreate() {
-                    setTimeout(()=>{
-                        this.emit('mycallback', 'hello');
-                    },1000);
+                    return `
+                        <!-- this is a comment -->
+                        <div>Hello ${this.props.title} ${this.props.name}</div>
+                    `
                 }
             });
 
@@ -52,12 +44,8 @@ describe('Doz.css.class', function () {
             });
 
             setTimeout(()=>{
-                const html = document.body.innerHTML;
-                console.log(html);
-                /*console.log(view);
-                be.err.true(/Doz/g.test(html));
-                be.err(done).true(/Luis/g.test(html));*/
-                done()
+                const emptyTag = document.body.querySelectorAll('doz-empty');
+                be.err(done).equal(emptyTag.length, 1);
             },100);
         });
     });

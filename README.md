@@ -10,7 +10,6 @@ A JavaScript framework for building UI, almost like writing in VanillaJS.
 <br/><br/>
 <a href="https://github.com/dozjs/doz/blob/master/documentation/index.md">Documentation</a> | <a href="https://dozjs.github.io/doz/example/">Demo</a>
 <br/><br/>
-
 </div>
 
 Tiny size: 7KB (gzip)
