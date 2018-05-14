@@ -121,7 +121,6 @@ function addEventListener($target, name, value, cmp) {
             extractEventName(name),
             value
         );
-
 }
 
 function setBind($target, name, value, cmp) {
@@ -133,6 +132,7 @@ function setBind($target, name, value, cmp) {
                     cmp.props[value] = this.value;
                 });
             });
+        //if ($target.type === 'radio') return;
         if (cmp._boundElements.hasOwnProperty(value)) {
             cmp._boundElements[value].push($target);
         } else {

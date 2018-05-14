@@ -34,10 +34,31 @@
     <code class="lang-js">
     Doz.component(&apos;doz-text&apos;, {
         template(){
-            return &grave;&lt;div&gt;&lt;input type=&quot;text&quot; d-bind=&quot;message&quot; placeholder=&quot;${this.props.placeholder}&quot;/&gt;&lt;p&gt;Text: ${this.props.message}&lt;/p&gt;&lt;/div&gt;&grave;
+            return &grave;
+                &lt;div&gt;
+                    &lt;input type=&quot;text&quot; d-bind=&quot;message&quot; placeholder=&quot;${this.props.placeholder}&quot;/&gt;
+                    &lt;p&gt;Text: ${this.props.message}&lt;/p&gt;
+                &lt;/div&gt;
+            &grave;
         },
         props: {
             message: &apos;&apos;
+        }
+    });
+
+    Doz.component(&apos;doz-radio&apos;, {
+        template(){
+            return &grave;
+                &lt;div&gt;
+                    &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;male&quot;&gt; Male
+                    &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;female&quot;&gt; Female
+                    &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;other&quot;&gt; Other
+                    &lt;p&gt;Radio: ${this.props.gender}&lt;/p&gt;
+                &lt;/div&gt;
+            &grave;
+        },
+        props: {
+            gender: &apos;&apos;
         }
     });
 
@@ -65,6 +86,7 @@
         template: &grave;
             &lt;doz-text placeholder=&quot;write a message&quot;&gt;&lt;/doz-text&gt;
             &lt;doz-select&gt;&lt;/doz-select&gt;
+            &lt;doz-radio&gt;&lt;/doz-radio&gt;
         &grave;
     });
     </code>
@@ -73,10 +95,31 @@
 
     Doz.component('doz-text', {
         template(){
-            return `<div><input type="text" d-bind="message" placeholder="${this.props.placeholder}"/><p>Text: ${this.props.message}</p></div>`
+            return `
+                <div>
+                    <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
+                    <p>Text: ${this.props.message}</p>
+                </div>
+            `
         },
         props: {
             message: ''
+        }
+    });
+
+    Doz.component('doz-radio', {
+        template(){
+            return `
+                <div>
+                    <input type="radio" d-bind="gender" name="gender" value="male"> Male
+                    <input type="radio" d-bind="gender" name="gender" value="female"> Female
+                    <input type="radio" d-bind="gender" name="gender" value="other"> Other
+                    <p>Radio: ${this.props.gender}</p>
+                </div>
+            `
+        },
+        props: {
+            gender: ''
         }
     });
 
@@ -104,6 +147,7 @@
         template: `
             <doz-text placeholder="write a message"></doz-text>
             <doz-select></doz-select>
+            <doz-radio></doz-radio>
         `
     });
 

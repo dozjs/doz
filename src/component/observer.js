@@ -27,7 +27,11 @@ function updateBound(instance, changes) {
     changes.forEach(item => {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(element => {
-                element.value = item.newValue;
+                if (element.type === 'radio' || element.type === 'checkbox') {
+                    element.checked = element.value === item.newValue;
+                } else {
+                    element.value = item.newValue;
+                }
             })
         }
     });

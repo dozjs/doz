@@ -1746,7 +1746,11 @@ function updateBound(instance, changes) {
     changes.forEach(function (item) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(function (element) {
-                element.value = item.newValue;
+                if (element.type === 'radio' || element.type === 'checkbox') {
+                    element.checked = element.value === item.newValue;
+                } else {
+                    element.value = item.newValue;
+                }
             });
         }
     });
@@ -2020,6 +2024,7 @@ function setBind($target, name, value, cmp) {
                 cmp.props[value] = this.value;
             });
         });
+        //if ($target.type === 'radio') return;
         if (cmp._boundElements.hasOwnProperty(value)) {
             cmp._boundElements[value].push($target);
         } else {
