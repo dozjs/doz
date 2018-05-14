@@ -2021,10 +2021,14 @@ function setBind($target, name, value, cmp) {
     if (typeof cmp.props[value] !== 'undefined') {
         ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
             $target.addEventListener(event, function () {
-                cmp.props[value] = this.value;
+
+                if (!this.defaultValue && this.type === 'checkbox') {
+                    console.log('this.defaultValue', this.defaultValue, this.checked);
+                    cmp.props[value] = this.checked;
+                } else cmp.props[value] = this.value;
             });
         });
-        //if ($target.type === 'radio') return;
+
         if (cmp._boundElements.hasOwnProperty(value)) {
             cmp._boundElements[value].push($target);
         } else {

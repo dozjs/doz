@@ -142,12 +142,26 @@
         }
     });
 
+    Doz.component('doz-checkbox', {
+        template(){
+            return `
+                <div>
+                    <input type="checkbox" d-bind="done" name="done"> ${this.props.done}
+                </div>
+            `
+        },
+        props: {
+            done: true
+        }
+    });
+
     new Doz({
         root: document.getElementById('app'),
         template: `
             <doz-text placeholder="write a message"></doz-text>
             <doz-select></doz-select>
             <doz-radio></doz-radio>
+            <doz-checkbox></doz-checkbox>
         `
     });
 
