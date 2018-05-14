@@ -49,7 +49,7 @@ Doz.component('button-counter', {
 });
 ```
 
-#### Make a view with the component defined above
+#### Make an app with the component defined above
 
 ```javascript
 new Doz({
