@@ -43,7 +43,7 @@ function create(instance, props) {
         updateBound(instance, changes);
         if (instance._isCreated) {
             delay(() => {
-                updateChildren(instance, changes);
+                //updateChildren(instance, changes);
                 events.callUpdate(instance);
             });
         }

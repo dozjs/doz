@@ -40,11 +40,24 @@ function removeAttribute($target, name, value) {
     }
 }
 
-function updateAttribute($target, name, newVal, oldVal) {
+function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (!newVal /*&& newVal !== false*/) {
-        removeAttribute($target, name, oldVal);
+        removeAttribute($target, name, oldVal, cmp);
     } else if (!oldVal || newVal !== oldVal) {
-        setAttribute($target, name, newVal);
+        setAttribute($target, name, newVal, cmp);
+    }
+
+    // Set children state
+    if (cmp && cmp.updateChildrenProps) {
+        const children = Object.keys(cmp.children);
+        children.forEach(i => {
+            //console.log(cmp.children[i].tag);
+            if (cmp.children[i]._publicProps.hasOwnProperty(name)
+                && cmp.children[i].props.hasOwnProperty(name))
+                cmp.children[i].props[name] = newVal;
+            /*if (cmp.children[i].props.hasOwnProperty(name))
+                cmp.children[i].props[name] = newVal;*/
+        });
     }
 }
 
@@ -52,7 +65,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
     Object.keys(props).forEach(name => {
-        updateAttribute($target, name, newProps[name], oldProps[name]);
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp);
         if (newProps[name] !== oldProps[name]){
             let obj = {};
             obj[name] = newProps[name];
