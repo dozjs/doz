@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 0.0.24  
+// [DOZ]  Build version: 0.0.25  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
