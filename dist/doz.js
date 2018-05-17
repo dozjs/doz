@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -255,18 +255,18 @@ var _require2 = __webpack_require__(0),
     INSTANCE = _require2.INSTANCE;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(14);
+var observer = __webpack_require__(15);
 var events = __webpack_require__(6);
 
 var _require3 = __webpack_require__(7),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(9).updateElement;
-var store = __webpack_require__(18);
-var ids = __webpack_require__(19);
+var update = __webpack_require__(10).updateElement;
+var store = __webpack_require__(20);
+var ids = __webpack_require__(21);
 
-var _require4 = __webpack_require__(20),
+var _require4 = __webpack_require__(22),
     extract = _require4.extract;
 
 var proxy = __webpack_require__(5);
@@ -1376,6 +1376,7 @@ module.exports = {
 
 
 var castStringTo = __webpack_require__(8);
+var dashToCamel = __webpack_require__(9);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
@@ -1395,7 +1396,7 @@ function serializeProps(node) {
             } else {
                 var value = attr.nodeValue;
                 if (REGEX.IS_STRING_QUOTED.test(value)) value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = attr.name === ATTR.FORCE_UPDATE ? true : castStringTo(value);
+                props[REGEX.IS_CUSTOM_TAG.test(node.nodeName) ? dashToCamel(attr.name) : attr.name] = attr.name === ATTR.FORCE_UPDATE ? true : castStringTo(value);
             }
         }
     }
@@ -1500,11 +1501,13 @@ module.exports = castStringTo;
 "use strict";
 
 
-var element = __webpack_require__(15);
+function dashToCamel(s) {
+    return s.replace(/(-\w)/g, function (m) {
+        return m[1].toUpperCase();
+    });
+}
 
-module.exports = {
-    updateElement: element.update
-};
+module.exports = dashToCamel;
 
 /***/ }),
 /* 10 */
@@ -1513,7 +1516,11 @@ module.exports = {
 "use strict";
 
 
-module.exports = __webpack_require__(11);
+var element = __webpack_require__(16);
+
+module.exports = {
+    updateElement: element.update
+};
 
 /***/ }),
 /* 11 */
@@ -1523,14 +1530,23 @@ module.exports = __webpack_require__(11);
 
 
 module.exports = __webpack_require__(12);
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(13);
 module.exports.component = __webpack_require__(3).component;
 module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(9).updateElement;
+module.exports.update = __webpack_require__(10).updateElement;
 module.exports.transform = __webpack_require__(7).transform;
 module.exports.html = __webpack_require__(4);
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1543,7 +1559,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(2);
-var bind = __webpack_require__(13);
+var bind = __webpack_require__(14);
 var component = __webpack_require__(3);
 
 var _require = __webpack_require__(0),
@@ -1687,7 +1703,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1719,7 +1735,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1782,7 +1798,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1790,7 +1806,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(16),
+var _require = __webpack_require__(17),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1894,7 +1910,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1909,7 +1925,9 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(8);
-var objectPath = __webpack_require__(17);
+var dashToCamel = __webpack_require__(9);
+var camelToDash = __webpack_require__(18);
+var objectPath = __webpack_require__(19);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -1928,6 +1946,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
+    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) name = camelToDash(name);
     if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
@@ -1958,6 +1977,7 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         var children = Object.keys(cmp.children);
+        name = dashToCamel(name);
         children.forEach(function (i) {
             if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name)) cmp.children[i].props[name] = value;
         });
@@ -2080,7 +2100,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function camelToDash(s) {
+    return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+}
+
+module.exports = camelToDash;
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2105,7 +2138,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2126,7 +2159,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2147,7 +2180,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

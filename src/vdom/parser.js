@@ -1,4 +1,5 @@
 const castStringTo = require('../utils/cast-string-to');
+const dashToCamel = require('../utils/dash-to-camel');
 const {REGEX, ATTR} = require('../constants');
 
 function serializeProps(node) {
@@ -15,9 +16,13 @@ function serializeProps(node) {
                 delete props[attr.name];
             } else {
                 let value = attr.nodeValue;
-                if(REGEX.IS_STRING_QUOTED.test(value))
+                if (REGEX.IS_STRING_QUOTED.test(value))
                     value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[attr.name] = attr.name === ATTR.FORCE_UPDATE
+                props[
+                    REGEX.IS_CUSTOM_TAG.test(node.nodeName)
+                        ? dashToCamel(attr.name)
+                        : attr.name
+                    ] = attr.name === ATTR.FORCE_UPDATE
                     ? true
                     : castStringTo(value);
             }

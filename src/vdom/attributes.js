@@ -1,5 +1,7 @@
 const {REGEX, ATTR} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
+const dashToCamel = require('../utils/dash-to-camel');
+const camelToDash = require('../utils/camel-to-dash');
 const objectPath = require('../utils/object-path');
 
 function isEventAttribute(name) {
@@ -19,6 +21,8 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
+    if(REGEX.IS_CUSTOM_TAG.test($target.nodeName))
+        name = camelToDash(name);
     if (isCustomAttribute(name)) {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
@@ -53,6 +57,7 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         const children = Object.keys(cmp.children);
+        name = dashToCamel(name);
         children.forEach(i => {
             if (cmp.children[i]._publicProps.hasOwnProperty(name)
                 && cmp.children[i].props.hasOwnProperty(name))
