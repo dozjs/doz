@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doz - form</title>
+    <script src="../dist/doz.js?589654"></script>
+</head>
+<body>
+
+<div id="app"></div>
+<script>
+    const matcher = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    function isEmail(string) {
+        return matcher.test(string);
+    }
+
+    Doz.component('app-loading', {
+        props: {
+            show: false,
+            stroke: '#b8b8b8',
+            strokeWidth: 4,
+            width: 200,
+            height: 200,
+            duration: '1s',
+            repeat: 'indefinite'
+        },
+        template() {
+            return `
+            <svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid" style="background: none; display: ${this.props.show ? 'block' : 'none'}">
+                <circle cx="50" cy="50" fill="none"
+                        stroke-linecap="round" r="40" stroke-width="4" stroke="${this.props.stroke}"
+                        stroke-dasharray="62.83185307179586 62.83185307179586" transform="rotate(180 50 50)">
+                    <animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50"
+                                      keyTimes="0;1" dur="${this.props.duration}" begin="0s" repeatCount="${this.props.repeat}"></animateTransform>
+                </circle>
+            </svg>
+        `
+        }
+    });
+
+    Doz.component('form-field-error', {
+        props: {
+            messages: ''
+        },
+        template() {
+            return `
+            <span d-ref="el" style="display: ${this.props.messages ? 'inline' : 'none'}">
+                ${this.props.messages}
+            </span>
+        `
+        }
+    });
+
+    Doz.component('form-field', {
+        props: {
+            type: 'text',
+            label: '',
+            name: '',
+            options: [],
+            required: false,
+            value: '',
+            description: '',
+            errors: '',
+            class: '',
+            classfield: ''
+        },
+        template() {
+
+            let input = '';
+
+            switch (this.props.type) {
+                case 'select':
+                    input = `
+                    <select d-ref="field" name="${this.props.name}" class="${this.props.classfield}">
+                    ${this.each(this.props.options, item => `
+                        <option ${this.props.value === item ? 'selected' : ''} value="${item}">${item}</option>
+                    `)}
+                    </select>
+                `;
+                    break;
+
+                case 'textarea':
+                    input = `
+                    <textarea
+                        d-ref="field"
+                        d-bind="value"
+                        name="${this.props.name}"
+                        class="${this.props.classfield}"
+                    > ${this.props.value}</textarea>
+                `;
+                    break;
+
+                default:
+                    input = `
+                    <input
+                        d-ref="field"
+                        d-bind="value"
+                        type="${this.props.type}"
+                        name="${this.props.name}"
+                        value="${this.props.value}"
+                        class="${this.props.classfield}"
+                    >
+                `
+            }
+
+            return `
+            <div class="${this.props.class}">
+                <label for="${this.props.name}">
+                    ${this.props.label} ${this.props.required ? '<span class="required">*</span>' : ''}
+                    <form-field-error messages="${this.props.errors}"></form-field-error>
+                </label>
+                ${this.props.description ? `<div>${this.props.description}</div>` : ''}
+                <div>
+                    ${input}
+                </div>
+            </div>
+        `
+        },
+
+        onUpdate() {
+            this.checkField();
+        },
+
+        onRender() {
+            const field = this.ref.field;
+            field.addEventListener('blur', ()=>{
+                this.checkField();
+            });
+        },
+
+        checkField() {
+            const field = this.ref.field;
+            let errors = [];
+            if (this.props.required && this.props.value === '') {
+                errors.push('Field is required');
+            }
+
+            if (this.props.type === 'email' && !isEmail(this.props.value)) {
+                errors.push('Value must be a valid email')
+            }
+
+            if (errors.length) {
+                field.classList.add('error');
+            } else{
+                field.classList.remove('error');
+            }
+
+            this.props.errors = errors.join('; ');
+
+            return errors;
+        }
+    });
+    Doz.component('app-form', {
+        props: {
+            loading: false
+        },
+        template() {
+            return `
+            <div>
+                <form-field class="form-group" classfield="form-control" type="text" label="First Name" name="firstName" required="true"></form-field>
+                <form-field class="form-group" classfield="form-control" type="text" label="Last Name" name="lastName" required="true"></form-field>
+                <form-field class="form-group" classfield="form-control" type="text" label="Address" name="address" required="true"></form-field>
+                <form-field class="form-group" classfield="form-control" type="text" label="City" name="city" required="true"></form-field>
+                <form-field class="form-group" classfield="form-control" type="text" label="Country" name="country" required="true"></form-field>
+                <form-field class="form-group" classfield="form-control" type="email" label="Email" name="email" required="true"></form-field>
+
+                <h3>Personal Data you want to rectify/acces or delete</h3>
+                <p>Details of the information you believe to be inaccurate and why rectification is required OR reason why you wish to have data erased:</p>
+
+                <form-field class="form-group" classfield="form-control" type="textarea" label="Types of data and/or reason" name="dataReason" required="true"></form-field>
+
+                <p><strong>Compliance with request:</strong> <br>Please note that we will not be able to comply with your request in certain circumstances, e.g. Compliance with legal obligations or official authorities.<br>We will notify you of any such decision.</p>
+                <p>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="this.submit()">SEND</button>
+                </p>
+                <app-loading show="${this.props.loading}"></app-loading>
+            </div>
+
+        `
+        },
+
+        onRender() {
+            setTimeout(()=> {
+                this.props.loading = true;
+            },1000);
+        },
+
+        submit() {
+            this.props.loading = true;
+
+            let valid = true;
+            const values = {};
+
+            Object.keys(this.children).forEach(i => {
+                const cmp = this.children[i];
+                if(cmp.tag !== 'form-field') return;
+                if(cmp.checkField().length) {
+                    valid = false;
+                }
+                values[cmp.props.name] = cmp.props.value;
+            });
+
+            if (valid) {
+                console.log(values)
+            }
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `
+        <div class="container">
+            <h1 class="display-4">Request for access, deletion or rectification of personal data</h1>
+            <p class="text-muted">When the EU’s new General Data Protection Regulation ‘GDPR’ comes into full effect and enforcement in May 2018 data subjects (individuals) will have the right to access and erase personal data Xdevel may hold concerning them. According to the GDPR, individuals have the right to have their personal data deleted under certain circumstances. If removal of the personal data is not possible, we will anonymize/pseudonymize your data.
+            For more information on the rights of data subjects, we refer you to articles 15 to 17 in the General Data Protection Regulation [EU2016/679].</p>
+            <app-form/>
+        </div>
+    `
+    });
+</script>
+</body>
+</html>

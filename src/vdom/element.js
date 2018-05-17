@@ -20,6 +20,9 @@ function create(node, cmp, initial) {
         node.type = TAG.EMPTY;
     }
 
+    //console.log(node.isSVG, node.type)
+    //console.dir(node);
+
     const $el = node.isSVG
         ? document.createElementNS(NS.SVG, node.type)
         : document.createElement(node.type);

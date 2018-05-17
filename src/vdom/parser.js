@@ -38,10 +38,11 @@ function transform(node) {
                 obj = node.nodeValue;
             } else {
                 obj = {};
-                obj.type = node.nodeName.toLowerCase();
+                obj.type = node.nodeName;//.toLowerCase();
                 obj.children = [];
                 obj.props = serializeProps(node);
-                obj.isSVG = typeof node.ownerSVGElement !== 'undefined'
+                obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
+                //console.dir(node);
             }
 
             if (!Object.keys(root).length)

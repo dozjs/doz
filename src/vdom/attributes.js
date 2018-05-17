@@ -43,20 +43,20 @@ function removeAttribute($target, name, value) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (!newVal /*&& newVal !== false*/) {
         removeAttribute($target, name, oldVal, cmp);
+        updateChildren(cmp, name, newVal);
     } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
+        updateChildren(cmp, name, newVal);
     }
+}
 
-    // Set children state
+function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         const children = Object.keys(cmp.children);
         children.forEach(i => {
-            //console.log(cmp.children[i].tag);
             if (cmp.children[i]._publicProps.hasOwnProperty(name)
                 && cmp.children[i].props.hasOwnProperty(name))
-                cmp.children[i].props[name] = newVal;
-            /*if (cmp.children[i].props.hasOwnProperty(name))
-                cmp.children[i].props[name] = newVal;*/
+                cmp.children[i].props[name] = value;
         });
     }
 }

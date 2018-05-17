@@ -342,11 +342,13 @@ function drawDynamic(instance) {
 
         const dynamicInstance = getInstances({root, template: item.node.outerHTML, view: instance.view});
 
-        instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+        if (dynamicInstance) {
+            instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
 
-        root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-        dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-        instance._processing.splice(index, 1);
+            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+            instance._processing.splice(index, 1);
+        }
         index -= 1;
 
     }

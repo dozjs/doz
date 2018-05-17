@@ -604,11 +604,13 @@ function drawDynamic(instance) {
 
         var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, view: instance.view });
 
-        instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+        if (dynamicInstance) {
+            instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
 
-        root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-        dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-        instance._processing.splice(index, 1);
+            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+            instance._processing.splice(index, 1);
+        }
         index -= 1;
     }
 }
@@ -1412,10 +1414,11 @@ function transform(node) {
                 obj = node.nodeValue;
             } else {
                 obj = {};
-                obj.type = node.nodeName.toLowerCase();
+                obj.type = node.nodeName; //.toLowerCase();
                 obj.children = [];
                 obj.props = serializeProps(node);
                 obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
+                //console.dir(node);
             }
 
             if (!Object.keys(root).length) root = obj;
@@ -1813,6 +1816,9 @@ function create(node, cmp, initial) {
         node.type = TAG.EMPTY;
     }
 
+    //console.log(node.isSVG, node.type)
+    //console.dir(node);
+
     var $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
 
     attach($el, node.props, cmp);
@@ -1942,18 +1948,18 @@ function removeAttribute($target, name, value) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (!newVal /*&& newVal !== false*/) {
             removeAttribute($target, name, oldVal, cmp);
+            updateChildren(cmp, name, newVal);
         } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
+        updateChildren(cmp, name, newVal);
     }
+}
 
-    // Set children state
+function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         var children = Object.keys(cmp.children);
         children.forEach(function (i) {
-            //console.log(cmp.children[i].tag);
-            if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name)) cmp.children[i].props[name] = newVal;
-            /*if (cmp.children[i].props.hasOwnProperty(name))
-                cmp.children[i].props[name] = newVal;*/
+            if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name)) cmp.children[i].props[name] = value;
         });
     }
 }
