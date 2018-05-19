@@ -42,7 +42,7 @@
             &grave;
         },
         props: {
-            message: &apos;&apos;
+            message: &apos;ciao&apos;
         }
     });
 
@@ -58,7 +58,12 @@
             &grave;
         },
         props: {
-            gender: &apos;&apos;
+            gender: &apos;other&apos;
+        },
+        onRender() {
+            setTimeout(()=&gt;{
+                this.props.gender = &apos;female&apos;
+            }, 2000);
         }
     });
 
@@ -77,7 +82,30 @@
             &grave;
         },
         props: {
-            item: &apos;&apos;
+            item: &apos;Tomato&apos;
+        },
+        onRender() {
+            setTimeout(()=&gt;{
+                this.props.item = &apos;Chicken&apos;
+            }, 2000);
+        }
+    });
+
+    Doz.component(&apos;doz-checkbox&apos;, {
+        template(){
+            return &grave;
+                &lt;div&gt;
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;done&quot; name=&quot;done&quot;&gt; ${this.props.done}
+                &lt;/div&gt;
+            &grave;
+        },
+        props: {
+            done: false
+        },
+        onRender() {
+            setTimeout(()=&gt;{
+                this.props.done = true
+            }, 2000);
         }
     });
 
@@ -87,6 +115,7 @@
             &lt;doz-text placeholder=&quot;write a message&quot;&gt;&lt;/doz-text&gt;
             &lt;doz-select&gt;&lt;/doz-select&gt;
             &lt;doz-radio&gt;&lt;/doz-radio&gt;
+            &lt;doz-checkbox&gt;&lt;/doz-checkbox&gt;
         &grave;
     });
     </code>
