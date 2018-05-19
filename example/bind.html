@@ -7,7 +7,7 @@
     <title>Doz - model</title>
     <title>Title</title>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?5896549"></script>
+    <script src="../dist/doz.js?58965495475"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -103,7 +103,7 @@
             `
         },
         props: {
-            message: ''
+            message: 'ciao'
         }
     });
 
@@ -119,7 +119,12 @@
             `
         },
         props: {
-            gender: ''
+            gender: 'other'
+        },
+        onRender() {
+            setTimeout(()=>{
+                this.props.gender = 'female'
+            }, 2000);
         }
     });
 
@@ -138,7 +143,12 @@
             `
         },
         props: {
-            item: ''
+            item: 'Tomato'
+        },
+        onRender() {
+            setTimeout(()=>{
+                this.props.item = 'Chicken'
+            }, 2000);
         }
     });
 
@@ -151,7 +161,12 @@
             `
         },
         props: {
-            done: true
+            done: false
+        },
+        onRender() {
+            setTimeout(()=>{
+                this.props.done = true
+            }, 2000);
         }
     });
 

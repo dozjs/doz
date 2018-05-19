@@ -3,6 +3,7 @@ const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const camelToDash = require('../utils/camel-to-dash');
 const objectPath = require('../utils/object-path');
+const delay = require('../utils/delay');
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -21,7 +22,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if(REGEX.IS_CUSTOM_TAG.test($target.nodeName))
+    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName))
         name = camelToDash(name);
     if (isCustomAttribute(name)) {
     } else if (typeof value === 'boolean') {
@@ -71,7 +72,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp) {
     let updated = [];
     Object.keys(props).forEach(name => {
         updateAttribute($target, name, newProps[name], oldProps[name], cmp);
-        if (newProps[name] !== oldProps[name]){
+        if (newProps[name] !== oldProps[name]) {
             let obj = {};
             obj[name] = newProps[name];
             updated.push(obj);
@@ -144,23 +145,25 @@ function addEventListener($target, name, value, cmp) {
 function setBind($target, name, value, cmp) {
     if (!isBindAttribute(name) || !canBind($target)) return;
     if (typeof cmp.props[value] !== 'undefined') {
-        ['compositionstart', 'compositionend', 'input', 'change']
-            .forEach(function (event) {
-                $target.addEventListener(event, function () {
 
-                    if(!this.defaultValue && this.type === 'checkbox') {
-                        console.log('this.defaultValue',this.defaultValue, this.checked);
-                        cmp.props[value] = this.checked;
-                    } else
-                        cmp.props[value] = this.value;
-                });
+        let events = ['compositionstart', 'compositionend', 'input', 'change'];
+
+        events.forEach(function (event) {
+            $target.addEventListener(event, function (e) {
+                if (!this.defaultValue && this.type === 'checkbox') {
+                    cmp.props[value] = this.checked;
+                } else
+                    cmp.props[value] = this.value;
             });
+        });
 
         if (cmp._boundElements.hasOwnProperty(value)) {
             cmp._boundElements[value].push($target);
         } else {
             cmp._boundElements[value] = [$target];
         }
+
+        return true;
     }
 }
 
@@ -170,10 +173,14 @@ function setRef($target, name, value, cmp) {
 }
 
 function attach($target, props, cmp) {
+    let bindValue;
+
     Object.keys(props).forEach(name => {
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
-        setBind($target, name, props[name], cmp);
+        if (setBind($target, name, props[name], cmp)) {
+            bindValue = cmp.props[props[name]];
+        }
         setRef($target, name, props[name], cmp);
     });
 
@@ -181,6 +188,16 @@ function attach($target, props, cmp) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
         }
+    }
+
+    if (typeof bindValue !== 'undefined') {
+        delay(()=>{
+            if ($target.type === 'radio' || $target.type === 'checkbox') {
+                $target.checked = bindValue;
+            } else {
+                $target.value = bindValue;
+            }
+        });
     }
 }
 

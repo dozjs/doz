@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -255,18 +255,18 @@ var _require2 = __webpack_require__(0),
     INSTANCE = _require2.INSTANCE;
 
 var collection = __webpack_require__(1);
-var observer = __webpack_require__(15);
+var observer = __webpack_require__(16);
 var events = __webpack_require__(6);
 
-var _require3 = __webpack_require__(7),
+var _require3 = __webpack_require__(8),
     transform = _require3.transform,
     serializeProps = _require3.serializeProps;
 
-var update = __webpack_require__(10).updateElement;
-var store = __webpack_require__(20);
-var ids = __webpack_require__(21);
+var update = __webpack_require__(11).updateElement;
+var store = __webpack_require__(21);
+var ids = __webpack_require__(22);
 
-var _require4 = __webpack_require__(22),
+var _require4 = __webpack_require__(23),
     extract = _require4.extract;
 
 var proxy = __webpack_require__(5);
@@ -1375,8 +1375,21 @@ module.exports = {
 "use strict";
 
 
-var castStringTo = __webpack_require__(8);
-var dashToCamel = __webpack_require__(9);
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var castStringTo = __webpack_require__(9);
+var dashToCamel = __webpack_require__(10);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
@@ -1447,7 +1460,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1495,7 +1508,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1510,26 +1523,17 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var element = __webpack_require__(16);
-
-module.exports = {
-    updateElement: element.update
-};
-
-/***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(12);
+var element = __webpack_require__(17);
+
+module.exports = {
+    updateElement: element.update
+};
 
 /***/ }),
 /* 12 */
@@ -1539,14 +1543,23 @@ module.exports = __webpack_require__(12);
 
 
 module.exports = __webpack_require__(13);
-module.exports.component = __webpack_require__(3).component;
-module.exports.collection = __webpack_require__(1);
-module.exports.update = __webpack_require__(10).updateElement;
-module.exports.transform = __webpack_require__(7).transform;
-module.exports.html = __webpack_require__(4);
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(14);
+module.exports.component = __webpack_require__(3).component;
+module.exports.collection = __webpack_require__(1);
+module.exports.update = __webpack_require__(11).updateElement;
+module.exports.transform = __webpack_require__(8).transform;
+module.exports.html = __webpack_require__(4);
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1559,7 +1572,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(2);
-var bind = __webpack_require__(14);
+var bind = __webpack_require__(15);
 var component = __webpack_require__(3);
 
 var _require = __webpack_require__(0),
@@ -1703,7 +1716,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1735,7 +1748,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1743,10 +1756,7 @@ module.exports = bind;
 
 var proxy = __webpack_require__(5);
 var events = __webpack_require__(6);
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
+var delay = __webpack_require__(7);
 
 function updateChildren(instance, changes) {
 
@@ -1765,7 +1775,9 @@ function updateBound(instance, changes) {
     changes.forEach(function (item) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(function (element) {
-                if (element.type === 'radio' || element.type === 'checkbox') {
+                if (element.type === 'checkbox') {
+                    element.checked = item.newValue;
+                } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
                 } else {
                     element.value = item.newValue;
@@ -1798,7 +1810,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1806,7 +1818,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(17),
+var _require = __webpack_require__(18),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1910,7 +1922,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1924,10 +1936,11 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
-var castStringTo = __webpack_require__(8);
-var dashToCamel = __webpack_require__(9);
-var camelToDash = __webpack_require__(18);
-var objectPath = __webpack_require__(19);
+var castStringTo = __webpack_require__(9);
+var dashToCamel = __webpack_require__(10);
+var camelToDash = __webpack_require__(19);
+var objectPath = __webpack_require__(20);
+var delay = __webpack_require__(7);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -2056,11 +2069,12 @@ function addEventListener($target, name, value, cmp) {
 function setBind($target, name, value, cmp) {
     if (!isBindAttribute(name) || !canBind($target)) return;
     if (typeof cmp.props[value] !== 'undefined') {
-        ['compositionstart', 'compositionend', 'input', 'change'].forEach(function (event) {
-            $target.addEventListener(event, function () {
 
+        var events = ['compositionstart', 'compositionend', 'input', 'change'];
+
+        events.forEach(function (event) {
+            $target.addEventListener(event, function (e) {
                 if (!this.defaultValue && this.type === 'checkbox') {
-                    console.log('this.defaultValue', this.defaultValue, this.checked);
                     cmp.props[value] = this.checked;
                 } else cmp.props[value] = this.value;
             });
@@ -2071,6 +2085,8 @@ function setBind($target, name, value, cmp) {
         } else {
             cmp._boundElements[value] = [$target];
         }
+
+        return true;
     }
 }
 
@@ -2080,10 +2096,14 @@ function setRef($target, name, value, cmp) {
 }
 
 function attach($target, props, cmp) {
+    var bindValue = void 0;
+
     Object.keys(props).forEach(function (name) {
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
-        setBind($target, name, props[name], cmp);
+        if (setBind($target, name, props[name], cmp)) {
+            bindValue = cmp.props[props[name]];
+        }
         setRef($target, name, props[name], cmp);
     });
 
@@ -2091,6 +2111,16 @@ function attach($target, props, cmp) {
         if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
         }
+    }
+
+    if (typeof bindValue !== 'undefined') {
+        delay(function () {
+            if ($target.type === 'radio' || $target.type === 'checkbox') {
+                $target.checked = bindValue;
+            } else {
+                $target.value = bindValue;
+            }
+        });
     }
 }
 
@@ -2100,7 +2130,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2113,7 +2143,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2138,7 +2168,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2159,7 +2189,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2180,7 +2210,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

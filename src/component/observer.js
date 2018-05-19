@@ -1,12 +1,6 @@
 const proxy = require('../utils/proxy');
 const events = require('./events');
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined)
-        return window.requestAnimationFrame(cb);
-    else
-        return window.setTimeout(cb);
-}
+const delay = require('../utils/delay');
 
 function updateChildren(instance, changes) {
 
@@ -27,7 +21,9 @@ function updateBound(instance, changes) {
     changes.forEach(item => {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(element => {
-                if (element.type === 'radio' || element.type === 'checkbox') {
+                if (element.type === 'checkbox') {
+                    element.checked = item.newValue;
+                } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
                 } else {
                     element.value = item.newValue;
