@@ -7,7 +7,7 @@
     <title>Doz - model</title>
     <title>Title</title>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?589654954705"></script>
+    <script src="../dist/doz.js?589654954735"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -15,7 +15,6 @@
 
         div {
             padding: 20px;
-            text-align: center;
         }
 
     </style>
@@ -37,12 +36,16 @@
             return &grave;
                 &lt;div&gt;
                     &lt;input type=&quot;text&quot; d-bind=&quot;message&quot; placeholder=&quot;${this.props.placeholder}&quot;/&gt;
-                    &lt;p&gt;Text: ${this.props.message}&lt;/p&gt;
+                    &lt;p&gt;Value: ${this.props.message}&lt;/p&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to hello&lt;/button&gt;
                 &lt;/div&gt;
             &grave;
         },
         props: {
             message: &apos;ciao&apos;
+        },
+        setNew() {
+            this.props.message = &apos;hello&apos;
         }
     });
 
@@ -53,17 +56,16 @@
                     &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;male&quot;&gt; Male
                     &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;female&quot;&gt; Female
                     &lt;input type=&quot;radio&quot; d-bind=&quot;gender&quot; name=&quot;gender&quot; value=&quot;other&quot;&gt; Other
-                    &lt;p&gt;Radio: ${this.props.gender}&lt;/p&gt;
+                    &lt;p&gt;Value: ${this.props.gender}&lt;/p&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to female&lt;/button&gt;
                 &lt;/div&gt;
             &grave;
         },
         props: {
             gender: &apos;other&apos;
         },
-        onRender() {
-            setTimeout(()=&gt;{
-                this.props.gender = &apos;female&apos;
-            }, 2000);
+        setNew() {
+            this.props.gender = &apos;female&apos;
         }
     });
 
@@ -77,17 +79,39 @@
                         &lt;option value=&quot;Tomato&quot;&gt;Tomato&lt;/option&gt;
                         &lt;option value=&quot;Chicken&quot;&gt;Chicken&lt;/option&gt;
                     &lt;/select&gt;
-                    &lt;p&gt;Select: ${this.props.item}&lt;/p&gt;
+                    &lt;p&gt;Value: ${this.props.item}&lt;/p&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to Chicken&lt;/button&gt;
                 &lt;/div&gt;
             &grave;
         },
         props: {
             item: &apos;Tomato&apos;
         },
-        onRender() {
-            setTimeout(()=&gt;{
-                this.props.item = &apos;Chicken&apos;
-            }, 2000);
+        setNew() {
+            this.props.item = &apos;Chicken&apos;
+        }
+    });
+
+    Doz.component(&apos;doz-select-multiple&apos;, {
+        template(){
+            return &grave;
+                &lt;div&gt;
+                    &lt;select d-bind=&quot;item&quot; multiple=&quot;multiple&quot;&gt;
+                        &lt;option value=&quot;&quot; disabled=&quot;true&quot; selected=&quot;true&quot; hidden=&quot;true&quot;&gt;Please Choose...&lt;/option&gt;
+                        &lt;option value=&quot;Milk&quot;&gt;Milk&lt;/option&gt;
+                        &lt;option value=&quot;Tomato&quot;&gt;Tomato&lt;/option&gt;
+                        &lt;option value=&quot;Chicken&quot;&gt;Chicken&lt;/option&gt;
+                    &lt;/select&gt;
+                    &lt;p&gt;Value: ${this.props.item}&lt;/p&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to Chicken, Milk&lt;/button&gt;
+                &lt;/div&gt;
+            &grave;
+        },
+        props: {
+            item: &apos;Tomato&apos;
+        },
+        setNew() {
+            this.props.item = [&apos;Chicken&apos;, &apos;Milk&apos;]
         }
     });
 
@@ -95,27 +119,60 @@
         template(){
             return &grave;
                 &lt;div&gt;
-                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;done&quot; name=&quot;done&quot;&gt; ${this.props.done}
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;done&quot; name=&quot;done&quot;&gt; ${this.props.done} &lt;br/&gt;&lt;br/&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to true&lt;/button&gt;
                 &lt;/div&gt;
             &grave;
         },
         props: {
             done: false
         },
-        onRender() {
-            setTimeout(()=&gt;{
-                this.props.done = true
-            }, 2000);
+        setNew() {
+            this.props.done = true
+        }
+    });
+
+    Doz.component(&apos;doz-checkbox-multiple&apos;, {
+        template(){
+            return &grave;
+                &lt;div&gt;
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;sauce&quot; name=&quot;sauce&quot; value=&quot;Mustard&quot;&gt; Mustard
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;sauce&quot; name=&quot;sauce&quot; value=&quot;Mayonnaise&quot;&gt; Mayonnaise
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;sauce&quot; name=&quot;sauce&quot; value=&quot;Ketchup&quot;&gt; Ketchup
+                    &lt;input type=&quot;checkbox&quot; d-bind=&quot;sauce&quot; name=&quot;sauce&quot; value=&quot;Pink Sauce&quot;&gt; Pink Sauce
+                    &lt;p&gt;Value: ${this.props.sauce}&lt;/p&gt;
+                    &lt;button onclick=&quot;this.setNew()&quot;&gt;Set to Mustard, Pink Sauce&lt;/button&gt;
+                &lt;/div&gt;
+            &grave;
+        },
+        props: {
+            sauce: [&apos;Ketchup&apos;, &apos;Mayonnaise&apos;]
+        },
+        setNew() {
+            this.props.sauce = [&apos;Mustard&apos;, &apos;Pink Sauce&apos;]
         }
     });
 
     new Doz({
         root: document.getElementById(&apos;app&apos;),
         template: &grave;
+            &lt;h3&gt;Input type text&lt;/h3&gt;
             &lt;doz-text placeholder=&quot;write a message&quot;&gt;&lt;/doz-text&gt;
-            &lt;doz-select&gt;&lt;/doz-select&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Input type radio&lt;/h3&gt;
             &lt;doz-radio&gt;&lt;/doz-radio&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Input type checkbox&lt;/h3&gt;
             &lt;doz-checkbox&gt;&lt;/doz-checkbox&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Input type checkbox multiple&lt;/h3&gt;
+            &lt;doz-checkbox-multiple&gt;&lt;/doz-checkbox-multiple&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Select&lt;/h3&gt;
+            &lt;doz-select&gt;&lt;/doz-select&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Select multiple&lt;/h3&gt;
+            &lt;doz-select-multiple&gt;&lt;/doz-select-multiple&gt;
         &grave;
     });
     </code>
@@ -127,12 +184,16 @@
             return `
                 <div>
                     <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
-                    <p>Text: ${this.props.message}</p>
+                    <p>Value: ${this.props.message}</p>
+                    <button onclick="this.setNew()">Set to hello</button>
                 </div>
             `
         },
         props: {
             message: 'ciao'
+        },
+        setNew() {
+            this.props.message = 'hello'
         }
     });
 
@@ -143,17 +204,16 @@
                     <input type="radio" d-bind="gender" name="gender" value="male"> Male
                     <input type="radio" d-bind="gender" name="gender" value="female"> Female
                     <input type="radio" d-bind="gender" name="gender" value="other"> Other
-                    <p>Radio: ${this.props.gender}</p>
+                    <p>Value: ${this.props.gender}</p>
+                    <button onclick="this.setNew()">Set to female</button>
                 </div>
             `
         },
         props: {
             gender: 'other'
         },
-        onRender() {
-            setTimeout(()=>{
-                this.props.gender = 'female'
-            }, 2000);
+        setNew() {
+            this.props.gender = 'female'
         }
     });
 
@@ -167,17 +227,16 @@
                         <option value="Tomato">Tomato</option>
                         <option value="Chicken">Chicken</option>
                     </select>
-                    <p>Select: ${this.props.item}</p>
+                    <p>Value: ${this.props.item}</p>
+                    <button onclick="this.setNew()">Set to Chicken</button>
                 </div>
             `
         },
         props: {
             item: 'Tomato'
         },
-        onRender() {
-            setTimeout(()=>{
-                this.props.item = 'Chicken'
-            }, 2000);
+        setNew() {
+            this.props.item = 'Chicken'
         }
     });
 
@@ -191,17 +250,16 @@
                         <option value="Tomato">Tomato</option>
                         <option value="Chicken">Chicken</option>
                     </select>
-                    <p>Select: ${this.props.item}</p>
+                    <p>Value: ${this.props.item}</p>
+                    <button onclick="this.setNew()">Set to Chicken, Milk</button>
                 </div>
             `
         },
         props: {
             item: 'Tomato'
         },
-        onRender() {
-            setTimeout(()=>{
-                this.props.item = ['Chicken', 'Milk']
-            }, 2000);
+        setNew() {
+            this.props.item = ['Chicken', 'Milk']
         }
     });
 
@@ -209,28 +267,60 @@
         template(){
             return `
                 <div>
-                    <input type="checkbox" d-bind="done" name="done"> ${this.props.done}
+                    <input type="checkbox" d-bind="done" name="done"> ${this.props.done} <br/><br/>
+                    <button onclick="this.setNew()">Set to true</button>
                 </div>
             `
         },
         props: {
             done: false
         },
-        onRender() {
-            setTimeout(()=>{
-                this.props.done = true
-            }, 2000);
+        setNew() {
+            this.props.done = true
+        }
+    });
+
+    Doz.component('doz-checkbox-multiple', {
+        template(){
+            return `
+                <div>
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Mustard"> Mustard
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Mayonnaise"> Mayonnaise
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Ketchup"> Ketchup
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Pink Sauce"> Pink Sauce
+                    <p>Value: ${this.props.sauce}</p>
+                    <button onclick="this.setNew()">Set to Mustard, Pink Sauce</button>
+                </div>
+            `
+        },
+        props: {
+            sauce: ['Ketchup', 'Mayonnaise']
+        },
+        setNew() {
+            this.props.sauce = ['Mustard', 'Pink Sauce']
         }
     });
 
     new Doz({
         root: document.getElementById('app'),
         template: `
+            <h3>Input type text</h3>
             <doz-text placeholder="write a message"></doz-text>
-            <doz-select></doz-select>
-            <doz-select-multiple></doz-select-multiple>
+            <hr>
+            <h3>Input type radio</h3>
             <doz-radio></doz-radio>
+            <hr>
+            <h3>Input type checkbox</h3>
             <doz-checkbox></doz-checkbox>
+            <hr>
+            <h3>Input type checkbox multiple</h3>
+            <doz-checkbox-multiple></doz-checkbox-multiple>
+            <hr>
+            <h3>Select</h3>
+            <doz-select></doz-select>
+            <hr>
+            <h3>Select multiple</h3>
+            <doz-select-multiple></doz-select-multiple>
         `
     });
 

@@ -150,10 +150,17 @@ function setBind($target, name, value, cmp) {
 
         events.forEach(function (event) {
             $target.addEventListener(event, function (e) {
-                if (!this.defaultValue && this.type === 'checkbox') {
-                    cmp.props[value] = this.checked;
+                let _value;
+                if (this.type === 'checkbox') {
+                    if(!this.defaultValue)
+                        cmp.props[value] = this.checked;
+                    else {
+                        const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
+                        _value = [...inputs].map(input => input.value);
+                        cmp.props[value] = _value;
+                    }
                 } else {
-                    let _value = this.value;
+                    _value = this.value;
                     if (this.multiple) {
                         _value = [...this.options].filter(option => option.selected).map(option => option.value);
                     }
@@ -197,8 +204,14 @@ function attach($target, props, cmp) {
 
     if (typeof bindValue !== 'undefined') {
         delay(() => {
-            if ($target.type === 'radio' || $target.type === 'checkbox') {
+            if ($target.type === 'radio') {
                 $target.checked = bindValue;
+            } else if ($target.type === 'checkbox') {
+                if(typeof bindValue === 'object') {
+                    const inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                    inputs.forEach(input => input.checked = Array.from(bindValue).includes(input.value));
+                } else
+                    $target.checked = bindValue;
             } else {
                 $target.value = bindValue;
             }

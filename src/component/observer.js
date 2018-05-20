@@ -22,7 +22,12 @@ function updateBound(instance, changes) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(element => {
                 if (element.type === 'checkbox') {
-                    element.checked = item.newValue;
+                    if(!element.defaultValue)
+                        element.checked = item.newValue;
+                    else if (Array.isArray(item.newValue)) {
+                        const inputs = document.querySelectorAll(`input[name=${element.name}][type=checkbox]`);
+                        [...inputs].forEach(input => input.checked = item.newValue.includes(input.value));
+                    }
                 } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
                 } else if(element.type === 'select-multiple' && Array.isArray(item.newValue)) {

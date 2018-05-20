@@ -1778,7 +1778,12 @@ function updateBound(instance, changes) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
             instance._boundElements[item.property].forEach(function (element) {
                 if (element.type === 'checkbox') {
-                    element.checked = item.newValue;
+                    if (!element.defaultValue) element.checked = item.newValue;else if (Array.isArray(item.newValue)) {
+                        var inputs = document.querySelectorAll('input[name=' + element.name + '][type=checkbox]');
+                        [].concat(_toConsumableArray(inputs)).forEach(function (input) {
+                            return input.checked = item.newValue.includes(input.value);
+                        });
+                    }
                 } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
                 } else if (element.type === 'select-multiple' && Array.isArray(item.newValue)) {
@@ -2080,10 +2085,17 @@ function setBind($target, name, value, cmp) {
 
         events.forEach(function (event) {
             $target.addEventListener(event, function (e) {
-                if (!this.defaultValue && this.type === 'checkbox') {
-                    cmp.props[value] = this.checked;
+                var _value = void 0;
+                if (this.type === 'checkbox') {
+                    if (!this.defaultValue) cmp.props[value] = this.checked;else {
+                        var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
+                        _value = [].concat(_toConsumableArray(inputs)).map(function (input) {
+                            return input.value;
+                        });
+                        cmp.props[value] = _value;
+                    }
                 } else {
-                    var _value = this.value;
+                    _value = this.value;
                     if (this.multiple) {
                         _value = [].concat(_toConsumableArray(this.options)).filter(function (option) {
                             return option.selected;
@@ -2131,8 +2143,15 @@ function attach($target, props, cmp) {
 
     if (typeof bindValue !== 'undefined') {
         delay(function () {
-            if ($target.type === 'radio' || $target.type === 'checkbox') {
+            if ($target.type === 'radio') {
                 $target.checked = bindValue;
+            } else if ($target.type === 'checkbox') {
+                if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
+                    var inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
+                    inputs.forEach(function (input) {
+                        return input.checked = Array.from(bindValue).includes(input.value);
+                    });
+                } else $target.checked = bindValue;
             } else {
                 $target.value = bindValue;
             }
