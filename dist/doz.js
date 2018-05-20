@@ -1754,6 +1754,8 @@ module.exports = bind;
 "use strict";
 
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var proxy = __webpack_require__(5);
 var events = __webpack_require__(6);
 var delay = __webpack_require__(7);
@@ -1779,6 +1781,10 @@ function updateBound(instance, changes) {
                     element.checked = item.newValue;
                 } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
+                } else if (element.type === 'select-multiple' && Array.isArray(item.newValue)) {
+                    [].concat(_toConsumableArray(element.options)).forEach(function (option) {
+                        return option.selected = item.newValue.includes(option.value);
+                    });
                 } else {
                     element.value = item.newValue;
                 }
@@ -2076,7 +2082,17 @@ function setBind($target, name, value, cmp) {
             $target.addEventListener(event, function (e) {
                 if (!this.defaultValue && this.type === 'checkbox') {
                     cmp.props[value] = this.checked;
-                } else cmp.props[value] = this.value;
+                } else {
+                    var _value = this.value;
+                    if (this.multiple) {
+                        _value = [].concat(_toConsumableArray(this.options)).filter(function (option) {
+                            return option.selected;
+                        }).map(function (option) {
+                            return option.value;
+                        });
+                    }
+                    cmp.props[value] = _value;
+                }
             });
         });
 

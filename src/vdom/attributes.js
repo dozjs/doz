@@ -152,8 +152,13 @@ function setBind($target, name, value, cmp) {
             $target.addEventListener(event, function (e) {
                 if (!this.defaultValue && this.type === 'checkbox') {
                     cmp.props[value] = this.checked;
-                } else
-                    cmp.props[value] = this.value;
+                } else {
+                    let _value = this.value;
+                    if (this.multiple) {
+                        _value = [...this.options].filter(option => option.selected).map(option => option.value);
+                    }
+                    cmp.props[value] = _value;
+                }
             });
         });
 
@@ -191,7 +196,7 @@ function attach($target, props, cmp) {
     }
 
     if (typeof bindValue !== 'undefined') {
-        delay(()=>{
+        delay(() => {
             if ($target.type === 'radio' || $target.type === 'checkbox') {
                 $target.checked = bindValue;
             } else {

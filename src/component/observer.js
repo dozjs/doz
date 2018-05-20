@@ -25,9 +25,12 @@ function updateBound(instance, changes) {
                     element.checked = item.newValue;
                 } else if (element.type === 'radio') {
                     element.checked = element.value === item.newValue;
+                } else if(element.type === 'select-multiple' && Array.isArray(item.newValue)) {
+                    [...element.options].forEach(option => option.selected = item.newValue.includes(option.value));
                 } else {
                     element.value = item.newValue;
                 }
+
             })
         }
     });
