@@ -1986,16 +1986,21 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 }
 
 function updateChildren(cmp, name, value) {
+    //console.log(name, value, cmp.children)
+    //if (value !== 'Nome')
+    //return false;
+
     if (cmp && cmp.updateChildrenProps) {
         var children = Object.keys(cmp.children);
         name = dashToCamel(name);
 
         //if (cmp.tag === 'app-form')
-        console.log(cmp.id);
+        //console.log(cmp.children);
 
         children.forEach(function (i) {
-            if (name === 'label') console.log(name, value);
-            if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name)) cmp.children[i].props[name] = value;
+            if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name))
+                //cmp.children[i].props[name] = value;
+                console.log(cmp.children[i].props[name], value);
         });
     }
 }

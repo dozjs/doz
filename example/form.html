@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Doz - form</title>
-    <script src="../dist/doz.js?589654"></script>
+    <script src="../dist/doz.js?58965476"></script>
 </head>
 <body>
 
@@ -14,6 +14,14 @@
     function isEmail(string) {
         return matcher.test(string);
     }
+
+    Doz.component('form-divider', {
+        template() {
+            return `
+                <hr>
+            `
+        }
+    });
 
     Doz.component('form-field-error', {
         props: {
@@ -38,8 +46,7 @@
             value: '',
             description: '',
             errors: '',
-            class: '',
-            classfield: ''
+            class: ''
         },
         template() {
 
@@ -48,7 +55,7 @@
             switch (this.props.type) {
                 case 'select':
                     input = `
-                    <select d-ref="field" name="${this.props.name}" class="${this.props.classfield}">
+                    <select d-ref="field" name="${this.props.name}">
                     ${this.each(this.props.options, item => `
                         <option ${this.props.value === item ? 'selected' : ''} value="${item}">${item}</option>
                     `)}
@@ -62,7 +69,6 @@
                         d-ref="field"
                         d-bind="value"
                         name="${this.props.name}"
-                        class="${this.props.classfield}"
                     > ${this.props.value}</textarea>
                 `;
                     break;
@@ -75,7 +81,6 @@
                         type="${this.props.type}"
                         name="${this.props.name}"
                         value="${this.props.value}"
-                        class="${this.props.classfield}"
                     >
                 `
             }
@@ -94,7 +99,13 @@
         `
         },
 
+        onBeforeUpdate() {
+            console.log('onBeforeUpdate', this.props.label);
+            this.checkField();
+        },
+
         onUpdate() {
+            console.log('onUpdate', this.props.label);
             this.checkField();
         },
 
@@ -127,45 +138,46 @@
             return errors;
         }
     });
+
     Doz.component('app-form', {
         props: {
             loading: false,
-            lang: 'en'
-        },
-        localeString: {
-            en: {
-                firstName: 'First Name',
-                lastName: 'Last Name',
-                address: 'Address',
-                city: 'City',
-                country: 'Country',
-                email: 'Email',
-                dataReasonTitle: 'Personal Data you want to rectify/access or delete',
-                dataReasonDescription: 'Details of the information you believe to be inaccurate and why rectification is required OR reason why you wish to have data erased:',
-                dataReasonLabel: 'Types of data and/or reason',
-                noteTitle: 'Compliance with request:',
-                noteDescription: 'Please note that we will not be able to comply with your request in certain circumstances, e.g. Compliance with legal obligations or official authorities.\nWe will notify you of any such decision.',
-                send: 'SEND',
-                reset: 'RESET'
-            },
-            it: {
-                firstName: 'Nome',
-                lastName: 'Cognome',
-                address: 'Indirizzo',
-                city: 'Città',
-                country: 'Paese',
-                email: 'Email',
-                dataReasonTitle: 'Dati personali che si desidera rettificare o eliminare',
-                dataReasonDescription: 'Dettagli delle informazioni che ritieni inaccurate e il motivo per cui ritieni necessaria la rettifica o la cancellazione dei dati',
-                dataReasonLabel: 'Specifica i dati e/o motivo',
-                noteTitle: 'Conformità con la richiesta:',
-                noteDescription: 'Tieni presente che non saremo in grado di soddisfare la tua richiesta in determinate circostanze, ad esempio,  qualora fosse richiesto dalla legge.\nTi avvertiremo in merito a tale decisione. ',
-                send: 'INVIA',
-                reset: 'RESET'
+            lang: 'en',
+            localeString: {
+                en: {
+                    firstName: 'First Name',
+                    lastName: 'Last Name',
+                    address: 'Address',
+                    city: 'City',
+                    country: 'Country',
+                    email: 'Email',
+                    dataReasonTitle: 'Personal Data you want to rectify/access or delete',
+                    dataReasonDescription: 'Details of the information you believe to be inaccurate and why rectification is required OR reason why you wish to have data erased:',
+                    dataReasonLabel: 'Types of data and/or reason',
+                    noteTitle: 'Compliance with request:',
+                    noteDescription: 'Please note that we will not be able to comply with your request in certain circumstances, e.g. Compliance with legal obligations or official authorities.\nWe will notify you of any such decision.',
+                    send: 'SEND',
+                    reset: 'RESET'
+                },
+                it: {
+                    firstName: 'Nome',
+                    lastName: 'Cognome',
+                    address: 'Indirizzo',
+                    city: 'Città',
+                    country: 'Paese',
+                    email: 'Email',
+                    dataReasonTitle: 'Dati personali che si desidera rettificare o eliminare',
+                    dataReasonDescription: 'Dettagli delle informazioni che ritieni inaccurate e il motivo per cui ritieni necessaria la rettifica o la cancellazione dei dati',
+                    dataReasonLabel: 'Specifica i dati e/o motivo',
+                    noteTitle: 'Conformità con la richiesta:',
+                    noteDescription: 'Tieni presente che non saremo in grado di soddisfare la tua richiesta in determinate circostanze, ad esempio,  qualora fosse richiesto dalla legge.\nTi avvertiremo in merito a tale decisione. ',
+                    send: 'INVIA',
+                    reset: 'RESET'
+                }
             }
         },
         template() {
-            const locale = this.localeString[this.props.lang] || this.localeString['en'];
+            const locale = this.props.localeString[this.props.lang] || this.props.localeString['en'];
 
             return `
                 <div>
@@ -175,21 +187,20 @@
                         <option value="it">IT</option>
                     </select>
                     <br><br><br>
-                    <form-field d:id="1" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.firstName}" name="firstName" required="true"></form-field>
-                    <form-field d:id="2" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.lastName}" name="lastName" required="true"></form-field>
-                    <form-field d:id="3" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.address}" name="address" required="true"></form-field>
-                    <form-field d:id="4" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.city}" name="city" required="true"></form-field>
-                    <form-field d:id="5" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.country}" name="country" required="true"></form-field>
-                    <form-field d:id="6" lang="${this.props.lang}" class="form-group" class-field="form-control" type="email" label="${locale.email}" name="email" required="true"></form-field>
+                    <form-field d:id="1" type="text" label="${locale.firstName}" name="firstName" required="true"></form-field>
+                    <form-field d:id="2" type="text" label="${locale.lastName}" name="lastName" required="true"></form-field>
+                    <form-field d:id="3" type="text" label="${locale.address}" name="address" required="true"></form-field>
+                    <form-field d:id="4" type="text" label="${locale.city}" name="city" required="true"></form-field>
+                    <form-field d:id="5" type="text" label="${locale.country}" name="country" required="true"></form-field>
+                    <form-field d:id="6" type="email" label="${locale.email}" name="email" required="true"></form-field>
 
                     <h3>${locale.dataReasonTitle}</h3>
                     <p>${locale.dataReasonDescription}</p>
 
-                    <form-field d:id="7" lang="${this.props.lang}" class="form-group" class-field="form-control" type="textarea" label="${locale.dataReasonLabel}" name="dataReason" required="true"></form-field>
-
+                    <form-field d:id="7" type="textarea" label="${locale.dataReasonLabel}" name="dataReason" required="true"></form-field>
                     <p><strong>${locale.noteTitle}</strong> <br>${locale.noteDescription}</p>
+                    <form-divider></form-divider>
                     <button type="button" class="btn btn-success btn-lg" onclick="this.submit()">${locale.send}</button>
-                    <app-loading show="${this.props.loading}"></app-loading>
                 </div>
 
         `
