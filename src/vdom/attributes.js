@@ -204,11 +204,13 @@ function attach($target, props, cmp) {
 
     if (typeof bindValue !== 'undefined') {
         delay(() => {
+            let inputs;
             if ($target.type === 'radio') {
-                $target.checked = bindValue;
+                inputs = document.querySelectorAll(`input[name=${$target.name}][type=radio]`);
+                inputs.forEach(input => input.checked = bindValue === input.value);
             } else if ($target.type === 'checkbox') {
                 if(typeof bindValue === 'object') {
-                    const inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                    inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
                     inputs.forEach(input => input.checked = Array.from(bindValue).includes(input.value));
                 } else
                     $target.checked = bindValue;

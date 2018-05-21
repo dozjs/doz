@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.0.28] - 2018-05-21
+- **Fixed** bind problem on radio input. The initial value was not considered
+
 ## [0.0.27] - 2018-05-20
 - **Improvement** binding for checkbox and select
 

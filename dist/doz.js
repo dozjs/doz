@@ -2143,11 +2143,15 @@ function attach($target, props, cmp) {
 
     if (typeof bindValue !== 'undefined') {
         delay(function () {
+            var inputs = void 0;
             if ($target.type === 'radio') {
-                $target.checked = bindValue;
+                inputs = document.querySelectorAll('input[name=' + $target.name + '][type=radio]');
+                inputs.forEach(function (input) {
+                    return input.checked = bindValue === input.value;
+                });
             } else if ($target.type === 'checkbox') {
                 if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
-                    var inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
+                    inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
                     inputs.forEach(function (input) {
                         return input.checked = Array.from(bindValue).includes(input.value);
                     });
