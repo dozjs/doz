@@ -15,31 +15,6 @@
         return matcher.test(string);
     }
 
-    Doz.component('app-loading', {
-        props: {
-            show: false,
-            stroke: '#b8b8b8',
-            strokeWidth: 4,
-            width: 200,
-            height: 200,
-            duration: '1s',
-            repeat: 'indefinite'
-        },
-        template() {
-            return `
-            <svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid" style="background: none; display: ${this.props.show ? 'block' : 'none'}">
-                <circle cx="50" cy="50" fill="none"
-                        stroke-linecap="round" r="40" stroke-width="4" stroke="${this.props.stroke}"
-                        stroke-dasharray="62.83185307179586 62.83185307179586" transform="rotate(180 50 50)">
-                    <animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50"
-                                      keyTimes="0;1" dur="${this.props.duration}" begin="0s" repeatCount="${this.props.repeat}"></animateTransform>
-                </circle>
-            </svg>
-        `
-        }
-    });
-
     Doz.component('form-field-error', {
         props: {
             messages: ''
@@ -154,37 +129,70 @@
     });
     Doz.component('app-form', {
         props: {
-            loading: false
+            loading: false,
+            lang: 'en'
+        },
+        localeString: {
+            en: {
+                firstName: 'First Name',
+                lastName: 'Last Name',
+                address: 'Address',
+                city: 'City',
+                country: 'Country',
+                email: 'Email',
+                dataReasonTitle: 'Personal Data you want to rectify/access or delete',
+                dataReasonDescription: 'Details of the information you believe to be inaccurate and why rectification is required OR reason why you wish to have data erased:',
+                dataReasonLabel: 'Types of data and/or reason',
+                noteTitle: 'Compliance with request:',
+                noteDescription: 'Please note that we will not be able to comply with your request in certain circumstances, e.g. Compliance with legal obligations or official authorities.\nWe will notify you of any such decision.',
+                send: 'SEND',
+                reset: 'RESET'
+            },
+            it: {
+                firstName: 'Nome',
+                lastName: 'Cognome',
+                address: 'Indirizzo',
+                city: 'Città',
+                country: 'Paese',
+                email: 'Email',
+                dataReasonTitle: 'Dati personali che si desidera rettificare o eliminare',
+                dataReasonDescription: 'Dettagli delle informazioni che ritieni inaccurate e il motivo per cui ritieni necessaria la rettifica o la cancellazione dei dati',
+                dataReasonLabel: 'Specifica i dati e/o motivo',
+                noteTitle: 'Conformità con la richiesta:',
+                noteDescription: 'Tieni presente che non saremo in grado di soddisfare la tua richiesta in determinate circostanze, ad esempio,  qualora fosse richiesto dalla legge.\nTi avvertiremo in merito a tale decisione. ',
+                send: 'INVIA',
+                reset: 'RESET'
+            }
         },
         template() {
+            const locale = this.localeString[this.props.lang] || this.localeString['en'];
+
             return `
-            <div>
-                <form-field class="form-group" classfield="form-control" type="text" label="First Name" name="firstName" required="true"></form-field>
-                <form-field class="form-group" classfield="form-control" type="text" label="Last Name" name="lastName" required="true"></form-field>
-                <form-field class="form-group" classfield="form-control" type="text" label="Address" name="address" required="true"></form-field>
-                <form-field class="form-group" classfield="form-control" type="text" label="City" name="city" required="true"></form-field>
-                <form-field class="form-group" classfield="form-control" type="text" label="Country" name="country" required="true"></form-field>
-                <form-field class="form-group" classfield="form-control" type="email" label="Email" name="email" required="true"></form-field>
+                <div>
+                    Language
+                    <select d-bind="lang">
+                        <option value="en">EN</option>
+                        <option value="it">IT</option>
+                    </select>
+                    <br><br><br>
+                    <form-field d:id="1" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.firstName}" name="firstName" required="true"></form-field>
+                    <form-field d:id="2" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.lastName}" name="lastName" required="true"></form-field>
+                    <form-field d:id="3" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.address}" name="address" required="true"></form-field>
+                    <form-field d:id="4" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.city}" name="city" required="true"></form-field>
+                    <form-field d:id="5" lang="${this.props.lang}" class="form-group" class-field="form-control" type="text" label="${locale.country}" name="country" required="true"></form-field>
+                    <form-field d:id="6" lang="${this.props.lang}" class="form-group" class-field="form-control" type="email" label="${locale.email}" name="email" required="true"></form-field>
 
-                <h3>Personal Data you want to rectify/acces or delete</h3>
-                <p>Details of the information you believe to be inaccurate and why rectification is required OR reason why you wish to have data erased:</p>
+                    <h3>${locale.dataReasonTitle}</h3>
+                    <p>${locale.dataReasonDescription}</p>
 
-                <form-field class="form-group" classfield="form-control" type="textarea" label="Types of data and/or reason" name="dataReason" required="true"></form-field>
+                    <form-field d:id="7" lang="${this.props.lang}" class="form-group" class-field="form-control" type="textarea" label="${locale.dataReasonLabel}" name="dataReason" required="true"></form-field>
 
-                <p><strong>Compliance with request:</strong> <br>Please note that we will not be able to comply with your request in certain circumstances, e.g. Compliance with legal obligations or official authorities.<br>We will notify you of any such decision.</p>
-                <p>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="this.submit()">SEND</button>
-                </p>
-                <app-loading show="${this.props.loading}"></app-loading>
-            </div>
+                    <p><strong>${locale.noteTitle}</strong> <br>${locale.noteDescription}</p>
+                    <button type="button" class="btn btn-success btn-lg" onclick="this.submit()">${locale.send}</button>
+                    <app-loading show="${this.props.loading}"></app-loading>
+                </div>
 
         `
-        },
-
-        onRender() {
-            setTimeout(()=> {
-                this.props.loading = true;
-            },1000);
         },
 
         submit() {
@@ -212,9 +220,7 @@
         root: '#app',
         template: `
         <div class="container">
-            <h1 class="display-4">Request for access, deletion or rectification of personal data</h1>
-            <p class="text-muted">When the EU’s new General Data Protection Regulation ‘GDPR’ comes into full effect and enforcement in May 2018 data subjects (individuals) will have the right to access and erase personal data Xdevel may hold concerning them. According to the GDPR, individuals have the right to have their personal data deleted under certain circumstances. If removal of the personal data is not possible, we will anonymize/pseudonymize your data.
-            For more information on the rights of data subjects, we refer you to articles 15 to 17 in the General Data Protection Regulation [EU2016/679].</p>
+            <h1 class="display-4">Request</h1>
             <app-form/>
         </div>
     `

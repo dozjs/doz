@@ -59,7 +59,13 @@ function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         const children = Object.keys(cmp.children);
         name = dashToCamel(name);
+
+        //if (cmp.tag === 'app-form')
+            console.log(cmp.id);
+
         children.forEach(i => {
+            if (name === 'label')
+                console.log(name, value);
             if (cmp.children[i]._publicProps.hasOwnProperty(name)
                 && cmp.children[i].props.hasOwnProperty(name))
                 cmp.children[i].props[name] = value;

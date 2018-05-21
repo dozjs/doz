@@ -1760,19 +1760,6 @@ var proxy = __webpack_require__(5);
 var events = __webpack_require__(6);
 var delay = __webpack_require__(7);
 
-function updateChildren(instance, changes) {
-
-    if (!instance.updateChildrenProps) return;
-
-    var children = Object.keys(instance.children);
-
-    children.forEach(function (i) {
-        changes.forEach(function (item) {
-            if (instance.children[i]._publicProps.hasOwnProperty(item.currentPath) && instance.children[i].props.hasOwnProperty(item.currentPath)) instance.children[i].props[item.currentPath] = item.newValue;
-        });
-    });
-}
-
 function updateBound(instance, changes) {
     changes.forEach(function (item) {
         if (instance._boundElements.hasOwnProperty(item.property)) {
@@ -2002,7 +1989,12 @@ function updateChildren(cmp, name, value) {
     if (cmp && cmp.updateChildrenProps) {
         var children = Object.keys(cmp.children);
         name = dashToCamel(name);
+
+        //if (cmp.tag === 'app-form')
+        console.log(cmp.id);
+
         children.forEach(function (i) {
+            if (name === 'label') console.log(name, value);
             if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name)) cmp.children[i].props[name] = value;
         });
     }
