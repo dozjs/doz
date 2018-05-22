@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 0.0.28  
+// [DOZ]  Build version: 0.1.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -566,6 +566,8 @@ function createInstance(cmp, cfg) {
     store.create(instance);
     // Create ID
     ids.create(instance);
+    // Add callback to ready queue
+    queueReadyCB(instance);
     // Call create
     events.callCreate(instance);
     // Now instance is created
@@ -576,6 +578,13 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+}
+
+function queueReadyCB(instace) {
+    if (typeof instace.onAppReady === 'function') {
+        instace.onAppReady._instance = instace;
+        instace.view._onAppReadyCB.push(instace.onAppReady);
+    }
 }
 
 function clearDynamic(instance) {
@@ -1634,6 +1643,21 @@ var Doz = function () {
                 value: {},
                 writable: true
             },
+            _onAppReadyCB: {
+                value: [],
+                writable: true
+            },
+            _callAppReady: {
+                value: function value() {
+                    this._onAppReadyCB.forEach(function (cb) {
+                        if (typeof cb === 'function' && cb._instance) {
+                            cb.call(cb._instance);
+                        }
+                    });
+
+                    this._onAppReadyCB = [];
+                }
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -1694,6 +1718,7 @@ var Doz = function () {
         };
 
         this._tree = component.getInstances({ root: this.cfg.root, template: template, view: this }) || [];
+        this._callAppReady();
     }
 
     _createClass(Doz, [{
