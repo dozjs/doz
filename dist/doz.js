@@ -84,6 +84,7 @@ return /******/ (function(modules) { // webpackBootstrap
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     INSTANCE: '__DOZ_INSTANCE__',
+    CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -252,7 +253,8 @@ var html = __webpack_require__(4);
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX,
     TAG = _require2.TAG,
-    INSTANCE = _require2.INSTANCE;
+    INSTANCE = _require2.INSTANCE,
+    CMP_INSTANCE = _require2.CMP_INSTANCE;
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(16);
@@ -326,8 +328,7 @@ function getInstances() {
                     view: cfg.view,
                     props: props,
                     dProps: dProps,
-                    parentCmp: parent.cmp /*,
-                                          isStatic: cfg.isStatic*/
+                    parentCmp: parent.cmp
                 });
 
                 if (!newElement) {
@@ -339,6 +340,8 @@ function getInstances() {
                 if (!component) {
                     component = newElement;
                 }
+
+                newElement._rootElement[CMP_INSTANCE] = newElement;
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
@@ -1825,7 +1828,8 @@ var deadChildren = [];
 var _require2 = __webpack_require__(0),
     INSTANCE = _require2.INSTANCE,
     TAG = _require2.TAG,
-    NS = _require2.NS;
+    NS = _require2.NS,
+    CMP_INSTANCE = _require2.CMP_INSTANCE;
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -1841,9 +1845,6 @@ function create(node, cmp, initial) {
     if (node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
-
-    //console.log(node.isSVG, node.type)
-    //console.dir(node);
 
     var $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
 
@@ -1875,9 +1876,17 @@ function update($parent, newNode, oldNode) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        var _rootElement = create(newNode, cmp, initial);
-        $parent.replaceChild(_rootElement, $parent.childNodes[index]);
-        return _rootElement;
+        var newElement = create(newNode, cmp, initial);
+        var oldElement = $parent.childNodes[index];
+
+        //Re-assign CMP INSTANCE to new element
+        if (oldElement[CMP_INSTANCE]) {
+            newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
+            newElement[CMP_INSTANCE]._rootElement = newElement;
+        }
+
+        $parent.replaceChild(newElement, oldElement);
+        return newElement;
     } else if (newNode.type) {
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
@@ -1932,7 +1941,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
-    ATTR = _require.ATTR;
+    ATTR = _require.ATTR,
+    CMP_INSTANCE = _require.CMP_INSTANCE;
 
 var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
@@ -1978,30 +1988,18 @@ function removeAttribute($target, name, value) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (!newVal /*&& newVal !== false*/) {
             removeAttribute($target, name, oldVal, cmp);
-            updateChildren(cmp, name, newVal);
+            updateChildren(cmp, name, newVal, $target);
         } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
-        updateChildren(cmp, name, newVal);
+        updateChildren(cmp, name, newVal, $target);
     }
 }
 
-function updateChildren(cmp, name, value) {
-    //console.log(name, value, cmp.children)
-    //if (value !== 'Nome')
-    //return false;
-
+function updateChildren(cmp, name, value, $target) {
     if (cmp && cmp.updateChildrenProps) {
-        var children = Object.keys(cmp.children);
         name = dashToCamel(name);
-
-        //if (cmp.tag === 'app-form')
-        //console.log(cmp.children);
-
-        children.forEach(function (i) {
-            if (cmp.children[i]._publicProps.hasOwnProperty(name) && cmp.children[i].props.hasOwnProperty(name))
-                //cmp.children[i].props[name] = value;
-                console.log(cmp.children[i].props[name], value);
-        });
+        var firstChild = $target.firstChild;
+        if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name)) firstChild[CMP_INSTANCE].props[name] = value;
     }
 }
 

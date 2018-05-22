@@ -1,6 +1,7 @@
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
     INSTANCE: '__DOZ_INSTANCE__',
+    CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },

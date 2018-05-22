@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {INSTANCE, TAG, NS} = require('../constants');
+const {INSTANCE, TAG, NS, CMP_INSTANCE} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -19,9 +19,6 @@ function create(node, cmp, initial) {
     if (node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
-
-    //console.log(node.isSVG, node.type)
-    //console.dir(node);
 
     const $el = node.isSVG
         ? document.createElementNS(NS.SVG, node.type)
@@ -51,12 +48,20 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        const rootElement = create(newNode, cmp, initial);
+        const newElement = create(newNode, cmp, initial);
+        const oldElement = $parent.childNodes[index];
+
+        //Re-assign CMP INSTANCE to new element
+        if (oldElement[CMP_INSTANCE]) {
+            newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
+            newElement[CMP_INSTANCE]._rootElement = newElement;
+        }
+
         $parent.replaceChild(
-            rootElement,
-            $parent.childNodes[index]
+            newElement,
+            oldElement
         );
-        return rootElement;
+        return newElement;
     } else if (newNode.type) {
         let updated = updateAttributes(
             $parent.childNodes[index],

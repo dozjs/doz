@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG, INSTANCE} = require('../constants');
+const {REGEX, TAG, INSTANCE, CMP_INSTANCE} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const events = require('./events');
@@ -63,8 +63,7 @@ function getInstances(cfg = {}) {
                     view: cfg.view,
                     props,
                     dProps,
-                    parentCmp: parent.cmp/*,
-                    isStatic: cfg.isStatic*/
+                    parentCmp: parent.cmp
                 });
 
                 if (!newElement) {
@@ -76,6 +75,8 @@ function getInstances(cfg = {}) {
                 if (!component) {
                     component = newElement;
                 }
+
+                newElement._rootElement[CMP_INSTANCE] = newElement;
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 

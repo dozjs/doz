@@ -1,4 +1,4 @@
-const {REGEX, ATTR} = require('../constants');
+const {REGEX, ATTR, CMP_INSTANCE} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const camelToDash = require('../utils/camel-to-dash');
@@ -48,31 +48,19 @@ function removeAttribute($target, name, value) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (!newVal /*&& newVal !== false*/) {
         removeAttribute($target, name, oldVal, cmp);
-        updateChildren(cmp, name, newVal);
+        updateChildren(cmp, name, newVal, $target);
     } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
-        updateChildren(cmp, name, newVal);
+        updateChildren(cmp, name, newVal, $target);
     }
 }
 
-function updateChildren(cmp, name, value) {
-    //console.log(name, value, cmp.children)
-    //if (value !== 'Nome')
-    //return false;
-
+function updateChildren(cmp, name, value, $target) {
     if (cmp && cmp.updateChildrenProps) {
-        const children = Object.keys(cmp.children);
         name = dashToCamel(name);
-
-        //if (cmp.tag === 'app-form')
-            //console.log(cmp.children);
-
-        children.forEach(i => {
-            if (cmp.children[i]._publicProps.hasOwnProperty(name)
-                && cmp.children[i].props.hasOwnProperty(name))
-                //cmp.children[i].props[name] = value;
-                console.log(cmp.children[i].props[name], value);
-        });
+        const firstChild = $target.firstChild;
+        if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name))
+            firstChild[CMP_INSTANCE].props[name] = value;
     }
 }
 
