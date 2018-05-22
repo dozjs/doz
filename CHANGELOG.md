@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.0] - 2018-05-22
+- **Added** new event `onAppReady`
+- **Fixed** update children problem
+
 ## [0.0.28] - 2018-05-21
 - **Fixed** bind problem on radio input. The initial value was not considered
 
