@@ -50,6 +50,9 @@ class Doz {
                 value: {},
                 writable: true
             },
+            _onAppReadyCB: {
+                value: []
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -108,6 +111,11 @@ class Doz {
         };
 
         this._tree = component.getInstances({root: this.cfg.root, template, view: this}) || [];
+
+        this._onAppReadyCB.forEach(cb => {
+            if (typeof cb === 'function')
+                cb();
+        });
     }
 
     getComponent(alias) {

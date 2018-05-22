@@ -301,6 +301,8 @@ function createInstance(cmp, cfg) {
     store.create(instance);
     // Create ID
     ids.create(instance);
+    // Add callback to ready queue
+    queueReadyCB(instance);
     // Call create
     events.callCreate(instance);
     // Now instance is created
@@ -311,6 +313,11 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+}
+
+function queueReadyCB(instace) {
+    if (typeof instace.onAppReady === 'function')
+        instace.view._onAppReadyCB.push(instace.onAppReady);
 }
 
 function clearDynamic(instance) {
