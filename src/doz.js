@@ -51,7 +51,19 @@ class Doz {
                 writable: true
             },
             _onAppReadyCB: {
-                value: []
+                value: [],
+                writable: true
+            },
+            _callAppReady: {
+                value: function () {
+                    this._onAppReadyCB.forEach(cb => {
+                        if (typeof cb === 'function' && cb._instance) {
+                            cb.call(cb._instance);
+                        }
+                    });
+
+                    this._onAppReadyCB = [];
+                }
             },
             action: {
                 value: bind(this.cfg.actions, this),
@@ -111,11 +123,7 @@ class Doz {
         };
 
         this._tree = component.getInstances({root: this.cfg.root, template, view: this}) || [];
-
-        this._onAppReadyCB.forEach(cb => {
-            if (typeof cb === 'function')
-                cb();
-        });
+        this._callAppReady();
     }
 
     getComponent(alias) {

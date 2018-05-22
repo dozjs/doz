@@ -42,21 +42,6 @@ describe('Doz.appready', function () {
                 }
             });
 
-            Doz.component('ciao-mondo', {
-                props: {
-                    salutation: 'Ciao Mondo'
-                },
-                template() {
-                    return `
-                        <h2>${this.props.salutation}</h2>
-                    `
-                },
-                onAppReady() {
-                    //console.log('ready', this);
-                    done()
-                }
-            });
-
             new Doz({
                 root: '#app',
                 template: `
@@ -64,6 +49,47 @@ describe('Doz.appready', function () {
                     <hello-world></hello-world>
                 `
             });
+
+        });
+
+        it('should be empty array queue', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            Doz.component('hello-world', {
+                props: {
+                    salutation: 'Hello World'
+                },
+                template() {
+                    return `
+                        <h2>${this.props.salutation}</h2>
+                    `
+                },
+                onRender() {
+                    setTimeout(() => {
+                        this.destroy();
+                    },1000)
+                },
+                onAppReady() {
+                    console.log('ready')
+                }
+            });
+
+            const app = new Doz({
+                root: '#app',
+                template: `
+                    <h1>Welcome to my app:</h1>
+                    <hello-world></hello-world>
+                `
+            });
+
+
+            setTimeout(()=>{
+                //app._onAppReadyCB = []
+                be.err(done).equal(0, app._onAppReadyCB.length)
+            },1500);
 
         });
 

@@ -316,8 +316,10 @@ function extendInstance(instance, cfg, dProps) {
 }
 
 function queueReadyCB(instace) {
-    if (typeof instace.onAppReady === 'function')
+    if (typeof instace.onAppReady === 'function') {
+        instace.onAppReady._instance = instace;
         instace.view._onAppReadyCB.push(instace.onAppReady);
+    }
 }
 
 function clearDynamic(instance) {
