@@ -168,6 +168,7 @@ When a component is defined it inherits some methods and properties:
 | `getStore` | function | Get store by name | no | no |
 | `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes |
 | `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no |
+| `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no |
 | `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
@@ -175,7 +176,6 @@ When a component is defined it inherits some methods and properties:
 | `onDestroy`| function | This method is called after that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onRender`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onUpdate`| function | This method is called after that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no |
 | `parent` | object | The parent object | no | no |
 | `props` | object | This object can contains all component props | no | yes |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
