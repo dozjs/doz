@@ -359,7 +359,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/77o4e7nL/3/)
+[FIDDLE](https://jsfiddle.net/77o4e7nL/4/)
 
 ---
 
