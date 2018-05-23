@@ -1345,15 +1345,15 @@ function callRender(context) {
     }
 }
 
-function callBeforeUpdate(context) {
+function callBeforeUpdate(context, changes) {
     if (typeof context.onBeforeUpdate === 'function') {
-        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
+        return context.onBeforeUpdate.call(context, changes);
     }
 }
 
-function callUpdate(context) {
+function callUpdate(context, changes) {
     if (typeof context.onUpdate === 'function') {
-        context.onUpdate.call(context);
+        context.onUpdate.call(context, changes);
     }
 }
 
@@ -1820,13 +1820,13 @@ function create(instance, props) {
         if (instance._isCreated) {
             delay(function () {
                 //updateChildren(instance, changes);
-                events.callUpdate(instance);
+                events.callUpdate(instance, changes);
             });
         }
     });
 
-    proxy.beforeChange(instance.props, function () {
-        var res = events.callBeforeUpdate(instance);
+    proxy.beforeChange(instance.props, function (changes) {
+        var res = events.callBeforeUpdate(instance, changes);
         if (res === false) return false;
     });
 }

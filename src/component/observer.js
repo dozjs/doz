@@ -33,13 +33,13 @@ function create(instance, props) {
         if (instance._isCreated) {
             delay(() => {
                 //updateChildren(instance, changes);
-                events.callUpdate(instance);
+                events.callUpdate(instance, changes);
             });
         }
     });
 
-    proxy.beforeChange(instance.props, () => {
-        const res = events.callBeforeUpdate(instance);
+    proxy.beforeChange(instance.props, changes => {
+        const res = events.callBeforeUpdate(instance, changes);
         if (res === false)
             return false;
     });

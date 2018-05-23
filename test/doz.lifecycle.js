@@ -51,12 +51,12 @@ describe('Doz.lifecycle', function () {
                     step++;
                     setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
                 },
-                onBeforeUpdate() {
-                    console.log('before update', this.props.salutation);
+                onBeforeUpdate(changes) {
+                    console.log('before update', this.props.salutation, changes);
                     step++;
                 },
-                onUpdate() {
-                    console.log('update', this.props.salutation);
+                onUpdate(changes) {
+                    console.log('update', this.props.salutation, changes);
                     step++;
                     setTimeout(()=> this.destroy(), 1000)
                 },

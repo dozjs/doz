@@ -16,15 +16,15 @@ function callRender(context) {
     }
 }
 
-function callBeforeUpdate(context) {
+function callBeforeUpdate(context, changes) {
     if(typeof context.onBeforeUpdate === 'function'){
-        return context.onBeforeUpdate.call(context, Object.assign({}, context.props));
+        return context.onBeforeUpdate.call(context, changes);
     }
 }
 
-function callUpdate(context) {
+function callUpdate(context, changes) {
     if(typeof context.onUpdate === 'function'){
-        context.onUpdate.call(context);
+        context.onUpdate.call(context, changes);
     }
 }
 
