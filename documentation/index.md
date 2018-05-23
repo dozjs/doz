@@ -289,14 +289,29 @@ Any event with prefix "onBefore" if returns `false` the next event will not call
 
 ```javascript
 //..
-    onBeforeUpdate() {
+    onBeforeUpdate(changes) {
+        console.log('before update', changes);
         if (this.props.counter >= 10) return false;
     },
-    onUpdate() {
-        console.log('update', this.props.counter);
+    onUpdate(changes) {
+        console.log('update', this.props.counter, changes);
     },
 //..
 ```
+
+Using the argument "changes" (only for `onBeforeUpdate` and `onUpdate`) you can know the changes of props object:
+```
+[
+    {
+        currentPath: "salutation"
+        newValue: "Ciao Mondo"
+        previousValue: "Hello World"
+        property: "salutation"
+        type: "update"
+    }
+]
+```
+
 
 A complete example
 
@@ -320,11 +335,11 @@ Doz.component('hello-world', {
         console.log('render');
         setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
     },
-    onBeforeUpdate() {
-        console.log('before update', this.props.salutation);
+    onBeforeUpdate(changes) {
+        console.log('before update', this.props.salutation, changes);
     },
-    onUpdate() {
-        console.log('update', this.props.salutation);
+    onUpdate(changes) {
+        console.log('update', this.props.salutation, changes);
         setTimeout(()=> this.destroy(), 1000)
     },
     onBeforeDestroy() {
@@ -344,7 +359,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/77o4e7nL/)
+[FIDDLE](https://jsfiddle.net/fabioricali/77o4e7nL/3/)
 
 ---
 
