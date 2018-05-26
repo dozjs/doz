@@ -8,7 +8,7 @@
  *
  *	Observable Slim is a singleton that allows you to observe changes made to an object and any nested
  *	children of that object. It is intended to assist with one-way data binding, that is, in MVC parlance,
- *	reflecting changes in the model to the view. Observable Slim aspires to be as lightweight and easily
+ *	reflecting changes in the model to the app. Observable Slim aspires to be as lightweight and easily
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 

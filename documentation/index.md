@@ -183,7 +183,7 @@ When a component is defined it inherits some methods and properties:
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes |
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
-| `view` | object | The view object | no | no |
+| `app` | object | The view object | no | no |
 
 ### Handlers
 All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).

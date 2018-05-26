@@ -91,7 +91,7 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view',
+        APP: 'doz-app',
         EMPTY: 'doz-empty',
         SUFFIX_ROOT: '-root'
     },
@@ -316,7 +316,7 @@ function getInstances() {
 
         while (child) {
 
-            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.app._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
 
@@ -325,7 +325,7 @@ function getInstances() {
 
                 var newElement = createInstance(cmp, {
                     root: child,
-                    view: cfg.view,
+                    app: cfg.app,
                     props: props,
                     dProps: dProps,
                     parentCmp: parent.cmp
@@ -432,8 +432,8 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
-        view: {
-            value: cfg.view,
+        app: {
+            value: cfg.app,
             enumerable: true
         },
         parent: {
@@ -486,18 +486,18 @@ function createInstance(cmp, cfg) {
         },
         getStore: {
             value: function value(storeName) {
-                return this.view.getStore(storeName);
+                return this.app.getStore(storeName);
             },
             enumerable: true
         },
         getComponentById: {
             value: function value(id) {
-                return this.view.getComponentById(id);
+                return this.app.getComponentById(id);
             },
             enumerable: true
         },
         action: {
-            value: cfg.view.action,
+            value: cfg.app.action,
             enumerable: true
         },
         render: {
@@ -527,7 +527,7 @@ function createInstance(cmp, cfg) {
 
                 var root = this._rootElement;
                 if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
-                return this.view.mount(template, root, this);
+                return this.app.mount(template, root, this);
             },
             enumerable: true
         },
@@ -583,7 +583,7 @@ function extendInstance(instance, cfg, dProps) {
 function queueReadyCB(instace) {
     if (typeof instace.onAppReady === 'function') {
         instace.onAppReady._instance = instace;
-        instace.view._onAppReadyCB.push(instace.onAppReady);
+        instace.app._onAppReadyCB.push(instace.onAppReady);
     }
 }
 
@@ -614,7 +614,7 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, view: instance.view });
+        var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, app: instance.app });
 
         if (dynamicInstance) {
             instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
@@ -721,7 +721,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *
  *	Observable Slim is a singleton that allows you to observe changes made to an object and any nested
  *	children of that object. It is intended to assist with one-way data binding, that is, in MVC parlance,
- *	reflecting changes in the model to the view. Observable Slim aspires to be as lightweight and easily
+ *	reflecting changes in the model to the app. Observable Slim aspires to be as lightweight and easily
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
@@ -1599,7 +1599,7 @@ var Doz = function () {
 
         _classCallCheck(this, Doz);
 
-        var template = '<' + TAG.VIEW + '></' + TAG.VIEW + '>';
+        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
@@ -1690,7 +1690,7 @@ var Doz = function () {
                     return component.getInstances({
                         root: root,
                         template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
-                        view: this,
+                        app: this,
                         parentCmp: parent,
                         //isStatic: false,
                         autoCmp: autoCmp,
@@ -1707,8 +1707,8 @@ var Doz = function () {
             }
         });
 
-        this._components[TAG.VIEW] = {
-            tag: TAG.VIEW,
+        this._components[TAG.APP] = {
+            tag: TAG.APP,
             cfg: {
                 props: cfg.props || {},
                 template: function template() {
@@ -1717,7 +1717,7 @@ var Doz = function () {
             }
         };
 
-        this._tree = component.getInstances({ root: this.cfg.root, template: template, view: this }) || [];
+        this._tree = component.getInstances({ root: this.cfg.root, template: template, app: this }) || [];
         this._callAppReady();
     }
 
@@ -2236,10 +2236,10 @@ module.exports.getLast = getLast;
 function create(instance) {
 
     if (typeof instance.store === 'string') {
-        if (instance.view._stores[instance.store] !== undefined) {
+        if (instance.app._stores[instance.store] !== undefined) {
             throw new Error('Store already defined: ' + instance.store);
         }
-        instance.view._stores[instance.store] = instance.props;
+        instance.app._stores[instance.store] = instance.props;
     }
 }
 
@@ -2257,10 +2257,10 @@ module.exports = {
 function create(instance) {
 
     if (typeof instance.id === 'string') {
-        if (instance.view._ids[instance.id] !== undefined) {
+        if (instance.app._ids[instance.id] !== undefined) {
             throw new Error('ID already defined: ' + instance.id);
         }
-        instance.view._ids[instance.id] = instance;
+        instance.app._ids[instance.id] = instance;
     }
 }
 

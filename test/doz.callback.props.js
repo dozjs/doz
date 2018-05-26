@@ -18,7 +18,7 @@ describe('Doz.callback', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component callback', function () {
+    describe('create app with component callback', function () {
 
         it('should be ok', function (done) {
 

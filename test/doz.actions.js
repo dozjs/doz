@@ -26,7 +26,7 @@ describe('Doz.actions', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with actions', function () {
+    describe('create app with actions', function () {
 
         it('should be ok', function (done) {
 
@@ -57,7 +57,7 @@ describe('Doz.actions', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                //console.log(view);
+                //console.log(app);
                 be.err(done).true(/Hello Dear Teddy</g.test(html));
             },100);
 

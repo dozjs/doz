@@ -19,7 +19,7 @@ describe('Doz.view.solo', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create only view', function () {
+    describe('create only app', function () {
 
         it('should be ok', function (done) {
 

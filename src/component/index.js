@@ -51,7 +51,7 @@ function getInstances(cfg = {}) {
     function walk(child, parent = {}) {
         while (child) {
 
-            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.view._components[child.nodeName.toLowerCase()];
+            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.app._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
 
@@ -60,7 +60,7 @@ function getInstances(cfg = {}) {
 
                 const newElement = createInstance(cmp, {
                     root: child,
-                    view: cfg.view,
+                    app: cfg.app,
                     props,
                     dProps,
                     parentCmp: parent.cmp
@@ -170,8 +170,8 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
-        view: {
-            value: cfg.view,
+        app: {
+            value: cfg.app,
             enumerable: true
         },
         parent: {
@@ -220,18 +220,18 @@ function createInstance(cmp, cfg) {
         },
         getStore: {
             value: function (storeName) {
-                return this.view.getStore(storeName);
+                return this.app.getStore(storeName);
             },
             enumerable: true
         },
         getComponentById: {
             value: function (id) {
-                return this.view.getComponentById(id);
+                return this.app.getComponentById(id);
             },
             enumerable: true
         },
         action: {
-            value: cfg.view.action,
+            value: cfg.app.action,
             enumerable: true
         },
         render: {
@@ -262,7 +262,7 @@ function createInstance(cmp, cfg) {
                     root = root.querySelector(cfg.selector);
                 else if (cfg.selector instanceof HTMLElement)
                     root = cfg.selector;
-                return this.view.mount(template, root, this);
+                return this.app.mount(template, root, this);
             },
             enumerable: true
         },
@@ -318,7 +318,7 @@ function extendInstance(instance, cfg, dProps) {
 function queueReadyCB(instace) {
     if (typeof instace.onAppReady === 'function') {
         instace.onAppReady._instance = instace;
-        instace.view._onAppReadyCB.push(instace.onAppReady);
+        instace.app._onAppReadyCB.push(instace.onAppReady);
     }
 }
 
@@ -350,7 +350,7 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        const dynamicInstance = getInstances({root, template: item.node.outerHTML, view: instance.view});
+        const dynamicInstance = getInstances({root, template: item.node.outerHTML, app: instance.app});
 
         if (dynamicInstance) {
             instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);

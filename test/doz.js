@@ -30,7 +30,7 @@ describe('Doz', function () {
                 template: ''
             });
 
-            //console.log(view);
+            //console.log(app);
 
             be.err.not.null(view);
         });
@@ -62,7 +62,7 @@ describe('Doz', function () {
                 template: `<div><my-component name="Doz"></my-component></div>`
             });
 
-            //console.log(view.components);
+            //console.log(app.components);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
@@ -123,9 +123,9 @@ describe('Doz', function () {
                            `
             });
 
-            //console.log(view._usedComponents);
-            //console.log(view.getComponent('second-component'));
-            //console.log(view.getComponent());
+            //console.log(app._usedComponents);
+            //console.log(app.getComponent('second-component'));
+            //console.log(app.getComponent());
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;

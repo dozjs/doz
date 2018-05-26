@@ -18,7 +18,7 @@ describe('Doz.dashcase.prop', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view', function () {
+    describe('create app', function () {
 
         it('should be ok', function (done) {
 

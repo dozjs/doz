@@ -1,10 +1,10 @@
 function create(instance) {
 
     if (typeof instance.store === 'string') {
-        if (instance.view._stores[instance.store] !== undefined) {
+        if (instance.app._stores[instance.store] !== undefined) {
             throw new Error(`Store already defined: ${instance.store}`);
         }
-        instance.view._stores[instance.store] = instance.props;
+        instance.app._stores[instance.store] = instance.props;
     }
 }
 

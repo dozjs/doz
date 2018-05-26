@@ -55,7 +55,7 @@ describe('Doz', function () {
             });
 
             const html = document.body.innerHTML;
-            //console.log(view);
+            //console.log(app);
             console.log(html);
 
             be.err.true(/Doz/g.test(html));
@@ -86,7 +86,7 @@ describe('Doz', function () {
             });
 
             const html = document.body.innerHTML;
-            //console.log(view);
+            //console.log(app);
             console.log(html);
 
             be.err.true(/Doz/g.test(html));
@@ -128,7 +128,7 @@ describe('Doz', function () {
             });
 
             const html = document.body.innerHTML;
-            //console.log(view);
+            //console.log(app);
             console.log(html);
 
             be.err.true(/Doz/g.test(html));
@@ -137,9 +137,9 @@ describe('Doz', function () {
             //be.err.true(/INNESTATO/g.test(html));
             //be.err.true(/INNESTATO2/g.test(html));
 
-            //console.log(view.components[0].__DOZ_INSTANCE__.child[0].__DOZ_INSTANCE__.propsMap.name);
-            //console.log(view.components[0].__DOZ_INSTANCE__.propsMap);
-            //console.log(view.components);
+            //console.log(app.components[0].__DOZ_INSTANCE__.child[0].__DOZ_INSTANCE__.propsMap.name);
+            //console.log(app.components[0].__DOZ_INSTANCE__.propsMap);
+            //console.log(app.components);
         });
 
         it('should be ok with a component and an handler', function () {

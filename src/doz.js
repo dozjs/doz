@@ -6,7 +6,7 @@ const {TAG, REGEX} = require('./constants');
 class Doz {
 
     constructor(cfg = {}) {
-        const template = `<${TAG.VIEW}></${TAG.VIEW}>`;
+        const template = `<${TAG.APP}></${TAG.APP}>`;
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
@@ -95,7 +95,7 @@ class Doz {
                     return component.getInstances({
                         root,
                         template: `<${TAG.ROOT}></${TAG.ROOT}>`,
-                        view: this,
+                        app: this,
                         parentCmp: parent,
                         //isStatic: false,
                         autoCmp,
@@ -112,8 +112,8 @@ class Doz {
             }
         });
 
-        this._components[TAG.VIEW] = {
-            tag: TAG.VIEW,
+        this._components[TAG.APP] = {
+            tag: TAG.APP,
             cfg: {
                 props: cfg.props || {},
                 template() {
@@ -122,7 +122,7 @@ class Doz {
             }
         };
 
-        this._tree = component.getInstances({root: this.cfg.root, template, view: this}) || [];
+        this._tree = component.getInstances({root: this.cfg.root, template, app: this}) || [];
         this._callAppReady();
     }
 

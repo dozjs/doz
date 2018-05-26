@@ -18,7 +18,7 @@ describe('Doz.store', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component with store defined', function () {
+    describe('create app with component with store defined', function () {
 
         it('should be ok', function (done) {
 
@@ -62,7 +62,7 @@ describe('Doz.store', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                //console.log(view);
+                //console.log(app);
                 be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
@@ -73,7 +73,7 @@ describe('Doz.store', function () {
 
     });
 
-    describe('create view with component with nested component with store', function () {
+    describe('create app with component with nested component with store', function () {
 
         it('should be ok', function (done) {
 
@@ -118,7 +118,7 @@ describe('Doz.store', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                //console.log(view);
+                //console.log(app);
                 be.err.true(/nested/g.test(html));
                 be.err.true(/bye/g.test(html));
                 be.err(done).true(/I'M CALLER/g.test(html));

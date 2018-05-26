@@ -8,7 +8,7 @@ module.exports = {
     TAG: {
         ROOT: 'doz-root',
         EACH: 'doz-each-root',
-        VIEW: 'doz-view',
+        APP: 'doz-app',
         EMPTY: 'doz-empty',
         SUFFIX_ROOT: '-root'
     },

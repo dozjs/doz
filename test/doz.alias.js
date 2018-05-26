@@ -18,7 +18,7 @@ describe('Doz.alias', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component with alias defined', function () {
+    describe('create app with component with alias defined', function () {
 
         it('should be ok with a nested component', function (done) {
 

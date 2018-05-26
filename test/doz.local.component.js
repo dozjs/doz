@@ -24,7 +24,7 @@ describe('Doz.local.component', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with local component', function () {
+    describe('create app with local component', function () {
 
         it('should be ok with a nested component', function (done) {
 

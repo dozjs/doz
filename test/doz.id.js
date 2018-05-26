@@ -18,7 +18,7 @@ describe('Doz.id', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create view with component with id defined', function () {
+    describe('create app with component with id defined', function () {
 
         it('should be ok with a nested component', function (done) {
 
