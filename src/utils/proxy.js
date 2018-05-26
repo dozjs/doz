@@ -301,7 +301,7 @@ const ObservableSlim = (function () {
                                 let keys = Object.keys(target);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     if (target[keys[i]] === targetProp) {
-                                        console.log('target still exists');
+                                        //console.log('target still exists');
                                         return;
                                     }
                                 }
@@ -499,7 +499,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim could not pause observable -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ could not pause observable -- matching proxy not found.');
         },
 
         /**
@@ -516,7 +516,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim could not resume observable -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ could not resume observable -- matching proxy not found.');
         },
 
         /**
@@ -574,7 +574,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         },
 
         /**
@@ -592,7 +592,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         },
 
         /**
@@ -610,7 +610,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         }
     };
 })();
