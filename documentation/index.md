@@ -157,6 +157,7 @@ When a component is defined it inherits some methods and properties:
 | ---- | ---- | ----------- | -------- | -------- |
 | `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
+| `app` | object | The app object | no | no |
 | `children` | object | An object that contains all children components | no | no |
 | `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no |
 | `destroy` | function | Destroy component and his children | no | no |
@@ -183,7 +184,6 @@ When a component is defined it inherits some methods and properties:
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes |
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
-| `app` | object | The view object | no | no |
 
 ### Handlers
 All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).
