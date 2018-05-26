@@ -30,7 +30,7 @@ function component(tag, cfg = {}) {
         updateChildrenProps: true,
         props: {},
         template() {
-            return '<div></div>'
+            return ''
         }
     });
 
@@ -55,6 +55,7 @@ function getInstances(cfg = {}) {
 
             if (cmp) {
 
+                //@todo add `autoCreateChildren`
                 const props = serializeProps(child);
                 const dProps = extract(props);
 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - vdom">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - vdom</title>
+    <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
+    <script src="../dist/doz.js?589654888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.component('home-page', {
+        template() {
+            return `
+                <div>I'm home page</div>
+            `
+        }
+    });
+
+    Doz.component('about-page', {
+        template() {
+            return `
+                <div>I'm about page</div>
+            `
+        }
+    });
+
+    Doz.component('contact-page', {
+        template() {
+            return `
+                <div>I'm contact page</div>
+            `
+        }
+    });
+
+    Doz.component('doz-routes', {
+        onAppReady() {
+            console.log(this._rootElement.parentNode.style.display='none')
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `
+            <nav>
+                <a href="#/home">Home</a> |
+                <a href="#/about">About</a> |
+                <a href="#/contact">Contact</a>
+            </nav>
+            <doz-routes>
+                <home-page d:route="/home"></home-page>
+                <about-page d:route="/about"></about-page>
+                <contact-page d:route="/contact"></contact-page>
+            </doz-routes>
+        `
+    });
+
+</script>
+</body>
+</html>

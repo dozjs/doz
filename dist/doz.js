@@ -293,7 +293,7 @@ function component(tag) {
         updateChildrenProps: true,
         props: {},
         template: function template() {
-            return '<div></div>';
+            return '';
         }
     });
 
@@ -580,10 +580,10 @@ function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
 }
 
-function queueReadyCB(instace) {
-    if (typeof instace.onAppReady === 'function') {
-        instace.onAppReady._instance = instace;
-        instace.app._onAppReadyCB.push(instace.onAppReady);
+function queueReadyCB(instance) {
+    if (typeof instance.onAppReady === 'function') {
+        instance.onAppReady._instance = instance;
+        instance.app._onAppReadyCB.push(instance.onAppReady);
     }
 }
 
@@ -1008,7 +1008,7 @@ var ObservableSlim = function () {
                                 var keys = Object.keys(target);
                                 for (var i = 0, _l2 = keys.length; i < _l2; i++) {
                                     if (target[keys[i]] === targetProp) {
-                                        console.log('target still exists');
+                                        //console.log('target still exists');
                                         return;
                                     }
                                 }
@@ -1203,7 +1203,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim could not pause observable -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ could not pause observable -- matching proxy not found.');
         },
 
         /**
@@ -1220,7 +1220,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim could not resume observable -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ could not resume observable -- matching proxy not found.');
         },
 
         /**
@@ -1277,7 +1277,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         },
 
         /**
@@ -1295,7 +1295,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         },
 
         /**
@@ -1313,7 +1313,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('ObseravableSlim -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
         }
     };
 }();
