@@ -93,6 +93,7 @@ module.exports = {
         EACH: 'doz-each-root',
         APP: 'doz-app',
         EMPTY: 'doz-empty',
+        MOUNT: 'doz-mount',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {
@@ -290,6 +291,7 @@ function component(tag) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
+        autoCreateChildren: true,
         updateChildrenProps: true,
         props: {},
         template: function template() {
@@ -310,6 +312,7 @@ function getInstances() {
 
     var component = null;
     var parentElement = void 0;
+    var trash = [];
 
     function walk(child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -319,6 +322,17 @@ function getInstances() {
             var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.app._components[child.nodeName.toLowerCase()];
 
             if (cmp) {
+
+                if (parent.cmp) {
+                    var rawChild = child.outerHTML;
+                    parent.cmp.rawChildren.push(rawChild);
+                }
+
+                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                    trash.push(child);
+                    child = child.nextSibling;
+                    continue;
+                }
 
                 var props = serializeProps(child);
                 var dProps = extract(props);
@@ -332,6 +346,7 @@ function getInstances() {
                 });
 
                 if (!newElement) {
+                    child = child.nextSibling;
                     continue;
                 }
 
@@ -365,6 +380,10 @@ function getInstances() {
     }
 
     walk(cfg.template);
+
+    trash.forEach(function (child) {
+        return child.remove();
+    });
 
     return component;
 }
@@ -450,6 +469,11 @@ function createInstance(cmp, cfg) {
             writable: true,
             enumerable: true
         },
+        rawChildren: {
+            value: [],
+            writable: true,
+            enumerable: true
+        },
         tag: {
             value: cmp.tag,
             enumerable: true
@@ -525,6 +549,12 @@ function createInstance(cmp, cfg) {
             value: function value(template) {
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+                if (this._rootElement.nodeType !== 1) {
+                    var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                    this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                    this._rootElement = newElement;
+                    this._rootElement[CMP_INSTANCE] = this;
+                }
                 var root = this._rootElement;
                 if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
                 return this.app.mount(template, root, this);
@@ -546,7 +576,9 @@ function createInstance(cmp, cfg) {
                     _this.children[child].destroy();
                 });
 
-                if (!onlyInstance) this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);else this._rootElement.parentNode.innerHTML = '';
+                if (!onlyInstance) {
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                } else this._rootElement.parentNode.innerHTML = '';
 
                 events.callDestroy(this);
             },
@@ -1678,18 +1710,18 @@ var Doz = function () {
                     }
 
                     var autoCmp = {
-                        tag: TAG.ROOT,
+                        tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template: function template() {
-                                return _template;
+                                return '<' + TAG.ROOT + '>' + _template + '</' + TAG.ROOT + '>';
                             }
                         }
                     };
 
                     return component.getInstances({
                         root: root,
-                        template: '<' + TAG.ROOT + '></' + TAG.ROOT + '>',
+                        template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
                         app: this,
                         parentCmp: parent,
                         //isStatic: false,

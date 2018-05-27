@@ -83,18 +83,18 @@ class Doz {
                     }
 
                     const autoCmp = {
-                        tag: TAG.ROOT,
+                        tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template() {
-                                return template;
+                                return `<${TAG.ROOT}>${template}</${TAG.ROOT}>`;
                             }
                         }
                     };
 
                     return component.getInstances({
                         root,
-                        template: `<${TAG.ROOT}></${TAG.ROOT}>`,
+                        template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
                         parentCmp: parent,
                         //isStatic: false,

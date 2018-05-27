@@ -10,6 +10,7 @@ module.exports = {
         EACH: 'doz-each-root',
         APP: 'doz-app',
         EMPTY: 'doz-empty',
+        MOUNT: 'doz-mount',
         SUFFIX_ROOT: '-root'
     },
     REGEX: {

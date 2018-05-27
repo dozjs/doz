@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Doz - vdom</title>
+    <title>Doz - routes</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
     <script src="../dist/doz.js?589654888"></script>
     <style>
@@ -44,8 +44,13 @@
     });
 
     Doz.component('doz-routes', {
+        autoCreateChildren: false,
         onAppReady() {
-            console.log(this._rootElement.parentNode.style.display='none')
+            let $currentView = this.mount(this.rawChildren[0]);
+            setTimeout(()=>{
+                $currentView.destroy();
+                this.mount(this.rawChildren[2]);
+            },1000);
         }
     });
 

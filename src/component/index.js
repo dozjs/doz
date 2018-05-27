@@ -27,6 +27,7 @@ function component(tag, cfg = {}) {
     cmp.tag = tag;
 
     cmp.cfg = extend.copy(cfg, {
+        autoCreateChildren: true,
         updateChildrenProps: true,
         props: {},
         template() {
@@ -47,6 +48,7 @@ function getInstances(cfg = {}) {
 
     let component = null;
     let parentElement;
+    const trash = [];
 
     function walk(child, parent = {}) {
         while (child) {
@@ -55,7 +57,17 @@ function getInstances(cfg = {}) {
 
             if (cmp) {
 
-                //@todo add `autoCreateChildren`
+                if (parent.cmp) {
+                    const rawChild = child.outerHTML;
+                    parent.cmp.rawChildren.push(rawChild);
+                }
+
+                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                    trash.push(child);
+                    child = child.nextSibling;
+                    continue;
+                }
+
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
@@ -68,6 +80,7 @@ function getInstances(cfg = {}) {
                 });
 
                 if (!newElement) {
+                    child = child.nextSibling;
                     continue;
                 }
 
@@ -101,6 +114,8 @@ function getInstances(cfg = {}) {
     }
 
     walk(cfg.template);
+
+    trash.forEach(child => child.remove());
 
     return component;
 }
@@ -189,6 +204,11 @@ function createInstance(cmp, cfg) {
             writable: true,
             enumerable: true
         },
+        rawChildren: {
+            value: [],
+            writable: true,
+            enumerable: true
+        },
         tag: {
             value: cmp.tag,
             enumerable: true
@@ -258,6 +278,12 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function (template, cfg = {}) {
+                if (this._rootElement.nodeType !== 1) {
+                    const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                    this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                    this._rootElement = newElement;
+                    this._rootElement[CMP_INSTANCE] = this;
+                }
                 let root = this._rootElement;
                 if (typeof cfg.selector === 'string')
                     root = root.querySelector(cfg.selector);
@@ -278,9 +304,9 @@ function createInstance(cmp, cfg) {
                     this.children[child].destroy();
                 });
 
-                if (!onlyInstance)
+                if (!onlyInstance) {
                     this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
-                else
+                } else
                     this._rootElement.parentNode.innerHTML = '';
 
                 events.callDestroy(this);
