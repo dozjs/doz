@@ -44,17 +44,17 @@
     });
 
     Doz.component('doz-routes', {
+        $currentView: null,
+        $routes: {},
         $REGEX: {
             ROUTE: /d:route(?:\s+)?=(?:\s+)?"(.*)"/
         },
-        $currentView: null,
         $removeCurrentView() {
             if (this.$currentView) {
                 this.$currentView.destroy();
                 this.$currentView = null;
             }
         },
-        $routes: {},
         $router() {
             let url = location.hash.slice(1) || '/';
             if (this.$routes.hasOwnProperty(url)) {
