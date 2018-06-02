@@ -94,7 +94,9 @@ function getInstances(cfg = {}) {
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
+                // This is deprecated in favor of onMount
                 events.callRender(newElement);
+                events.callMount(newElement);
                 parentElement = newElement;
 
                 if (parent.cmp) {
@@ -172,6 +174,14 @@ function createInstance(cmp, cfg) {
         },
         _dynamicChildren: {
             value: [],
+            writable: true
+        },
+        _unmounted: {
+            value: false,
+            writable: true
+        },
+        _unmountedParentNode: {
+            value: null,
             writable: true
         },
         beginSafeRender: {
@@ -278,23 +288,53 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function (template, cfg = {}) {
-                if (this._rootElement.nodeType !== 1) {
-                    const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
-                    this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
-                    this._rootElement = newElement;
-                    this._rootElement[CMP_INSTANCE] = this;
+                if (this._unmounted) {
+                    console.log(this._rootElement.parentNode);
+                    console.log(this._unmountedParentNode);
+                } else {
+                    if (this._rootElement.nodeType !== 1) {
+                        const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                        this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                        this._rootElement = newElement;
+                        this._rootElement[CMP_INSTANCE] = this;
+                    }
+                    let root = this._rootElement;
+                    if (typeof cfg.selector === 'string')
+                        root = root.querySelector(cfg.selector);
+                    else if (cfg.selector instanceof HTMLElement)
+                        root = cfg.selector;
+
+                    this._unmounted = false;
+
+                    return this.app.mount(template, root, this);
                 }
-                let root = this._rootElement;
-                if (typeof cfg.selector === 'string')
-                    root = root.querySelector(cfg.selector);
-                else if (cfg.selector instanceof HTMLElement)
-                    root = cfg.selector;
-                return this.app.mount(template, root, this);
+            },
+            enumerable: true
+        },
+        unmount: {
+            value: function (onlyInstance = false, byDestroy) {
+                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode)) {
+                    console.warn('unmount failed');
+                    return;
+                }
+
+                this._unmountedParentNode = this._rootElement.parentNode.parentNode;
+
+                if (!onlyInstance) {
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                } else
+                    this._rootElement.parentNode.innerHTML = '';
+
+                this._unmounted = !byDestroy;
+
+                events.callUnmount(this);
+
+                return this;
             },
             enumerable: true
         },
         destroy: {
-            value: function (onlyInstance = false) {
+            value: function (onlyInstance) {
                 if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
@@ -304,10 +344,7 @@ function createInstance(cmp, cfg) {
                     this.children[child].destroy();
                 });
 
-                if (!onlyInstance) {
-                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
-                } else
-                    this._rootElement.parentNode.innerHTML = '';
+                this.unmount(onlyInstance, true);
 
                 events.callDestroy(this);
             },
@@ -360,7 +397,6 @@ function clearDynamic(instance) {
             instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
-
     }
 }
 
@@ -387,7 +423,6 @@ function drawDynamic(instance) {
             instance._processing.splice(index, 1);
         }
         index -= 1;
-
     }
 }
 

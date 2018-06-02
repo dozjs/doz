@@ -4,7 +4,7 @@ const be = require('bejs');
 
 describe('Doz.runtime.mount', function () {
 
-    this.timeout(1500);
+    this.timeout(4000);
 
     before(function () {
         this.jsdom = require('jsdom-global')()
@@ -29,10 +29,7 @@ describe('Doz.runtime.mount', function () {
 
             Doz.component('fist-component', {
                 template() {
-                    return `
-                        <button forceupdate onclick="this.drawOther()">Mount second</i></button>
-                        <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
-                    `;
+                    return `<div>hello world</div>`;
                 },
                 drawOther() {
                     if (this.other) return;
@@ -43,10 +40,6 @@ describe('Doz.runtime.mount', function () {
                             <thirty-component></thirty-component>
                         </div>
                     `);
-
-                    /*this.other = this.mount(`
-                        HELLO
-                    `);*/
 
                     console.log('component mounted');
                     done();
@@ -96,9 +89,67 @@ describe('Doz.runtime.mount', function () {
                 root: '#app',
                 template: `<fist-component></fist-component>`
             });
-
-            //console.log(document.body.innerHTML)
         });
+    });
 
+    describe('unmount after', function () {
+
+        it('should be ok', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            Doz.component('fist-component', {
+                template() {
+                    return `<div>hello world</div>`;
+                },
+                drawOther() {
+                    if (this.other) return;
+
+                    this.other = this.mount(`<second-component></second-component>`);
+
+                    console.log('component mounted');
+
+                    setTimeout(()=>{
+                        this.other.unmount();
+                    },1000);
+
+                    this.other.onUnmount = function () {
+                        console.log('component unmounted');
+                        this.mount();
+                        done();
+                    };
+                },
+                removeOther() {
+                    if (this.other) {
+                        this.other.unmount();
+                    }
+                },
+                onCreate() {
+                    setTimeout(()=>{
+                        this.drawOther();
+                        console.log('AFTER', document.body.innerHTML);
+                    },1000);
+                }
+            });
+
+            Doz.component('second-component', {
+                props: {
+                    state: false
+                },
+                template() {
+                    return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+                },
+                toggle() {
+                    this.props.state = !this.props.state;
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template: `<fist-component></fist-component>`
+            });
+        });
     });
 });

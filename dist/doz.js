@@ -266,10 +266,10 @@ var _require3 = __webpack_require__(8),
     serializeProps = _require3.serializeProps;
 
 var update = __webpack_require__(11).updateElement;
-var store = __webpack_require__(21);
-var ids = __webpack_require__(22);
+var store = __webpack_require__(22);
+var ids = __webpack_require__(23);
 
-var _require4 = __webpack_require__(23),
+var _require4 = __webpack_require__(24),
     extract = _require4.extract;
 
 var proxy = __webpack_require__(5);
@@ -360,7 +360,9 @@ function getInstances() {
 
                 child.insertBefore(newElement._rootElement, child.firstChild);
 
+                // This is deprecated in favor of onMount
                 events.callRender(newElement);
+                events.callMount(newElement);
                 parentElement = newElement;
 
                 if (parent.cmp) {
@@ -437,6 +439,10 @@ function createInstance(cmp, cfg) {
         },
         _dynamicChildren: {
             value: [],
+            writable: true
+        },
+        _unmounted: {
+            value: false,
             writable: true
         },
         beginSafeRender: {
@@ -557,15 +563,38 @@ function createInstance(cmp, cfg) {
                 }
                 var root = this._rootElement;
                 if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
+
+                this._unmounted = false;
+
                 return this.app.mount(template, root, this);
             },
             enumerable: true
         },
-        destroy: {
+        unmount: {
             value: function value() {
-                var _this = this;
-
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+                var byDestroy = arguments[1];
+
+                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode)) {
+                    console.warn('unmount failed');
+                    return;
+                }
+
+                if (!onlyInstance) {
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                } else this._rootElement.parentNode.innerHTML = '';
+
+                this._unmounted = !byDestroy;
+
+                events.callUnmount(this);
+
+                return this;
+            },
+            enumerable: true
+        },
+        destroy: {
+            value: function value(onlyInstance) {
+                var _this = this;
 
                 if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
@@ -576,9 +605,7 @@ function createInstance(cmp, cfg) {
                     _this.children[child].destroy();
                 });
 
-                if (!onlyInstance) {
-                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
-                } else this._rootElement.parentNode.innerHTML = '';
+                this.unmount(onlyInstance, true);
 
                 events.callDestroy(this);
             },
@@ -1359,6 +1386,8 @@ module.exports = ObservableSlim;
 "use strict";
 
 
+var deprecate = __webpack_require__(17);
+
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
@@ -1373,7 +1402,14 @@ function callCreate(context) {
 
 function callRender(context) {
     if (typeof context.onRender === 'function') {
+        deprecate.once('onRender is deprecated since v. 1.0.0, use onMount instead');
         context.onRender.call(context);
+    }
+}
+
+function callMount(context) {
+    if (typeof context.onMount === 'function') {
+        context.onMount.call(context);
     }
 }
 
@@ -1386,6 +1422,12 @@ function callBeforeUpdate(context, changes) {
 function callUpdate(context, changes) {
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
+    }
+}
+
+function callUnmount(context) {
+    if (typeof context.onUnmount === 'function') {
+        context.onUnmount.call(context);
     }
 }
 
@@ -1406,8 +1448,10 @@ module.exports = {
     callBeforeCreate: callBeforeCreate,
     callCreate: callCreate,
     callRender: callRender,
+    callMount: callMount,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
+    callUnmount: callUnmount,
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
@@ -1573,7 +1617,7 @@ module.exports = dashToCamel;
 "use strict";
 
 
-var element = __webpack_require__(17);
+var element = __webpack_require__(18);
 
 module.exports = {
     updateElement: element.update
@@ -1874,9 +1918,56 @@ module.exports = {
 "use strict";
 
 
+var _list = [];
+
+/**
+ * Simple deprecate
+ * @param prop {*}
+ * @param msg {string}
+ * @returns {boolean}
+ */
+var deprecate = function deprecate(prop, msg) {
+    if (typeof prop !== 'undefined') {
+        msg = msg || prop;
+
+        if (!_list.includes(msg)) _list.push(msg);
+
+        console.warn('[' + deprecate.title + ']', msg);
+        return true;
+    }
+    return false;
+};
+
+deprecate.title = 'DeprecationWarning';
+
+/**
+ * Calls only once same deprecation
+ * @param args
+ * @returns {boolean}
+ */
+var once = function once() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    if (_list.includes(args[1] || args[0])) return false;
+    return deprecate.apply(undefined, args);
+};
+
+module.exports = deprecate;
+module.exports.once = once;
+module.exports._list = _list;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(18),
+var _require = __webpack_require__(19),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -1986,7 +2077,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2003,8 +2094,8 @@ var _require = __webpack_require__(0),
 
 var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
-var camelToDash = __webpack_require__(19);
-var objectPath = __webpack_require__(20);
+var camelToDash = __webpack_require__(20);
+var objectPath = __webpack_require__(21);
 var delay = __webpack_require__(7);
 
 function isEventAttribute(name) {
@@ -2221,7 +2312,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2234,7 +2325,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2259,7 +2350,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2280,7 +2371,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2301,7 +2392,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
