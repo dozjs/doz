@@ -11,7 +11,8 @@ const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
-const propagateMount = require('./propagate-mount');
+//const propagateMount = require('./propagate-mount');
+//const propagateUnmount = require('./propagate-unmount');
 
 function component(tag, cfg = {}) {
 
@@ -290,10 +291,14 @@ function createInstance(cmp, cfg) {
         mount: {
             value: function (template, cfg = {}) {
                 if (this._unmounted) {
-                    this._unmounted = false;
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
+                    this._unmounted = false;
+                    this._unmountedParentNode = null;
                     events.callMount(this);
-                    propagateMount(this);
+                    Object.keys(this.children).forEach(child => {
+                        this.children[child].mount();
+                    });
+                    //propagateMount(this);
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
                         const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
@@ -308,6 +313,7 @@ function createInstance(cmp, cfg) {
                         root = cfg.selector;
 
                     this._unmounted = false;
+                    this._unmountedParentNode = null;
 
                     return this.app.mount(template, root, this);
                 }
@@ -316,8 +322,8 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy) {
-                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
-                    return;
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement  || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                    return false;
                 }
 
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
@@ -330,6 +336,10 @@ function createInstance(cmp, cfg) {
                 this._unmounted = !byDestroy;
 
                 events.callUnmount(this);
+                //propagateUnmount(this);
+                Object.keys(this.children).forEach(child => {
+                    this.children[child].unmount();
+                });
 
                 return this;
             },
@@ -342,11 +352,12 @@ function createInstance(cmp, cfg) {
                     return;
                 }
 
+                if (this.unmount(onlyInstance, true) === false)
+                    return;
+
                 Object.keys(this.children).forEach(child => {
                     this.children[child].destroy();
                 });
-
-                this.unmount(onlyInstance, true);
 
                 events.callDestroy(this);
             },

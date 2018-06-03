@@ -274,6 +274,7 @@ var _require4 = __webpack_require__(24),
 
 var proxy = __webpack_require__(5);
 var propagateMount = __webpack_require__(25);
+var propagateUnmount = __webpack_require__(26);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -558,13 +559,19 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function value(template) {
+                var _this = this;
+
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
                 if (this._unmounted) {
-                    this._unmounted = false;
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
+                    this._unmounted = false;
+                    this._unmountedParentNode = null;
                     events.callMount(this);
-                    propagateMount(this);
+                    Object.keys(this.children).forEach(function (child) {
+                        _this.children[child].mount();
+                    });
+                    //propagateMount(this);
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
                         var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
@@ -576,6 +583,7 @@ function createInstance(cmp, cfg) {
                     if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
 
                     this._unmounted = false;
+                    this._unmountedParentNode = null;
 
                     return this.app.mount(template, root, this);
                 }
@@ -584,11 +592,13 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function value() {
+                var _this2 = this;
+
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
                 var byDestroy = arguments[1];
 
-                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
-                    return;
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                    return false;
                 }
 
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
@@ -600,6 +610,10 @@ function createInstance(cmp, cfg) {
                 this._unmounted = !byDestroy;
 
                 events.callUnmount(this);
+                //propagateUnmount(this);
+                Object.keys(this.children).forEach(function (child) {
+                    _this2.children[child].unmount();
+                });
 
                 return this;
             },
@@ -607,18 +621,18 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value(onlyInstance) {
-                var _this = this;
+                var _this3 = this;
 
                 if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
                 }
 
-                Object.keys(this.children).forEach(function (child) {
-                    _this.children[child].destroy();
-                });
+                if (this.unmount(onlyInstance, true) === false) return;
 
-                this.unmount(onlyInstance, true);
+                Object.keys(this.children).forEach(function (child) {
+                    _this3.children[child].destroy();
+                });
 
                 events.callDestroy(this);
             },
@@ -1438,6 +1452,12 @@ function callUpdate(context, changes) {
     }
 }
 
+function callBeforeUnmount(context) {
+    if (typeof context.onBeforeUnmount === 'function') {
+        context.onBeforeUnmount.call(context);
+    }
+}
+
 function callUnmount(context) {
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
@@ -1464,6 +1484,7 @@ module.exports = {
     callMount: callMount,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
+    callBeforeUnmount: callBeforeUnmount,
     callUnmount: callUnmount,
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
@@ -2461,6 +2482,23 @@ function propagateMount(instance) {
 }
 
 module.exports = propagateMount;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function propagateUnmount(instance) {
+    Object.keys(instance.children).forEach(function (item) {
+        var child = instance.children[item];
+        if (typeof child.onUnmount === 'function') child.onUnmount();
+        propagateUnmount(child);
+    });
+}
+
+module.exports = propagateUnmount;
 
 /***/ })
 /******/ ]);

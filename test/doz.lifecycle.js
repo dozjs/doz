@@ -29,6 +29,34 @@ describe('Doz.lifecycle', function () {
 
             let step = 0;
 
+            Doz.component('nested-nested-component', {
+                template() {
+                    return 'nested-nested-component';
+                },
+                onBeforeUnmount() {
+                    console.log('before unmount', this.tag);
+                    step++;
+                },
+                onUnmount() {
+                    console.log('unmount', this.tag);
+                    step++;
+                }
+            });
+
+            Doz.component('nested-component', {
+                template() {
+                    return '<div>nested component <nested-nested-component></nested-nested-component></div>';
+                },
+                onBeforeUnmount() {
+                    console.log('before unmount', this.tag);
+                    step++;
+                },
+                onUnmount() {
+                    console.log('unmount', this.tag);
+                    step++;
+                }
+            });
+
             Doz.component('hello-world', {
                 props: {
                     salutation: 'Hello World'
@@ -36,6 +64,7 @@ describe('Doz.lifecycle', function () {
                 template() {
                     return `
                         <h2>${this.props.salutation}</h2>
+                        <nested-component></nested-component>
                     `
                 },
                 onBeforeCreate() {
@@ -46,8 +75,8 @@ describe('Doz.lifecycle', function () {
                     console.log('create');
                     step++;
                 },
-                onRender() {
-                    console.log('render');
+                onMount() {
+                    console.log('mount');
                     step++;
                     setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
                 },
@@ -60,6 +89,14 @@ describe('Doz.lifecycle', function () {
                     step++;
                     setTimeout(()=> this.destroy(), 1000)
                 },
+                onBeforeUnmount() {
+                    console.log('before unmount');
+                    step++;
+                },
+                onUnmount() {
+                    console.log('unmount');
+                    step++;
+                },
                 onBeforeDestroy() {
                     console.log('before destroy');
                     step++;
@@ -67,7 +104,8 @@ describe('Doz.lifecycle', function () {
                 onDestroy() {
                     console.log('destroy');
                     step++;
-                    if (step === 7)
+                    console.log(step)
+                    if (step === 13)
                         done()
                 }
             });
