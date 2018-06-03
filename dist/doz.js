@@ -273,6 +273,7 @@ var _require4 = __webpack_require__(24),
     extract = _require4.extract;
 
 var proxy = __webpack_require__(5);
+var propagateMount = __webpack_require__(25);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -445,6 +446,10 @@ function createInstance(cmp, cfg) {
             value: false,
             writable: true
         },
+        _unmountedParentNode: {
+            value: null,
+            writable: true
+        },
         beginSafeRender: {
             value: function value() {
                 proxy.beginRender(this.props);
@@ -555,18 +560,25 @@ function createInstance(cmp, cfg) {
             value: function value(template) {
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-                if (this._rootElement.nodeType !== 1) {
-                    var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
-                    this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
-                    this._rootElement = newElement;
-                    this._rootElement[CMP_INSTANCE] = this;
+                if (this._unmounted) {
+                    this._unmounted = false;
+                    this._unmountedParentNode.appendChild(this._rootElement.parentNode);
+                    events.callMount(this);
+                    propagateMount(this);
+                } else if (template) {
+                    if (this._rootElement.nodeType !== 1) {
+                        var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                        this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                        this._rootElement = newElement;
+                        this._rootElement[CMP_INSTANCE] = this;
+                    }
+                    var root = this._rootElement;
+                    if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
+
+                    this._unmounted = false;
+
+                    return this.app.mount(template, root, this);
                 }
-                var root = this._rootElement;
-                if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
-
-                this._unmounted = false;
-
-                return this.app.mount(template, root, this);
             },
             enumerable: true
         },
@@ -575,10 +587,11 @@ function createInstance(cmp, cfg) {
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
                 var byDestroy = arguments[1];
 
-                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode)) {
-                    console.warn('unmount failed');
+                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return;
                 }
+
+                this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
                 if (!onlyInstance) {
                     this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
@@ -2431,6 +2444,23 @@ function extract(props) {
 module.exports = {
     extract: extract
 };
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function propagateMount(instance) {
+    Object.keys(instance.children).forEach(function (item) {
+        var child = instance.children[item];
+        if (typeof child.onMount === 'function') child.onMount();
+        propagateMount(child);
+    });
+}
+
+module.exports = propagateMount;
 
 /***/ })
 /******/ ]);

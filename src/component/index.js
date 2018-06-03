@@ -11,6 +11,7 @@ const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
+const propagateMount = require('./propagate-mount');
 
 function component(tag, cfg = {}) {
 
@@ -289,9 +290,11 @@ function createInstance(cmp, cfg) {
         mount: {
             value: function (template, cfg = {}) {
                 if (this._unmounted) {
-                    console.log(this._rootElement.parentNode);
-                    console.log(this._unmountedParentNode);
-                } else {
+                    this._unmounted = false;
+                    this._unmountedParentNode.appendChild(this._rootElement.parentNode);
+                    events.callMount(this);
+                    propagateMount(this);
+                } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
                         const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                         this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
@@ -313,8 +316,7 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy) {
-                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode)) {
-                    console.warn('unmount failed');
+                if (!onlyInstance && (!this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return;
                 }
 

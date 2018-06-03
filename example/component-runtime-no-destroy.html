@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component at runtime, no destroy</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <script src="../dist/doz.js?589654888576"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            height: 50px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Component at runtime, unmount without destroy</h1>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('fist-component', {
+        template() {
+            return `
+                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+            `;
+        },
+        drawOther() {
+            if (!this.other) {
+
+                this.other = this.mount(`
+                    <div>
+                        <second-component></second-component>
+                        <thirty-component></thirty-component>
+                    </div>
+                `);
+
+                this.other.onUnmount = function () {
+                    console.log('component unmounted');
+                };
+            } else {
+                this.other.mount()
+            }
+
+        },
+        removeOther() {
+            if (this.other) {
+                this.other.unmount();
+            }
+        }
+    });
+
+    Doz.component('second-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        },
+        onMount() {
+            console.log('mount', this.tag);
+        },
+        onUnmount() {
+            console.log('unmount', this.tag);
+        }
+    });
+
+    Doz.component('thirty-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        },
+        onMount() {
+            console.log('mount', this.tag);
+        },
+        onUnmount() {
+            console.log('unmount', this.tag);
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `<fist-component></fist-component>`
+    });
+
+</script>
+</body>
+</html>

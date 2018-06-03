@@ -100,6 +100,8 @@ describe('Doz.runtime.mount', function () {
                 <div id="app"></div>
             `;
 
+            let firstHtml = '';
+
             Doz.component('fist-component', {
                 template() {
                     return `<div>hello world</div>`;
@@ -109,15 +111,16 @@ describe('Doz.runtime.mount', function () {
 
                     this.other = this.mount(`<second-component></second-component>`);
 
-                    console.log('component mounted');
-
                     setTimeout(()=>{
                         this.other.unmount();
                     },1000);
 
                     this.other.onUnmount = function () {
-                        console.log('component unmounted');
                         this.mount();
+                    };
+
+                    this.other.onMount = function () {
+                        be.err.equal(document.body.innerHTML, firstHtml);
                         done();
                     };
                 },
@@ -129,7 +132,7 @@ describe('Doz.runtime.mount', function () {
                 onCreate() {
                     setTimeout(()=>{
                         this.drawOther();
-                        console.log('AFTER', document.body.innerHTML);
+                        firstHtml = document.body.innerHTML;
                     },1000);
                 }
             });
@@ -143,6 +146,9 @@ describe('Doz.runtime.mount', function () {
                 },
                 toggle() {
                     this.props.state = !this.props.state;
+                },
+                onMount() {
+                    console.log('MOUNT SECOND')
                 }
             });
 
