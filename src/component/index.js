@@ -94,10 +94,10 @@ function getInstances(cfg = {}) {
 
                 if (events.callBeforeMount(newElement) !== false) {
                     child.insertBefore(newElement._rootElement, child.firstChild);
-
-                    // This is deprecated in favor of onMount
                     events.callRender(newElement);
                     events.callMount(newElement);
+                } else {
+                    newElement.unmount(null, null, true)
                 }
 
                 parentElement = newElement;
@@ -292,16 +292,21 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function (template, cfg = {}) {
-                if (events.callBeforeMount(this) === false)
-                    return this;
+
                 if (this._unmounted) {
+                    if (events.callBeforeMount(this) === false)
+                        return this;
+
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
                     this._unmountedParentNode = null;
+
                     events.callMount(this);
+
                     Object.keys(this.children).forEach(child => {
                         this.children[child].mount();
                     });
+
                     return this;
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
@@ -310,7 +315,9 @@ function createInstance(cmp, cfg) {
                         this._rootElement = newElement;
                         this._rootElement[CMP_INSTANCE] = this;
                     }
+
                     let root = this._rootElement;
+
                     if (typeof cfg.selector === 'string')
                         root = root.querySelector(cfg.selector);
                     else if (cfg.selector instanceof HTMLElement)
@@ -325,7 +332,7 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         unmount: {
-            value: function (onlyInstance = false, byDestroy) {
+            value: function (onlyInstance = false, byDestroy, silenty) {
                 if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement  || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return false;
                 }
@@ -339,10 +346,11 @@ function createInstance(cmp, cfg) {
 
                 this._unmounted = !byDestroy;
 
-                events.callUnmount(this);
-                //propagateUnmount(this);
+                if (!silenty)
+                    events.callUnmount(this);
+
                 Object.keys(this.children).forEach(child => {
-                    this.children[child].unmount();
+                    this.children[child].unmount(onlyInstance, byDestroy, silenty);
                 });
 
                 return this;

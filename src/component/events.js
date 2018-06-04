@@ -21,7 +21,7 @@ function callRender(context) {
 
 function callBeforeMount(context) {
     if(typeof context.onBeforeMount === 'function'){
-        context.onBeforeMount.call(context);
+        return context.onBeforeMount.call(context);
     }
 }
 
@@ -45,7 +45,7 @@ function callUpdate(context, changes) {
 
 function callBeforeUnmount(context) {
     if(typeof context.onBeforeUnmount === 'function'){
-        context.onBeforeUnmount.call(context);
+        return context.onBeforeUnmount.call(context);
     }
 }
 

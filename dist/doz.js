@@ -360,10 +360,10 @@ function getInstances() {
 
                 if (events.callBeforeMount(newElement) !== false) {
                     child.insertBefore(newElement._rootElement, child.firstChild);
-
-                    // This is deprecated in favor of onMount
                     events.callRender(newElement);
                     events.callMount(newElement);
+                } else {
+                    newElement.unmount(null, null, true);
                 }
 
                 parentElement = newElement;
@@ -565,15 +565,20 @@ function createInstance(cmp, cfg) {
 
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-                if (events.callBeforeMount(this) === false) return this;
+
                 if (this._unmounted) {
+                    if (events.callBeforeMount(this) === false) return this;
+
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
                     this._unmountedParentNode = null;
+
                     events.callMount(this);
+
                     Object.keys(this.children).forEach(function (child) {
                         _this.children[child].mount();
                     });
+
                     return this;
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
@@ -582,7 +587,9 @@ function createInstance(cmp, cfg) {
                         this._rootElement = newElement;
                         this._rootElement[CMP_INSTANCE] = this;
                     }
+
                     var root = this._rootElement;
+
                     if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
 
                     this._unmounted = false;
@@ -595,10 +602,12 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function value() {
+                var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
                 var _this2 = this;
 
-                var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
                 var byDestroy = arguments[1];
+                var silenty = arguments[2];
 
                 if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return false;
@@ -612,10 +621,10 @@ function createInstance(cmp, cfg) {
 
                 this._unmounted = !byDestroy;
 
-                events.callUnmount(this);
-                //propagateUnmount(this);
+                if (!silenty) events.callUnmount(this);
+
                 Object.keys(this.children).forEach(function (child) {
-                    _this2.children[child].unmount();
+                    _this2.children[child].unmount(onlyInstance, byDestroy, silenty);
                 });
 
                 return this;
@@ -1439,7 +1448,7 @@ function callRender(context) {
 
 function callBeforeMount(context) {
     if (typeof context.onBeforeMount === 'function') {
-        context.onBeforeMount.call(context);
+        return context.onBeforeMount.call(context);
     }
 }
 
@@ -1463,7 +1472,7 @@ function callUpdate(context, changes) {
 
 function callBeforeUnmount(context) {
     if (typeof context.onBeforeUnmount === 'function') {
-        context.onBeforeUnmount.call(context);
+        return context.onBeforeUnmount.call(context);
     }
 }
 

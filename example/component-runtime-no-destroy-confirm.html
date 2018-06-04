@@ -20,17 +20,16 @@
     </style>
 </head>
 <body>
-<h1>Component at runtime, unmount without destroy</h1>
+<h1>Component at runtime, confirm mount and unmount without destroy</h1>
 <div id="app"></div>
 
 <script>
 
     Doz.component('fist-component', {
-        $allowMount: true,
         template() {
             return `
-                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
-                <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+                <button forceupdate onclick="this.drawOther()">Mount second and thirty</i></button>
+                <button forceupdate onclick="this.removeOther()">Unmount second and thirty</i></button>
             `;
         },
         drawOther() {
@@ -43,20 +42,9 @@
                     </div>
                 `);
 
-                this.other.onBeforeMount = () => {
-                    console.log('main component before mount');
-                };
-
-                this.other.onMount = () => {
-                    console.log('main component mount');
-                };
-
-                this.other.onBeforeUnmount = () => {
-                    console.log('main component before unmount');
-                };
-
-                this.other.onUnmount = () => {
-                    console.log('main component unmount');
+                this.other.onBeforeUnmount = function() {
+                    console.log('before unmount', this.tag);
+                    return confirm('Unmount second and thirty?');
                 };
             } else {
                 this.other.mount();
@@ -80,6 +68,10 @@
         toggle() {
             this.props.state = !this.props.state;
         },
+        onBeforeMount() {
+            console.log('before mount', this.tag);
+            return confirm('Mount second?');
+        },
         onMount() {
             console.log('mount', this.tag);
         },
@@ -100,6 +92,10 @@
         },
         toggle() {
             this.props.state = !this.props.state;
+        },
+        onBeforeMount() {
+            console.log('before mount', this.tag);
+            return confirm('Mount thirty?');
         },
         onMount() {
             console.log('mount', this.tag);
