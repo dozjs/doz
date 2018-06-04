@@ -11,8 +11,6 @@ const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
-//const propagateMount = require('./propagate-mount');
-//const propagateUnmount = require('./propagate-unmount');
 
 function component(tag, cfg = {}) {
 
