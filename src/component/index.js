@@ -84,23 +84,19 @@ function getInstances(cfg = {}) {
                     continue;
                 }
 
-                newElement.render(true);
+                if (events.callBeforeMount(newElement) !== false) {
+                    newElement.render(true);
 
-                if (!component) {
-                    component = newElement;
-                }
+                    if (!component) {
+                        component = newElement;
+                    }
 
-                newElement._rootElement[CMP_INSTANCE] = newElement;
-                console.log('APPENDER', newElement.tag, child.firstChild[CMP_INSTANCE])
-                //if (events.callBeforeMount(newElement) !== false) {
-                    //console.log('APPENDER', newElement._rootElement.outerHTML, child.firstChild.outerHTML, newElement.tag)
+                    newElement._rootElement[CMP_INSTANCE] = newElement;
+
                     child.insertBefore(newElement._rootElement, child.firstChild);
                     events.callRender(newElement);
                     events.callMount(newElement);
-                //} else {
-                    //console.log('NON APPENDER', newElement._rootElement.outerHTML, child.firstChild.outerHTML, newElement.tag)
-                    //newElement.unmount(null, null, true)
-                //}
+                }
 
                 parentElement = newElement;
 
@@ -337,7 +333,7 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy, silenty) {
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement  || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return false;
                 }
 
