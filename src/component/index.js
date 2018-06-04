@@ -92,11 +92,14 @@ function getInstances(cfg = {}) {
 
                 newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                child.insertBefore(newElement._rootElement, child.firstChild);
+                if (events.callBeforeMount(newElement) !== false) {
+                    child.insertBefore(newElement._rootElement, child.firstChild);
 
-                // This is deprecated in favor of onMount
-                events.callRender(newElement);
-                events.callMount(newElement);
+                    // This is deprecated in favor of onMount
+                    events.callRender(newElement);
+                    events.callMount(newElement);
+                }
+
                 parentElement = newElement;
 
                 if (parent.cmp) {
@@ -289,6 +292,8 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function (template, cfg = {}) {
+                if (events.callBeforeMount(this) === false)
+                    return this;
                 if (this._unmounted) {
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
@@ -297,7 +302,7 @@ function createInstance(cmp, cfg) {
                     Object.keys(this.children).forEach(child => {
                         this.children[child].mount();
                     });
-                    //propagateMount(this);
+                    return this;
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
                         const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);

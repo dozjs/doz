@@ -33,6 +33,14 @@ describe('Doz.lifecycle', function () {
                 template() {
                     return 'nested-nested-component';
                 },
+                onBeforeMount() {
+                    console.log('before mount', this.tag);
+                    step++;
+                },
+                onMount() {
+                    console.log('mount', this.tag);
+                    step++;
+                },
                 onBeforeUnmount() {
                     console.log('before unmount', this.tag);
                     step++;
@@ -46,6 +54,14 @@ describe('Doz.lifecycle', function () {
             Doz.component('nested-component', {
                 template() {
                     return '<div>nested component <nested-nested-component></nested-nested-component></div>';
+                },
+                onBeforeMount() {
+                    console.log('before mount', this.tag);
+                    step++;
+                },
+                onMount() {
+                    console.log('mount', this.tag);
+                    step++;
                 },
                 onBeforeUnmount() {
                     console.log('before unmount', this.tag);
@@ -73,6 +89,10 @@ describe('Doz.lifecycle', function () {
                 },
                 onCreate() {
                     console.log('create');
+                    step++;
+                },
+                onBeforeMount() {
+                    console.log('before mount');
                     step++;
                 },
                 onMount() {
@@ -104,8 +124,8 @@ describe('Doz.lifecycle', function () {
                 onDestroy() {
                     console.log('destroy');
                     step++;
-                    console.log(step)
-                    if (step === 13)
+                    console.log('step', step);
+                    if (step === 18)
                         done()
                 }
             });

@@ -19,6 +19,12 @@ function callRender(context) {
     }
 }
 
+function callBeforeMount(context) {
+    if(typeof context.onBeforeMount === 'function'){
+        context.onBeforeMount.call(context);
+    }
+}
+
 function callMount(context) {
     if(typeof context.onMount === 'function'){
         context.onMount.call(context);
@@ -66,6 +72,7 @@ module.exports = {
     callBeforeCreate,
     callCreate,
     callRender,
+    callBeforeMount,
     callMount,
     callBeforeUpdate,
     callUpdate,
