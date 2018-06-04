@@ -357,14 +357,16 @@ function getInstances() {
                 }
 
                 newElement._rootElement[CMP_INSTANCE] = newElement;
-
-                if (events.callBeforeMount(newElement) !== false) {
-                    child.insertBefore(newElement._rootElement, child.firstChild);
-                    events.callRender(newElement);
-                    events.callMount(newElement);
-                } else {
-                    newElement.unmount(null, null, true);
-                }
+                console.log('APPENDER', newElement.tag, child.firstChild[CMP_INSTANCE]);
+                //if (events.callBeforeMount(newElement) !== false) {
+                //console.log('APPENDER', newElement._rootElement.outerHTML, child.firstChild.outerHTML, newElement.tag)
+                child.insertBefore(newElement._rootElement, child.firstChild);
+                events.callRender(newElement);
+                events.callMount(newElement);
+                //} else {
+                //console.log('NON APPENDER', newElement._rootElement.outerHTML, child.firstChild.outerHTML, newElement.tag)
+                //newElement.unmount(null, null, true)
+                //}
 
                 parentElement = newElement;
 
@@ -595,7 +597,9 @@ function createInstance(cmp, cfg) {
                     this._unmounted = false;
                     this._unmountedParentNode = null;
 
-                    return this.app.mount(template, root, this);
+                    var result = this.app.mount(template, root, this);
+                    console.log('RES', result.tag);
+                    return result;
                 }
             },
             enumerable: true
