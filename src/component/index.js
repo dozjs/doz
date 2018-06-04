@@ -242,6 +242,7 @@ function createInstance(cmp, cfg) {
                     if (safe) this.beginSafeRender();
                     res = obj.map(func).map(stringEl => {
                         if (typeof stringEl === 'string') {
+
                             return stringEl.trim()
                         }
                     }).join('');

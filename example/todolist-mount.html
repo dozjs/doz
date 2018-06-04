@@ -185,7 +185,7 @@
             totalDone: 0
         },
 
-        onRender() {
+        onMount() {
             this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
                 {title: "Buy milk", done: false},
                 {title: "Buy cigarettes", done: false}

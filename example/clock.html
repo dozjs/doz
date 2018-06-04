@@ -39,7 +39,7 @@
         props: {
             time: &apos;--:--:--&apos;,
         },
-        onRender() {
+        onMount() {
             setInterval(() =&gt; this.currentTime(), 1000)
         },
         currentTime() {
@@ -62,7 +62,7 @@
         props: {
             time: '--:--:--',
         },
-        onRender() {
+        onMount() {
             setInterval(() => this.currentTime(), 1000)
         },
         currentTime() {
