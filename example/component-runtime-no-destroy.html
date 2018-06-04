@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component at runtime, no destroy</title>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?589654888576480"></script>
+    <script src="../dist/doz.js?5896548885764803"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -26,13 +26,16 @@
 <script>
 
     Doz.component('fist-component', {
+        $allowMount: true,
         template() {
             return `
-                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate onclick="this.drawOther(true)">Mount second</i></button>
+                <button forceupdate onclick="this.drawOther(false)">Try to mount second without success</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
             `;
         },
-        drawOther() {
+        drawOther(allowMount) {
+            this.$allowMount = allowMount;
             if (!this.other) {
 
                 this.other = this.mount(`
@@ -42,15 +45,24 @@
                     </div>
                 `);
 
-                this.other.onBeforeUnmount = function () {
-                    console.log('component before unmounted');
+                this.other.onBeforeMount = () => {
+                    console.log('main component before mount');
+                    return this.$allowMount;
                 };
 
-                this.other.onUnmount = function () {
-                    console.log('component unmounted');
+                this.other.onMount = () => {
+                    console.log('main component mount');
+                };
+
+                this.other.onBeforeUnmount = () => {
+                    console.log('main component before unmount');
+                };
+
+                this.other.onUnmount = () => {
+                    console.log('main component unmount');
                 };
             } else {
-                this.other.mount()
+                this.other.mount();
             }
 
         },
@@ -58,6 +70,10 @@
             if (this.other) {
                 this.other.unmount();
             }
+        },
+        onBeforeMount(){
+            console.log('bbbbbbbbbbb component before mount');
+            //return this.$allowMount;
         }
     });
 

@@ -273,8 +273,6 @@ var _require4 = __webpack_require__(24),
     extract = _require4.extract;
 
 var proxy = __webpack_require__(5);
-var propagateMount = __webpack_require__(25);
-var propagateUnmount = __webpack_require__(26);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -360,11 +358,14 @@ function getInstances() {
 
                 newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                child.insertBefore(newElement._rootElement, child.firstChild);
+                if (events.callBeforeMount(newElement) !== false) {
+                    child.insertBefore(newElement._rootElement, child.firstChild);
 
-                // This is deprecated in favor of onMount
-                events.callRender(newElement);
-                events.callMount(newElement);
+                    // This is deprecated in favor of onMount
+                    events.callRender(newElement);
+                    events.callMount(newElement);
+                }
+
                 parentElement = newElement;
 
                 if (parent.cmp) {
@@ -511,6 +512,7 @@ function createInstance(cmp, cfg) {
                     if (safe) this.beginSafeRender();
                     res = obj.map(func).map(function (stringEl) {
                         if (typeof stringEl === 'string') {
+
                             return stringEl.trim();
                         }
                     }).join('');
@@ -563,6 +565,7 @@ function createInstance(cmp, cfg) {
 
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+                if (events.callBeforeMount(this) === false) return this;
                 if (this._unmounted) {
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
@@ -571,7 +574,7 @@ function createInstance(cmp, cfg) {
                     Object.keys(this.children).forEach(function (child) {
                         _this.children[child].mount();
                     });
-                    //propagateMount(this);
+                    return this;
                 } else if (template) {
                     if (this._rootElement.nodeType !== 1) {
                         var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
@@ -1434,6 +1437,12 @@ function callRender(context) {
     }
 }
 
+function callBeforeMount(context) {
+    if (typeof context.onBeforeMount === 'function') {
+        context.onBeforeMount.call(context);
+    }
+}
+
 function callMount(context) {
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
@@ -1481,6 +1490,7 @@ module.exports = {
     callBeforeCreate: callBeforeCreate,
     callCreate: callCreate,
     callRender: callRender,
+    callBeforeMount: callBeforeMount,
     callMount: callMount,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
@@ -2465,40 +2475,6 @@ function extract(props) {
 module.exports = {
     extract: extract
 };
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function propagateMount(instance) {
-    Object.keys(instance.children).forEach(function (item) {
-        var child = instance.children[item];
-        if (typeof child.onMount === 'function') child.onMount();
-        propagateMount(child);
-    });
-}
-
-module.exports = propagateMount;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function propagateUnmount(instance) {
-    Object.keys(instance.children).forEach(function (item) {
-        var child = instance.children[item];
-        if (typeof child.onUnmount === 'function') child.onUnmount();
-        propagateUnmount(child);
-    });
-}
-
-module.exports = propagateUnmount;
 
 /***/ })
 /******/ ]);
