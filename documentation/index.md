@@ -172,10 +172,14 @@ When a component is defined it inherits some methods and properties:
 | `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no |
 | `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
+| `onBeforeMount`| function | This method is called before that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
+| `onBeforeUnmount`| function | This method is called before that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onCreate`| function | This method is called after that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onDestroy`| function | This method is called after that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onRender`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
+| `onMount`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
+| `onRender`| function | **[Deprecated]** This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
+| `onUnmount`| function | This method is called after that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `onUpdate`| function | This method is called after that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `parent` | object | The parent object | no | no |
 | `props` | object | This object can contains all component props | no | yes |
@@ -184,6 +188,8 @@ When a component is defined it inherits some methods and properties:
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes |
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
+| `unmount` | function | This method unmount a component from child. More info on [mount](#async-mount) | no | no |
+
 
 ### Handlers
 All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).
@@ -276,12 +282,15 @@ new Doz({
 ---
 
 ### Lifecycle methods
-In order all events:
+In order all hooks:
 - `onBeforeCreate`: called before that instance is created.
 - `onCreate`: called after that instance is created.
-- `onRender`: called after that instance is mounted on DOM.
+- `onBeforeMount`: called before that instance is mounted on DOM.
+- `onMount`: called after that instance is mounted on DOM.
 - `onBeforeUpdate`: called before that instance is updated.
 - `onUpdate`: called after that instance is updated.
+- `onBeforeUnmount`: called before that instance is unmounted.
+- `onUnmount`: called after that instance is unmounted.
 - `onBeforeDestroy`: called before that instance is destroyed.
 - `onDestroy`: called after that instance is destroyed.
 
@@ -331,8 +340,11 @@ Doz.component('hello-world', {
     onCreate() {
         console.log('create');
     },
-    onRender() {
-        console.log('render');
+    onBeforeMount() {
+        console.log('before mount');
+    },
+    onMount() {
+        console.log('mount');
         setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
     },
     onBeforeUpdate(changes) {
@@ -341,6 +353,12 @@ Doz.component('hello-world', {
     onUpdate(changes) {
         console.log('update', this.props.salutation, changes);
         setTimeout(()=> this.destroy(), 1000)
+    },
+    onBeforeUnmount() {
+        console.log('before unmount');
+    },
+    onUnmount() {
+        console.log('unmount');
     },
     onBeforeDestroy() {
         console.log('before destroy');
