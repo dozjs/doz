@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - unreleased
 - **Added** new option property `autoCreateChildren` to component definition
 - **Added** new property `rawChildren` to component
+- **Added** new hook `onBeforeMount`
 - **Added** new hook `onMount`
 - **Added** new hook `onBeforeUnmount`
 - **Added** new hook `onUnmount`
