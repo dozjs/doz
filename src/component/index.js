@@ -4,7 +4,7 @@ const html = require('../utils/html');
 const {REGEX, TAG, INSTANCE, CMP_INSTANCE} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
-const events = require('./events');
+const hooks = require('./hooks');
 const {transform, serializeProps} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 const store = require('./store');
@@ -84,7 +84,7 @@ function getInstances(cfg = {}) {
                     continue;
                 }
 
-                if (events.callBeforeMount(newElement) !== false) {
+                if (hooks.callBeforeMount(newElement) !== false) {
                     newElement.render(true);
 
                     if (!component) {
@@ -94,8 +94,8 @@ function getInstances(cfg = {}) {
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
-                    events.callRender(newElement);
-                    events.callMount(newElement);
+                    hooks.callRender(newElement);
+                    hooks.callMount(newElement);
                 }
 
                 parentElement = newElement;
@@ -292,14 +292,14 @@ function createInstance(cmp, cfg) {
             value: function (template, cfg = {}) {
 
                 if (this._unmounted) {
-                    if (events.callBeforeMount(this) === false)
+                    if (hooks.callBeforeMount(this) === false)
                         return this;
 
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
                     this._unmountedParentNode = null;
 
-                    events.callMount(this);
+                    hooks.callMount(this);
 
                     Object.keys(this.children).forEach(child => {
                         this.children[child].mount();
@@ -333,7 +333,7 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy, silenty) {
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return false;
                 }
 
@@ -347,7 +347,7 @@ function createInstance(cmp, cfg) {
                 this._unmounted = !byDestroy;
 
                 if (!silenty)
-                    events.callUnmount(this);
+                    hooks.callUnmount(this);
 
                 Object.keys(this.children).forEach(child => {
                     this.children[child].unmount(onlyInstance, byDestroy, silenty);
@@ -359,7 +359,7 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function (onlyInstance) {
-                if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
+                if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
                 }
@@ -371,7 +371,7 @@ function createInstance(cmp, cfg) {
                     this.children[child].destroy();
                 });
 
-                events.callDestroy(this);
+                hooks.callDestroy(this);
             },
             enumerable: true
         }
@@ -380,7 +380,7 @@ function createInstance(cmp, cfg) {
     // Assign cfg to instance
     extendInstance(instance, cmp.cfg, cfg.dProps);
 
-    const beforeCreate = events.callBeforeCreate(instance);
+    const beforeCreate = hooks.callBeforeCreate(instance);
     if (beforeCreate === false)
         return undefined;
 
@@ -393,7 +393,7 @@ function createInstance(cmp, cfg) {
     // Add callback to ready queue
     queueReadyCB(instance);
     // Call create
-    events.callCreate(instance);
+    hooks.callCreate(instance);
     // Now instance is created
     instance._isCreated = true;
 

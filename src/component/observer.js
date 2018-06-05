@@ -1,5 +1,5 @@
 const proxy = require('../utils/proxy');
-const events = require('./events');
+const events = require('./hooks');
 const delay = require('../utils/delay');
 
 function updateBound(instance, changes) {
