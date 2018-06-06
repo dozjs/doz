@@ -259,7 +259,7 @@ var _require2 = __webpack_require__(0),
 
 var collection = __webpack_require__(1);
 var observer = __webpack_require__(16);
-var events = __webpack_require__(6);
+var hooks = __webpack_require__(6);
 
 var _require3 = __webpack_require__(8),
     transform = _require3.transform,
@@ -350,7 +350,7 @@ function getInstances() {
                     continue;
                 }
 
-                if (events.callBeforeMount(newElement) !== false) {
+                if (hooks.callBeforeMount(newElement) !== false) {
                     newElement.render(true);
 
                     if (!component) {
@@ -360,8 +360,8 @@ function getInstances() {
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
-                    events.callRender(newElement);
-                    events.callMount(newElement);
+                    hooks.callRender(newElement);
+                    hooks.callMount(newElement);
                 }
 
                 parentElement = newElement;
@@ -565,13 +565,13 @@ function createInstance(cmp, cfg) {
 
 
                 if (this._unmounted) {
-                    if (events.callBeforeMount(this) === false) return this;
+                    if (hooks.callBeforeMount(this) === false) return this;
 
                     this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                     this._unmounted = false;
                     this._unmountedParentNode = null;
 
-                    events.callMount(this);
+                    hooks.callMount(this);
 
                     Object.keys(this.children).forEach(function (child) {
                         _this.children[child].mount();
@@ -609,7 +609,7 @@ function createInstance(cmp, cfg) {
                 var byDestroy = arguments[1];
                 var silenty = arguments[2];
 
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || events.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return false;
                 }
 
@@ -621,7 +621,7 @@ function createInstance(cmp, cfg) {
 
                 this._unmounted = !byDestroy;
 
-                if (!silenty) events.callUnmount(this);
+                if (!silenty) hooks.callUnmount(this);
 
                 Object.keys(this.children).forEach(function (child) {
                     _this2.children[child].unmount(onlyInstance, byDestroy, silenty);
@@ -635,18 +635,18 @@ function createInstance(cmp, cfg) {
             value: function value(onlyInstance) {
                 var _this3 = this;
 
-                if (!onlyInstance && (!this._rootElement || events.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
+                if (this.unmount(onlyInstance, true) === false) return;
+
+                if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
                 }
-
-                if (this.unmount(onlyInstance, true) === false) return;
 
                 Object.keys(this.children).forEach(function (child) {
                     _this3.children[child].destroy();
                 });
 
-                events.callDestroy(this);
+                hooks.callDestroy(this);
             },
             enumerable: true
         }
@@ -655,7 +655,7 @@ function createInstance(cmp, cfg) {
     // Assign cfg to instance
     extendInstance(instance, cmp.cfg, cfg.dProps);
 
-    var beforeCreate = events.callBeforeCreate(instance);
+    var beforeCreate = hooks.callBeforeCreate(instance);
     if (beforeCreate === false) return undefined;
 
     // Create observer to props
@@ -667,7 +667,7 @@ function createInstance(cmp, cfg) {
     // Add callback to ready queue
     queueReadyCB(instance);
     // Call create
-    events.callCreate(instance);
+    hooks.callCreate(instance);
     // Now instance is created
     instance._isCreated = true;
 

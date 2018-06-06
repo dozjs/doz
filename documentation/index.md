@@ -188,7 +188,7 @@ When a component is defined it inherits some methods and properties:
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes |
 | `tag` | string | Component tag name | no | no |
 | `template` | function | This method must be return the component template literals | yes | yes |
-| `unmount` | function | This method unmount a component from child. More info on [mount](#async-mount) | no | no |
+| `unmount` | function | This method unmount a component from DOM. More info on [unmount](#unmount) | no | no |
 
 
 ### Handlers
@@ -484,6 +484,32 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/uLb9nw2d/)
 
 ---
+
+### Unmount
+You can also unmount a component.
+
+```javascript
+Doz.component('my-wrapper', {
+    template() {
+        return `
+            <div>
+                <h2>Hello World</h2>
+                <button onclick="this.unmount()">Unmount</button>
+            </div>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-wrapper></my-wrapper>
+    `
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/2/)
 
 ### Directives
 The directives are special attributes that are specified inside component tag.

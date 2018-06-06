@@ -359,13 +359,14 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function (onlyInstance) {
+
+                if (this.unmount(onlyInstance, true) === false)
+                    return;
+
                 if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
                     console.warn('destroy failed');
                     return;
                 }
-
-                if (this.unmount(onlyInstance, true) === false)
-                    return;
 
                 Object.keys(this.children).forEach(child => {
                     this.children[child].destroy();
