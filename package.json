@@ -22,7 +22,9 @@
         "dom",
         "javascript",
         "framework",
-        "ui"
+        "ui",
+        "virtual dom",
+        "v-dom"
     ],
     "author": "Fabio Ricali",
     "license": "MIT",
