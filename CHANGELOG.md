@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - unreleased
+## [1.0.0] - 2018-06-06
 - **Added** new option property `autoCreateChildren` to component definition
 - **Added** new property `rawChildren` to component
 - **Added** new hook `onBeforeMount`
