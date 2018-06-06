@@ -377,7 +377,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/77o4e7nL/4/)
+[FIDDLE](https://jsfiddle.net/77o4e7nL/7/)
 
 ---
 
