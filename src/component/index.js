@@ -325,7 +325,7 @@ function createInstance(cmp, cfg) {
                     this._unmountedParentNode = null;
 
                     let result = this.app.mount(template, root, this);
-                    console.log('RES', result.tag);
+                    //console.log('RES', result.tag);
                     return result;
                 }
             },
