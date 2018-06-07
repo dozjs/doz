@@ -187,17 +187,17 @@
                         <option value="it">IT</option>
                     </select>
                     <br><br><br>
-                    <form-field d:id="1" type="text" label="${locale.firstName}" name="firstName" required="true"></form-field>
-                    <form-field d:id="2" type="text" label="${locale.lastName}" name="lastName" required="true"></form-field>
-                    <form-field d:id="3" type="text" label="${locale.address}" name="address" required="true"></form-field>
-                    <form-field d:id="4" type="text" label="${locale.city}" name="city" required="true"></form-field>
-                    <form-field d:id="5" type="text" label="${locale.country}" name="country" required="true"></form-field>
-                    <form-field d:id="6" type="email" label="${locale.email}" name="email" required="true"></form-field>
+                    <form-field type="text" label="${locale.firstName}" name="firstName" required="true"></form-field>
+                    <form-field type="text" label="${locale.lastName}" name="lastName" required="true"></form-field>
+                    <form-field type="text" label="${locale.address}" name="address" required="true"></form-field>
+                    <form-field type="text" label="${locale.city}" name="city" required="true"></form-field>
+                    <form-field type="text" label="${locale.country}" name="country" required="true"></form-field>
+                    <form-field type="email" label="${locale.email}" name="email" required="true"></form-field>
 
                     <h3>${locale.dataReasonTitle}</h3>
                     <p>${locale.dataReasonDescription}</p>
 
-                    <form-field d:id="7" type="textarea" label="${locale.dataReasonLabel}" name="dataReason" required="true"></form-field>
+                    <form-field type="textarea" label="${locale.dataReasonLabel}" name="dataReason" required="true"></form-field>
                     <p><strong>${locale.noteTitle}</strong> <br>${locale.noteDescription}</p>
                     <form-divider></form-divider>
                     <button type="button" class="btn btn-success btn-lg" onclick="this.submit()">${locale.send}</button>
