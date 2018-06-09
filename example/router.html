@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - ROUTER">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - router</title>
+    <!--script src="../node_modules/doz/dist/doz.js?589654888l30"></script-->
+    <script src="../dist/doz.js?589654888l30343"></script>
+    <!--script src="https://unpkg.com/doz/dist/doz.js?4"></script-->
+    <script src="../node_modules/doz-router/dist/doz-router.js?7545426208"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #000;
+        }
+
+        nav a {
+            padding: 10px;
+            background: coral;
+            color: #000;
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        nav a:link {
+            text-decoration: none;
+        }
+
+        nav a.router-link-active {
+            background: blanchedalmond;
+        }
+
+        .container {
+            margin-top: 100px;
+            color: #fff;
+            font-size: 40px;
+        }
+
+        .container a {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.component('doz-router', DozRouter);
+
+    Doz.component('home-page', {
+        template() {
+            return `
+                <div>I'm home page</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('about-page', {
+        template() {
+            return `
+                <div>I'm about page</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('extension-page', {
+        template() {
+            return `
+                <div>I'm .html page</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('contact-page', {
+        template() {
+            return `
+                <div>I'm contact page</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('profile-page', {
+        template() {
+            return `
+                <div>I'm profile me page</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('user-details-page', {
+        template() {
+            return `
+                <div>I'm user page with id "${this.props.id}", <a href="javascript:history.back()">back</a></div>
+            `
+        },
+        onCreate() {
+            this.props.id = this.getComponentById('router').$_param['id'];
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('search-page', {
+        template() {
+            return `
+                <div>I'm search page with query "${this.props.query}"</div>
+            `
+        },
+        onCreate() {
+            this.props.query = this.getComponentById('router').$_query['t'];
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('user-page', {
+        template() {
+            return `
+                <div>I'm user page index, <a href="#/user/10">show id 10</a></div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('section-page', {
+        template() {
+            let id = this.getComponentById('router').$_param['id'];
+            return `
+                <div>I'm section page index ${id}</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    Doz.component('not-found-page', {
+        template() {
+            return `
+                <div>404 page not found</div>
+            `
+        },
+        onCreate() {
+            console.log(this.tag, 'created')
+        },
+        onDestroy() {
+            console.log(this.tag, 'destroyed')
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `
+            <nav>
+                <a router-link href="/">Home</a>
+                <a router-link href="/about">About</a>
+                <a router-link href="/profile/me">Profile</a>
+                <a router-link href="/profile.html">.html</a>
+                <a router-link href="/user/">User</a>
+                <a router-link href="/search/?t=hello">Search</a>
+                <a router-link href="/contact">Contact</a>
+                <a router-link href="/not-found-page-bla-bla">Not found</a>
+                <a router-link href="/section/1">Section 1</a>
+                <a router-link href="/section/2">Section 2</a>
+                <a router-link href="/section/3">Section 3</a>
+                <a router-link href="/section/4">Section 4</a>
+            </nav>
+            <div class="container">
+                <doz-router d:id="router">
+                    <home-page route="/"></home-page>
+                    <about-page route="/about"></about-page>
+                    <contact-page route="/contact"></contact-page>
+                    <extension-page route="/profile.html"></extension-page>
+                    <profile-page route="/profile/me"></profile-page>
+                    <search-page route="/search"></search-page>
+                    <user-page route="/user/"></user-page>
+                    <user-details-page route="/user/:id"></user-details-page>
+                    <not-found-page route="*"></not-found-page>
+                    <section-page route="/section/:id" preserve></section-page>
+                </doz-router>
+            </div>
+        `
+    });
+
+</script>
+</body>
+</html>

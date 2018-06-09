@@ -593,9 +593,7 @@ function createInstance(cmp, cfg) {
                     this._unmounted = false;
                     this._unmountedParentNode = null;
 
-                    var result = this.app.mount(template, root, this);
-                    //console.log('RES', result.tag);
-                    return result;
+                    return this.app.mount(template, root, this);
                 }
             },
             enumerable: true
@@ -607,12 +605,13 @@ function createInstance(cmp, cfg) {
                 var _this2 = this;
 
                 var byDestroy = arguments[1];
-                var silenty = arguments[2];
+                var silently = arguments[2];
 
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || /**/!this._rootElement || hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                    //if (!onlyInstance && hooks.callBeforeUnmount(this) === false) {
                     return false;
                 }
-
+                //try {
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
                 if (!onlyInstance) {
@@ -620,11 +619,18 @@ function createInstance(cmp, cfg) {
                 } else this._rootElement.parentNode.innerHTML = '';
 
                 this._unmounted = !byDestroy;
+                /*} catch (e) {
+                    console.log(e);
+                    //return false;
+                    this._unmountedParentNode = null;
+                    this._unmounted = false;
+                    return;
+                }*/
 
-                if (!silenty) hooks.callUnmount(this);
+                if (!silently) hooks.callUnmount(this);
 
                 Object.keys(this.children).forEach(function (child) {
-                    _this2.children[child].unmount(onlyInstance, byDestroy, silenty);
+                    _this2.children[child].unmount(onlyInstance, byDestroy, silently);
                 });
 
                 return this;
@@ -635,10 +641,11 @@ function createInstance(cmp, cfg) {
             value: function value(onlyInstance) {
                 var _this3 = this;
 
+                //console.log('->', this.tag);
                 if (this.unmount(onlyInstance, true) === false) return;
 
                 if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
-                    console.warn('destroy failed');
+                    //console.warn('destroy failed');
                     return;
                 }
 
