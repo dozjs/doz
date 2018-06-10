@@ -607,11 +607,12 @@ function createInstance(cmp, cfg) {
                 var byDestroy = arguments[1];
                 var silently = arguments[2];
 
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || /**/!this._rootElement || hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
-                    //if (!onlyInstance && hooks.callBeforeUnmount(this) === false) {
-                    return false;
+                if (hooks.callBeforeUnmount(this) === false) return false;
+
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                    return;
                 }
-                //try {
+
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
                 if (!onlyInstance) {
@@ -619,13 +620,6 @@ function createInstance(cmp, cfg) {
                 } else this._rootElement.parentNode.innerHTML = '';
 
                 this._unmounted = !byDestroy;
-                /*} catch (e) {
-                    console.log(e);
-                    //return false;
-                    this._unmountedParentNode = null;
-                    this._unmounted = false;
-                    return;
-                }*/
 
                 if (!silently) hooks.callUnmount(this);
 

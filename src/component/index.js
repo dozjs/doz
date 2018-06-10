@@ -331,26 +331,21 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy, silently) {
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || /**/!this._rootElement||  hooks.callBeforeUnmount(this) === false || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
-                //if (!onlyInstance && hooks.callBeforeUnmount(this) === false) {
+                if (hooks.callBeforeUnmount(this) === false)
                     return false;
-                }
-                //try {
-                    this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
-                    if (!onlyInstance) {
-                        this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
-                    } else
-                        this._rootElement.parentNode.innerHTML = '';
-
-                    this._unmounted = !byDestroy;
-                /*} catch (e) {
-                    console.log(e);
-                    //return false;
-                    this._unmountedParentNode = null;
-                    this._unmounted = false;
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return;
-                }*/
+                }
+
+                this._unmountedParentNode = this._rootElement.parentNode.parentNode;
+
+                if (!onlyInstance) {
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                } else
+                    this._rootElement.parentNode.innerHTML = '';
+
+                this._unmounted = !byDestroy;
 
                 if (!silently)
                     hooks.callUnmount(this);
