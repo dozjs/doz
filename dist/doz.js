@@ -607,11 +607,11 @@ function createInstance(cmp, cfg) {
                 var byDestroy = arguments[1];
                 var silently = arguments[2];
 
-                if (hooks.callBeforeUnmount(this) === false) return false;
-
                 if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return;
                 }
+
+                if (hooks.callBeforeUnmount(this) === false) return false;
 
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
@@ -635,11 +635,9 @@ function createInstance(cmp, cfg) {
             value: function value(onlyInstance) {
                 var _this3 = this;
 
-                //console.log('->', this.tag);
                 if (this.unmount(onlyInstance, true) === false) return;
 
                 if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
-                    //console.warn('destroy failed');
                     return;
                 }
 

@@ -331,12 +331,12 @@ function createInstance(cmp, cfg) {
         },
         unmount: {
             value: function (onlyInstance = false, byDestroy, silently) {
-                if (hooks.callBeforeUnmount(this) === false)
-                    return false;
-
                 if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                     return;
                 }
+
+                if (hooks.callBeforeUnmount(this) === false)
+                    return false;
 
                 this._unmountedParentNode = this._rootElement.parentNode.parentNode;
 
