@@ -361,12 +361,10 @@ function createInstance(cmp, cfg) {
         destroy: {
             value: function (onlyInstance) {
 
-                //console.log('->', this.tag);
                 if (this.unmount(onlyInstance, true) === false)
                     return;
 
                 if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
-                    //console.warn('destroy failed');
                     return;
                 }
 
