@@ -113,7 +113,13 @@ class Doz {
                 }
             });
         } else if (typeof this.cfg.components === 'object'){
-            this._components = Object.assign({}, this.cfg.components)
+            //this._components = Object.assign({}, this.cfg.components);
+            Object.keys(this.cfg.components).forEach(objName => {
+                this._components[objName] = {
+                    tag: objName,
+                    cfg: this.cfg.components[objName]
+                }
+            });
         }
 
         this._components[TAG.APP] = {

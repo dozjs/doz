@@ -56,8 +56,8 @@ function getInstances(cfg = {}) {
             const cmpName = child.nodeName.toLowerCase();
             let localComponents = {};
 
-            if (parent.cmp && parent._components) {
-                localComponents = parent._components;
+            if (parent.cmp && parent.cmp._components) {
+                localComponents = parent.cmp._components;
             }
 
             const cmp = cfg.autoCmp ||
@@ -427,7 +427,12 @@ function extendInstance(instance, cfg, dProps) {
         });
         delete instance.components;
     } else if (typeof cfg.components === 'object'){
-        instance._components = Object.assign({}, cfg.components);
+        Object.keys(cfg.components).forEach(objName => {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: cfg.components[objName]
+            }
+        });
         delete instance.components;
     }
 }

@@ -51,13 +51,13 @@ describe('Doz.local.component', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 console.log(view);
                 be.err.true(/Doz/g.test(html));
                 be.err(done).true(/Luis/g.test(html));
-            },100);
+            }, 100);
 
         });
 
@@ -98,15 +98,61 @@ describe('Doz.local.component', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 console.log(view);
-                be.err.true(/Doz/g.test(html));
-                be.err(done).true(/Luis/g.test(html));
-            },100);
+                be.err.true(/Doz component/g.test(html));
+                be.err(done).true(/Luis component/g.test(html));
+            }, 100);
 
         });
 
+        describe('create app with component and sub-component (2)', function () {
+
+            it('should be ok with a nested component', function (done) {
+
+                document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+                const label = {
+                    template() {
+                        return `
+                            <label>${this.props.name.toUpperCase()}</label>
+                        `
+                    }
+                };
+
+                Doz.component('my-component', {
+                    components: {
+                        'label-component': label
+                    },
+                    template() {
+                        return `
+                        <label-component name="Doz"></label-component>
+                        <label-component name="Luis"></label-component>
+                    `
+                    }
+                });
+
+                const view = new Doz({
+                    root: '#app',
+                    template: `
+                    <my-component></my-component>
+                `
+                });
+
+                setTimeout(() => {
+                    const html = document.body.innerHTML;
+                    console.log(html);
+                    //console.log(view);
+                    be.err.true(/DOZ/g.test(html));
+                    be.err(done).true(/LUIS/g.test(html));
+                }, 100);
+
+            });
+
+        });
     });
 });
