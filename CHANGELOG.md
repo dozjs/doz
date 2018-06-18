@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** support to local sub-components
+
 ## [1.0.1] - 2018-06-10
 - **Fixed** issue on `beforeDestroy` and `destroy`  that are not called in the child component when parent is destroyed
 - **Added** version method `Doz.version`
