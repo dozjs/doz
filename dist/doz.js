@@ -324,8 +324,8 @@ function getInstances() {
             var cmpName = child.nodeName.toLowerCase();
             var localComponents = {};
 
-            if (parent.cmp && parent._components) {
-                localComponents = parent._components;
+            if (parent.cmp && parent.cmp._components) {
+                localComponents = parent.cmp._components;
             }
 
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.get(child.nodeName);
@@ -698,7 +698,12 @@ function extendInstance(instance, cfg, dProps) {
         });
         delete instance.components;
     } else if (_typeof(cfg.components) === 'object') {
-        instance._components = Object.assign({}, cfg.components);
+        Object.keys(cfg.components).forEach(function (objName) {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: cfg.components[objName]
+            };
+        });
         delete instance.components;
     }
 }
@@ -1863,7 +1868,13 @@ var Doz = function () {
                 }
             });
         } else if (_typeof(this.cfg.components) === 'object') {
-            this._components = Object.assign({}, this.cfg.components);
+            //this._components = Object.assign({}, this.cfg.components);
+            Object.keys(this.cfg.components).forEach(function (objName) {
+                _this._components[objName] = {
+                    tag: objName,
+                    cfg: _this.cfg.components[objName]
+                };
+            });
         }
 
         this._components[TAG.APP] = {
