@@ -159,6 +159,7 @@ When a component is defined it inherits some methods and properties:
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
 | `app` | object | The app object | no | no |
 | `children` | object | An object that contains all children components | no | no |
+| `components` | object | An object that contains local components | no | no |
 | `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no |
 | `destroy` | function | Destroy component and his children | no | no |
 | `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no |
@@ -386,6 +387,7 @@ As said previously, when define a component with `component` this will be global
 Doz also allows you to create local components:
 
 ```javascript
+// First way
 const helloWorld = {
     tag: 'hello-world',
     cfg: {
@@ -399,6 +401,76 @@ const helloWorld = {
 
 new Doz({
     components: [helloWorld],
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <hello-world></hello-world>
+    `
+});
+
+// Second way
+const helloWorld = {
+    template() {
+        return `
+            <h2>Hello World</h2>
+        `
+    }
+}
+
+new Doz({
+    components: {
+        'hello-world': helloWorld
+    },
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <hello-world></hello-world>
+    `
+});
+```
+
+Since 1.1.0 also components supports local components:
+
+```javascript
+// First
+const hello = {
+    template() {
+        return `
+            <span>Hello</span>
+        `
+    }
+}
+
+// Second
+const world = {
+    template() {
+        return `
+            <span>World</span>
+        `
+    }
+}
+
+// Together...
+const HelloWorld = {
+    components: {
+        'hello-tag': hello,
+        'world-tag': world
+    },
+    template() {
+        return `
+            <h2>
+                <hello-tag></hello-tag>
+                <world-tag></world-tag>
+            </h2>
+        `
+    }
+}
+
+// App
+new Doz({
+    components: {
+        'hello-world': HelloWorld
+    },
     root: '#app',
     template: `
         <h1>Welcome to my app:</h1>
