@@ -244,6 +244,8 @@ module.exports.copy = copy;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var extend = __webpack_require__(2);
 
 var _require = __webpack_require__(1),
@@ -319,7 +321,14 @@ function getInstances() {
 
         while (child) {
 
-            var cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.app._components[child.nodeName.toLowerCase()];
+            var cmpName = child.nodeName.toLowerCase();
+            var localComponents = {};
+
+            if (parent.cmp && parent._components) {
+                localComponents = parent._components;
+            }
+
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.get(child.nodeName);
 
             if (cmp) {
 
@@ -428,6 +437,10 @@ function createInstance(cmp, cfg) {
             value: new Map()
         },
         _loops: {
+            value: {},
+            writable: true
+        },
+        _components: {
             value: {},
             writable: true
         },
@@ -675,6 +688,19 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+
+    // Add local components
+    if (Array.isArray(cfg.components)) {
+        cfg.components.forEach(function (cmp) {
+            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    } else if (_typeof(cfg.components) === 'object') {
+        instance._components = Object.assign({}, cfg.components);
+        delete instance.components;
+    }
 }
 
 function queueReadyCB(instance) {
@@ -1830,11 +1856,15 @@ var Doz = function () {
             }
         });
 
-        this.cfg.components.forEach(function (cmp) {
-            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                _this._components[cmp.tag] = cmp;
-            }
-        });
+        if (Array.isArray(this.cfg.components)) {
+            this.cfg.components.forEach(function (cmp) {
+                if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                    _this._components[cmp.tag] = cmp;
+                }
+            });
+        } else if (_typeof(this.cfg.components) === 'object') {
+            this._components = Object.assign({}, this.cfg.components);
+        }
 
         this._components[TAG.APP] = {
             tag: TAG.APP,

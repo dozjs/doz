@@ -106,11 +106,15 @@ class Doz {
             }
         });
 
-        this.cfg.components.forEach(cmp => {
-            if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
-                this._components[cmp.tag] = cmp;
-            }
-        });
+        if (Array.isArray(this.cfg.components)) {
+            this.cfg.components.forEach(cmp => {
+                if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
+                    this._components[cmp.tag] = cmp;
+                }
+            });
+        } else if (typeof this.cfg.components === 'object'){
+            this._components = Object.assign({}, this.cfg.components)
+        }
 
         this._components[TAG.APP] = {
             tag: TAG.APP,

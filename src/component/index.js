@@ -53,7 +53,17 @@ function getInstances(cfg = {}) {
     function walk(child, parent = {}) {
         while (child) {
 
-            const cmp = cfg.autoCmp || collection.get(child.nodeName) || cfg.app._components[child.nodeName.toLowerCase()];
+            const cmpName = child.nodeName.toLowerCase();
+            let localComponents = {};
+
+            if (parent.cmp && parent._components) {
+                localComponents = parent._components;
+            }
+
+            const cmp = cfg.autoCmp ||
+                localComponents[cmpName] ||
+                cfg.app._components[cmpName] ||
+                collection.get(child.nodeName);
 
             if (cmp) {
 
@@ -163,6 +173,10 @@ function createInstance(cmp, cfg) {
             value: new Map()
         },
         _loops: {
+            value: {},
+            writable: true
+        },
+        _components: {
             value: {},
             writable: true
         },
@@ -403,6 +417,19 @@ function createInstance(cmp, cfg) {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
+
+    // Add local components
+    if (Array.isArray(cfg.components)) {
+        cfg.components.forEach(cmp => {
+            if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    } else if (typeof cfg.components === 'object'){
+        instance._components = Object.assign({}, cfg.components);
+        delete instance.components;
+    }
 }
 
 function queueReadyCB(instance) {
