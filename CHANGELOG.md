@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.1] - 2018-06-19
+- **Fixed** auto-cast issue for numeric argument passed to custom function
+
 ## [1.1.0] - 2018-06-18
 - **Added** support to local components for components
 
