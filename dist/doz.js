@@ -1880,12 +1880,15 @@ var Doz = function () {
         this._components[TAG.APP] = {
             tag: TAG.APP,
             cfg: {
-                props: cfg.props || {},
                 template: function template() {
                     return typeof cfg.template === 'function' ? cfg.template() : cfg.template;
                 }
             }
         };
+
+        Object.keys(cfg).forEach(function (p) {
+            if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
+        });
 
         this._tree = component.getInstances({ root: this.cfg.root, template: template, app: this }) || [];
         this._callAppReady();

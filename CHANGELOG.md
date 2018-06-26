@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.2] - 2018-06-27
+- **Improvement** for constructor, now supports all component events
+
 ## [1.1.1] - 2018-06-19
 - **Fixed** auto-cast issue for numeric argument passed to custom function
 
