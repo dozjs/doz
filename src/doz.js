@@ -125,12 +125,16 @@ class Doz {
         this._components[TAG.APP] = {
             tag: TAG.APP,
             cfg: {
-                props: cfg.props || {},
                 template() {
                     return typeof cfg.template === 'function' ? cfg.template() : cfg.template;
                 }
             }
         };
+
+        Object.keys(cfg).forEach(p => {
+            if(!['template', 'root'].includes(p))
+                this._components[TAG.APP].cfg[p] = cfg[p];
+        });
 
         this._tree = component.getInstances({root: this.cfg.root, template, app: this}) || [];
         this._callAppReady();
