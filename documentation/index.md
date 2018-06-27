@@ -160,6 +160,7 @@ When a component is defined it inherits some methods and properties:
 | `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
 | `app` | object | The app object | no | no |
+| `autoCreateChildren` | boolean | If `true`, create the child components. Default: `true` | no | no |
 | `children` | object | An object that contains all children components | no | no |
 | `components` | object | An object that contains local components | no | no |
 | `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no |
