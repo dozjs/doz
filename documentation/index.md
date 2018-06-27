@@ -32,7 +32,9 @@ Below some basic concepts:
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
 - [Actions](#actions)
+- [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
+- [Write a component](#develop-and-production)
 
 ## Installation
 ```
@@ -881,8 +883,36 @@ new Doz({
 
 ---
 
+### Component logic inside Doz constructor
+It's also possible creating an app with component logic inside Doz constructor like so:
+
+```javascript
+new Doz({
+    root: '#app',
+    props: {
+        name: 'super DOZ'
+    },
+    template() {
+        return `
+            <h1>Welcome to ${this.props.name}</h1>
+            <my-button onclick="this.$clickMe()"></my-button>
+        `
+    },
+    $clickMe() {
+        alert(this.props.name)
+    }
+});
+```
+
+---
+
 ### Develop and production
 The best way to build app with Doz is using the great [Parcel Bundler](https://github.com/parcel-bundler/parcel) with zero configuration.
+
+---
+
+### Write a component
+You can use [Doz Component Starter](https://github.com/dozjs/doz-component-starter) at the moment the right way to creating a component.
 
 ---
 
