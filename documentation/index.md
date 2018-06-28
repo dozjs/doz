@@ -170,6 +170,7 @@ When a component is defined it inherits some methods and properties:
 | `endSafeRender` | function | This method disable encoding of props into HTML entities before they are called | no | no |
 | `getComponent` | function | Get child component by alias | no | yes |
 | `getComponentById` | function | Get component by id | no | no |
+| `getHTMLElement` | function | Returns HTML element of component | no | no |
 | `getStore` | function | Get store by name | no | no |
 | `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes |
 | `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no |
