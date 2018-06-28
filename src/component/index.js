@@ -199,6 +199,12 @@ function createInstance(cmp, cfg) {
             value: null,
             writable: true
         },
+        getHTMLElement: {
+            value: function () {
+                return this._rootElement.parentNode;
+            },
+            enumerable: true
+        },
         beginSafeRender: {
             value: function () {
                 proxy.beginRender(this.props)
