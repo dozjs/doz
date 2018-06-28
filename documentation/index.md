@@ -187,6 +187,7 @@ When a component is defined it inherits some methods and properties:
 | `onUpdate`| function | This method is called after that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
 | `parent` | object | The parent object | no | no |
 | `props` | object | This object can contains all component props | no | yes |
+| `rawChildren` | array | An array that contains all children components as string | no | no |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
 | `render` | function | This method is called after changes detected, then updates the component part | no | no |
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes |
