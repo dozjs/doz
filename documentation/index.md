@@ -155,46 +155,47 @@ Doz.component('my-component', {
 #### Inherited
 When a component is defined it inherits some methods and properties:
 
-| Name | Type | Description | Required | Editable |
-| ---- | ---- | ----------- | -------- | -------- |
-| `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no |
-| `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes |
-| `app` | object | The app object | no | no |
-| `autoCreateChildren` | boolean | If `true`, create the child components. Default: `true` | no | no |
-| `children` | object | An object that contains all children components | no | no |
-| `components` | object | An object that contains local components | no | no |
-| `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no |
-| `destroy` | function | Destroy component and his children | no | no |
-| `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no |
-| `emit` | function | This method call a callback given an event name. More info on [emitter](#emitter) | no | no |
-| `endSafeRender` | function | This method disable encoding of props into HTML entities before they are called | no | no |
-| `getComponent` | function | Get child component by alias | no | yes |
-| `getComponentById` | function | Get component by id | no | no |
-| `getHTMLElement` | function | Returns HTML element of component | no | no |
-| `getStore` | function | Get store by name | no | no |
-| `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes |
-| `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no |
-| `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no |
-| `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onBeforeMount`| function | This method is called before that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onBeforeUnmount`| function | This method is called before that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onCreate`| function | This method is called after that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onDestroy`| function | This method is called after that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onMount`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onRender`| function | **[Deprecated]** This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onUnmount`| function | This method is called after that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `onUpdate`| function | This method is called after that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no |
-| `parent` | object | The parent object | no | no |
-| `props` | object | This object can contains all component props | no | yes |
-| `rawChildren` | array | An array that contains all children components as string | no | no |
-| `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no |
-| `render` | function | This method is called after changes detected, then updates the component part | no | no |
-| `store` | string | An unique store name to expose the props with other components of the app | no | yes |
-| `tag` | string | Component tag name | no | no |
-| `template` | function | This method must be return the component template literals | yes | yes |
-| `unmount` | function | This method unmount a component from DOM. More info on [unmount](#unmount) | no | no |
+| Name | Type | Description | Required | Editable | Since |
+| ---- | ---- | ----------- | -------- | -------- | ----- |
+| `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no | |
+| `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes | |
+| `app` | object | The app object | no | no | |
+| `autoCreateChildren` | boolean | If `true`, create the child components. Default: `true` | no | no | 1.0.0 |
+| `children` | object | An object that contains all children components | no | no | |
+| `components` | object | An object that contains local components | no | no | |
+| `beginSafeRender` | function | This method enable encoding of props into HTML entities before they are called | no | no | |
+| `destroy` | function | Destroy component and his children | no | no | |
+| `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no | |
+| `emit` | function | This method call a callback given an event name. More info on [emitter](#emitter) | no | no | |
+| `endSafeRender` | function | This method disable encoding of props into HTML entities before they are called | no | no | |
+| `getComponent` | function | Get child component by alias | no | yes | |
+| `getComponentById` | function | Get component by id | no | no | |
+| `getHTMLElement` | function | Returns HTML element of component | no | no | 1.2.0 |
+| `getStore` | function | Get store by name | no | no | |
+| `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes | |
+| `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no | |
+| `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no | |
+| `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onBeforeMount`| function | This method is called before that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
+| `onBeforeUnmount`| function | This method is called before that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
+| `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onCreate`| function | This method is called after that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onDestroy`| function | This method is called after that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onMount`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
+| `onMountAsync`| function | This method is called after that component instance is mounted but in async way. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.3.0 |
+| `onRender`| function | **[Deprecated]** This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onUnmount`| function | This method is called after that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
+| `onUpdate`| function | This method is called after that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `parent` | object | The parent object | no | no | |
+| `props` | object | This object can contains all component props | no | yes | |
+| `rawChildren` | array | An array that contains all children components as string | no | no | 1.0.0 |
+| `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no | |
+| `render` | function | This method is called after changes detected, then updates the component part | no | no | |
+| `store` | string | An unique store name to expose the props with other components of the app | no | yes | |
+| `tag` | string | Component tag name | no | no | |
+| `template` | function | This method must be return the component template literals | yes | yes | |
+| `unmount` | function | This method unmount a component from DOM. More info on [unmount](#unmount) | no | no | |
 
 
 ### Handlers
@@ -293,6 +294,7 @@ In order all hooks:
 - `onCreate`: called after that instance is created.
 - `onBeforeMount`: called before that instance is mounted on DOM.
 - `onMount`: called after that instance is mounted on DOM.
+- `onMountAsync`: called after that instance is mounted on DOM.
 - `onBeforeUpdate`: called before that instance is updated.
 - `onUpdate`: called after that instance is updated.
 - `onBeforeUnmount`: called before that instance is unmounted.
