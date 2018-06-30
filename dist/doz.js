@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.2.0  
+// [DOZ]  Build version: 1.3.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -368,11 +368,11 @@ function getInstances() {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    // This creates bad bug
-                    //child.insertBefore(newElement._rootElement, child.firstChild);
+                    child.insertBefore(newElement._rootElement, child.firstChild);
 
                     hooks.callRender(newElement);
                     hooks.callMount(newElement);
+                    hooks.callMountAsync(newElement);
                 }
 
                 parentElement = newElement;
@@ -1496,6 +1496,14 @@ function callMount(context) {
     }
 }
 
+function callMountAsync(context) {
+    if (typeof context.onMountAsync === 'function') {
+        setTimeout(function () {
+            context.onMountAsync.call(context);
+        });
+    }
+}
+
 function callBeforeUpdate(context, changes) {
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
@@ -1539,6 +1547,7 @@ module.exports = {
     callRender: callRender,
     callBeforeMount: callBeforeMount,
     callMount: callMount,
+    callMountAsync: callMountAsync,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
     callBeforeUnmount: callBeforeUnmount,
@@ -1736,7 +1745,7 @@ module.exports.collection = __webpack_require__(1);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
 module.exports.html = __webpack_require__(4);
-module.exports.version = '1.2.0';
+module.exports.version = '1.3.0';
 
 /***/ }),
 /* 14 */
@@ -2119,6 +2128,8 @@ function update($parent, newNode, oldNode) {
     var cmp = arguments[4];
     var initial = arguments[5];
 
+
+    if (!$parent) return;
 
     if (!oldNode) {
         var rootElement = create(newNode, cmp, initial);
