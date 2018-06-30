@@ -39,6 +39,8 @@ function create(node, cmp, initial) {
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
+    if (!$parent) return;
+
     if (!oldNode) {
         const rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);

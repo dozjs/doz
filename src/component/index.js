@@ -103,7 +103,6 @@ function getInstances(cfg = {}) {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    // This creates bad bug
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
                     hooks.callRender(newElement);
