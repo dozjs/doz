@@ -20,7 +20,7 @@ Below some basic concepts:
     - [Emitter](#emitter)
     - [Lifecycle methods](#lifecycle-methods)
     - [Local component](#local-component)
-    - [Async mount](#async-mount)
+    - [Mount](#mount)
     - [Directives](#directives)
         - [HTML element](#html-element)
             - [d-bind](#d-bind)
@@ -490,7 +490,7 @@ new Doz({
 
 ---
 
-### Async mount
+### Mount
 Doz component instance provide a method called `mount`,
 this method allows you to "append" a new component inside another.
 
