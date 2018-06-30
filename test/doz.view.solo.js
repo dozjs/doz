@@ -87,6 +87,7 @@ describe('Doz.view.solo', function () {
                 'onBeforeMount',
                 'onMount',
                 'onBeforeUpdate',
+                'onMountAsync',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
@@ -114,6 +115,9 @@ describe('Doz.view.solo', function () {
                 onMount() {
                     queueEvents.push('onMount');
                     this.props.title = 'ciao';
+                },
+                onMountAsync() {
+                    queueEvents.push('onMountAsync');
                 },
                 onBeforeUpdate() {
                     queueEvents.push('onBeforeUpdate');
