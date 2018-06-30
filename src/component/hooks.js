@@ -32,7 +32,7 @@ function callMount(context) {
 }
 
 function callMountAsync(context) {
-    if(typeof context.onMountSync === 'function'){
+    if(typeof context.onMountAsync === 'function'){
         setTimeout(()=>{
             context.onMountAsync.call(context);
         });

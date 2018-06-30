@@ -98,7 +98,11 @@ describe('Doz.lifecycle', function () {
                 onMount() {
                     console.log('mount');
                     step++;
-                    setTimeout(()=> this.props.salutation = 'Ciao Mondo', 1000);
+                    setTimeout(() => this.props.salutation = 'Ciao Mondo', 1000);
+                },
+                onMountAsync() {
+                    console.log('mountAsync');
+                    step++;
                 },
                 onBeforeUpdate(changes) {
                     console.log('before update', this.props.salutation, changes);
@@ -107,7 +111,7 @@ describe('Doz.lifecycle', function () {
                 onUpdate(changes) {
                     console.log('update', this.props.salutation, changes);
                     step++;
-                    setTimeout(()=> this.destroy(), 1000)
+                    setTimeout(() => this.destroy(), 1000)
                 },
                 onBeforeUnmount() {
                     console.log('before unmount');
@@ -124,9 +128,10 @@ describe('Doz.lifecycle', function () {
                 onDestroy() {
                     console.log('destroy');
                     step++;
+
                     console.log('step', step);
-                    if (step === 18)
-                        done()
+                    if (step === 19) done()
+
                 }
             });
 
