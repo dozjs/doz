@@ -31,6 +31,14 @@ function callMount(context) {
     }
 }
 
+function callMountAsync(context) {
+    if(typeof context.onMountSync === 'function'){
+        setTimeout(()=>{
+            context.onMountAsync.call(context);
+        });
+    }
+}
+
 function callBeforeUpdate(context, changes) {
     if(typeof context.onBeforeUpdate === 'function'){
         return context.onBeforeUpdate.call(context, changes);
@@ -74,6 +82,7 @@ module.exports = {
     callRender,
     callBeforeMount,
     callMount,
+    callMountAsync,
     callBeforeUpdate,
     callUpdate,
     callBeforeUnmount,

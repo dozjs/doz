@@ -107,6 +107,7 @@ function getInstances(cfg = {}) {
 
                     hooks.callRender(newElement);
                     hooks.callMount(newElement);
+                    hooks.callMountAsync(newElement);
                 }
 
                 parentElement = newElement;
