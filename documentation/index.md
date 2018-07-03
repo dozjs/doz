@@ -659,6 +659,39 @@ new Doz({
 #### DOZ component
 Directives that works only on component
 
+##### d:alias
+This attribute allows you to define an unique name that identify the component locally inside component parent.
+
+```javascript
+Doz.component('my-label', {
+    template() {
+        return `
+            <label>I'm a label</label>
+        `
+    }
+});
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button onclick="this.clickme()">Get component by alias!</button>
+            <my-label d:alias="foo"></my-label>
+        `
+    },
+    clickme(e) {
+        alert(this.children.foo);
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
+
 ##### d:id
 This attribute allows you to define an unique name that identify the component globally.
 
