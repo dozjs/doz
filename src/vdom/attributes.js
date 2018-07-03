@@ -39,14 +39,14 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, value) {
-    if (isCustomAttribute(name)) {
+    if (isCustomAttribute(name) || !$target) {
     } else {
         $target.removeAttribute(name);
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if (!newVal /*&& newVal !== false*/) {
+    if (!newVal) {
         removeAttribute($target, name, oldVal, cmp);
         updateChildren(cmp, name, newVal, $target);
     } else if (!oldVal || newVal !== oldVal) {
@@ -56,7 +56,7 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 }
 
 function updateChildren(cmp, name, value, $target) {
-    if (cmp && cmp.updateChildrenProps) {
+    if (cmp && cmp.updateChildrenProps && $target) {
         name = dashToCamel(name);
         const firstChild = $target.firstChild;
         if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name))
@@ -87,6 +87,7 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
+    if (!$target) return;
     $target.setAttribute(name, value);
     $target[name] = value;
 }
