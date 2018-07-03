@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.3.0  
+// [DOZ]  Build version: 1.3.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1745,7 +1745,7 @@ module.exports.collection = __webpack_require__(1);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
 module.exports.html = __webpack_require__(4);
-module.exports.version = '1.3.0';
+module.exports.version = '1.3.1';
 
 /***/ }),
 /* 14 */
@@ -2244,23 +2244,23 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, value) {
-    if (isCustomAttribute(name)) {} else {
+    if (isCustomAttribute(name) || !$target) {} else {
         $target.removeAttribute(name);
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if (!newVal /*&& newVal !== false*/) {
-            removeAttribute($target, name, oldVal, cmp);
-            updateChildren(cmp, name, newVal, $target);
-        } else if (!oldVal || newVal !== oldVal) {
+    if (!newVal) {
+        removeAttribute($target, name, oldVal, cmp);
+        updateChildren(cmp, name, newVal, $target);
+    } else if (!oldVal || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         updateChildren(cmp, name, newVal, $target);
     }
 }
 
 function updateChildren(cmp, name, value, $target) {
-    if (cmp && cmp.updateChildrenProps) {
+    if (cmp && cmp.updateChildrenProps && $target) {
         name = dashToCamel(name);
         var firstChild = $target.firstChild;
         if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name)) firstChild[CMP_INSTANCE].props[name] = value;
@@ -2290,6 +2290,7 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
+    if (!$target) return;
     $target.setAttribute(name, value);
     $target[name] = value;
 }
