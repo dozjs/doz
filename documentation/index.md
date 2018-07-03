@@ -168,7 +168,6 @@ When a component is defined it inherits some methods and properties:
 | `each` | function | This method serves to iterate parts of the template. More info on [loops](#loops) | no | no | |
 | `emit` | function | This method call a callback given an event name. More info on [emitter](#emitter) | no | no | |
 | `endSafeRender` | function | This method disable encoding of props into HTML entities before they are called | no | no | |
-| `getComponent` | function | Get child component by alias | no | yes | |
 | `getComponentById` | function | Get component by id | no | no | |
 | `getHTMLElement` | function | Returns HTML element of component | no | no | 1.2.0 |
 | `getStore` | function | Get store by name | no | no | |
