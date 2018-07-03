@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1] - 2018-07-03
+- **Fixed** possible undefined target property
+
 ## [1.3.0] - 2018-06-30
 - **Added** new hook `onMountAsync`
 - **Fixed** possible issue on nested update
