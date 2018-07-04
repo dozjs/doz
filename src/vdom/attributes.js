@@ -138,6 +138,15 @@ function addEventListener($target, name, value, cmp) {
             extractEventName(name),
             value
         );
+    else {
+        const _func = function () {
+            eval(value)
+        };
+        $target.addEventListener(
+            extractEventName(name),
+            _func.bind(cmp)
+        );
+    }
 }
 
 function setBind($target, name, value, cmp) {

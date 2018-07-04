@@ -1869,7 +1869,6 @@ var Doz = function () {
                         template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
                         app: this,
                         parentCmp: parent,
-                        //isStatic: false,
                         autoCmp: autoCmp,
                         mount: true
                     });
@@ -1885,7 +1884,6 @@ var Doz = function () {
                 }
             });
         } else if (_typeof(this.cfg.components) === 'object') {
-            //this._components = Object.assign({}, this.cfg.components);
             Object.keys(this.cfg.components).forEach(function (objName) {
                 _this._components[objName] = {
                     tag: objName,
@@ -2334,7 +2332,12 @@ function addEventListener($target, name, value, cmp) {
         }
     }
 
-    if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);
+    if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
+        var _func = function _func() {
+            eval(value);
+        };
+        $target.addEventListener(extractEventName(name), _func.bind(cmp));
+    }
 }
 
 function setBind($target, name, value, cmp) {

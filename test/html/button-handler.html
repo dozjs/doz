@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - button handler</title>
     <script src="../../dist/doz.js?589654888"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
             font-family: sans-serif;
         }
-
         button {
-            width: 50px;
-            height: 50px;
+            padding: 20px;
             font-size: 20px;
         }
     </style>
@@ -26,20 +23,18 @@
     new Doz({
         root: '#app',
         props: {
-            state: false
+            state: false,
+            count: 0
         },
         template() {
-            console.log('template', this.props);
             return `
-                <button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>
+                <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
+                <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
+                <button onclick="this.props.count++">Count ${this.props.count}</button>
             `;
         },
         toggle() {
-            console.log('toggle', this.props);
             this.props.state = !this.props.state;
-        },
-        onCreate() {
-            console.log('onCreate', this.props);
         }
     });
 
