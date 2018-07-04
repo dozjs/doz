@@ -1897,8 +1897,8 @@ var Doz = function () {
         this._components[TAG.APP] = {
             tag: TAG.APP,
             cfg: {
-                template: function template() {
-                    return typeof cfg.template === 'function' ? cfg.template() : cfg.template;
+                template: typeof cfg.template === 'function' ? cfg.template : function () {
+                    return cfg.template;
                 }
             }
         };

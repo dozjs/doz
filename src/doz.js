@@ -125,8 +125,8 @@ class Doz {
         this._components[TAG.APP] = {
             tag: TAG.APP,
             cfg: {
-                template() {
-                    return typeof cfg.template === 'function' ? cfg.template() : cfg.template;
+                template: typeof cfg.template === 'function' ? cfg.template : function () {
+                    return cfg.template
                 }
             }
         };
