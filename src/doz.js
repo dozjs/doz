@@ -97,7 +97,6 @@ class Doz {
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
                         parentCmp: parent,
-                        //isStatic: false,
                         autoCmp,
                         mount: true
                     });
@@ -113,7 +112,6 @@ class Doz {
                 }
             });
         } else if (typeof this.cfg.components === 'object'){
-            //this._components = Object.assign({}, this.cfg.components);
             Object.keys(this.cfg.components).forEach(objName => {
                 this._components[objName] = {
                     tag: objName,
