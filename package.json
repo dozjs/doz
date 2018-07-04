@@ -9,6 +9,7 @@
         "release:minor": "webpack --env.minor && npm run-script release:publish",
         "release:patch": "webpack --env.patch && npm run-script release:publish",
         "release:publish": "echo git commit -a -m BUILD && version-to-tag.sh && npm publish",
+        "watch": "webpack --watch --progress --debug",
         "build": "webpack --progress",
         "test": "mocha test",
         "doc": "jsdoc2md --template README.hbs --no-gfm --files src/Component.js src/DOM.js > README.md"
