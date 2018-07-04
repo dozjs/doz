@@ -16,6 +16,7 @@ Below some basic concepts:
     - [Methods](#methods)
         - [Inherited](#inherited)
     - [Handlers](#handlers)
+        - [Inline logic](#inline-logic)
         - [Passing arguments](#passing-arguments)
     - [Emitter](#emitter)
     - [Lifecycle methods](#lifecycle-methods)
@@ -224,6 +225,30 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/v0ejbsLs/)
 
 ---
+
+#### Inline logic
+Since **1.3.2** version, Doz supports also inline logic. Normally `this` is reference of HTML element but in Doz it's every reference of component instance.
+
+```javascript
+Doz.component('my-button', {
+    props: {
+        count: 0
+    },
+    template() {
+        return `
+            <button onclick="this.props.count++">Click me!</button>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
 
 #### Passing arguments
 The method passed to event is transformed by Doz (in reality it's a string) so the arguments are automatically casted.
