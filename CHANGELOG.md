@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - 2018-07-04
+- **Improvement** event handler, now supports inline logic
+- **Fixed** props update issue in constructor
+
 ## [1.3.1] - 2018-07-03
 - **Fixed** possible undefined target property
 
