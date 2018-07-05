@@ -40,6 +40,8 @@ function component(tag, cfg = {}) {
 
 function getInstances(cfg = {}) {
 
+    if (!cfg.root) return;
+
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
         : cfg.template;
