@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - benchmark</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../dist/doz.js?589654888"></script>
+    <script src="../../dist/doz.js?589654888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -110,21 +110,12 @@
         }
     });
 
-    Doz.component('doz-list-item', {
-        template() {
-            return `<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
-        },
-        click(t) {
-            console.log(t);
-        }
-    });
-
     Doz.component('doz-list', {
         store: 'list',
         template() {
             return (
                 `<div>
-                    <ul>${this.each(this.props.record, item => `<doz-list-item title="${item}"></doz-list-item>`)}</ul>
+                    <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}</ul>
                 </div>`
             );
         },
@@ -135,6 +126,7 @@
 
         onBeforeUpdate() {
             console.log('before');
+            //console.timeEnd(currentBench);
         },
 
         onUpdate() {
@@ -148,7 +140,7 @@
         actions,
         root: document.getElementById('app'),
         template: `
-            <doz-label title="Loop mount component"></doz-label>
+            <doz-label title="Loop"></doz-label>
             <doz-buttons></doz-buttons>
             <doz-list></doz-list>
         `
