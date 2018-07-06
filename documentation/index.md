@@ -192,6 +192,7 @@ When a component is defined it inherits some methods and properties:
 | `rawChildren` | array | An array that contains all children components as string | no | no | 1.0.0 |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no | |
 | `render` | function | This method is called after changes detected, then updates the component part | no | no | |
+| `style` | function | This method generate inline style from an object inside the template. More info on [inline-style](#inline-style) | no | no | 1.3.4 |
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes | |
 | `tag` | string | Component tag name | no | no | |
 | `template` | function | This method must be return the component template literals | yes | yes | |
@@ -903,6 +904,38 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
+
+---
+
+### Inline style
+Doz provide since 1.3.4 version a method called `style` that allows you of transform an object to inline style:
+
+```javascript
+
+const css = {
+    background: '#000',
+    color: '#fff',
+    userSelect: 'none'
+};
+
+Doz.component('my-button', {
+    template() {
+        return `
+            <button
+            ${this.style(css)}
+            >Hello button</button>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-button></my-button>
+    `
+});
+```
 
 ---
 
