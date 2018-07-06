@@ -38,13 +38,11 @@ Doz.component('button-counter', {
     template: function() {
         return `
             <div>
-                <button onclick="this.click()">${this.props.title}</button>
-                <span class="counter">${this.props.counter}</span>
+                <button onclick="this.props.counter++">
+                    ${this.props.title} ${this.props.counter}
+                </button>
             </div>
         `
-    },
-    click: function() {
-        this.props.counter += 1;
     }
 });
 ```
