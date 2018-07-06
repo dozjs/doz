@@ -11,7 +11,7 @@ const store = require('./store');
 const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
-const camelToDash = require('../utils/camel-to-dash');
+const toInlineStyle = require('../utils/to-inline-style');
 
 function component(tag, cfg = {}) {
 
@@ -278,10 +278,7 @@ function createInstance(cmp, cfg) {
         },
         style: {
             value: function (obj) {
-                obj = Object.entries(obj).reduce((styleString, [propName, propValue]) => {
-                    return `${styleString}${camelToDash(propName)}:${propValue};`;
-                }, '');
-                return `style="${obj}"`
+                return toInlineStyle(obj)
             }
         },
         getStore: {
