@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.3.4] - 2018-07-06
-- **Added**
+- **Added** new method `style` to component instance
 
 ## [1.3.3] - 2018-07-05
 - **Fixed** possible root instance issue
