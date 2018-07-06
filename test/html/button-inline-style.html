@@ -20,6 +20,11 @@
 
 <script>
 
+    const css = {
+        background: '#000',
+        color: '#fff'
+    };
+
     new Doz({
         root: '#app',
         props: {
@@ -28,13 +33,11 @@
         },
         template() {
             return `
-                <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
-                <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
-                <button onclick="this.props.count++">Count ${this.props.count}</button>
+                <button
+                    ${this.style(css)}
+                    onclick="this.props.count++"
+                >Count ${this.props.count}</button>
             `;
-        },
-        toggle() {
-            this.props.state = !this.props.state;
         }
     });
 
