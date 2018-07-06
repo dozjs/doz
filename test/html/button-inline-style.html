@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - button inline style</title>
+    <script src="../../dist/doz.js?589654888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        button {
+            padding: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    new Doz({
+        root: '#app',
+        props: {
+            state: false,
+            count: 0
+        },
+        template() {
+            return `
+                <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
+                <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
+                <button onclick="this.props.count++">Count ${this.props.count}</button>
+            `;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        }
+    });
+
+</script>
+</body>
+</html>

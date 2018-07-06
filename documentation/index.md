@@ -914,8 +914,7 @@ Doz provide since 1.3.4 version a method called `style` that allows you of trans
 
 const css = {
     background: '#000',
-    color: '#fff',
-    userSelect: 'none'
+    color: '#fff'
 };
 
 Doz.component('my-button', {
