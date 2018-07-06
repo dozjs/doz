@@ -32,6 +32,7 @@ Below some basic concepts:
             - [d:on](#don)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
+- [Inline style](#inline-style)
 - [Actions](#actions)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
@@ -192,7 +193,7 @@ When a component is defined it inherits some methods and properties:
 | `rawChildren` | array | An array that contains all children components as string | no | no | 1.0.0 |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no | |
 | `render` | function | This method is called after changes detected, then updates the component part | no | no | |
-| `style` | function | This method generate inline style from an object inside the template. More info on [inline-style](#inline-style) | no | no | 1.3.4 |
+| `style` | function | This method generate inline style from an object inside the template. More info on [inline style](#inline-style) | no | no | 1.3.4 |
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes | |
 | `tag` | string | Component tag name | no | no | |
 | `template` | function | This method must be return the component template literals | yes | yes | |
@@ -908,7 +909,7 @@ new Doz({
 ---
 
 ### Inline style
-Doz provide since 1.3.4 version a method called `style` that allows you of transform an object to inline style:
+Doz provide since 1.3.4 version a method called `style` that allows you to transform an object to inline style string.
 
 ```javascript
 
@@ -921,7 +922,7 @@ Doz.component('my-button', {
     template() {
         return `
             <button
-            ${this.style(css)}
+                ${this.style(css)}
             >Hello button</button>
         `
     }
