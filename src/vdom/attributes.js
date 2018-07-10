@@ -46,10 +46,10 @@ function removeAttribute($target, name, value) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if (!newVal) {
+    if (newVal === '') {
         removeAttribute($target, name, oldVal, cmp);
         updateChildren(cmp, name, newVal, $target);
-    } else if (!oldVal || newVal !== oldVal) {
+    } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         updateChildren(cmp, name, newVal, $target);
     }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - zero value</title>
+    <script src="../../dist/doz.js?589654888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        button {
+            padding: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('form-field', {
+        props: {
+            id: '',
+            type: 'text',
+            label: '',
+            name: '',
+            options: [],
+            required: false,
+            value: '',
+            description: '',
+            errors: '',
+            classInner: '',
+            classField: '',
+            storeUrl: '',
+            rowPath: '',
+            valueRow: '',
+            displayRow: '',
+            showValue: false
+        },
+
+        onCreate() {
+            this.props.id = this.props.id || `form-field-${Math.random()}`;
+        },
+
+        onUpdate() {
+            //console.log('update')
+        },
+
+        template() {
+
+            let input = `
+                <input
+                    d-ref="field"
+                    id="${this.props.id}"
+                    type="${this.props.type}"
+                    name="${this.props.name}"
+                    value="${this.props.value}"
+                    class="${this.props.classField}"
+                    required=${this.props.required}
+                >
+            `;
+
+            return `
+                <div class="${this.props.classInner}">
+                    <label for="${this.props.id}">
+                        ${this.props.label} ${this.props.required ? '<span class="required">*</span>' : ''}
+                    </label>
+                    ${this.props.description ? `<div>${this.props.description}</div>` : ''}
+                    <div>
+                        ${input}
+                    </div>
+                </div>
+            `
+        },
+
+        $loadStore() {}
+    });
+
+    Doz.component('d-wrapper', {
+        props: {
+            value: ''
+        },
+        template() {
+            return `
+                <form-field
+                    value="${this.props.value}"
+                ></form-field>
+            `;
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        props: {
+            count: 0
+        },
+        template() {
+            return `
+                <d-wrapper
+                    value="${this.props.count}"
+                    d-bind="count"
+                ></d-wrapper>
+            `;
+        }
+    });
+
+</script>
+</body>
+</html>
