@@ -279,7 +279,8 @@ function createInstance(cmp, cfg) {
         style: {
             value: function (obj) {
                 return toInlineStyle(obj)
-            }
+            },
+            enumerable: true
         },
         getStore: {
             value: function (storeName) {
@@ -291,6 +292,10 @@ function createInstance(cmp, cfg) {
             value: function (id) {
                 return this.app.getComponentById(id);
             },
+            enumerable: true
+        },
+        appRoot: {
+            value: this.app._root,
             enumerable: true
         },
         action: {

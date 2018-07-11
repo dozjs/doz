@@ -65,6 +65,9 @@ class Doz {
                     this._onAppReadyCB = [];
                 }
             },
+            _root: {
+                value: this.cfg.root
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
