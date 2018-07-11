@@ -547,7 +547,8 @@ function createInstance(cmp, cfg) {
         style: {
             value: function value(obj) {
                 return toInlineStyle(obj);
-            }
+            },
+            enumerable: true
         },
         getStore: {
             value: function value(storeName) {
@@ -559,6 +560,10 @@ function createInstance(cmp, cfg) {
             value: function value(id) {
                 return this.app.getComponentById(id);
             },
+            enumerable: true
+        },
+        appRoot: {
+            value: cfg.app._root,
             enumerable: true
         },
         action: {
@@ -1855,6 +1860,9 @@ var Doz = function () {
 
                     this._onAppReadyCB = [];
                 }
+            },
+            _root: {
+                value: this.cfg.root
             },
             action: {
                 value: bind(this.cfg.actions, this),
