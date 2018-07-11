@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
+- **Added** new property `appRoot` to component instance
 
 ## [1.3.5] - 2018-07-11
 - **Fixed** attributes was removed with falsy value, now only if empty
