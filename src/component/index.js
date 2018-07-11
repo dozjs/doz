@@ -295,7 +295,7 @@ function createInstance(cmp, cfg) {
             enumerable: true
         },
         appRoot: {
-            value: this.app._root,
+            value: cfg.app._root,
             enumerable: true
         },
         action: {

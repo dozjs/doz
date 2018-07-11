@@ -198,5 +198,23 @@ describe('Doz', function () {
             },100);
 
         });
+
+        it('appRoot should be equal', function () {
+
+            // language=HTML
+            document.body.innerHTML = `
+                <div id="app"></div>`;
+
+            const view = new Doz({
+                root: document.getElementById('app'),
+                template() {
+                    return `ciao`
+                },
+                onMount() {
+                    be.err.equal(this.appRoot.id, 'app');
+                }
+            });
+
+        });
     });
 });
