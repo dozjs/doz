@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 - **Breaking changes**
     - Refactored `style` to `toStyle` method
-- **Added** new property `appRoot` to component instance
-- **Added** new property `style` to component instance
+- **Added** property `appRoot` to component instance
+- **Added** property `style` to component instance
 
 ## [1.3.5] - 2018-07-11
 - **Fixed** attributes was removed with falsy value, now only if empty
