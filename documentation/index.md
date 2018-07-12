@@ -927,6 +927,12 @@ Doz.component('my-salutation', {
         },
         '.foo, .bar': {
             display: 'inline'
+        },
+        '@media only screen and (max-width: 600px)': {
+            'h1, h2': {
+                color: 'white',
+                backgroundColor: 'green'
+            }
         }
     },
     template() {
