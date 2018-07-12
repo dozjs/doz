@@ -430,6 +430,9 @@ function createInstance(cmp, cfg) {
     queueReadyCB(instance);
     // Call create
     hooks.callCreate(instance);
+    //Apply scoped style
+    applyScopedStyle(instance);
+
     // Now instance is created
     instance._isCreated = true;
 
@@ -503,6 +506,28 @@ function drawDynamic(instance) {
         }
         index -= 1;
     }
+}
+
+function applyScopedStyle(instance) {
+    if (typeof instance.style !== 'object') return;
+
+    const styleId = `${instance.tag}--style`;
+
+    if (document.querySelector(`#${styleId}`)) return;
+
+    let css = '';
+
+    Object.keys(instance.style).forEach(key => {
+        let properties = toInlineStyle(instance.style[key], false);
+        key = `${instance.tag} ${key.replace(/(,)/g, `$1${instance.tag}`)}`;
+        css +=`${key}{${properties}} `;
+    });
+
+    const styleEl = document.createElement('style');
+    styleEl.id = styleId;
+    styleEl.innerHTML = css;
+
+    document.head.appendChild(styleEl);
 }
 
 module.exports = {
