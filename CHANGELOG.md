@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 - **Breaking changes**
-    - Refactored `style` to `toStyle` method
+    - Refactored method `style` to `toStyle`
 - **Added** property `appRoot` to component instance
 - **Added** property `style` to component instance
+- **Added** method `getCmp` shorthand reference to `getComponentById`
 
 ## [1.3.5] - 2018-07-11
 - **Fixed** attributes was removed with falsy value, now only if empty

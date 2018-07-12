@@ -562,6 +562,12 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
+        getCmp: {
+            value: function value(id) {
+                return this.app.getComponentById(id);
+            },
+            enumerable: true
+        },
         appRoot: {
             value: cfg.app._root,
             enumerable: true

@@ -163,7 +163,7 @@ When a component is defined it inherits some methods and properties:
 | `action` | object | This object contains all app actions. More info on [actions](#actions) | no | no | |
 | `alias` | string | A name that identify the children component. More info on [directives](#directives) | no | yes | |
 | `app` | object | The app object | no | no | |
-| `appRoot` | HTMLElement | The app HTMLElement | no | no | 2.0.0 |
+| `appRoot` | HTMLElement | The app HTMLElement | no | no | 1.4.0 |
 | `autoCreateChildren` | boolean | If `true`, create the child components. Default: `true` | no | no | 1.0.0 |
 | `children` | object | An object that contains all children components | no | no | |
 | `components` | object | An object that contains local components | no | no | |
@@ -195,11 +195,11 @@ When a component is defined it inherits some methods and properties:
 | `rawChildren` | array | An array that contains all children components as string | no | no | 1.0.0 |
 | `ref` | object | An object that contains all references to HTML elements that have the directive "d-ref" | no | no | |
 | `render` | function | This method is called after changes detected, then updates the component part | no | no | |
-| `style` | object | An object that contains component style in object literal. More info on [scoped style](#scoped-style) | no | yes | 2.0.0 |
+| `style` | object | An object that contains component style in object literal. More info on [scoped style](#scoped-style) | no | yes | 1.4.0 |
 | `store` | string | An unique store name to expose the props with other components of the app | no | yes | |
 | `tag` | string | Component tag name | no | no | |
 | `template` | function | This method must be return the component template literals | yes | yes | |
-| `toStyle` | function | This method generate inline style from an object inside the template. More info on [inline style](#inline-style) | no | no | 2.0.0 |
+| `toStyle` | function | This method generate inline style from an object inside the template. More info on [inline style](#inline-style) | no | no | 1.4.0 |
 | `unmount` | function | This method unmount a component from DOM. More info on [unmount](#unmount) | no | no | |
 
 
@@ -912,7 +912,7 @@ new Doz({
 ---
 
 ### Scoped style
-Doz provide since 2.0.0 version a property called `style` that allows you to add a scoped css as object literal.
+Doz provide since 1.4.0 version a property called `style` that allows you to add a scoped css as object literal.
 
 ```javascript
 
