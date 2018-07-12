@@ -782,21 +782,28 @@ function drawDynamic(instance) {
 function applyScopedStyle(instance) {
     if (_typeof(instance.style) !== 'object') return;
 
+    function composeStyle(style) {
+        var out = '';
+        Object.keys(style).forEach(function (key) {
+            if (/^@media/.test(key)) {
+                out += key + ' {' + composeStyle(style[key]) + '}';
+            } else {
+                var properties = toInlineStyle(style[key], false);
+                key = tag + ' ' + key.replace(/(,)/g, '$1' + tag + ' ');
+                out += key + '{' + properties + '} ';
+            }
+        });
+        return out;
+    }
+
+    var tag = instance.tag;
     var styleId = instance.tag + '--style';
 
     if (document.querySelector('#' + styleId)) return;
 
-    var css = '';
-
-    Object.keys(instance.style).forEach(function (key) {
-        var properties = toInlineStyle(instance.style[key], false);
-        key = instance.tag + ' ' + key.replace(/(,)/g, '$1' + instance.tag);
-        css += key + '{' + properties + '} ';
-    });
-
     var styleEl = document.createElement('style');
     styleEl.id = styleId;
-    styleEl.innerHTML = css;
+    styleEl.innerHTML = composeStyle(instance.style);
 
     document.head.appendChild(styleEl);
 }

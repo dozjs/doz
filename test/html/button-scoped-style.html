@@ -9,10 +9,6 @@
         body {
             font-family: sans-serif;
         }
-        button {
-            padding: 20px;
-            font-size: 20px;
-        }
     </style>
 </head>
 <body>
@@ -28,7 +24,14 @@
             button: {
                 color: 'red',
                 backgroundColor: 'yellow',
-                fontSize: '20px'
+                fontSize: '20px',
+                padding: '20px'
+            },
+            '@media only screen and (max-width: 600px)': {
+                button: {
+                    color: 'white',
+                    backgroundColor: 'green'
+                }
             }
         },
         template() {
@@ -47,6 +50,7 @@
                 <div>
                     <styled-button></styled-button>
                     <styled-button></styled-button>
+                    <button>button without style</button>
                 </div>
             `;
         }
