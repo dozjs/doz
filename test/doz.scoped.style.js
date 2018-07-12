@@ -35,6 +35,11 @@ describe('Doz.scoped.style', function () {
                     },
                     '.foo, .bar': {
                         display: 'inline'
+                    },
+                    '@media only screen and (max-width: 600px)': {
+                        'h1,h2': {
+                            color: 'green'
+                        }
                     }
                 },
                 template() {
@@ -60,7 +65,7 @@ describe('Doz.scoped.style', function () {
             });
 
             setTimeout(()=>{
-                const styleExpect = 'salutation-card h1{color:red;font-weight:bold;} salutation-card h2{color:yellow;} salutation-card .foo,salutation-card .bar{display:inline;} ';
+                const styleExpect = 'salutation-card h1{color:red;font-weight:bold;} salutation-card h2{color:yellow;} salutation-card .foo,salutation-card  .bar{display:inline;} @media only screen and (max-width: 600px) {salutation-card h1,salutation-card h2{color:green;} }';
                 const html = document.head.innerHTML;
                 console.log(html);
                 be.err(done).equal(styleExpect, document.querySelector('#salutation-card--style').innerHTML);

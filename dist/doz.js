@@ -544,7 +544,7 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
-        style: {
+        toStyle: {
             value: function value(obj) {
                 return toInlineStyle(obj);
             },
@@ -701,6 +701,9 @@ function createInstance(cmp, cfg) {
     queueReadyCB(instance);
     // Call create
     hooks.callCreate(instance);
+    //Apply scoped style
+    applyScopedStyle(instance);
+
     // Now instance is created
     instance._isCreated = true;
 
@@ -774,6 +777,28 @@ function drawDynamic(instance) {
         }
         index -= 1;
     }
+}
+
+function applyScopedStyle(instance) {
+    if (_typeof(instance.style) !== 'object') return;
+
+    var styleId = instance.tag + '--style';
+
+    if (document.querySelector('#' + styleId)) return;
+
+    var css = '';
+
+    Object.keys(instance.style).forEach(function (key) {
+        var properties = toInlineStyle(instance.style[key], false);
+        key = instance.tag + ' ' + key.replace(/(,)/g, '$1' + instance.tag);
+        css += key + '{' + properties + '} ';
+    });
+
+    var styleEl = document.createElement('style');
+    styleEl.id = styleId;
+    styleEl.innerHTML = css;
+
+    document.head.appendChild(styleEl);
 }
 
 module.exports = {
@@ -2580,6 +2605,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 var camelToDash = __webpack_require__(12);
 
 function toInlineStyle(obj) {
+    var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
     obj = Object.entries(obj).reduce(function (styleString, _ref) {
         var _ref2 = _slicedToArray(_ref, 2),
             propName = _ref2[0],
@@ -2587,7 +2614,7 @@ function toInlineStyle(obj) {
 
         return '' + styleString + camelToDash(propName) + ':' + propValue + ';';
     }, '');
-    return 'style="' + obj + '"';
+    return withStyle ? 'style="' + obj + '"' : obj;
 }
 
 module.exports = toInlineStyle;
