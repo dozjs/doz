@@ -276,7 +276,7 @@ function createInstance(cmp, cfg) {
             },
             enumerable: true
         },
-        style: {
+        toStyle: {
             value: function (obj) {
                 return toInlineStyle(obj)
             },

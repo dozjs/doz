@@ -34,7 +34,7 @@
         template() {
             return `
                 <button
-                    ${this.style(css)}
+                    ${this.toStyle(css)}
                     onclick="this.props.count++"
                 >Count ${this.props.count}</button>
             `;
