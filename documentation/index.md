@@ -13,6 +13,7 @@ Below some basic concepts:
 - [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
+    - [Reusing components](#reusing-components)
     - [Methods](#methods)
         - [Inherited](#inherited)
     - [Handlers](#handlers)
@@ -100,7 +101,7 @@ new Doz({
 ---
 
 ### Props
-All props are stored into `props` property of the component and they are accessible through a proxy that detect changes. When there are changes Doz update only the node that containing the updated prop.
+All props are stored into `props` (your component data) property of the component and they are accessible through a proxy that detect changes. When there are changes Doz update only the node that containing the updated prop.
 Doz uses [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to build the component UI then the props are injected inside the string.
 
 ```javascript
@@ -130,6 +131,38 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/)
 
 ---
+
+### Reusing components
+Doz applies Object.assign to `props` for a basic immutability.
+Obviously `assign` method is not recursive then you need define `props` as function,
+otherwise other instances of the same object will change the same data.
+
+No problem for this scenario
+```javascript
+props: {
+    value: 0
+}
+```
+
+This scenario it's a problem
+```javascript
+props: {
+    other: {
+        value: 0
+    }
+}
+```
+
+You must convert to a function like so
+```javascript
+props: function(){
+    return {
+        other: {
+            value: 0
+        }
+    }
+}
+```
 
 ### Methods
 The methods are defined inside a single object where there are also props and events.
