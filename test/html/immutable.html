@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - counter</title>
     <title>Title</title>
-    <script src="../../dist/doz.js?589654"></script>
+    <script src="../../dist/doz.js?5896554"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -45,13 +45,14 @@
         template(){
             return `<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter.value}</span></div>`
         },
-        props: {
-            counter: {
-                value: 0
+        props() {
+            return {
+                counter: {
+                    value: 0
+                }
             }
         },
         myClickHandler() {
-            this.props.counter = Object.assign({}, this.props.counter);
             this.props.counter.value += 1;
         }
     });
