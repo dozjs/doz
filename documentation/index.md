@@ -946,7 +946,7 @@ new Doz({
 ---
 
 ### Scoped style
-Doz provide since 1.4.0 version a property called `style` that allows you to add a scoped css as object literal.
+Doz provide since 1.4.0 version a property called `style` that allows you to add a pseudo scoped css as object literal.
 
 ```javascript
 
@@ -988,6 +988,17 @@ new Doz({
     `
 });
 ```
+
+**Caution**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
+
+```
+<head>
+...
+ <style> my-component .myClass{color:#000}</style>
+</head>
+```
+
+If you need something stronger, please use other solution like [CSS Loader](https://github.com/webpack-contrib/css-loader).
 
 ---
 
