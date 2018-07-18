@@ -114,7 +114,7 @@ Doz.component('my-clock', {
             <h2>${this.props.title} <span>${this.props.time}</span></h2>
         `
     },
-    onRender() {
+    onMount() {
         setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
     }
 });
@@ -128,7 +128,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/)
+[FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/3)
 
 ---
 
