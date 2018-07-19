@@ -975,18 +975,25 @@ var ObservableSlim = function () {
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
-                //setTimeout(function () {
-                if (numChanges === changes.length) {
-                    // invoke any functions that are observing changes
-                    for (var i = 0; i < observable.observers.length; i++) {
-                        observable.observers[i](changes);
-                    }changes = [];
-                }
-                //}, 10);
+                window.requestAnimationFrame(function () {
+                    if (numChanges === changes.length) {
+                        // invoke any functions that are observing changes
+                        //for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
+                        //changes = [];
+
+                        var changesCopy = changes.slice(0);
+                        changes = [];
+
+                        // invoke any functions that are observing changes
+                        for (var i = 0; i < observable.observers.length; i++) {
+                            observable.observers[i](changesCopy);
+                        }
+                    }
+                } /*, 10*/);
             } else {
                 // invoke any functions that are observing changes
-                for (var _i = 0; _i < observable.observers.length; _i++) {
-                    observable.observers[_i](changes);
+                for (var i = 0; i < observable.observers.length; i++) {
+                    observable.observers[i](changes);
                 }changes = [];
             }
         };
@@ -1205,17 +1212,17 @@ var ObservableSlim = function () {
                                 (function iterate(obj) {
 
                                     var keys = Object.keys(obj);
-                                    for (var _i2 = 0, _l3 = keys.length; _i2 < _l3; _i2++) {
-                                        var objProp = obj[keys[_i2]];
+                                    for (var _i = 0, _l3 = keys.length; _i < _l3; _i++) {
+                                        var objProp = obj[keys[_i]];
                                         if (objProp instanceof Object && objProp !== null) iterate(objProp);
                                     }
 
                                     // if there are any existing target objects (objects that we're already observing)...
                                     //let c = targets.indexOf(obj);
                                     var c = -1;
-                                    for (var _i3 = 0, _l4 = targets.length; _i3 < _l4; _i3++) {
-                                        if (obj === targets[_i3]) {
-                                            c = _i3;
+                                    for (var _i2 = 0, _l4 = targets.length; _i2 < _l4; _i2++) {
+                                        if (obj === targets[_i2]) {
+                                            c = _i2;
                                             break;
                                         }
                                     }
