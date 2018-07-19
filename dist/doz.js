@@ -578,6 +578,8 @@ function createInstance(cmp, cfg) {
         },
         render: {
             value: function value(initial) {
+                var _this = this;
+
                 this.beginSafeRender();
                 var template = this.template().trim();
                 this.endSafeRender();
@@ -587,7 +589,13 @@ function createInstance(cmp, cfg) {
 
                 var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
-                drawDynamic(this);
+                //console.log(next)
+
+
+                setTimeout(function () {
+                    //console.log('this._processing',this._processing)
+                    drawDynamic(_this);
+                });
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -599,7 +607,7 @@ function createInstance(cmp, cfg) {
         },
         mount: {
             value: function value(template) {
-                var _this = this;
+                var _this2 = this;
 
                 var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -614,7 +622,7 @@ function createInstance(cmp, cfg) {
                     hooks.callMount(this);
 
                     Object.keys(this.children).forEach(function (child) {
-                        _this.children[child].mount();
+                        _this2.children[child].mount();
                     });
 
                     return this;
@@ -642,7 +650,7 @@ function createInstance(cmp, cfg) {
             value: function value() {
                 var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-                var _this2 = this;
+                var _this3 = this;
 
                 var byDestroy = arguments[1];
                 var silently = arguments[2];
@@ -664,7 +672,7 @@ function createInstance(cmp, cfg) {
                 if (!silently) hooks.callUnmount(this);
 
                 Object.keys(this.children).forEach(function (child) {
-                    _this2.children[child].unmount(onlyInstance, byDestroy, silently);
+                    _this3.children[child].unmount(onlyInstance, byDestroy, silently);
                 });
 
                 return this;
@@ -673,7 +681,7 @@ function createInstance(cmp, cfg) {
         },
         destroy: {
             value: function value(onlyInstance) {
-                var _this3 = this;
+                var _this4 = this;
 
                 if (this.unmount(onlyInstance, true) === false) return;
 
@@ -682,7 +690,7 @@ function createInstance(cmp, cfg) {
                 }
 
                 Object.keys(this.children).forEach(function (child) {
-                    _this3.children[child].destroy();
+                    _this4.children[child].destroy();
                 });
 
                 hooks.callDestroy(this);
@@ -772,14 +780,17 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, app: instance.app });
+        //console.log(instance._processing[index].node.innerHTML)
+        if (item.node.innerHTML === '') {
 
-        if (dynamicInstance) {
-            instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+            var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, app: instance.app });
 
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-            instance._processing.splice(index, 1);
+            if (dynamicInstance) {
+                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                instance._processing.splice(index, 1);
+            }
         }
         index -= 1;
     }
@@ -975,21 +986,14 @@ var ObservableSlim = function () {
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
-                window.requestAnimationFrame(function () {
+                setTimeout(function () {
                     if (numChanges === changes.length) {
                         // invoke any functions that are observing changes
-                        //for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
-                        //changes = [];
-
-                        var changesCopy = changes.slice(0);
-                        changes = [];
-
-                        // invoke any functions that are observing changes
                         for (var i = 0; i < observable.observers.length; i++) {
-                            observable.observers[i](changesCopy);
-                        }
+                            observable.observers[i](changes);
+                        }changes = [];
                     }
-                } /*, 10*/);
+                }, 10);
             } else {
                 // invoke any functions that are observing changes
                 for (var i = 0; i < observable.observers.length; i++) {
@@ -2076,7 +2080,7 @@ function updateBound(instance, changes) {
 }
 
 function create(instance, props) {
-    instance.props = proxy.create(props, true, function (changes) {
+    instance.props = proxy.create(props, false, function (changes) {
         instance.render();
         updateBound(instance, changes);
         if (instance._isCreated) {
@@ -2189,6 +2193,7 @@ function create(node, cmp, initial) {
     }).forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-') !== -1 && !initial) {
+        //console.log('ADD TO DYNAMIC', $el)
         cmp._processing.push({ node: $el, action: 'create' });
     }
 

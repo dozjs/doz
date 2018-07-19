@@ -31,6 +31,7 @@ function create(node, cmp, initial) {
         .forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-')!== -1 && !initial) {
+        //console.log('ADD TO DYNAMIC', $el)
         cmp._processing.push({node: $el, action: 'create'});
     }
 

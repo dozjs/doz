@@ -319,7 +319,14 @@ function createInstance(cmp, cfg) {
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
-                drawDynamic(this);
+                //console.log(next)
+
+
+                setTimeout(()=>{
+                    //console.log('this._processing',this._processing)
+                    drawDynamic(this);
+                });
+
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -501,14 +508,17 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        const dynamicInstance = getInstances({root, template: item.node.outerHTML, app: instance.app});
+        //console.log(instance._processing[index].node.innerHTML)
+        if(item.node.innerHTML === '') {
 
-        if (dynamicInstance) {
-            instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+            const dynamicInstance = getInstances({root, template: item.node.outerHTML, app: instance.app});
 
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-            instance._processing.splice(index, 1);
+            if (dynamicInstance) {
+                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                instance._processing.splice(index, 1);
+            }
         }
         index -= 1;
     }

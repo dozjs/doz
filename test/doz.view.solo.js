@@ -87,11 +87,11 @@ describe('Doz.view.solo', function () {
                 'onBeforeMount',
                 'onMount',
                 'onBeforeUpdate',
-                'onMountAsync',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
                 'onBeforeDestroy',
+                'onMountAsync',
                 'onDestroy'
             ];
 
@@ -136,8 +136,10 @@ describe('Doz.view.solo', function () {
                     queueEvents.push('onBeforeDestroy');
                 },
                 onDestroy() {
-                    queueEvents.push('onDestroy');
-                    be.err(done).equal(queueEvents, shouldBe);
+                    setTimeout(function () {
+                        queueEvents.push('onDestroy');
+                        be.err(done).equal(queueEvents, shouldBe);
+                    },100);
                 }
             });
         });
