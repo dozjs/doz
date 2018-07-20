@@ -978,12 +978,29 @@ var ObservableSlim = function () {
             }
         };
 
+        var lastUpdate = 0;
+
         var _notifyObservers = function _notifyObservers(numChanges) {
 
             // if the observable is paused, then we don't want to execute any of the observer functions
             if (observable.paused === true) return;
 
-            console.log(changes);
+            //console.log(lastUpdate)
+
+            if (++lastUpdate > 10) {
+                domDelay = false;
+                lastUpdate = 0;
+            } else {
+                domDelay = true;
+            }
+            /*
+            for (let i = 0; i < changes.length; i++) {
+                console.log(changes[i].type);
+                if (changes[i].type === 'delete') {
+                      domDelay = true;
+                    break;
+                }
+            }*/
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -2087,7 +2104,6 @@ function create(instance, props) {
         updateBound(instance, changes);
         if (instance._isCreated) {
             delay(function () {
-                //updateChildren(instance, changes);
                 events.callUpdate(instance, changes);
             });
         }

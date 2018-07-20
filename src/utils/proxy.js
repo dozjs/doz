@@ -73,12 +73,30 @@ const ObservableSlim = (function () {
             }
         };
 
+        let lastUpdate = 0;
+
         let _notifyObservers = function (numChanges) {
 
             // if the observable is paused, then we don't want to execute any of the observer functions
             if (observable.paused === true) return;
 
-            console.log(changes);
+            //console.log(lastUpdate)
+
+            if (++lastUpdate > 10) {
+                domDelay = false;
+                lastUpdate = 0;
+            } else {
+                domDelay = true;
+            }
+            /*
+            for (let i = 0; i < changes.length; i++) {
+                console.log(changes[i].type);
+                if (changes[i].type === 'delete') {
+
+                    domDelay = true;
+                    break;
+                }
+            }*/
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -89,12 +107,13 @@ const ObservableSlim = (function () {
                         for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                         changes = [];
                     }
-                }, 10);
+                },10);
             } else {
                 // invoke any functions that are observing changes
                 for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                 changes = [];
             }
+
         };
 
         let handler = {

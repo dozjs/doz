@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - TAGFIELD">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - tagfield</title>
+    <script src="../../dist/doz.js?558r"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.component('doz-tagfield', {
+
+        props() {
+            return {
+                data: [],
+                selected: [
+                    'ciao1',
+                    'ciao2',
+                    'ciao3',
+                    'ciao4',
+                    'ciao5',
+                    'ciao6',
+                    'ciao7',
+                    'dfsdf',
+                    'cisdfsdao1',
+                    'cweiao1',
+                    'wer',
+                    'ciwerwreao1',
+                    'sdfs',
+                    'cdfdiafdfdfo1',
+                    'cvxcxcviao1',
+                    'cixcvao1',
+                    'bb',
+                    'ciavbvco1',
+                    'ciacvbcvbo1',
+                    'cc',
+                    'ciao1',
+                    'xxcv',
+                    'bvb',
+                    'vvbvb',
+                    'cvgrew2',
+                    'ciaxvxcvo1',
+                    'ci4656579ao1',
+                    'cifdfgao1',
+                    '7868687',
+                    'ciao11bcvbdfe546',
+                    'ciao21bcvbdfe546',
+                    'ciao13bcvbdfe546',
+                    'ciao41bcvbdfe546',
+                    'ciao16bcvbdfe546',
+                    'ciao15bcvbdfe546',
+                    'ciao1b7cvbdfe546',
+                    'ciao1bc8vbdfe546',
+                    'ciao1bc9vbdfe546',
+                    'ciao1bc00vbdfe546',
+                    'ciao1b11cvbdfe546',
+                    'ciao1bc12vbdfe546',
+                    'ciao1bc13vbdfe546',
+                    'ciao1bc14vbdfe546',
+                    'ciao1bc16vbdfe546',
+                    'ciao1bcvsdfdfbdfe546',
+                    'ciao1bcvsdfdddsdfbdfe546',
+                    'ciao1bcvsdfddsdfbdfe546',
+                    'ciao1bcvsdffffbdfe546',
+                    'ciao1bcdsfcvvbdfe546',
+                    'ciao1bcvcbnn76bdfe546',
+                    'ciao1bcvbdf44e546',
+                    'ciao1rrbcvbdfe546',
+                    'ciao1bc7777vbdfe546',
+                ],
+                name: 'tagfield',
+                active: -1,
+                tagColor: '#000',
+                tagBackground: 'beige',
+                crossChar: '&cross;',
+                insertOnBlur: true,
+                search: ''
+            }
+        },
+
+        template() {
+
+            const tagActiveStyle = this.toStyle({
+                color: this.props.tagBackground,
+                background: this.props.tagColor
+            });
+
+            const tagStyle = this.toStyle({
+                color: this.props.tagColor,
+                background: this.props.tagBackground
+            });
+
+            return `
+                <div onclick="this.$focusInput()" onkeydown="this.$onKeyDown()" >
+                    <ul>
+                        ${this.each(this.props.selected, (item, i) => `
+                            <li ${i === this.props.active ? `${tagActiveStyle}` : `${tagStyle}`}>
+                                <div onclick="this.$selectItem(${i})" >
+                                    ${item} <button ${i === this.props.active ? `${tagActiveStyle}` : `${tagStyle}`} onclick="this.$removeItem(${i})">${this.props.crossChar}</button>
+                                </div>
+                            </li>
+                        `)}
+                        <li>
+                            <input
+                                type="text"
+                                oninput="this.$onInput()"
+                                onkeydown="this.$onInputKeyDown()"
+                                onkeypress="this.$onInputKeyPress()"
+                                onblur="this.$onInputBlur()"
+                                d-ref="input"
+                                size="1"
+                            >
+                        </li>
+                    </ul>
+                    <select multiple="multiple" name="${this.props.name}">
+                        ${this.each(this.props.selected, item => `
+                            <option selected="selected">${item}</option>
+                        `)}
+                    </select>
+                </div>
+            `
+        },
+
+        onUpdate() {
+            this.$focusInput();
+        },
+
+        $focusInner: false,
+
+        $focusInput() {
+            this.$focusInner = true;
+           // this.ref.input.focus();
+        },
+
+        $setInputSize(e) {
+            e.target.setAttribute('size', e.target.value.length);
+        },
+
+        $onInput(e) {
+            this.$setInputSize(e);
+            this.props.search = e.target.value;
+        },
+
+        $onInputKeyPress(e) {
+            if (e.keyCode === 13) {
+                let value = e.target.value.trim();
+                if(this.$addItem(value))
+                    e.target.value = '';
+                //e.target.focus();
+            }
+
+            this.props.active = -1;
+        },
+
+        $onInputKeyDown(e) {
+            if(e.keyCode === 8 && e.target.value.length === 0) {
+                this.props.selected.pop();
+            }
+        },
+
+        $onKeyDown(e) {
+
+            e.stopPropagation();
+
+            const current = this.props.active;
+            const code = e.keyCode;
+            if (code === 46) {
+                this.$removeItem(current);
+            }
+        },
+
+        $onInputBlur() {
+            this.$focusInner = false;
+            setTimeout(()=> {
+                if (!this.$focusInner) {
+                    if(this.props.insertOnBlur)
+                        this.$addItem(this.ref.input.value);
+                    this.props.active = -1;
+                }
+            },100);
+        },
+
+        $addItem(value) {
+            if (!value.trim() || this.props.selected.includes(value)) return false;
+            this.props.selected.push(value);
+            return true;
+        },
+
+        $removeItem(value, e) {
+            if (e)
+                e.stopPropagation();
+            //const arr = this.props.selected;
+            //arr.splice(value, 1);
+            this.props.selected.splice(value, 1);
+            //this.props.selected = arr;
+            this.props.active = -1;
+        },
+
+        $selectItem(value) {
+            this.props.active = value;
+        }
+
+    });
+
+    new Doz({
+        root: '#app',
+        template: `
+            <doz-tagfield></doz-tagfield>
+        `
+    });
+
+</script>
+</body>
+</html>
