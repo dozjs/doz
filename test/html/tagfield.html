@@ -201,10 +201,10 @@
         $removeItem(value, e) {
             if (e)
                 e.stopPropagation();
-            //const arr = this.props.selected;
-            //arr.splice(value, 1);
-            this.props.selected.splice(value, 1);
-            //this.props.selected = arr;
+            const arr = Object.assign([], this.props.selected);
+            arr.splice(value, 1);
+            //this.props.selected.splice(value, 1);
+            this.props.selected = arr;
             this.props.active = -1;
         },
 

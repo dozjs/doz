@@ -73,7 +73,7 @@ const ObservableSlim = (function () {
             }
         };
 
-        let lastUpdate = 0;
+        //let lastUpdate = 0;
 
         let _notifyObservers = function (numChanges) {
 
@@ -82,20 +82,12 @@ const ObservableSlim = (function () {
 
             //console.log(lastUpdate)
 
-            if (++lastUpdate > 10) {
-                domDelay = false;
+            /*if (++lastUpdate > 1) {
+                domDelay = true;
+                console.log(lastUpdate)
                 lastUpdate = 0;
             } else {
-                domDelay = true;
-            }
-            /*
-            for (let i = 0; i < changes.length; i++) {
-                console.log(changes[i].type);
-                if (changes[i].type === 'delete') {
-
-                    domDelay = true;
-                    break;
-                }
+                domDelay = false;
             }*/
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
@@ -107,7 +99,7 @@ const ObservableSlim = (function () {
                         for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                         changes = [];
                     }
-                },10);
+                }, 10);
             } else {
                 // invoke any functions that are observing changes
                 for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);

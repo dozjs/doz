@@ -978,7 +978,7 @@ var ObservableSlim = function () {
             }
         };
 
-        var lastUpdate = 0;
+        //let lastUpdate = 0;
 
         var _notifyObservers = function _notifyObservers(numChanges) {
 
@@ -987,19 +987,12 @@ var ObservableSlim = function () {
 
             //console.log(lastUpdate)
 
-            if (++lastUpdate > 10) {
-                domDelay = false;
+            /*if (++lastUpdate > 1) {
+                domDelay = true;
+                console.log(lastUpdate)
                 lastUpdate = 0;
             } else {
-                domDelay = true;
-            }
-            /*
-            for (let i = 0; i < changes.length; i++) {
-                console.log(changes[i].type);
-                if (changes[i].type === 'delete') {
-                      domDelay = true;
-                    break;
-                }
+                domDelay = false;
             }*/
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed

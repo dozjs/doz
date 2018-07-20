@@ -75,6 +75,13 @@
             this.getStore('list').record = record;
         },
 
+        removeFirst() {
+            console.time(currentBench = 'removeFirst');
+            let record = Object.assign([], this.getStore('list').record);
+            record.splice(0, 1);
+            this.getStore('list').record = record;
+        },
+
         swap() {
             if (!this.getStore('list').record.length) return;
             let record = Object.assign([], this.getStore('list').record);
@@ -103,6 +110,7 @@
                     <button onclick="this.action.reverse()" >Reverse</button>
                     <button onclick="this.action.sort()" >Sort</button>
                     <button onclick="this.action.remove()" >Remove</button>
+                    <button onclick="this.action.removeFirst()" >Remove first</button>
                     <button onclick="this.action.swap()" >Swap</button>
                     <button onclick="this.action.clear()" >Clear</button>
                 </div>`
