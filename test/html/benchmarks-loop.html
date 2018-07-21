@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - benchmark</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../../dist/doz.js?589654888"></script>
+    <script src="../../dist/doz.js?58965r4888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -79,7 +79,7 @@
             console.time(currentBench = 'removeFirst');
             let record = Object.assign([], this.getStore('list').record);
             record.splice(0, 1);
-            this.getStore('list').record = record;
+            this.getStore('list').record = record
         },
 
         swap() {

@@ -52,7 +52,7 @@ const ObservableSlim = (function () {
      * _create
      * @description Private internal function that is invoked to create a new ES6 Proxy whose changes we can observe through the Observerable.observe() method.
      * @param target {Object} required, plain JavaScript object that we want to observe for changes.
-     * @param domDelay {Boolean} batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
+     * @param domDelay {Boolean|Null} batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
      * @param originalObservable {Object} the original observable created by the user, exists for recursion purposes, allows one observable to observe change on any nested/child objects.
      * @param originalPath {String} the path of the property in relation to the target on the original observable, exists for recursion purposes, allows one observable to observe change on any nested/child objects.
      * @returns {Object}
@@ -60,6 +60,7 @@ const ObservableSlim = (function () {
      */
     let _create = function (target, domDelay, originalObservable, originalPath) {
 
+        let autoDomDelay = domDelay == null;
         let observable = originalObservable || null;
         let path = originalPath || '';
 
@@ -73,22 +74,21 @@ const ObservableSlim = (function () {
             }
         };
 
-        //let lastUpdate = 0;
+        let calls = 0;
 
         let _notifyObservers = function (numChanges) {
 
             // if the observable is paused, then we don't want to execute any of the observer functions
             if (observable.paused === true) return;
 
-            //console.log(lastUpdate)
-
-            /*if (++lastUpdate > 1) {
-                domDelay = true;
-                console.log(lastUpdate)
-                lastUpdate = 0;
-            } else {
-                domDelay = false;
-            }*/
+            // reset calls number after 10ms
+            if (autoDomDelay) {
+                domDelay = ++calls > 1;
+                setTimeout(function () {
+                    calls = 0;
+                }, 10);
+            }
+            console.log('domDelay', domDelay);
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -385,6 +385,7 @@ const ObservableSlim = (function () {
                         }
 
                     }
+
                     // notify the observer functions that the target has been modified
                     _notifyObservers(changes.length);
 

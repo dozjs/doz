@@ -27,7 +27,7 @@ function updateBound(instance, changes) {
 }
 
 function create(instance, props) {
-    instance.props = proxy.create(props, false, changes => {
+    instance.props = proxy.create(props, null, changes => {
         instance.render();
         updateBound(instance, changes);
         if (instance._isCreated) {

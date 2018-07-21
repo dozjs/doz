@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../dist/doz.js?589654885249218"></script>
+    <script src="../../dist/doz.js?589654885249218"></script>
     <style>
         body {
             font-family: sans-serif;
-            background: peachpuff;
         }
 
         .todo-input {
@@ -29,14 +28,14 @@
             padding: 10px;
             border-radius: 5px;
             border: 0;
-            background: coral;
-            color: #fff;
+            background: #c9c7ff;
+            color: #cf70ff;
         }
 
         .todo-item {
             padding: 10px;
             margin-bottom: 5px;
-            background: bisque;
+            background: #ffd9c2;
             border-radius: 5px;
         }
 
@@ -51,7 +50,7 @@
         }
 
         .todo-item:hover {
-            background: #feffb3;
+            background: #5063ff;
         }
 
         .todo-item.done {
@@ -209,10 +208,11 @@
         },
 
         onMount() {
-            this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
-                {title: "Buy milk", done: false},
-                {title: "Buy cigarettes", done: false}
-            ];
+            let record = [];
+            for(let i = 0; i < 1000; i++) {
+                record.push({title: `Item ${i}`, done: false})
+            }
+            this.props.record = record;
         },
 
         onUpdate() {
