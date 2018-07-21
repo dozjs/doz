@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1] - 2018-07-21
+- **Improvement** proxy performance
+
 ## [1.4.0] - 2018-07-12
 - **Breaking changes**
     - Refactored method `style` to `toStyle`
