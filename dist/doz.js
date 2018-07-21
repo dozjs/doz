@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.4.0  
+// [DOZ]  Build version: 1.4.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1833,7 +1833,7 @@ module.exports.collection = __webpack_require__(1);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
 module.exports.html = __webpack_require__(4);
-module.exports.version = '1.4.0';
+module.exports.version = '1.4.1';
 
 /***/ }),
 /* 15 */
