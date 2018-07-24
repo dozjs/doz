@@ -30,7 +30,7 @@ describe('Doz', function () {
                 template: ''
             });
 
-            //console.log(app);
+            //console.log(view);
 
             be.err.not.null(view);
         });

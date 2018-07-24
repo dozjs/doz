@@ -25,6 +25,8 @@ class Doz {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
+        cfg.root.innerHTML = '';
+
         this.cfg = extend(cfg, {
             components: [],
             actions: {}

@@ -12,7 +12,9 @@
         "watch": "webpack --watch --progress --debug",
         "build": "webpack --progress",
         "test": "mocha test",
-        "doc": "jsdoc2md --template README.hbs --no-gfm --files src/Component.js src/DOM.js > README.md"
+        "doc": "jsdoc2md --template README.hbs --no-gfm --files src/Component.js src/DOM.js > README.md",
+        "test-hrm-watch": "parcel watch test/html/HRM/index.js --out-file bundle --no-cache --out-dir test/html/HRM/public/dist",
+        "test-hrm-build": "parcel build test/html/HRM/index.js --out-file bundle --no-cache --out-dir test/html/HRM/public/dist --public-url ./"
     },
     "repository": {
         "type": "git",
