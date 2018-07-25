@@ -37,6 +37,7 @@
     "homepage": "https://github.com/dozjs/doz#readme",
     "dependencies": {},
     "devDependencies": {
+        "autoprefixer": "^9.0.1",
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",
         "babel-preset-env": "^1.6.1",
@@ -48,6 +49,7 @@
         "jsdom": "^11.6.2",
         "jsdom-global": "^3.0.2",
         "mocha": "^5.0.4",
+        "postcss-modules": "^1.3.0",
         "unminified-webpack-plugin": "^1.4.2",
         "webpack": "^3.10.0",
         "webpack-auto-inject-version": "^1.0.0"

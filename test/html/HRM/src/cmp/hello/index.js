@@ -1,10 +1,11 @@
 import {component} from '../../../../../../index'
+import './world'
 
 component('app-hello', {
     template() {
         return `
             <h1>
-                hello world ciao mondo99999933333
+                hello <app-world></app-world>
             </h1>
         `
     }

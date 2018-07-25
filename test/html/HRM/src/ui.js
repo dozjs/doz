@@ -5,8 +5,8 @@ component('app-ui', {
     template() {
         return `
             <div>
-                ${Math.random()}
                 <app-hello></app-hello>
+                <button onclick="console.log('hello click')">Click me!</button>
             </div>
         `
     }

@@ -25,7 +25,11 @@ class Doz {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
-        cfg.root.innerHTML = '';
+        // Remove if already exists
+        const appNode = document.querySelector(TAG.APP);
+        if (appNode) {
+            appNode.parentNode.removeChild(appNode);
+        }
 
         this.cfg = extend(cfg, {
             components: [],
