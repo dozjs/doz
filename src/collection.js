@@ -18,11 +18,17 @@ function register(cmp) {
 
     const tag = cmp.tag.toUpperCase();
 
-   // if (!collection.hasOwnProperty(tag)) {
+    if (collection.hasOwnProperty(tag))
+        console.warn('Doz', `component ${tag} overwritten`);
+
+    collection[tag] = cmp;
+    /*
+    if (!collection.hasOwnProperty(tag)) {
         collection[tag] = cmp;
-    //} else {
-        //throw new Error(`Component ${tag} already defined`);
-    //}
+    } else {
+        throw new Error(`Component ${tag} already defined`);
+    }
+    */
 }
 
 function removeAll() {

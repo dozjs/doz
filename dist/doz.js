@@ -154,11 +154,16 @@ function register(cmp) {
 
     var tag = cmp.tag.toUpperCase();
 
+    if (collection.hasOwnProperty(tag)) console.warn('Doz', 'component ' + tag + ' overwritten');
+
+    collection[tag] = cmp;
+    /*
     if (!collection.hasOwnProperty(tag)) {
         collection[tag] = cmp;
     } else {
-        throw new Error('Component ' + tag + ' already defined');
+        throw new Error(`Component ${tag} already defined`);
     }
+    */
 }
 
 function removeAll() {
@@ -1881,6 +1886,12 @@ var Doz = function () {
 
         if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
+        }
+
+        // Remove if already exists
+        var appNode = document.querySelector(TAG.APP);
+        if (appNode) {
+            appNode.parentNode.removeChild(appNode);
         }
 
         this.cfg = extend(cfg, {
