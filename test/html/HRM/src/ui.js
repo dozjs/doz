@@ -1,5 +1,6 @@
 import {component} from '../../../../index'
 import './cmp/hello/index'
+import hrm from './hrm'
 
 component('app-ui', {
     props: {
@@ -14,12 +15,6 @@ component('app-ui', {
         `
     },
     onCreate() {
-        if (module.hot) {
-            window.__hotStore = window.__hotStore || new Map();
-            this.props.count = window.__hotStore.get('count') || 0;
-            module.hot.dispose(() => {
-                window.__hotStore.set('count', this.props.count);
-            });
-        }
+        hrm(this, module);
     }
 });

@@ -2613,12 +2613,39 @@ require('./world');
         return '\n            <h1>\n                hello <app-world></app-world>\n            </h1>\n        ';
     }
 });
-},{"../../../../../../index":3,"./world":23}],5:[function(require,module,exports) {
+},{"../../../../../../index":3,"./world":23}],62:[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (context, _module) {
+    if (!_module || !_module.hot) return;
+    window.__hotStore = window.__hotStore || new Map();
+
+    Object.keys(context.props).forEach(function (p) {
+        context.props[p] = window.__hotStore.get(p) || context.props[p];
+    });
+
+    _module.hot.dispose(function () {
+        Object.keys(context.props).forEach(function (p) {
+            window.__hotStore.set(p, context.props[p]);
+        });
+    });
+};
+},{}],5:[function(require,module,exports) {
 'use strict';
 
 var _index = require('../../../../index');
 
 require('./cmp/hello/index');
+
+var _hrm = require('./hrm');
+
+var _hrm2 = _interopRequireDefault(_hrm);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _index.component)('app-ui', {
     props: {
@@ -2628,18 +2655,10 @@ require('./cmp/hello/index');
         return '\n            <div>\n                <app-hello></app-hello> ' + this.props.count + '\n                <button onclick="this.props.count++">Click me</button>\n            </div>\n        ';
     },
     onCreate: function onCreate() {
-        var _this = this;
-
-        if (module.hot) {
-            window.__hotStore = window.__hotStore || new Map();
-            this.props.count = window.__hotStore.get('count') || 0;
-            module.hot.dispose(function () {
-                window.__hotStore.set('count', _this.props.count);
-            });
-        }
+        (0, _hrm2.default)(this, module);
     }
 });
-},{"../../../../index":3,"./cmp/hello/index":9}],1:[function(require,module,exports) {
+},{"../../../../index":3,"./cmp/hello/index":9,"./hrm":62}],1:[function(require,module,exports) {
 'use strict';
 
 var _index = require('../../../index');
