@@ -15,6 +15,7 @@ component('app-ui', {
         `
     },
     onCreate() {
+        console.log(module);
         hrm(this, module);
     }
 });

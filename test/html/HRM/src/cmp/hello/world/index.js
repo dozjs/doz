@@ -5,7 +5,7 @@ component('app-world', {
     template() {
         return `
             <span class="${style.myColor}">
-                world!!!
+                mondo!
             </span>
         `
     }

@@ -5,7 +5,7 @@ component('app-hello', {
     template() {
         return `
             <h1>
-                hello <app-world></app-world>
+                ciao <app-world></app-world>
             </h1>
         `
     }
