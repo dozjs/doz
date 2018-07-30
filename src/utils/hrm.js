@@ -1,6 +1,6 @@
-export default function (context, _module) {
+module.exports = (context, _module) => {
     if (!_module || !_module.hot) return;
-    const ns = '__doz_hotStore__';
+    const ns = '__doz_hot_store__';
 
     window[ns] = window[ns] || {};
     const id = _module.id;
@@ -15,4 +15,4 @@ export default function (context, _module) {
             window[ns][id].set(p, context.props[p]);
         });
     });
-}
+};

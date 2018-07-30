@@ -12,6 +12,7 @@ const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
 const toInlineStyle = require('../utils/to-inline-style');
+const hrm = require('../utils/hrm');
 
 function component(tag, cfg = {}) {
 
@@ -95,6 +96,10 @@ function getInstances(cfg = {}) {
                 if (!newElement) {
                     child = child.nextSibling;
                     continue;
+                }
+
+                if (typeof newElement.module === 'object') {
+                    hrm(newElement, newElement.module);
                 }
 
                 if (hooks.callBeforeMount(newElement) !== false) {

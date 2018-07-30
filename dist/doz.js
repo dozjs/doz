@@ -281,6 +281,7 @@ var _require4 = __webpack_require__(24),
 
 var proxy = __webpack_require__(5);
 var toInlineStyle = __webpack_require__(25);
+var hrm = __webpack_require__(26);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -365,6 +366,10 @@ function getInstances() {
                 if (!newElement) {
                     child = child.nextSibling;
                     continue;
+                }
+
+                if (_typeof(newElement.module) === 'object') {
+                    hrm(newElement, newElement.module);
                 }
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -2666,6 +2671,32 @@ function toInlineStyle(obj) {
 }
 
 module.exports = toInlineStyle;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function (context, _module) {
+    if (!_module || !_module.hot) return;
+    var ns = '__doz_hot_store__';
+
+    window[ns] = window[ns] || {};
+    var id = _module.id;
+    window[ns][id] = window[ns][id] || new Map();
+
+    Object.keys(context.props).forEach(function (p) {
+        context.props[p] = window[ns][id].get(p) || context.props[p];
+    });
+
+    _module.hot.dispose(function () {
+        Object.keys(context.props).forEach(function (p) {
+            window[ns][id].set(p, context.props[p]);
+        });
+    });
+};
 
 /***/ })
 /******/ ]);
