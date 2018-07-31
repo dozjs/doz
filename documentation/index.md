@@ -1099,7 +1099,7 @@ new Doz({
 ### Develop and production
 The best way to build app with Doz is using the great [Parcel Bundler](https://github.com/parcel-bundler/parcel) with zero configuration.
 
-#### Hot module replacement and state preservation
+### Hot module replacement and state preservation
 If you need preserve component state add just `module` to config:
 
 ```javascript
