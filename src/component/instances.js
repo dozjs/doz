@@ -15,6 +15,7 @@ const hmr = require('./hmr');
 const style = require('./style');
 const queueReady = require('./queue-ready');
 const extendInstance = require('./extend-instance');
+const cloneObject = require('../utils/clone-object');
 
 function get(cfg = {}) {
 
@@ -121,9 +122,10 @@ function get(cfg = {}) {
 
 function create(cmp, cfg) {
 
-    const props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function'
-        ? cmp.cfg.props()
-        : cmp.cfg.props
+    const props = extend.copy(cfg.props,
+        typeof cmp.cfg.props === 'function'
+            ? cmp.cfg.props()
+            : cmp.cfg.props
     );
 
     const instance = Object.defineProperties({}, {
@@ -168,6 +170,9 @@ function create(cmp, cfg) {
         },
         _publicProps: {
             value: Object.assign({}, cfg.props)
+        },
+        _initialProps: {
+            value: cloneObject(props)
         },
         _processing: {
             value: [],
@@ -300,14 +305,9 @@ function create(cmp, cfg) {
 
                 const rootElement = update(cfg.root, next, this._prev, 0, this, initial);
 
-                //console.log(next)
-
-
-                setTimeout(()=>{
-                    //console.log('this._processing',this._processing)
+                setTimeout(() => {
                     drawDynamic(this);
                 });
-
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -446,9 +446,13 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        if(item.node.innerHTML === '') {
+        if (item.node.innerHTML === '') {
 
-            const dynamicInstance = require('./instances').get({root, template: item.node.outerHTML, app: instance.app});
+            const dynamicInstance = require('./instances').get({
+                root,
+                template: item.node.outerHTML,
+                app: instance.app
+            });
 
             if (dynamicInstance) {
                 instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);

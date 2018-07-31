@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -126,58 +126,6 @@ module.exports = {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-/**
- * Copies deep missing properties to the target object
- * @param targetObj {Object} target object
- * @param defaultObj {Object} default object
- * @param exclude {Array} exclude properties from copy
- * @returns {*}
- */
-
-function extend(targetObj, defaultObj) {
-    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-    for (var i in defaultObj) {
-        /* istanbul ignore else  */
-        if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
-            if (!targetObj.hasOwnProperty(i) || typeof targetObj[i] === 'undefined') {
-                targetObj[i] = defaultObj[i];
-            } else if (_typeof(targetObj[i]) === 'object') {
-                extend(targetObj[i], defaultObj[i]);
-            }
-        }
-    }
-    return targetObj;
-}
-
-/**
- * Creates new target object and copies deep missing properties to the target object
- * @param args[0] {Object} target object
- * @param args[1] {Object} default object
- * @param args[2] {Array} exclude properties from copy
- * @returns {*}
- */
-function copy() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    args[0] = Object.assign({}, args[0]);
-    return extend.apply(this, args);
-}
-
-module.exports = extend;
-module.exports.copy = copy;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -243,7 +191,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -251,508 +199,93 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var extend = __webpack_require__(1);
-var html = __webpack_require__(4);
+/**
+ * Copies deep missing properties to the target object
+ * @param targetObj {Object} target object
+ * @param defaultObj {Object} default object
+ * @param exclude {Array} exclude properties from copy
+ * @returns {*}
+ */
 
-var _require = __webpack_require__(0),
-    TAG = _require.TAG,
-    CMP_INSTANCE = _require.CMP_INSTANCE,
-    INSTANCE = _require.INSTANCE;
+function extend(targetObj, defaultObj) {
+    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
-var collection = __webpack_require__(2);
-var observer = __webpack_require__(18);
-var hooks = __webpack_require__(6);
-
-var _require2 = __webpack_require__(8),
-    transform = _require2.transform,
-    serializeProps = _require2.serializeProps;
-
-var update = __webpack_require__(11).updateElement;
-var store = __webpack_require__(23);
-var ids = __webpack_require__(24);
-
-var _require3 = __webpack_require__(25),
-    extract = _require3.extract;
-
-var proxy = __webpack_require__(5);
-var toInlineStyle = __webpack_require__(13);
-var hmr = __webpack_require__(26);
-var style = __webpack_require__(28);
-var queueReady = __webpack_require__(29);
-var extendInstance = __webpack_require__(30);
-
-function get() {
-    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-
-    if (!cfg.root) return;
-
-    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
-
-    cfg.root.appendChild(cfg.template);
-
-    var component = null;
-    var parentElement = void 0;
-    var trash = [];
-
-    function walk(child) {
-        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-        while (child) {
-
-            var cmpName = child.nodeName.toLowerCase();
-            var localComponents = {};
-
-            if (parent.cmp && parent.cmp._components) {
-                localComponents = parent.cmp._components;
+    for (var i in defaultObj) {
+        /* istanbul ignore else  */
+        if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
+            if (!targetObj.hasOwnProperty(i) || typeof targetObj[i] === 'undefined') {
+                targetObj[i] = defaultObj[i];
+            } else if (_typeof(targetObj[i]) === 'object') {
+                extend(targetObj[i], defaultObj[i]);
             }
-
-            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.get(child.nodeName);
-
-            if (cmp) {
-
-                if (parent.cmp) {
-                    var rawChild = child.outerHTML;
-                    parent.cmp.rawChildren.push(rawChild);
-                }
-
-                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                    trash.push(child);
-                    child = child.nextSibling;
-                    continue;
-                }
-
-                var props = serializeProps(child);
-                var dProps = extract(props);
-
-                var newElement = create(cmp, {
-                    root: child,
-                    app: cfg.app,
-                    props: props,
-                    dProps: dProps,
-                    parentCmp: parent.cmp
-                });
-
-                if (!newElement) {
-                    child = child.nextSibling;
-                    continue;
-                }
-
-                if (_typeof(newElement.module) === 'object') {
-                    hmr(newElement, newElement.module);
-                }
-
-                if (hooks.callBeforeMount(newElement) !== false) {
-                    newElement.render(true);
-
-                    if (!component) {
-                        component = newElement;
-                    }
-
-                    newElement._rootElement[CMP_INSTANCE] = newElement;
-
-                    child.insertBefore(newElement._rootElement, child.firstChild);
-
-                    hooks.callRender(newElement);
-                    hooks.callMount(newElement);
-                    hooks.callMountAsync(newElement);
-                }
-
-                parentElement = newElement;
-
-                if (parent.cmp) {
-                    var n = Object.keys(parent.cmp.children).length;
-                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
-                }
-
-                cfg.autoCmp = null;
-            }
-
-            if (child.hasChildNodes()) {
-                walk(child.firstChild, { cmp: parentElement });
-            }
-
-            child = child.nextSibling;
         }
     }
-
-    walk(cfg.template);
-
-    trash.forEach(function (child) {
-        return child.remove();
-    });
-
-    return component;
+    return targetObj;
 }
 
-function create(cmp, cfg) {
+/**
+ * Creates new target object and copies deep missing properties to the target object
+ * @param args[0] {Object} target object
+ * @param args[1] {Object} default object
+ * @param args[2] {Array} exclude properties from copy
+ * @returns {*}
+ */
+function copy() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
 
-    var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
+    args[0] = Object.assign({}, args[0]);
+    return extend.apply(this, args);
+}
 
-    var instance = Object.defineProperties({}, {
-        _isCreated: {
-            value: false,
-            writable: true
-        },
-        _prevTpl: {
-            value: null,
-            writable: true
-        },
-        _prev: {
-            value: null,
-            writable: true
-        },
-        _prevProps: {
-            value: null,
-            writable: true
-        },
-        _rootElement: {
-            value: null,
-            writable: true
-        },
-        _boundElements: {
-            value: {},
-            writable: true
-        },
-        _callback: {
-            value: cfg.dProps['callback'],
-            writable: true
-        },
-        _cache: {
-            value: new Map()
-        },
-        _loops: {
-            value: {},
-            writable: true
-        },
-        _components: {
-            value: {},
-            writable: true
-        },
-        _publicProps: {
-            value: Object.assign({}, cfg.props)
-        },
-        _processing: {
-            value: [],
-            writable: true
-        },
-        _dynamicChildren: {
-            value: [],
-            writable: true
-        },
-        _unmounted: {
-            value: false,
-            writable: true
-        },
-        _unmountedParentNode: {
-            value: null,
-            writable: true
-        },
-        getHTMLElement: {
-            value: function value() {
-                return this._rootElement.parentNode;
-            },
-            enumerable: true
-        },
-        beginSafeRender: {
-            value: function value() {
-                proxy.beginRender(this.props);
-            },
-            enumerable: true
-        },
-        endSafeRender: {
-            value: function value() {
-                proxy.endRender(this.props);
-            },
-            enumerable: true
-        },
-        app: {
-            value: cfg.app,
-            enumerable: true
-        },
-        parent: {
-            value: cfg.parentCmp,
-            enumerable: true
-        },
-        ref: {
-            value: {},
-            writable: true,
-            enumerable: true
-        },
-        children: {
-            value: {},
-            writable: true,
-            enumerable: true
-        },
-        rawChildren: {
-            value: [],
-            writable: true,
-            enumerable: true
-        },
-        tag: {
-            value: cmp.tag,
-            enumerable: true
-        },
-        emit: {
-            value: function value(name) {
-                if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
-                    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                        args[_key - 1] = arguments[_key];
-                    }
+module.exports = extend;
+module.exports.copy = copy;
 
-                    this.parent[this._callback[name]].apply(this.parent, args);
-                }
-            },
-            enumerable: true
-        },
-        each: {
-            value: function value(obj, func) {
-                var safe = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-                var res = void 0;
-                if (Array.isArray(obj)) {
-                    if (safe) this.beginSafeRender();
-                    res = obj.map(func).map(function (stringEl) {
-                        if (typeof stringEl === 'string') {
-
-                            return stringEl.trim();
-                        }
-                    }).join('');
-                    if (safe) this.endSafeRender();
-                }
-                return res;
-            },
-            enumerable: true
-        },
-        toStyle: {
-            value: function value(obj) {
-                return toInlineStyle(obj);
-            },
-            enumerable: true
-        },
-        getStore: {
-            value: function value(storeName) {
-                return this.app.getStore(storeName);
-            },
-            enumerable: true
-        },
-        getComponentById: {
-            value: function value(id) {
-                return this.app.getComponentById(id);
-            },
-            enumerable: true
-        },
-        getCmp: {
-            value: function value(id) {
-                return this.app.getComponentById(id);
-            },
-            enumerable: true
-        },
-        appRoot: {
-            value: cfg.app._root,
-            enumerable: true
-        },
-        action: {
-            value: cfg.app.action,
-            enumerable: true
-        },
-        render: {
-            value: function value(initial) {
-                var _this = this;
-
-                this.beginSafeRender();
-                var template = this.template().trim();
-                this.endSafeRender();
-
-                var tpl = html.create(template, TAG.ROOT);
-                var next = transform(tpl);
-
-                var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
-
-                //console.log(next)
+"use strict";
 
 
-                setTimeout(function () {
-                    //console.log('this._processing',this._processing)
-                    drawDynamic(_this);
-                });
+var extend = __webpack_require__(2);
 
-                if (!this._rootElement && rootElement) {
-                    this._rootElement = rootElement;
-                }
+var _require = __webpack_require__(1),
+    register = _require.register;
 
-                this._prev = next;
-            },
-            enumerable: true
-        },
-        mount: {
-            value: function value(template) {
-                var _this2 = this;
+var _require2 = __webpack_require__(0),
+    REGEX = _require2.REGEX;
 
-                var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function component(tag) {
+    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-                if (this._unmounted) {
-                    if (hooks.callBeforeMount(this) === false) return this;
+    if (typeof tag !== 'string') {
+        throw new TypeError('Tag must be a string');
+    }
 
-                    this._unmountedParentNode.appendChild(this._rootElement.parentNode);
-                    this._unmounted = false;
-                    this._unmountedParentNode = null;
+    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
+        throw new TypeError('Tag must contain a dash (-) like my-component');
+    }
 
-                    hooks.callMount(this);
+    var cmp = {};
 
-                    Object.keys(this.children).forEach(function (child) {
-                        _this2.children[child].mount();
-                    });
+    cmp.tag = tag;
 
-                    return this;
-                } else if (template) {
-                    if (this._rootElement.nodeType !== 1) {
-                        var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
-                        this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
-                        this._rootElement = newElement;
-                        this._rootElement[CMP_INSTANCE] = this;
-                    }
-
-                    var root = this._rootElement;
-
-                    if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
-
-                    this._unmounted = false;
-                    this._unmountedParentNode = null;
-
-                    return this.app.mount(template, root, this);
-                }
-            },
-            enumerable: true
-        },
-        unmount: {
-            value: function value() {
-                var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-                var _this3 = this;
-
-                var byDestroy = arguments[1];
-                var silently = arguments[2];
-
-                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
-                    return;
-                }
-
-                if (hooks.callBeforeUnmount(this) === false) return false;
-
-                this._unmountedParentNode = this._rootElement.parentNode.parentNode;
-
-                if (!onlyInstance) {
-                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
-                } else this._rootElement.parentNode.innerHTML = '';
-
-                this._unmounted = !byDestroy;
-
-                if (!silently) hooks.callUnmount(this);
-
-                Object.keys(this.children).forEach(function (child) {
-                    _this3.children[child].unmount(onlyInstance, byDestroy, silently);
-                });
-
-                return this;
-            },
-            enumerable: true
-        },
-        destroy: {
-            value: function value(onlyInstance) {
-                var _this4 = this;
-
-                if (this.unmount(onlyInstance, true) === false) return;
-
-                if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
-                    return;
-                }
-
-                Object.keys(this.children).forEach(function (child) {
-                    _this4.children[child].destroy();
-                });
-
-                hooks.callDestroy(this);
-            },
-            enumerable: true
+    cmp.cfg = extend.copy(cfg, {
+        autoCreateChildren: true,
+        updateChildrenProps: true,
+        props: {},
+        template: function template() {
+            return '';
         }
     });
 
-    // Assign cfg to instance
-    extendInstance(instance, cmp.cfg, cfg.dProps);
-
-    var beforeCreate = hooks.callBeforeCreate(instance);
-    if (beforeCreate === false) return undefined;
-
-    // Create observer to props
-    observer.create(instance, props);
-    // Create shared store
-    store.create(instance);
-    // Create ID
-    ids.create(instance);
-    // Add callback to ready queue
-    queueReady.add(instance);
-    // Call create
-    hooks.callCreate(instance);
-    //Apply scoped style
-    style.scoped(instance);
-
-    // Now instance is created
-    instance._isCreated = true;
-
-    return instance;
+    register(cmp);
 }
 
-function clearDynamic(instance) {
-    var index = instance._dynamicChildren.length - 1;
-
-    while (index >= 0) {
-        var item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
-        }
-        index -= 1;
-    }
-}
-
-function drawDynamic(instance) {
-    clearDynamic(instance);
-
-    var index = instance._processing.length - 1;
-
-    while (index >= 0) {
-        var item = instance._processing[index];
-        var root = item.node.parentNode;
-
-        if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
-        }
-
-        //console.log(instance._processing[index].node.innerHTML)
-        if (item.node.innerHTML === '') {
-
-            var dynamicInstance = __webpack_require__(3).get({ root: root, template: item.node.outerHTML, app: instance.app });
-
-            if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
-                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-                instance._processing.splice(index, 1);
-            }
-        }
-        index -= 1;
-    }
-}
-
-module.exports = {
-    create: create,
-    get: get,
-    clearDynamic: clearDynamic,
-    drawDynamic: drawDynamic
-};
+module.exports = component;
 
 /***/ }),
 /* 4 */
@@ -1461,7 +994,7 @@ module.exports = ObservableSlim;
 "use strict";
 
 
-var deprecate = __webpack_require__(19);
+var deprecate = __webpack_require__(18);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -1715,7 +1248,7 @@ module.exports = dashToCamel;
 "use strict";
 
 
-var element = __webpack_require__(20);
+var element = __webpack_require__(19);
 
 module.exports = {
     updateElement: element.update
@@ -1741,24 +1274,7 @@ module.exports = camelToDash;
 "use strict";
 
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var camelToDash = __webpack_require__(12);
-
-function toInlineStyle(obj) {
-    var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-    obj = Object.entries(obj).reduce(function (styleString, _ref) {
-        var _ref2 = _slicedToArray(_ref, 2),
-            propName = _ref2[0],
-            propValue = _ref2[1];
-
-        return '' + styleString + camelToDash(propName) + ':' + propValue + ';';
-    }, '');
-    return withStyle ? 'style="' + obj + '"' : obj;
-}
-
-module.exports = toInlineStyle;
+module.exports = __webpack_require__(14);
 
 /***/ }),
 /* 14 */
@@ -1768,24 +1284,15 @@ module.exports = toInlineStyle;
 
 
 module.exports = __webpack_require__(15);
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(16);
-module.exports.component = __webpack_require__(31);
-module.exports.collection = __webpack_require__(2);
+module.exports.component = __webpack_require__(3);
+module.exports.collection = __webpack_require__(1);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
 module.exports.html = __webpack_require__(4);
 module.exports.version = '1.4.1';
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1797,9 +1304,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(1);
-var bind = __webpack_require__(17);
-var instances = __webpack_require__(3);
+var extend = __webpack_require__(2);
+var bind = __webpack_require__(16);
+var instances = __webpack_require__(27);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -1978,7 +1485,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2010,7 +1517,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2069,7 +1576,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2116,7 +1623,7 @@ module.exports.once = once;
 module.exports._list = _list;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2124,7 +1631,7 @@ module.exports._list = _list;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(21),
+var _require = __webpack_require__(20),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2237,7 +1744,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2255,7 +1762,7 @@ var _require = __webpack_require__(0),
 var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
 var camelToDash = __webpack_require__(12);
-var objectPath = __webpack_require__(22);
+var objectPath = __webpack_require__(21);
 var delay = __webpack_require__(7);
 
 function isEventAttribute(name) {
@@ -2478,7 +1985,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2503,7 +2010,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2524,7 +2031,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2545,7 +2052,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2586,7 +2093,545 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var camelToDash = __webpack_require__(12);
+
+function toInlineStyle(obj) {
+    var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+    obj = Object.entries(obj).reduce(function (styleString, _ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            propName = _ref2[0],
+            propValue = _ref2[1];
+
+        return '' + styleString + camelToDash(propName) + ':' + propValue + ';';
+    }, '');
+    return withStyle ? 'style="' + obj + '"' : obj;
+}
+
+module.exports = toInlineStyle;
+
+/***/ }),
+/* 26 */,
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var extend = __webpack_require__(2);
+var html = __webpack_require__(4);
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG,
+    CMP_INSTANCE = _require.CMP_INSTANCE,
+    INSTANCE = _require.INSTANCE;
+
+var collection = __webpack_require__(1);
+var observer = __webpack_require__(17);
+var hooks = __webpack_require__(6);
+
+var _require2 = __webpack_require__(8),
+    transform = _require2.transform,
+    serializeProps = _require2.serializeProps;
+
+var update = __webpack_require__(11).updateElement;
+var store = __webpack_require__(22);
+var ids = __webpack_require__(23);
+
+var _require3 = __webpack_require__(24),
+    extract = _require3.extract;
+
+var proxy = __webpack_require__(5);
+var toInlineStyle = __webpack_require__(25);
+var hmr = __webpack_require__(28);
+var style = __webpack_require__(29);
+var queueReady = __webpack_require__(30);
+var extendInstance = __webpack_require__(31);
+
+function get() {
+    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+
+    if (!cfg.root) return;
+
+    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+
+    cfg.root.appendChild(cfg.template);
+
+    var component = null;
+    var parentElement = void 0;
+    var trash = [];
+
+    function walk(child) {
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        while (child) {
+
+            var cmpName = child.nodeName.toLowerCase();
+            var localComponents = {};
+
+            if (parent.cmp && parent.cmp._components) {
+                localComponents = parent.cmp._components;
+            }
+
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.get(child.nodeName);
+
+            if (cmp) {
+
+                if (parent.cmp) {
+                    var rawChild = child.outerHTML;
+                    parent.cmp.rawChildren.push(rawChild);
+                }
+
+                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                    trash.push(child);
+                    child = child.nextSibling;
+                    continue;
+                }
+
+                var props = serializeProps(child);
+                var dProps = extract(props);
+
+                var newElement = create(cmp, {
+                    root: child,
+                    app: cfg.app,
+                    props: props,
+                    dProps: dProps,
+                    parentCmp: parent.cmp
+                });
+
+                if (!newElement) {
+                    child = child.nextSibling;
+                    continue;
+                }
+
+                if (_typeof(newElement.module) === 'object') {
+                    hmr(newElement, newElement.module);
+                }
+
+                if (hooks.callBeforeMount(newElement) !== false) {
+                    newElement.render(true);
+
+                    if (!component) {
+                        component = newElement;
+                    }
+
+                    newElement._rootElement[CMP_INSTANCE] = newElement;
+
+                    child.insertBefore(newElement._rootElement, child.firstChild);
+
+                    hooks.callRender(newElement);
+                    hooks.callMount(newElement);
+                    hooks.callMountAsync(newElement);
+                }
+
+                parentElement = newElement;
+
+                if (parent.cmp) {
+                    var n = Object.keys(parent.cmp.children).length;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                }
+
+                cfg.autoCmp = null;
+            }
+
+            if (child.hasChildNodes()) {
+                walk(child.firstChild, { cmp: parentElement });
+            }
+
+            child = child.nextSibling;
+        }
+    }
+
+    walk(cfg.template);
+
+    trash.forEach(function (child) {
+        return child.remove();
+    });
+
+    return component;
+}
+
+function create(cmp, cfg) {
+
+    var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
+
+    var instance = Object.defineProperties({}, {
+        _isCreated: {
+            value: false,
+            writable: true
+        },
+        _prevTpl: {
+            value: null,
+            writable: true
+        },
+        _prev: {
+            value: null,
+            writable: true
+        },
+        _prevProps: {
+            value: null,
+            writable: true
+        },
+        _rootElement: {
+            value: null,
+            writable: true
+        },
+        _boundElements: {
+            value: {},
+            writable: true
+        },
+        _callback: {
+            value: cfg.dProps['callback'],
+            writable: true
+        },
+        _cache: {
+            value: new Map()
+        },
+        _loops: {
+            value: {},
+            writable: true
+        },
+        _components: {
+            value: {},
+            writable: true
+        },
+        _publicProps: {
+            value: Object.assign({}, cfg.props)
+        },
+        _processing: {
+            value: [],
+            writable: true
+        },
+        _dynamicChildren: {
+            value: [],
+            writable: true
+        },
+        _unmounted: {
+            value: false,
+            writable: true
+        },
+        _unmountedParentNode: {
+            value: null,
+            writable: true
+        },
+        getHTMLElement: {
+            value: function value() {
+                return this._rootElement.parentNode;
+            },
+            enumerable: true
+        },
+        beginSafeRender: {
+            value: function value() {
+                proxy.beginRender(this.props);
+            },
+            enumerable: true
+        },
+        endSafeRender: {
+            value: function value() {
+                proxy.endRender(this.props);
+            },
+            enumerable: true
+        },
+        app: {
+            value: cfg.app,
+            enumerable: true
+        },
+        parent: {
+            value: cfg.parentCmp,
+            enumerable: true
+        },
+        ref: {
+            value: {},
+            writable: true,
+            enumerable: true
+        },
+        children: {
+            value: {},
+            writable: true,
+            enumerable: true
+        },
+        rawChildren: {
+            value: [],
+            writable: true,
+            enumerable: true
+        },
+        tag: {
+            value: cmp.tag,
+            enumerable: true
+        },
+        emit: {
+            value: function value(name) {
+                if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
+                    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                        args[_key - 1] = arguments[_key];
+                    }
+
+                    this.parent[this._callback[name]].apply(this.parent, args);
+                }
+            },
+            enumerable: true
+        },
+        each: {
+            value: function value(obj, func) {
+                var safe = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+                var res = void 0;
+                if (Array.isArray(obj)) {
+                    if (safe) this.beginSafeRender();
+                    res = obj.map(func).map(function (stringEl) {
+                        if (typeof stringEl === 'string') {
+
+                            return stringEl.trim();
+                        }
+                    }).join('');
+                    if (safe) this.endSafeRender();
+                }
+                return res;
+            },
+            enumerable: true
+        },
+        toStyle: {
+            value: function value(obj) {
+                return toInlineStyle(obj);
+            },
+            enumerable: true
+        },
+        getStore: {
+            value: function value(storeName) {
+                return this.app.getStore(storeName);
+            },
+            enumerable: true
+        },
+        getComponentById: {
+            value: function value(id) {
+                return this.app.getComponentById(id);
+            },
+            enumerable: true
+        },
+        getCmp: {
+            value: function value(id) {
+                return this.app.getComponentById(id);
+            },
+            enumerable: true
+        },
+        appRoot: {
+            value: cfg.app._root,
+            enumerable: true
+        },
+        action: {
+            value: cfg.app.action,
+            enumerable: true
+        },
+        render: {
+            value: function value(initial) {
+                var _this = this;
+
+                this.beginSafeRender();
+                var template = this.template().trim();
+                this.endSafeRender();
+
+                var tpl = html.create(template, TAG.ROOT);
+                var next = transform(tpl);
+
+                var rootElement = update(cfg.root, next, this._prev, 0, this, initial);
+
+                //console.log(next)
+
+
+                setTimeout(function () {
+                    //console.log('this._processing',this._processing)
+                    drawDynamic(_this);
+                });
+
+                if (!this._rootElement && rootElement) {
+                    this._rootElement = rootElement;
+                }
+
+                this._prev = next;
+            },
+            enumerable: true
+        },
+        mount: {
+            value: function value(template) {
+                var _this2 = this;
+
+                var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+                if (this._unmounted) {
+                    if (hooks.callBeforeMount(this) === false) return this;
+
+                    this._unmountedParentNode.appendChild(this._rootElement.parentNode);
+                    this._unmounted = false;
+                    this._unmountedParentNode = null;
+
+                    hooks.callMount(this);
+
+                    Object.keys(this.children).forEach(function (child) {
+                        _this2.children[child].mount();
+                    });
+
+                    return this;
+                } else if (template) {
+                    if (this._rootElement.nodeType !== 1) {
+                        var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                        this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                        this._rootElement = newElement;
+                        this._rootElement[CMP_INSTANCE] = this;
+                    }
+
+                    var root = this._rootElement;
+
+                    if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
+
+                    this._unmounted = false;
+                    this._unmountedParentNode = null;
+
+                    return this.app.mount(template, root, this);
+                }
+            },
+            enumerable: true
+        },
+        unmount: {
+            value: function value() {
+                var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+                var _this3 = this;
+
+                var byDestroy = arguments[1];
+                var silently = arguments[2];
+
+                if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+                    return;
+                }
+
+                if (hooks.callBeforeUnmount(this) === false) return false;
+
+                this._unmountedParentNode = this._rootElement.parentNode.parentNode;
+
+                if (!onlyInstance) {
+                    this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                } else this._rootElement.parentNode.innerHTML = '';
+
+                this._unmounted = !byDestroy;
+
+                if (!silently) hooks.callUnmount(this);
+
+                Object.keys(this.children).forEach(function (child) {
+                    _this3.children[child].unmount(onlyInstance, byDestroy, silently);
+                });
+
+                return this;
+            },
+            enumerable: true
+        },
+        destroy: {
+            value: function value(onlyInstance) {
+                var _this4 = this;
+
+                if (this.unmount(onlyInstance, true) === false) return;
+
+                if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
+                    return;
+                }
+
+                Object.keys(this.children).forEach(function (child) {
+                    _this4.children[child].destroy();
+                });
+
+                hooks.callDestroy(this);
+            },
+            enumerable: true
+        }
+    });
+
+    // Assign cfg to instance
+    extendInstance(instance, cmp.cfg, cfg.dProps);
+
+    var beforeCreate = hooks.callBeforeCreate(instance);
+    if (beforeCreate === false) return undefined;
+
+    // Create observer to props
+    observer.create(instance, props);
+    // Create shared store
+    store.create(instance);
+    // Create ID
+    ids.create(instance);
+    // Add callback to ready queue
+    queueReady.add(instance);
+    // Call create
+    hooks.callCreate(instance);
+    //Apply scoped style
+    style.scoped(instance);
+
+    // Now instance is created
+    instance._isCreated = true;
+
+    return instance;
+}
+
+function drawDynamic(instance) {
+    clearDynamic(instance);
+
+    var index = instance._processing.length - 1;
+
+    while (index >= 0) {
+        var item = instance._processing[index];
+        var root = item.node.parentNode;
+
+        if (item.node[INSTANCE]) {
+            item.node[INSTANCE].destroy(true);
+        }
+
+        if (item.node.innerHTML === '') {
+
+            var dynamicInstance = __webpack_require__(27).get({ root: root, template: item.node.outerHTML, app: instance.app });
+
+            if (dynamicInstance) {
+                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                instance._processing.splice(index, 1);
+            }
+        }
+        index -= 1;
+    }
+}
+
+function clearDynamic(instance) {
+    var index = instance._dynamicChildren.length - 1;
+
+    while (index >= 0) {
+        var item = instance._dynamicChildren[index];
+
+        if (!document.body.contains(item) && item[INSTANCE]) {
+            item[INSTANCE].destroy(true);
+            instance._dynamicChildren.splice(index, 1);
+        }
+        index -= 1;
+    }
+}
+
+module.exports = {
+    create: create,
+    get: get,
+    clearDynamic: clearDynamic,
+    drawDynamic: drawDynamic
+};
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2614,8 +2659,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 27 */,
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2623,7 +2667,7 @@ module.exports = hmr;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var toInlineStyle = __webpack_require__(13);
+var toInlineStyle = __webpack_require__(25);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -2659,7 +2703,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2677,7 +2721,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2708,51 +2752,6 @@ function extendInstance(instance, cfg, dProps) {
 }
 
 module.exports = extendInstance;
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var extend = __webpack_require__(1);
-
-var _require = __webpack_require__(2),
-    register = _require.register;
-
-var _require2 = __webpack_require__(0),
-    REGEX = _require2.REGEX;
-
-function component(tag) {
-    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-    if (typeof tag !== 'string') {
-        throw new TypeError('Tag must be a string');
-    }
-
-    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
-        throw new TypeError('Tag must contain a dash (-) like my-component');
-    }
-
-    var cmp = {};
-
-    cmp.tag = tag;
-
-    cmp.cfg = extend.copy(cfg, {
-        autoCreateChildren: true,
-        updateChildrenProps: true,
-        props: {},
-        template: function template() {
-            return '';
-        }
-    });
-
-    register(cmp);
-}
-
-module.exports = component;
 
 /***/ })
 /******/ ]);
