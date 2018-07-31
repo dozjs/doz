@@ -4,13 +4,13 @@ import './cmp/hello/index'
 component('app-ui', {
     module,
     props: {
-        count: 5997777
+        count: 599
     },
     template() {
         return `
             <div>
                 <app-hello></app-hello> ${this.props.count}
-                <button onclick="this.props.count++">Click me!!!</button>
+                <button onclick="this.props.count++">Click me!</button>
             </div>
         `
     }

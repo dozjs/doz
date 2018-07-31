@@ -2647,10 +2647,10 @@ require('./cmp/hello/index');
 (0, _index.component)('app-ui', {
     module: module,
     props: {
-        count: 5997777
+        count: 599
     },
     template: function template() {
-        return '\n            <div>\n                <app-hello></app-hello> ' + this.props.count + '\n                <button onclick="this.props.count++">Click me!!!</button>\n            </div>\n        ';
+        return '\n            <div>\n                <app-hello></app-hello> ' + this.props.count + '\n                <button onclick="this.props.count++">Click me!</button>\n            </div>\n        ';
     }
 });
 },{"../../../../index":3,"./cmp/hello/index":9}],1:[function(require,module,exports) {
@@ -2668,7 +2668,7 @@ new _index2.default({
     root: '#app',
     template: '\n        <app-ui></app-ui>\n    '
 });
-},{"../../../index":3,"./src/ui":5}],64:[function(require,module,exports) {
+},{"../../../index":3,"./src/ui":5}],65:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -2695,7 +2695,7 @@ module.bundle.Module = Module;
 
 var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
-  var hostname = '' || location.hostname;
+  var hostname = undefined || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
   var ws = new WebSocket(protocol + '://' + hostname + ':' + '63344' + '/');
   ws.onmessage = function (event) {
@@ -2838,5 +2838,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[64,1], null)
+},{}]},{},[65,1], null)
 //# sourceMappingURL=/bundle.map

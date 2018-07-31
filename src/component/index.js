@@ -1,7 +1,7 @@
 const extend = require('../utils/extend');
 const {register} = require('../collection');
 const html = require('../utils/html');
-const {REGEX, TAG, INSTANCE, CMP_INSTANCE} = require('../constants');
+const {REGEX, TAG, CMP_INSTANCE} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const hooks = require('./hooks');
@@ -12,7 +12,11 @@ const ids = require('./ids');
 const {extract} = require('./d-props');
 const proxy = require('../utils/proxy');
 const toInlineStyle = require('../utils/to-inline-style');
-const hmr = require('../utils/hmr');
+const hmr = require('./hmr');
+const dynamic = require('./dynamic');
+const style = require('./style');
+const queueReady = require('./queue-ready');
+const extendInstance = require('./extend-instance');
 
 function component(tag, cfg = {}) {
 
@@ -329,7 +333,7 @@ function createInstance(cmp, cfg) {
 
                 setTimeout(()=>{
                     //console.log('this._processing',this._processing)
-                    drawDynamic(this);
+                    dynamic.draw(this);
                 });
 
 
@@ -445,117 +449,16 @@ function createInstance(cmp, cfg) {
     // Create ID
     ids.create(instance);
     // Add callback to ready queue
-    queueReadyCB(instance);
+    queueReady.add(instance);
     // Call create
     hooks.callCreate(instance);
     //Apply scoped style
-    applyScopedStyle(instance);
+    style.scoped(instance);
 
     // Now instance is created
     instance._isCreated = true;
 
     return instance;
-}
-
-function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg, dProps);
-
-    // Add local components
-    if (Array.isArray(cfg.components)) {
-        cfg.components.forEach(cmp => {
-            if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
-                instance._components[cmp.tag] = cmp;
-            }
-        });
-        delete instance.components;
-    } else if (typeof cfg.components === 'object'){
-        Object.keys(cfg.components).forEach(objName => {
-            instance._components[objName] = {
-                tag: objName,
-                cfg: cfg.components[objName]
-            }
-        });
-        delete instance.components;
-    }
-}
-
-function queueReadyCB(instance) {
-    if (typeof instance.onAppReady === 'function') {
-        instance.onAppReady._instance = instance;
-        instance.app._onAppReadyCB.push(instance.onAppReady);
-    }
-}
-
-function clearDynamic(instance) {
-    let index = instance._dynamicChildren.length - 1;
-
-    while (index >= 0) {
-        let item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
-        }
-        index -= 1;
-    }
-}
-
-function drawDynamic(instance) {
-    clearDynamic(instance);
-
-    let index = instance._processing.length - 1;
-
-    while (index >= 0) {
-        let item = instance._processing[index];
-        let root = item.node.parentNode;
-
-        if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
-        }
-
-        //console.log(instance._processing[index].node.innerHTML)
-        if(item.node.innerHTML === '') {
-
-            const dynamicInstance = getInstances({root, template: item.node.outerHTML, app: instance.app});
-
-            if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
-                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-                instance._processing.splice(index, 1);
-            }
-        }
-        index -= 1;
-    }
-}
-
-function applyScopedStyle(instance) {
-    if (typeof instance.style !== 'object') return;
-
-    function composeStyle(style) {
-        let out = '';
-        Object.keys(style).forEach(key => {
-            if (/^@media/.test(key)) {
-                out += `${key} {${composeStyle(style[key])}}`
-            } else {
-                let properties = toInlineStyle(style[key], false);
-                key = `${tag} ${key.replace(/(,)/g, `$1${tag} `)}`;
-                out += `${key}{${properties}} `;
-            }
-        });
-        return out;
-    }
-
-    const tag = instance.tag;
-    const styleId = `${instance.tag}--style`;
-
-    if (document.querySelector(`#${styleId}`)) return;
-
-    const styleEl = document.createElement('style');
-    styleEl.id = styleId;
-    styleEl.innerHTML = composeStyle(instance.style);
-
-    document.head.appendChild(styleEl);
 }
 
 module.exports = {

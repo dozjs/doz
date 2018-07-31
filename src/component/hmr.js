@@ -1,4 +1,4 @@
-module.exports = (context, _module) => {
+function hmr (context, _module) {
     if (!_module || !_module.hot) return;
     const ns = '__doz_hot_store__';
 
@@ -15,4 +15,6 @@ module.exports = (context, _module) => {
             window[ns][id].set(p, context.props[p]);
         });
     });
-};
+}
+
+module.exports = hmr;
