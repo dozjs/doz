@@ -38,6 +38,7 @@ Below some basic concepts:
 - [Actions](#actions)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
+    - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
 - [Write a component](#develop-and-production)
 
 ## Installation
@@ -1098,10 +1099,27 @@ new Doz({
 ### Develop and production
 The best way to build app with Doz is using the great [Parcel Bundler](https://github.com/parcel-bundler/parcel) with zero configuration.
 
+#### Hot module replacement and state preservation
+If you need preserve component state add just `module` to config:
+
+```javascript
+Doz.component('my-counter', {
+    module,
+    props: {
+        count: 0
+    },
+    template() {
+        return `
+            <button onclick="this.props.count++">Count ${this.props.count}</button>
+        `
+    }
+});
+```
+
 ---
 
 ### Write a component
-You can use [Doz Component Starter](https://github.com/dozjs/doz-component-starter) at the moment the right way to creating a component.
+You can use [doz-cli](https://github.com/dozjs/doz-cli) at the moment the right way to creating a component.
 
 ---
 
