@@ -1,6 +1,6 @@
 const extend = require('./utils/extend');
 const bind = require('./utils/bind');
-const component = require('./component/index');
+const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 
 class Doz {
@@ -101,7 +101,7 @@ class Doz {
                         }
                     };
 
-                    return component.getInstances({
+                    return instances.get({
                         root,
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
@@ -143,7 +143,7 @@ class Doz {
                 this._components[TAG.APP].cfg[p] = cfg[p];
         });
 
-        this._tree = component.getInstances({root: this.cfg.root, template, app: this}) || [];
+        this._tree = instances.get({root: this.cfg.root, template, app: this}) || [];
         this._callAppReady();
     }
 
