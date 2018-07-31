@@ -10,7 +10,7 @@ component('app-ui', {
         return `
             <div>
                 <app-hello></app-hello> ${this.props.count}
-                <button onclick="this.props.count++">Click me!</button>
+                <button onclick="this.props.count++">Click me!!!</button>
             </div>
         `
     }

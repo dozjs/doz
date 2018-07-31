@@ -173,6 +173,69 @@ function bind(obj, context) {
 }
 
 module.exports = bind;
+},{}],19:[function(require,module,exports) {
+var regexN = /\n/g;
+var regexS = /\s+/g;
+var replace = ' ';
+
+var html = {
+    /**
+     * Create DOM element
+     * @param str html string
+     * @param wrapper tag string
+     * @returns {Element | Node | null}
+     */
+    create: function create(str, wrapper) {
+        var element = void 0;
+        str = str.replace(regexN, replace);
+        str = str.replace(regexS, replace);
+
+        var template = document.createElement('div');
+        template.innerHTML = str;
+
+        if (template.childNodes.length > 1) {
+            element = document.createElement(wrapper);
+            //console.log('TEMPLATE',template.innerHTML);
+            element.innerHTML = template.innerHTML;
+        } else {
+            //console.log('TEMPLATE',template.innerHTML);
+            element = template.firstChild || document.createTextNode('');
+        }
+
+        if (!this.isValidNode(element)) throw new Error('Element not valid');
+        return element;
+    },
+
+    /**
+     * Check if is a valid Node
+     * @param {*} el
+     * @returns {Boolean}
+     */
+    isValidNode: function isValidNode(el) {
+        return el && 'nodeType' in el;
+    },
+
+    getAllNodes: function getAllNodes(el) {
+
+        var nodes = [];
+
+        function scanner(n) {
+            while (n) {
+                nodes.push(n);
+                if (n.hasChildNodes()) {
+                    scanner(n.firstChild);
+                }
+                n = n.nextSibling;
+            }
+        }
+
+        scanner(el);
+
+        return nodes;
+    }
+};
+
+module.exports = html;
 },{}],25:[function(require,module,exports) {
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
@@ -275,70 +338,7 @@ module.exports = {
     get: get,
     removeAll: removeAll
 };
-},{"./constants":25}],19:[function(require,module,exports) {
-var regexN = /\n/g;
-var regexS = /\s+/g;
-var replace = ' ';
-
-var html = {
-    /**
-     * Create DOM element
-     * @param str html string
-     * @param wrapper tag string
-     * @returns {Element | Node | null}
-     */
-    create: function create(str, wrapper) {
-        var element = void 0;
-        str = str.replace(regexN, replace);
-        str = str.replace(regexS, replace);
-
-        var template = document.createElement('div');
-        template.innerHTML = str;
-
-        if (template.childNodes.length > 1) {
-            element = document.createElement(wrapper);
-            //console.log('TEMPLATE',template.innerHTML);
-            element.innerHTML = template.innerHTML;
-        } else {
-            //console.log('TEMPLATE',template.innerHTML);
-            element = template.firstChild || document.createTextNode('');
-        }
-
-        if (!this.isValidNode(element)) throw new Error('Element not valid');
-        return element;
-    },
-
-    /**
-     * Check if is a valid Node
-     * @param {*} el
-     * @returns {Boolean}
-     */
-    isValidNode: function isValidNode(el) {
-        return el && 'nodeType' in el;
-    },
-
-    getAllNodes: function getAllNodes(el) {
-
-        var nodes = [];
-
-        function scanner(n) {
-            while (n) {
-                nodes.push(n);
-                if (n.hasChildNodes()) {
-                    scanner(n.firstChild);
-                }
-                n = n.nextSibling;
-            }
-        }
-
-        scanner(el);
-
-        return nodes;
-    }
-};
-
-module.exports = html;
-},{}],47:[function(require,module,exports) {
+},{"./constants":25}],49:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
@@ -425,7 +425,6 @@ var ObservableSlim = function () {
                     calls = 0;
                 }, 10);
             }
-            //console.log('domDelay', domDelay);
 
             // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -962,7 +961,7 @@ var ObservableSlim = function () {
 }();
 
 module.exports = ObservableSlim;
-},{}],58:[function(require,module,exports) {
+},{}],65:[function(require,module,exports) {
 var _this = this;
 
 var _list = [];
@@ -1004,7 +1003,7 @@ var once = function once() {
 module.exports = deprecate;
 module.exports.once = once;
 module.exports._list = _list;
-},{}],39:[function(require,module,exports) {
+},{}],41:[function(require,module,exports) {
 var deprecate = require('../utils/deprecate');
 
 function callBeforeCreate(context) {
@@ -1097,13 +1096,13 @@ module.exports = {
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
-},{"../utils/deprecate":58}],57:[function(require,module,exports) {
+},{"../utils/deprecate":65}],66:[function(require,module,exports) {
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
 
 module.exports = delay;
-},{}],37:[function(require,module,exports) {
+},{}],39:[function(require,module,exports) {
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var proxy = require('../utils/proxy');
@@ -1155,7 +1154,7 @@ function create(instance, props) {
 module.exports = {
     create: create
 };
-},{"../utils/proxy":47,"./hooks":39,"../utils/delay":57}],33:[function(require,module,exports) {
+},{"../utils/proxy":49,"./hooks":41,"../utils/delay":66}],35:[function(require,module,exports) {
 function castStringTo(obj) {
 
     if (typeof obj !== 'string') {
@@ -1196,7 +1195,7 @@ function castStringTo(obj) {
 }
 
 module.exports = castStringTo;
-},{}],35:[function(require,module,exports) {
+},{}],37:[function(require,module,exports) {
 function dashToCamel(s) {
     return s.replace(/(-\w)/g, function (m) {
         return m[1].toUpperCase();
@@ -1275,13 +1274,13 @@ module.exports = {
     transform: transform,
     serializeProps: serializeProps
 };
-},{"../utils/cast-string-to":33,"../utils/dash-to-camel":35,"../constants":25}],59:[function(require,module,exports) {
+},{"../utils/cast-string-to":35,"../utils/dash-to-camel":37,"../constants":25}],67:[function(require,module,exports) {
 function camelToDash(s) {
     return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
 }
 
 module.exports = camelToDash;
-},{}],60:[function(require,module,exports) {
+},{}],68:[function(require,module,exports) {
 function getByPath(path, obj) {
     return path.split('.').reduce(function (res, prop) {
         return res ? res[prop] : undefined;
@@ -1299,7 +1298,7 @@ function getLast(path, obj) {
 
 module.exports = getByPath;
 module.exports.getLast = getLast;
-},{}],55:[function(require,module,exports) {
+},{}],61:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -1533,7 +1532,7 @@ module.exports = {
     attach: attach,
     updateAttributes: updateAttributes
 };
-},{"../constants":25,"../utils/cast-string-to":33,"../utils/dash-to-camel":35,"../utils/camel-to-dash":59,"../utils/object-path":60,"../utils/delay":57}],31:[function(require,module,exports) {
+},{"../constants":25,"../utils/cast-string-to":35,"../utils/dash-to-camel":37,"../utils/camel-to-dash":67,"../utils/object-path":68,"../utils/delay":66}],33:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _require = require('./attributes'),
@@ -1647,13 +1646,13 @@ module.exports = {
     create: create,
     update: update
 };
-},{"./attributes":55,"../constants":25}],15:[function(require,module,exports) {
+},{"./attributes":61,"../constants":25}],15:[function(require,module,exports) {
 var element = require('./element');
 
 module.exports = {
     updateElement: element.update
 };
-},{"./element":31}],41:[function(require,module,exports) {
+},{"./element":33}],43:[function(require,module,exports) {
 function create(instance) {
 
     if (typeof instance.store === 'string') {
@@ -1667,7 +1666,7 @@ function create(instance) {
 module.exports = {
     create: create
 };
-},{}],43:[function(require,module,exports) {
+},{}],45:[function(require,module,exports) {
 function create(instance) {
 
     if (typeof instance.id === 'string') {
@@ -1681,7 +1680,7 @@ function create(instance) {
 module.exports = {
     create: create
 };
-},{}],45:[function(require,module,exports) {
+},{}],47:[function(require,module,exports) {
 var _require = require('../constants'),
     ATTR = _require.ATTR;
 
@@ -1715,7 +1714,7 @@ function extract(props) {
 module.exports = {
     extract: extract
 };
-},{"../constants":25}],49:[function(require,module,exports) {
+},{"../constants":25}],51:[function(require,module,exports) {
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var camelToDash = require('./camel-to-dash');
@@ -1734,8 +1733,8 @@ function toInlineStyle(obj) {
 }
 
 module.exports = toInlineStyle;
-},{"./camel-to-dash":59}],51:[function(require,module,exports) {
-module.exports = function (context, _module) {
+},{"./camel-to-dash":67}],53:[function(require,module,exports) {
+function hmr(instance, _module) {
     if (!_module || !_module.hot) return;
     var ns = '__doz_hot_store__';
 
@@ -1743,80 +1742,126 @@ module.exports = function (context, _module) {
     var id = _module.id;
     window[ns][id] = window[ns][id] || new Map();
 
-    Object.keys(context.props).forEach(function (p) {
-        context.props[p] = window[ns][id].get(p) || context.props[p];
+    Object.keys(instance.props).forEach(function (p) {
+        instance.props[p] = window[ns][id].get(p) || instance.props[p];
     });
 
     _module.hot.dispose(function () {
-        Object.keys(context.props).forEach(function (p) {
-            window[ns][id].set(p, context.props[p]);
+        Object.keys(instance.props).forEach(function (p) {
+            window[ns][id].set(p, instance.props[p]);
         });
     });
+}
+
+module.exports = hmr;
+},{}],55:[function(require,module,exports) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var toInlineStyle = require('../utils/to-inline-style');
+
+function scoped(instance) {
+    if (_typeof(instance.style) !== 'object') return;
+
+    function composeStyle(style) {
+        var out = '';
+        Object.keys(style).forEach(function (key) {
+            if (/^@media/.test(key)) {
+                out += key + ' {' + composeStyle(style[key]) + '}';
+            } else {
+                var properties = toInlineStyle(style[key], false);
+                key = tag + ' ' + key.replace(/(,)/g, '$1' + tag + ' ');
+                out += key + '{' + properties + '} ';
+            }
+        });
+        return out;
+    }
+
+    var tag = instance.tag;
+    var styleId = instance.tag + '--style';
+
+    if (document.querySelector('#' + styleId)) return;
+
+    var styleEl = document.createElement('style');
+    styleEl.id = styleId;
+    styleEl.innerHTML = composeStyle(instance.style);
+
+    document.head.appendChild(styleEl);
+}
+
+module.exports = {
+    scoped: scoped
 };
-},{}],21:[function(require,module,exports) {
+},{"../utils/to-inline-style":51}],57:[function(require,module,exports) {
+function add(instance) {
+    if (typeof instance.onAppReady === 'function') {
+        instance.onAppReady._instance = instance;
+        instance.app._onAppReadyCB.push(instance.onAppReady);
+    }
+}
+
+module.exports = {
+    add: add
+};
+},{}],59:[function(require,module,exports) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function extendInstance(instance, cfg, dProps) {
+    Object.assign(instance, cfg, dProps);
+
+    // Add local components
+    if (Array.isArray(cfg.components)) {
+        cfg.components.forEach(function (cmp) {
+            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    } else if (_typeof(cfg.components) === 'object') {
+        Object.keys(cfg.components).forEach(function (objName) {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: cfg.components[objName]
+            };
+        });
+        delete instance.components;
+    }
+}
+
+module.exports = extendInstance;
+},{}],31:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var extend = require('../utils/extend');
-
-var _require = require('../collection'),
-    register = _require.register;
-
 var html = require('../utils/html');
 
-var _require2 = require('../constants'),
-    REGEX = _require2.REGEX,
-    TAG = _require2.TAG,
-    INSTANCE = _require2.INSTANCE,
-    CMP_INSTANCE = _require2.CMP_INSTANCE;
+var _require = require('../constants'),
+    TAG = _require.TAG,
+    CMP_INSTANCE = _require.CMP_INSTANCE,
+    INSTANCE = _require.INSTANCE;
 
 var collection = require('../collection');
 var observer = require('./observer');
 var hooks = require('./hooks');
 
-var _require3 = require('../vdom/parser'),
-    transform = _require3.transform,
-    serializeProps = _require3.serializeProps;
+var _require2 = require('../vdom/parser'),
+    transform = _require2.transform,
+    serializeProps = _require2.serializeProps;
 
 var update = require('../vdom').updateElement;
 var store = require('./store');
 var ids = require('./ids');
 
-var _require4 = require('./d-props'),
-    extract = _require4.extract;
+var _require3 = require('./d-props'),
+    extract = _require3.extract;
 
 var proxy = require('../utils/proxy');
 var toInlineStyle = require('../utils/to-inline-style');
-var hmr = require('../utils/hmr');
+var hmr = require('./hmr');
+var style = require('./style');
+var queueReady = require('./queue-ready');
+var extendInstance = require('./extend-instance');
 
-function component(tag) {
-    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-    if (typeof tag !== 'string') {
-        throw new TypeError('Tag must be a string');
-    }
-
-    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
-        throw new TypeError('Tag must contain a dash (-) like my-component');
-    }
-
-    var cmp = {};
-
-    cmp.tag = tag;
-
-    cmp.cfg = extend.copy(cfg, {
-        autoCreateChildren: true,
-        updateChildrenProps: true,
-        props: {},
-        template: function template() {
-            return '';
-        }
-    });
-
-    register(cmp);
-}
-
-function getInstances() {
+function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
@@ -1860,7 +1905,7 @@ function getInstances() {
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
-                var newElement = createInstance(cmp, {
+                var newElement = create(cmp, {
                     root: child,
                     app: cfg.app,
                     props: props,
@@ -1920,7 +1965,7 @@ function getInstances() {
     return component;
 }
 
-function createInstance(cmp, cfg) {
+function create(cmp, cfg) {
 
     var props = extend.copy(cfg.props, typeof cmp.cfg.props === 'function' ? cmp.cfg.props() : cmp.cfg.props);
 
@@ -2227,11 +2272,11 @@ function createInstance(cmp, cfg) {
     // Create ID
     ids.create(instance);
     // Add callback to ready queue
-    queueReadyCB(instance);
+    queueReady.add(instance);
     // Call create
     hooks.callCreate(instance);
     //Apply scoped style
-    applyScopedStyle(instance);
+    style.scoped(instance);
 
     // Now instance is created
     instance._isCreated = true;
@@ -2239,32 +2284,31 @@ function createInstance(cmp, cfg) {
     return instance;
 }
 
-function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg, dProps);
+function drawDynamic(instance) {
+    clearDynamic(instance);
 
-    // Add local components
-    if (Array.isArray(cfg.components)) {
-        cfg.components.forEach(function (cmp) {
-            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                instance._components[cmp.tag] = cmp;
+    var index = instance._processing.length - 1;
+
+    while (index >= 0) {
+        var item = instance._processing[index];
+        var root = item.node.parentNode;
+
+        if (item.node[INSTANCE]) {
+            item.node[INSTANCE].destroy(true);
+        }
+
+        if (item.node.innerHTML === '') {
+
+            var dynamicInstance = require('./instances').get({ root: root, template: item.node.outerHTML, app: instance.app });
+
+            if (dynamicInstance) {
+                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                instance._processing.splice(index, 1);
             }
-        });
-        delete instance.components;
-    } else if (_typeof(cfg.components) === 'object') {
-        Object.keys(cfg.components).forEach(function (objName) {
-            instance._components[objName] = {
-                tag: objName,
-                cfg: cfg.components[objName]
-            };
-        });
-        delete instance.components;
-    }
-}
-
-function queueReadyCB(instance) {
-    if (typeof instance.onAppReady === 'function') {
-        instance.onAppReady._instance = instance;
-        instance.app._onAppReadyCB.push(instance.onAppReady);
+        }
+        index -= 1;
     }
 }
 
@@ -2282,69 +2326,13 @@ function clearDynamic(instance) {
     }
 }
 
-function drawDynamic(instance) {
-    clearDynamic(instance);
-
-    var index = instance._processing.length - 1;
-
-    while (index >= 0) {
-        var item = instance._processing[index];
-        var root = item.node.parentNode;
-
-        if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
-        }
-
-        //console.log(instance._processing[index].node.innerHTML)
-        if (item.node.innerHTML === '') {
-
-            var dynamicInstance = getInstances({ root: root, template: item.node.outerHTML, app: instance.app });
-
-            if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
-                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-                instance._processing.splice(index, 1);
-            }
-        }
-        index -= 1;
-    }
-}
-
-function applyScopedStyle(instance) {
-    if (_typeof(instance.style) !== 'object') return;
-
-    function composeStyle(style) {
-        var out = '';
-        Object.keys(style).forEach(function (key) {
-            if (/^@media/.test(key)) {
-                out += key + ' {' + composeStyle(style[key]) + '}';
-            } else {
-                var properties = toInlineStyle(style[key], false);
-                key = tag + ' ' + key.replace(/(,)/g, '$1' + tag + ' ');
-                out += key + '{' + properties + '} ';
-            }
-        });
-        return out;
-    }
-
-    var tag = instance.tag;
-    var styleId = instance.tag + '--style';
-
-    if (document.querySelector('#' + styleId)) return;
-
-    var styleEl = document.createElement('style');
-    styleEl.id = styleId;
-    styleEl.innerHTML = composeStyle(instance.style);
-
-    document.head.appendChild(styleEl);
-}
-
 module.exports = {
-    component: component,
-    getInstances: getInstances
+    create: create,
+    get: get,
+    clearDynamic: clearDynamic,
+    drawDynamic: drawDynamic
 };
-},{"../utils/extend":27,"../collection":13,"../utils/html":19,"../constants":25,"./observer":37,"./hooks":39,"../vdom/parser":17,"../vdom":15,"./store":41,"./ids":43,"./d-props":45,"../utils/proxy":47,"../utils/to-inline-style":49,"../utils/hmr":51}],11:[function(require,module,exports) {
+},{"../utils/extend":27,"../utils/html":19,"../constants":25,"../collection":13,"./observer":39,"./hooks":41,"../vdom/parser":17,"../vdom":15,"./store":43,"./ids":45,"./d-props":47,"../utils/proxy":49,"../utils/to-inline-style":51,"./hmr":53,"./style":55,"./queue-ready":57,"./extend-instance":59,"./instances":31}],11:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2353,7 +2341,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var extend = require('./utils/extend');
 var bind = require('./utils/bind');
-var component = require('./component/index');
+var instances = require('./component/instances');
 
 var _require = require('./constants'),
     TAG = _require.TAG,
@@ -2464,7 +2452,7 @@ var Doz = function () {
                         }
                     };
 
-                    return component.getInstances({
+                    return instances.get({
                         root: root,
                         template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
                         app: this,
@@ -2505,7 +2493,7 @@ var Doz = function () {
             if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
         });
 
-        this._tree = component.getInstances({ root: this.cfg.root, template: template, app: this }) || [];
+        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
         this._callAppReady();
     }
 
@@ -2530,9 +2518,47 @@ var Doz = function () {
 }();
 
 module.exports = Doz;
-},{"./utils/extend":27,"./utils/bind":29,"./component/index":21,"./constants":25}],7:[function(require,module,exports) {
+},{"./utils/extend":27,"./utils/bind":29,"./component/instances":31,"./constants":25}],21:[function(require,module,exports) {
+var extend = require('../utils/extend');
+
+var _require = require('../collection'),
+    register = _require.register;
+
+var _require2 = require('../constants'),
+    REGEX = _require2.REGEX;
+
+function component(tag) {
+    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+    if (typeof tag !== 'string') {
+        throw new TypeError('Tag must be a string');
+    }
+
+    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
+        throw new TypeError('Tag must contain a dash (-) like my-component');
+    }
+
+    var cmp = {};
+
+    cmp.tag = tag;
+
+    cmp.cfg = extend.copy(cfg, {
+        autoCreateChildren: true,
+        updateChildrenProps: true,
+        props: {},
+        template: function template() {
+            return '';
+        }
+    });
+
+    register(cmp);
+}
+
+module.exports = component;
+},{"../utils/extend":27,"../collection":13,"../constants":25}],7:[function(require,module,exports) {
 module.exports = require('./doz');
-module.exports.component = require('./component').component;
+module.exports.component = require('./component');
 module.exports.collection = require('./collection');
 module.exports.update = require('./vdom/index').updateElement;
 module.exports.transform = require('./vdom/parser').transform;
@@ -2540,7 +2566,7 @@ module.exports.html = require('./utils/html');
 module.exports.version = '[AIV]{version}[/AIV]';
 },{"./doz":11,"./component":21,"./collection":13,"./vdom/index":15,"./vdom/parser":17,"./utils/html":19}],3:[function(require,module,exports) {
 module.exports = require('./src');
-},{"./src":7}],63:[function(require,module,exports) {
+},{"./src":7}],71:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -2570,7 +2596,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],62:[function(require,module,exports) {
+},{}],70:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -2601,7 +2627,7 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":63}],53:[function(require,module,exports) {
+},{"./bundle-url":71}],63:[function(require,module,exports) {
 
 var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
@@ -2609,7 +2635,7 @@ module.hot.accept(reloadCSS);
 module.exports = {
         "myColor": "style_myColor_2tgQH"
 };
-},{"_css_loader":62}],23:[function(require,module,exports) {
+},{"_css_loader":70}],23:[function(require,module,exports) {
 'use strict';
 
 var _index = require('../../../../../../../index');
@@ -2625,7 +2651,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         return '\n            <span class="' + _style2.default.myColor + '">\n                mondo!\n            </span>\n        ';
     }
 });
-},{"../../../../../../../index":3,"./style.css":53}],9:[function(require,module,exports) {
+},{"../../../../../../../index":3,"./style.css":63}],9:[function(require,module,exports) {
 'use strict';
 
 var _index = require('../../../../../../index');
@@ -2650,7 +2676,7 @@ require('./cmp/hello/index');
         count: 599
     },
     template: function template() {
-        return '\n            <div>\n                <app-hello></app-hello> ' + this.props.count + '\n                <button onclick="this.props.count++">Click me!</button>\n            </div>\n        ';
+        return '\n            <div>\n                <app-hello></app-hello> ' + this.props.count + '\n                <button onclick="this.props.count++">Click me!!!</button>\n            </div>\n        ';
     }
 });
 },{"../../../../index":3,"./cmp/hello/index":9}],1:[function(require,module,exports) {
@@ -2668,7 +2694,7 @@ new _index2.default({
     root: '#app',
     template: '\n        <app-ui></app-ui>\n    '
 });
-},{"../../../index":3,"./src/ui":5}],65:[function(require,module,exports) {
+},{"../../../index":3,"./src/ui":5}],72:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -2695,9 +2721,9 @@ module.bundle.Module = Module;
 
 var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
-  var hostname = undefined || location.hostname;
+  var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '63344' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55383' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -2838,5 +2864,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[65,1], null)
+},{}]},{},[72,1], null)
 //# sourceMappingURL=/bundle.map

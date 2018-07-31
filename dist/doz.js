@@ -2592,7 +2592,7 @@ module.exports = {
 "use strict";
 
 
-function hmr(context, _module) {
+function hmr(instance, _module) {
     if (!_module || !_module.hot) return;
     var ns = '__doz_hot_store__';
 
@@ -2600,13 +2600,13 @@ function hmr(context, _module) {
     var id = _module.id;
     window[ns][id] = window[ns][id] || new Map();
 
-    Object.keys(context.props).forEach(function (p) {
-        context.props[p] = window[ns][id].get(p) || context.props[p];
+    Object.keys(instance.props).forEach(function (p) {
+        instance.props[p] = window[ns][id].get(p) || instance.props[p];
     });
 
     _module.hot.dispose(function () {
-        Object.keys(context.props).forEach(function (p) {
-            window[ns][id].set(p, context.props[p]);
+        Object.keys(instance.props).forEach(function (p) {
+            window[ns][id].set(p, instance.props[p]);
         });
     });
 }

@@ -433,20 +433,6 @@ function create(cmp, cfg) {
     return instance;
 }
 
-function clearDynamic(instance) {
-    let index = instance._dynamicChildren.length - 1;
-
-    while (index >= 0) {
-        let item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
-        }
-        index -= 1;
-    }
-}
-
 function drawDynamic(instance) {
     clearDynamic(instance);
 
@@ -460,7 +446,6 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        //console.log(instance._processing[index].node.innerHTML)
         if(item.node.innerHTML === '') {
 
             const dynamicInstance = require('./instances').get({root, template: item.node.outerHTML, app: instance.app});
@@ -471,6 +456,20 @@ function drawDynamic(instance) {
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
             }
+        }
+        index -= 1;
+    }
+}
+
+function clearDynamic(instance) {
+    let index = instance._dynamicChildren.length - 1;
+
+    while (index >= 0) {
+        let item = instance._dynamicChildren[index];
+
+        if (!document.body.contains(item) && item[INSTANCE]) {
+            item[INSTANCE].destroy(true);
+            instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
     }
