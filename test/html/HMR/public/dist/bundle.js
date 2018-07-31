@@ -962,7 +962,7 @@ var ObservableSlim = function () {
 }();
 
 module.exports = ObservableSlim;
-},{}],57:[function(require,module,exports) {
+},{}],58:[function(require,module,exports) {
 var _this = this;
 
 var _list = [];
@@ -1097,7 +1097,7 @@ module.exports = {
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
-},{"../utils/deprecate":57}],56:[function(require,module,exports) {
+},{"../utils/deprecate":58}],57:[function(require,module,exports) {
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
@@ -1155,7 +1155,7 @@ function create(instance, props) {
 module.exports = {
     create: create
 };
-},{"../utils/proxy":47,"./hooks":39,"../utils/delay":56}],31:[function(require,module,exports) {
+},{"../utils/proxy":47,"./hooks":39,"../utils/delay":57}],33:[function(require,module,exports) {
 function castStringTo(obj) {
 
     if (typeof obj !== 'string') {
@@ -1196,7 +1196,7 @@ function castStringTo(obj) {
 }
 
 module.exports = castStringTo;
-},{}],33:[function(require,module,exports) {
+},{}],35:[function(require,module,exports) {
 function dashToCamel(s) {
     return s.replace(/(-\w)/g, function (m) {
         return m[1].toUpperCase();
@@ -1275,13 +1275,13 @@ module.exports = {
     transform: transform,
     serializeProps: serializeProps
 };
-},{"../utils/cast-string-to":31,"../utils/dash-to-camel":33,"../constants":25}],58:[function(require,module,exports) {
+},{"../utils/cast-string-to":33,"../utils/dash-to-camel":35,"../constants":25}],59:[function(require,module,exports) {
 function camelToDash(s) {
     return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
 }
 
 module.exports = camelToDash;
-},{}],59:[function(require,module,exports) {
+},{}],60:[function(require,module,exports) {
 function getByPath(path, obj) {
     return path.split('.').reduce(function (res, prop) {
         return res ? res[prop] : undefined;
@@ -1533,7 +1533,7 @@ module.exports = {
     attach: attach,
     updateAttributes: updateAttributes
 };
-},{"../constants":25,"../utils/cast-string-to":31,"../utils/dash-to-camel":33,"../utils/camel-to-dash":58,"../utils/object-path":59,"../utils/delay":56}],35:[function(require,module,exports) {
+},{"../constants":25,"../utils/cast-string-to":33,"../utils/dash-to-camel":35,"../utils/camel-to-dash":59,"../utils/object-path":60,"../utils/delay":57}],31:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _require = require('./attributes'),
@@ -1653,7 +1653,7 @@ var element = require('./element');
 module.exports = {
     updateElement: element.update
 };
-},{"./element":35}],41:[function(require,module,exports) {
+},{"./element":31}],41:[function(require,module,exports) {
 function create(instance) {
 
     if (typeof instance.store === 'string') {
@@ -1734,7 +1734,7 @@ function toInlineStyle(obj) {
 }
 
 module.exports = toInlineStyle;
-},{"./camel-to-dash":58}],51:[function(require,module,exports) {
+},{"./camel-to-dash":59}],51:[function(require,module,exports) {
 module.exports = function (context, _module) {
     if (!_module || !_module.hot) return;
     var ns = '__doz_hot_store__';
@@ -1786,7 +1786,7 @@ var _require4 = require('./d-props'),
 
 var proxy = require('../utils/proxy');
 var toInlineStyle = require('../utils/to-inline-style');
-var hrm = require('../utils/hrm');
+var hmr = require('../utils/hmr');
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1874,7 +1874,7 @@ function getInstances() {
                 }
 
                 if (_typeof(newElement.module) === 'object') {
-                    hrm(newElement, newElement.module);
+                    hmr(newElement, newElement.module);
                 }
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -2344,7 +2344,7 @@ module.exports = {
     component: component,
     getInstances: getInstances
 };
-},{"../utils/extend":27,"../collection":13,"../utils/html":19,"../constants":25,"./observer":37,"./hooks":39,"../vdom/parser":17,"../vdom":15,"./store":41,"./ids":43,"./d-props":45,"../utils/proxy":47,"../utils/to-inline-style":49,"../utils/hrm":51}],11:[function(require,module,exports) {
+},{"../utils/extend":27,"../collection":13,"../utils/html":19,"../constants":25,"./observer":37,"./hooks":39,"../vdom/parser":17,"../vdom":15,"./store":41,"./ids":43,"./d-props":45,"../utils/proxy":47,"../utils/to-inline-style":49,"../utils/hmr":51}],11:[function(require,module,exports) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2540,7 +2540,7 @@ module.exports.html = require('./utils/html');
 module.exports.version = '[AIV]{version}[/AIV]';
 },{"./doz":11,"./component":21,"./collection":13,"./vdom/index":15,"./vdom/parser":17,"./utils/html":19}],3:[function(require,module,exports) {
 module.exports = require('./src');
-},{"./src":7}],62:[function(require,module,exports) {
+},{"./src":7}],63:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -2570,7 +2570,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],61:[function(require,module,exports) {
+},{}],62:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -2601,15 +2601,15 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":62}],53:[function(require,module,exports) {
+},{"./bundle-url":63}],53:[function(require,module,exports) {
 
 var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
-        "myColor": "style_myColor_3_17Y"
+        "myColor": "style_myColor_2tgQH"
 };
-},{"_css_loader":61}],23:[function(require,module,exports) {
+},{"_css_loader":62}],23:[function(require,module,exports) {
 'use strict';
 
 var _index = require('../../../../../../../index');
@@ -2668,7 +2668,7 @@ new _index2.default({
     root: '#app',
     template: '\n        <app-ui></app-ui>\n    '
 });
-},{"../../../index":3,"./src/ui":5}],63:[function(require,module,exports) {
+},{"../../../index":3,"./src/ui":5}],64:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -2695,9 +2695,9 @@ module.bundle.Module = Module;
 
 var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
-  var hostname = undefined || location.hostname;
+  var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64006' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '63344' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -2838,5 +2838,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[63,1], null)
+},{}]},{},[64,1], null)
 //# sourceMappingURL=/bundle.map
