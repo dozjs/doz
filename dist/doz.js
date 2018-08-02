@@ -278,9 +278,9 @@ var proxy = __webpack_require__(5);
 var toInlineStyle = __webpack_require__(13);
 var hmr = __webpack_require__(26);
 var style = __webpack_require__(27);
-var queueReady = __webpack_require__(28);
-var extendInstance = __webpack_require__(29);
-var cloneObject = __webpack_require__(30);
+var queueReady = __webpack_require__(29);
+var extendInstance = __webpack_require__(30);
+var cloneObject = __webpack_require__(31);
 
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1780,7 +1780,7 @@ module.exports = __webpack_require__(15);
 
 
 module.exports = __webpack_require__(16);
-module.exports.component = __webpack_require__(31);
+module.exports.component = __webpack_require__(32);
 module.exports.collection = __webpack_require__(2);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
@@ -2629,35 +2629,22 @@ module.exports = hmr;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var toInlineStyle = __webpack_require__(13);
+var composeStyle = __webpack_require__(28);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
 
-    function composeStyle(style) {
-        var out = '';
-        Object.keys(style).forEach(function (key) {
-            if (/^@media/.test(key)) {
-                out += key + ' {' + composeStyle(style[key]) + '}';
-            } else {
-                var properties = toInlineStyle(style[key], false);
-                key = tag + ' ' + key.replace(/(,)/g, '$1' + tag + ' ');
-                out += key + '{' + properties + '} ';
-            }
-        });
-        return out;
-    }
-
-    var tag = instance.tag;
     var styleId = instance.tag + '--style';
+    var styleExists = document.querySelector('#' + styleId);
 
-    if (document.querySelector('#' + styleId)) return;
-
-    var styleEl = document.createElement('style');
-    styleEl.id = styleId;
-    styleEl.innerHTML = composeStyle(instance.style);
-
-    document.head.appendChild(styleEl);
+    if (styleExists) {
+        styleExists.innerHTML = composeStyle(instance.style, instance.tag);
+    } else {
+        var styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        styleEl.innerHTML = composeStyle(instance.style, instance.tag);
+        document.head.appendChild(styleEl);
+    }
 }
 
 module.exports = {
@@ -2666,6 +2653,31 @@ module.exports = {
 
 /***/ }),
 /* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var toInlineStyle = __webpack_require__(13);
+
+function composeStyle(style, tag) {
+    var out = '';
+    Object.keys(style).forEach(function (key) {
+        if (/^@media/.test(key)) {
+            out += key + ' {' + composeStyle(style[key], tag) + '}';
+        } else {
+            var properties = toInlineStyle(style[key], false);
+            key = tag + ' ' + key.replace(/(,)/g, '$1' + tag + ' ');
+            out += key + '{' + properties + '} ';
+        }
+    });
+    return out;
+}
+
+module.exports = composeStyle;
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2683,7 +2695,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2716,7 +2728,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2729,7 +2741,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
