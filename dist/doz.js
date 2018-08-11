@@ -1810,7 +1810,7 @@ module.exports = __webpack_require__(16);
 
 
 module.exports = __webpack_require__(17);
-module.exports.component = __webpack_require__(33);
+module.exports.component = __webpack_require__(34);
 module.exports.collection = __webpack_require__(2);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
@@ -1921,7 +1921,7 @@ var Doz = function () {
                 enumerable: true
             },
             mount: {
-                value: function value(_template, root) {
+                value: function value(template, root) {
                     var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
 
 
@@ -1935,12 +1935,13 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
+                    var contentStr = eval('`' + toLiteralString(template) + '`');
                     var autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template: function template() {
-                                return '<' + TAG.ROOT + '>' + _template + '</' + TAG.ROOT + '>';
+                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
                             }
                         }
                     };
@@ -2774,7 +2775,8 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 33 */
+/* 33 */,
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

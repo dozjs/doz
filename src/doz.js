@@ -92,12 +92,13 @@ class Doz {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
+                    const contentStr = eval('`' + toLiteralString(template) + '`');
                     const autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template() {
-                                return `<${TAG.ROOT}>${template}</${TAG.ROOT}>`;
+                                return `<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
                             }
                         }
                     };
