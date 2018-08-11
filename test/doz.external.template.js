@@ -19,18 +19,19 @@ describe('Doz.external.template', function () {
         Doz.collection.removeAll();
     });
 
-    describe('create app with component with id defined', function () {
+    describe('create app with component template defined', function () {
 
-        it('should be ok with a nested component', function () {
+        it('should be ok with a nested component', function (done) {
 
-            console.log(template);
-
-            document.body.innerHTML = `<div id="app"></div>`;
+            document.body.innerHTML = `
+                <div id="app"></div>
+                <template id="salutation-tpl">
+                    hello <b>{{this.props.title}}</b>
+                </template>
+            `;
 
             Doz.component('salutation-card', {
-                template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
-                }
+                template: '#salutation-tpl'
             });
 
             Doz.component('caller-o', {
@@ -41,6 +42,9 @@ describe('Doz.external.template', function () {
 
             const view = new Doz({
                 root: '#app',
+                props: {
+                    game: 'Mario Bros'
+                },
                 template: `
                     <salutation-card
                         d:id="salutation1"
@@ -53,8 +57,17 @@ describe('Doz.external.template', function () {
                         name="Tina">
                     </salutation-card>
                     <caller-o d:id="caller"></caller-o>
+                    {{this.props.game}}
                 `
             });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                be.err.object(view.getComponentById('salutation1'));
+                be.err.object(view.getComponentById('salutation2'));
+                be.err(done).object(view.getComponentById('caller'));
+            },100);
 
         });
 

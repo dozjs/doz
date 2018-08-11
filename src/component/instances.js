@@ -1,6 +1,6 @@
 const extend = require('../utils/extend');
 const html = require('../utils/html');
-const {TAG, CMP_INSTANCE, INSTANCE} = require('../constants');
+const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
 const collection = require('../collection');
 const observer = require('./observer');
 const hooks = require('./hooks');
@@ -16,6 +16,7 @@ const style = require('./style');
 const queueReady = require('./queue-ready');
 const extendInstance = require('./extend-instance');
 const cloneObject = require('../utils/clone-object');
+const toLiteralString = require('../utils/to-literal-string');
 
 function get(cfg = {}) {
 
@@ -127,6 +128,21 @@ function create(cmp, cfg) {
             ? cmp.cfg.props()
             : cmp.cfg.props
     );
+
+    if(typeof cmp.cfg.template === 'string') {
+        let contentTpl = cmp.cfg.template;
+        if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
+            cmp.cfg.template = function () {
+                let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
+                return eval('`'+contentStr+'`')
+            }
+        } else {
+            cmp.cfg.template = function () {
+                contentTpl = toLiteralString(contentTpl);
+                return eval('`'+contentTpl+'`');
+            }
+        }
+    }
 
     const instance = Object.defineProperties({}, {
         _isCreated: {

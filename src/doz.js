@@ -2,6 +2,7 @@ const extend = require('./utils/extend');
 const bind = require('./utils/bind');
 const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
+const toLiteralString = require('./utils/to-literal-string');
 
 class Doz {
 
@@ -120,7 +121,7 @@ class Doz {
                     this._components[cmp.tag] = cmp;
                 }
             });
-        } else if (typeof this.cfg.components === 'object'){
+        } else if (typeof this.cfg.components === 'object') {
             Object.keys(this.cfg.components).forEach(objName => {
                 this._components[objName] = {
                     tag: objName,
@@ -133,13 +134,14 @@ class Doz {
             tag: TAG.APP,
             cfg: {
                 template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    return cfg.template
+                    const contentStr = toLiteralString(cfg.template);
+                    return eval('`' + contentStr + '`');
                 }
             }
         };
 
         Object.keys(cfg).forEach(p => {
-            if(!['template', 'root'].includes(p))
+            if (!['template', 'root'].includes(p))
                 this._components[TAG.APP].cfg[p] = cfg[p];
         });
 
