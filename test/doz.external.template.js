@@ -34,12 +34,6 @@ describe('Doz.external.template', function () {
                 template: '#salutation-tpl'
             });
 
-            Doz.component('caller-o', {
-                template() {
-                    return `<div>call me</div>`
-                }
-            });
-
             const view = new Doz({
                 root: '#app',
                 props: {
@@ -56,17 +50,16 @@ describe('Doz.external.template', function () {
                         title="MRS."
                         name="Tina">
                     </salutation-card>
-                    <caller-o d:id="caller"></caller-o>
-                    {{this.props.game}}
+                    <div id="game-name">{{this.props.game}}</div>
                 `
             });
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                be.err.object(view.getComponentById('salutation1'));
-                be.err.object(view.getComponentById('salutation2'));
-                be.err(done).object(view.getComponentById('caller'));
+                be.err.true(/<b>MR.<\/b>/.test(html));
+                be.err.true(/<b>MRS.<\/b>/.test(html));
+                be.err(done).equal('Mario Bros', document.getElementById('game-name').innerHTML);
             },100);
 
         });
