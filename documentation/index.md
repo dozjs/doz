@@ -1118,8 +1118,8 @@ Doz.component('my-counter', {
 
 ---
 
-### Write a component
-You can use [doz-cli](https://github.com/dozjs/doz-cli) at the moment the right way to creating a component.
+### Write app or component
+You can use [doz-cli](https://github.com/dozjs/doz-cli) at the moment the right way to creating a component or an app.
 
 ---
 
