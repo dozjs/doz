@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.4.3  
+// [DOZ]  Build version: 1.4.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1810,12 +1810,12 @@ module.exports = __webpack_require__(16);
 
 
 module.exports = __webpack_require__(17);
-module.exports.component = __webpack_require__(34);
+module.exports.component = __webpack_require__(33);
 module.exports.collection = __webpack_require__(2);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
 module.exports.html = __webpack_require__(4);
-module.exports.version = '1.4.3';
+module.exports.version = '1.4.4';
 
 /***/ }),
 /* 17 */
@@ -2775,8 +2775,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 33 */,
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
