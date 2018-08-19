@@ -129,17 +129,17 @@ function create(cmp, cfg) {
             : cmp.cfg.props
     );
 
-    if(typeof cmp.cfg.template === 'string') {
+    if (typeof cmp.cfg.template === 'string') {
         let contentTpl = cmp.cfg.template;
         if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
             cmp.cfg.template = function () {
                 let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                return eval('`'+contentStr+'`')
+                return eval('`' + contentStr + '`')
             }
         } else {
             cmp.cfg.template = function () {
                 contentTpl = toLiteralString(contentTpl);
-                return eval('`'+contentTpl+'`');
+                return eval('`' + contentTpl + '`');
             }
         }
     }
@@ -330,6 +330,17 @@ function create(cmp, cfg) {
                 }
 
                 this._prev = next;
+            },
+            enumerable: true
+        },
+        h: {
+            value: function (strings, ...value) {
+                let result = strings[0];
+                for (let i = 0; i < value.length; ++i) {
+                    result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
+                }
+
+                return result;
             },
             enumerable: true
         },

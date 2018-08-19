@@ -94,7 +94,8 @@ module.exports = {
         APP: 'doz-app',
         EMPTY: 'doz-empty',
         MOUNT: 'doz-mount',
-        SUFFIX_ROOT: '-root'
+        SUFFIX_ROOT: '-root',
+        TEXT_NODE_PLACE: 'doz-text-node-place'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -599,6 +600,22 @@ function create(cmp, cfg) {
                 }
 
                 this._prev = next;
+            },
+            enumerable: true
+        },
+        h: {
+            value: function value(strings) {
+                var result = strings[0];
+
+                for (var _len2 = arguments.length, _value = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                    _value[_key2 - 1] = arguments[_key2];
+                }
+
+                for (var i = 0; i < _value.length; ++i) {
+                    result += '<' + TAG.TEXT_NODE_PLACE + '>' + _value[i] + '</' + TAG.TEXT_NODE_PLACE + '>' + strings[i + 1];
+                }
+
+                return result;
             },
             enumerable: true
         },
@@ -1632,9 +1649,11 @@ function transform(node) {
 
             if (node.nodeType === 3) {
                 obj = node.nodeValue;
+            } else if (node.nodeName.toLowerCase() === 'doz-text-node-place') {
+                obj = node.innerText;
             } else {
                 obj = {};
-                obj.type = node.nodeName; //.toLowerCase();
+                obj.type = node.nodeName;
                 obj.children = [];
                 obj.props = serializeProps(node);
                 obj.isSVG = typeof node.ownerSVGElement !== 'undefined';

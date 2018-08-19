@@ -41,9 +41,11 @@ function transform(node) {
 
             if (node.nodeType === 3) {
                 obj = node.nodeValue;
+            } else if (node.nodeName.toLowerCase() === 'doz-text-node-place'){
+                obj = node.innerText;
             } else {
                 obj = {};
-                obj.type = node.nodeName;//.toLowerCase();
+                obj.type = node.nodeName;
                 obj.children = [];
                 obj.props = serializeProps(node);
                 obj.isSVG = typeof node.ownerSVGElement !== 'undefined';

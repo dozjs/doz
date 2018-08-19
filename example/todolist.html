@@ -152,7 +152,7 @@
 
     Doz.component('doz-todo-item', {
         template() {
-            return `
+            return this.h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
@@ -175,7 +175,7 @@
 
     Doz.component('doz-todo-buttons', {
         template() {
-            return `
+            return this.h`
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
             `;
