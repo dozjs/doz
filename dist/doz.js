@@ -612,8 +612,11 @@ function create(cmp, cfg) {
                 }
 
                 for (var i = 0; i < _value.length; ++i) {
-                    result += '<' + TAG.TEXT_NODE_PLACE + '>' + _value[i] + '</' + TAG.TEXT_NODE_PLACE + '>' + strings[i + 1];
+                    //result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
+                    result += '' + _value[i] + strings[i + 1];
                 }
+
+                console.log(result);
 
                 return result;
             },
