@@ -95,7 +95,7 @@ module.exports = {
         EMPTY: 'doz-empty',
         MOUNT: 'doz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'doz-text-node-place'
+        TEXT_NODE_PLACE: 'te-xt'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -612,10 +612,13 @@ function create(cmp, cfg) {
                 }
 
                 for (var i = 0; i < _value.length; ++i) {
-                    //result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
-                    result += '' + _value[i] + strings[i + 1];
+                    result += '<' + TAG.TEXT_NODE_PLACE + '>' + _value[i] + '</' + TAG.TEXT_NODE_PLACE + '>' + strings[i + 1];
+                    //result += `${value[i]}${strings[i + 1]}`;
                 }
 
+                result = result.replace(/<te-xt></gi, '<');
+                result = result.replace(/><\/te-xt>/gi, '>');
+                result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
                 console.log(result);
 
                 return result;
@@ -1619,7 +1622,8 @@ var dashToCamel = __webpack_require__(10);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
-    ATTR = _require.ATTR;
+    ATTR = _require.ATTR,
+    TAG = _require.TAG;
 
 function serializeProps(node) {
     var props = {};
@@ -1652,7 +1656,7 @@ function transform(node) {
 
             if (node.nodeType === 3) {
                 obj = node.nodeValue;
-            } else if (node.nodeName.toLowerCase() === 'doz-text-node-place') {
+            } else if (node.nodeName.toLowerCase() === TAG.TEXT_NODE_PLACE) {
                 obj = node.innerText;
             } else {
                 obj = {};

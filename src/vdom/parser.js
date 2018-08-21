@@ -1,6 +1,6 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const {REGEX, ATTR} = require('../constants');
+const {REGEX, ATTR, TAG} = require('../constants');
 
 function serializeProps(node) {
     const props = {};
@@ -41,7 +41,7 @@ function transform(node) {
 
             if (node.nodeType === 3) {
                 obj = node.nodeValue;
-            } else if (node.nodeName.toLowerCase() === 'doz-text-node-place'){
+            } else if (node.nodeName.toLowerCase() === TAG.TEXT_NODE_PLACE){
                 obj = node.innerText;
             } else {
                 obj = {};

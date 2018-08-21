@@ -337,10 +337,13 @@ function create(cmp, cfg) {
             value: function (strings, ...value) {
                 let result = strings[0];
                 for (let i = 0; i < value.length; ++i) {
-                    //result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
-                    result += `${value[i]}${strings[i + 1]}`;
+                    result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
+                    //result += `${value[i]}${strings[i + 1]}`;
                 }
 
+                result = result.replace(/<te-xt></gi, '<');
+                result = result.replace(/><\/te-xt>/gi, '>');
+                result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
                 console.log(result);
 
                 return result;
