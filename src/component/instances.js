@@ -344,6 +344,7 @@ function create(cmp, cfg) {
                 result = result.replace(/<te-xt></gi, '<');
                 result = result.replace(/><\/te-xt>/gi, '>');
                 result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
+                result = result.replace(/(\son.*)<te-xt>(.*?)<\/te-xt>(.*?")/gi, '$1$2$3');
                 console.log(result);
 
                 return result;
