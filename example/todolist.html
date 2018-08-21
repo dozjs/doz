@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../dist/doz.js?5896548859249218"></script>
+    <script src="../dist/doz.js?58965488592492158"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -151,8 +151,8 @@
     };
 
     Doz.component('doz-todo-item', {
-        template() {
-            return this.h`
+        template(h) {
+            return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
@@ -174,8 +174,8 @@
     });
 
     Doz.component('doz-todo-buttons', {
-        template() {
-            return this.h`
+        template(h) {
+            return h`
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
             `;
@@ -184,8 +184,7 @@
 
     Doz.component('doz-todo', {
         store: 'todo',
-        template() {
-            const h = this.h;
+        template(h) {
             return h`
                 <div>
                     <div class="todo-input">

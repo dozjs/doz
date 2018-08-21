@@ -25,8 +25,8 @@
 <script>
 
     Doz.component('doz-clock', {
-        template(){
-            return this.h`<div>${this.props.title}: ${this.props.time}</div>`
+        template(h){
+            return h`<div>${this.props.title}: ${this.props.time}</div>`
         },
         props: {
             time: '--:--:--',

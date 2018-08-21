@@ -284,6 +284,7 @@ var queueReady = __webpack_require__(30);
 var extendInstance = __webpack_require__(31);
 var cloneObject = __webpack_require__(32);
 var toLiteralString = __webpack_require__(14);
+var h = __webpack_require__(34);
 
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -583,7 +584,7 @@ function create(cmp, cfg) {
                 var _this = this;
 
                 this.beginSafeRender();
-                var template = this.template().trim();
+                var template = this.template(h).trim();
                 this.endSafeRender();
 
                 var tpl = html.create(template, TAG.ROOT);
@@ -600,28 +601,6 @@ function create(cmp, cfg) {
                 }
 
                 this._prev = next;
-            },
-            enumerable: true
-        },
-        h: {
-            value: function value(strings) {
-                var result = strings[0];
-
-                for (var _len2 = arguments.length, _value = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                    _value[_key2 - 1] = arguments[_key2];
-                }
-
-                for (var i = 0; i < _value.length; ++i) {
-                    result += '<' + TAG.TEXT_NODE_PLACE + '>' + _value[i] + '</' + TAG.TEXT_NODE_PLACE + '>' + strings[i + 1];
-                    //result += `${value[i]}${strings[i + 1]}`;
-                }
-
-                result = result.replace(/<te-xt></gi, '<');
-                result = result.replace(/><\/te-xt>/gi, '>');
-                result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
-                console.log(result);
-
-                return result;
             },
             enumerable: true
         },
@@ -2844,6 +2823,47 @@ function component(tag) {
 }
 
 module.exports = component;
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
+
+var tag = TAG.TEXT_NODE_PLACE;
+var re = [new RegExp('<' + tag + '>', 'gi'), new RegExp('></' + tag + '>', 'gi'), new RegExp('="<' + tag + '>(.*?)</' + tag + '>', 'gi'), new RegExp('<(.*?\\s)<' + tag + '>(.*?)</' + tag + '>', 'gi'), new RegExp('(\\son.*)<' + tag + '>(.*?)</' + tag + '>(.*?")', 'gi')];
+
+module.exports = function (strings) {
+    var result = strings[0];
+
+    for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        value[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < value.length; ++i) {
+        result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];
+    }
+
+    result = result.replace(/<te-xt></gi, '<');
+    result = result.replace(/><\/te-xt>/gi, '>');
+    result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
+    result = result.replace(/<(.*?\s)<te-xt>(.*?)<\/te-xt>/gi, '<$1 $2');
+    result = result.replace(/(\son.*)<te-xt>(.*?)<\/te-xt>(.*?")/gi, '$1$2$3');
+    /*
+        console.log(re)
+        result = result.replace(re[0], '<');
+        result = result.replace(re[1], '>');
+        result = result.replace(re[2], '="$1"');
+        result = result.replace(re[3], '<$1 $2');
+        result = result.replace(re[4], '$1$2$3');*/
+    //console.log(result);
+
+    return result;
+};
 
 /***/ })
 /******/ ]);

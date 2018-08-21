@@ -17,6 +17,7 @@ const queueReady = require('./queue-ready');
 const extendInstance = require('./extend-instance');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
+const h = require('../vdom/h');
 
 function get(cfg = {}) {
 
@@ -313,7 +314,7 @@ function create(cmp, cfg) {
         render: {
             value: function (initial) {
                 this.beginSafeRender();
-                const template = this.template().trim();
+                const template = this.template(h).trim();
                 this.endSafeRender();
 
                 const tpl = html.create(template, TAG.ROOT);
@@ -330,24 +331,6 @@ function create(cmp, cfg) {
                 }
 
                 this._prev = next;
-            },
-            enumerable: true
-        },
-        h: {
-            value: function (strings, ...value) {
-                let result = strings[0];
-                for (let i = 0; i < value.length; ++i) {
-                    result += `<${TAG.TEXT_NODE_PLACE}>${value[i]}</${TAG.TEXT_NODE_PLACE}>${strings[i + 1]}`;
-                    //result += `${value[i]}${strings[i + 1]}`;
-                }
-
-                result = result.replace(/<te-xt></gi, '<');
-                result = result.replace(/><\/te-xt>/gi, '>');
-                result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
-                result = result.replace(/(\son.*)<te-xt>(.*?)<\/te-xt>(.*?")/gi, '$1$2$3');
-                console.log(result);
-
-                return result;
             },
             enumerable: true
         },

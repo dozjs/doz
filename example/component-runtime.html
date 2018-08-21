@@ -26,8 +26,8 @@
 <script>
 
     Doz.component('fist-component', {
-        template() {
-            return `
+        template(h) {
+            return h`
                 <button forceupdate onclick="this.drawOther()">Mount second</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
             `;
@@ -59,8 +59,8 @@
         props: {
             state: false
         },
-        template() {
-            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        template(h) {
+            return h`<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;
@@ -71,8 +71,8 @@
         props: {
             state: false
         },
-        template() {
-            return `<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        template(h) {
+            return h`<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;
