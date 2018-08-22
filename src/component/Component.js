@@ -72,6 +72,8 @@ class Component {
         this.appRoot = cfg.app._root;
         this.action = cfg.app.action;
         this.props = {};
+        this.autoCreateChildren = true;
+        this.updateChildrenProps = true;
 
         let instance = this;
 

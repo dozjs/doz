@@ -12,18 +12,10 @@ function component(tag, cfg = {}) {
         throw new TypeError('Tag must contain a dash (-) like my-component');
     }
 
-    const cmp = {};
-
-    cmp.tag = tag;
-
-    cmp.cfg = extend.copy(cfg, {
-        autoCreateChildren: true,
-        updateChildrenProps: true,
-        props: {},
-        template() {
-            return ''
-        }
-    });
+    const cmp = {
+        tag,
+        cfg
+    };
 
     register(cmp);
 }
