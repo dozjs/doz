@@ -1811,10 +1811,18 @@ var _require = __webpack_require__(0),
     TAG = _require.TAG;
 
 var tag = TAG.TEXT_NODE_PLACE;
+var LESS = '<';
+var GREATER = '>';
 
 var regOpen = new RegExp('<' + tag + '>(\\s+)?<', 'gi');
 var regClose = new RegExp('>(\\s+)?</' + tag + '>', 'gi');
 
+/**
+ * This method add special tag to value placeholder
+ * @param strings
+ * @param value
+ * @returns {*}
+ */
 module.exports = function (strings) {
     var result = strings[0];
     var allowTag = false;
@@ -1825,14 +1833,14 @@ module.exports = function (strings) {
 
     for (var i = 0; i < value.length; ++i) {
         [].concat(_toConsumableArray(strings[i])).forEach(function (char) {
-            if (char === '<') allowTag = false;
-            if (char === '>') allowTag = true;
+            if (char === LESS) allowTag = false;
+            if (char === GREATER) allowTag = true;
         });
 
         if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
-    result = result.replace(regOpen, '<').replace(regClose, '>');
+    result = result.replace(regOpen, LESS).replace(regClose, GREATER);
 
     return result;
 };

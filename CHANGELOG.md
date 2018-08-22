@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `h` an helper that improve virtual dom performance
+
 ## [1.4.4] - 2018-08-12
 - **Improvement** template engine
 

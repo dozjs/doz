@@ -40,37 +40,6 @@
 </head>
 <body>
 <div id="app"></div>
-
-<h2>HTML</h2>
-<pre class="prettyprint">
-    <code class="lang-html">
-    &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
-    </code>
-</pre>
-<h2>JavaScript</h2>
-<pre class="prettyprint">
-    <code class="lang-js">
-    Doz.component(&apos;doz-button-counter&apos;, {
-        template(){
-            return &grave;&lt;div&gt;&lt;button onclick=&quot;this.myClickHandler()&quot;&gt;${this.props.title}&lt;/button&gt; &lt;span class=&quot;counter&quot;&gt;${this.props.counter}&lt;/span&gt;&lt;/div&gt;&grave;
-        },
-        props: {
-            counter: 0
-        },
-        myClickHandler() {
-            this.props.counter += 1;
-        }
-    });
-
-    new Doz({
-        root: document.getElementById(&apos;app&apos;),
-        template: &grave;
-            &lt;doz-button-counter title=&quot;Click me!&quot;&gt;&lt;/doz-button-counter&gt;
-            &lt;doz-button-counter title=&quot;Touch me!&quot;&gt;&lt;/doz-button-counter&gt;
-        &grave;
-    });
-    </code>
-</pre>
 <script>
 
     Doz.component('doz-button-counter', {

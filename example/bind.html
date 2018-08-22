@@ -25,8 +25,8 @@
 <script>
 
     Doz.component('doz-text', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
                     <p>Value: ${this.props.message}</p>
@@ -43,8 +43,8 @@
     });
 
     Doz.component('doz-radio', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <input type="radio" d-bind="gender" name="gender" value="male"> Male
                     <input type="radio" d-bind="gender" name="gender" value="female"> Female
@@ -63,8 +63,8 @@
     });
 
     Doz.component('doz-select', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <select d-bind="item">
                         <option value="" disabled="true" selected="true" hidden="true">Please Choose...</option>
@@ -86,8 +86,8 @@
     });
 
     Doz.component('doz-select-multiple', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <select d-bind="item" multiple="multiple">
                         <option value="" disabled="true" selected="true" hidden="true">Please Choose...</option>
@@ -109,8 +109,8 @@
     });
 
     Doz.component('doz-checkbox', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <input type="checkbox" d-bind="done" name="done"> ${this.props.done} <br/><br/>
                     <button onclick="this.setNew()">Set to true</button>
@@ -126,8 +126,8 @@
     });
 
     Doz.component('doz-checkbox-multiple', {
-        template(){
-            return this.h`
+        template(h){
+            return h`
                 <div>
                     <input type="checkbox" d-bind="sauce" name="sauce" value="Mustard"> Mustard
                     <input type="checkbox" d-bind="sauce" name="sauce" value="Mayonnaise"> Mayonnaise
