@@ -9,7 +9,7 @@ module.exports = function (strings, ...value) {
     let allowTag = false;
 
     for (let i = 0; i < value.length; ++i) {
-        Array.from(strings[i]).forEach(char => {
+        [...strings[i]].forEach(char => {
             if (char === '<')
                 allowTag = false;
             if (char === '>')

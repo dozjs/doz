@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -262,7 +262,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var collection = __webpack_require__(2);
-var observer = __webpack_require__(19);
+var observer = __webpack_require__(20);
 var hooks = __webpack_require__(6);
 
 var _require2 = __webpack_require__(8),
@@ -270,21 +270,21 @@ var _require2 = __webpack_require__(8),
     serializeProps = _require2.serializeProps;
 
 var update = __webpack_require__(11).updateElement;
-var store = __webpack_require__(24);
-var ids = __webpack_require__(25);
+var store = __webpack_require__(25);
+var ids = __webpack_require__(26);
 
-var _require3 = __webpack_require__(26),
+var _require3 = __webpack_require__(27),
     extract = _require3.extract;
 
 var proxy = __webpack_require__(5);
 var toInlineStyle = __webpack_require__(13);
-var hmr = __webpack_require__(27);
-var style = __webpack_require__(28);
-var queueReady = __webpack_require__(30);
-var extendInstance = __webpack_require__(31);
-var cloneObject = __webpack_require__(32);
+var hmr = __webpack_require__(28);
+var style = __webpack_require__(29);
+var queueReady = __webpack_require__(31);
+var extendInstance = __webpack_require__(32);
+var cloneObject = __webpack_require__(33);
 var toLiteralString = __webpack_require__(14);
-var h = __webpack_require__(33);
+var h = __webpack_require__(15);
 
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1483,7 +1483,7 @@ module.exports = ObservableSlim;
 "use strict";
 
 
-var deprecate = __webpack_require__(20);
+var deprecate = __webpack_require__(21);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -1740,7 +1740,7 @@ module.exports = dashToCamel;
 "use strict";
 
 
-var element = __webpack_require__(21);
+var element = __webpack_require__(22);
 
 module.exports = {
     updateElement: element.update
@@ -1805,7 +1805,37 @@ module.exports = toLiteralString;
 "use strict";
 
 
-module.exports = __webpack_require__(16);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
+
+var tag = TAG.TEXT_NODE_PLACE;
+
+var regOpen = new RegExp('<' + tag + '>(\\s+)?<', 'gi');
+var regClose = new RegExp('>(\\s+)?</' + tag + '>', 'gi');
+
+module.exports = function (strings) {
+    var result = strings[0];
+    var allowTag = false;
+
+    for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        value[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < value.length; ++i) {
+        [].concat(_toConsumableArray(strings[i])).forEach(function (char) {
+            if (char === '<') allowTag = false;
+            if (char === '>') allowTag = true;
+        });
+
+        if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
+    }
+
+    result = result.replace(regOpen, '<').replace(regClose, '>');
+
+    return result;
+};
 
 /***/ }),
 /* 16 */
@@ -1815,16 +1845,25 @@ module.exports = __webpack_require__(16);
 
 
 module.exports = __webpack_require__(17);
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(18);
 module.exports.component = __webpack_require__(34);
 module.exports.collection = __webpack_require__(2);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
-module.exports.h = __webpack_require__(33);
+module.exports.h = __webpack_require__(15);
 module.exports.html = __webpack_require__(4);
 module.exports.version = '1.4.4';
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1837,7 +1876,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(1);
-var bind = __webpack_require__(18);
+var bind = __webpack_require__(19);
 var instances = __webpack_require__(3);
 
 var _require = __webpack_require__(0),
@@ -2021,7 +2060,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2053,7 +2092,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2112,7 +2151,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2159,7 +2198,7 @@ module.exports.once = once;
 module.exports._list = _list;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2167,7 +2206,7 @@ module.exports._list = _list;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(22),
+var _require = __webpack_require__(23),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2280,7 +2319,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2298,7 +2337,7 @@ var _require = __webpack_require__(0),
 var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
 var camelToDash = __webpack_require__(12);
-var objectPath = __webpack_require__(23);
+var objectPath = __webpack_require__(24);
 var delay = __webpack_require__(7);
 
 function isEventAttribute(name) {
@@ -2521,7 +2560,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2546,7 +2585,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2567,7 +2606,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2588,7 +2627,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2629,7 +2668,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2661,7 +2700,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2669,7 +2708,7 @@ module.exports = hmr;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var composeStyle = __webpack_require__(29);
+var composeStyle = __webpack_require__(30);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -2692,7 +2731,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2717,7 +2756,7 @@ function composeStyle(style, tag) {
 module.exports = composeStyle;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2735,7 +2774,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2768,7 +2807,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2779,43 +2818,6 @@ function cloneObject(obj) {
 }
 
 module.exports = cloneObject;
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(0),
-    TAG = _require.TAG;
-
-var tag = TAG.TEXT_NODE_PLACE;
-
-var regOpen = new RegExp('<' + tag + '>(\\s+)?<', 'gi');
-var regClose = new RegExp('>(\\s+)?</' + tag + '>', 'gi');
-
-module.exports = function (strings) {
-    var result = strings[0];
-    var allowTag = false;
-
-    for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        value[_key - 1] = arguments[_key];
-    }
-
-    for (var i = 0; i < value.length; ++i) {
-        Array.from(strings[i]).forEach(function (char) {
-            if (char === '<') allowTag = false;
-            if (char === '>') allowTag = true;
-        });
-
-        if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
-    }
-
-    result = result.replace(regOpen, '<').replace(regClose, '>');
-
-    return result;
-};
 
 /***/ }),
 /* 34 */
