@@ -1,4 +1,3 @@
-const extend = require('../utils/extend');
 const {register} = require('../collection');
 const {REGEX} = require('../constants');
 

@@ -52,3 +52,5 @@ new Doz({
         return `<my-component></my-component>`
     }
 });
+
+console.log(MyComponent.prototype.onMount)

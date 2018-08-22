@@ -757,59 +757,53 @@ var Component = function () {
 
         // Private
         this._cfgRoot = cfg.root;
-        this._isCreated = false;
-        this._prevTpl = null;
-        this._prev = null;
-        this._prevProps = null;
-        this._rootElement = null;
-        this._boundElements = {};
-        this._callback = cfg.dProps['callback'];
-        this._cache = new Map();
-        this._loops = {};
-        this._components = {};
         this._publicProps = Object.assign({}, cfg.props);
         this._initialProps = cloneObject(props);
+        this._callback = cfg.dProps['callback'];
+        this._isCreated = false;
+        this._prev = null;
+        this._rootElement = null;
+        this._boundElements = {};
+        this._components = {};
         this._processing = [];
         this._dynamicChildren = [];
         this._unmounted = false;
         this._unmountedParentNode = null;
 
         // Public
+        this.tag = cmp.tag;
         this.app = cfg.app;
         this.parent = cfg.parentCmp;
+        this.appRoot = cfg.app._root;
+        this.action = cfg.app.action;
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
-        this.tag = cmp.tag;
-        this.appRoot = cfg.app._root;
-        this.action = cfg.app.action;
         this.props = {};
         this.autoCreateChildren = true;
         this.updateChildrenProps = true;
 
-        var instance = this;
-
         // Assign cfg to instance
-        extendInstance(instance, cmp.cfg, cfg.dProps);
+        extendInstance(this, cmp.cfg, cfg.dProps);
 
-        var beforeCreate = hooks.callBeforeCreate(instance);
+        var beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false) return undefined;
 
         // Create observer to props
-        observer.create(instance, props);
+        observer.create(this, props);
         // Create shared store
-        store.create(instance);
+        store.create(this);
         // Create ID
-        ids.create(instance);
+        ids.create(this);
         // Add callback to ready queue
-        queueReady.add(instance);
+        queueReady.add(this);
         // Call create
-        hooks.callCreate(instance);
+        hooks.callCreate(this);
         //Apply scoped style
-        style.scoped(instance);
+        style.scoped(this);
 
         // Now instance is created
-        instance._isCreated = true;
+        this._isCreated = true;
 
         return this;
     }
@@ -2798,8 +2792,6 @@ module.exports = cloneObject;
 
 "use strict";
 
-
-var extend = __webpack_require__(1);
 
 var _require = __webpack_require__(3),
     register = _require.register;
