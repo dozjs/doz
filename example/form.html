@@ -48,13 +48,13 @@
             errors: '',
             class: ''
         },
-        template() {
+        template(h) {
 
             let input = '';
 
             switch (this.props.type) {
                 case 'select':
-                    input = `
+                    input = h`
                     <select d-ref="field" name="${this.props.name}">
                     ${this.each(this.props.options, item => `
                         <option ${this.props.value === item ? 'selected' : ''} value="${item}">${item}</option>
@@ -64,7 +64,7 @@
                     break;
 
                 case 'textarea':
-                    input = `
+                    input = h`
                     <textarea
                         d-ref="field"
                         d-bind="value"
@@ -74,7 +74,7 @@
                     break;
 
                 default:
-                    input = `
+                    input = h`
                     <input
                         d-ref="field"
                         d-bind="value"
@@ -85,7 +85,9 @@
                 `
             }
 
-            return `
+
+
+            return h`
             <div class="${this.props.class}">
                 <label for="${this.props.name}">
                     ${this.props.label} ${this.props.required ? '<span class="required">*</span>' : ''}

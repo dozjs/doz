@@ -30,14 +30,14 @@
         props: {
             state: 'pause'
         },
-        template: function () {
+        template: function (h) {
             switch (this.props.state) {
                 case 'play':
-                    return `<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
+                    return h`<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
                 case 'pause':
-                    return `<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
+                    return h`<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
                 case 'loading':
-                    return `<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
+                    return h`<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
         },
         play() {
@@ -55,8 +55,8 @@
         props: {
             state: false
         },
-        template: function () {
-            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        template: function (h) {
+            return h`<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;

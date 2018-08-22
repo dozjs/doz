@@ -96,15 +96,15 @@
     };
 
     Doz.component('doz-label', {
-        template() {
-            return `<h1>${this.props.title}</h1>`
+        template(h) {
+            return h`<h1>${this.props.title}</h1>`
         }
     });
 
     Doz.component('doz-buttons', {
-        template() {
+        template(h) {
             return (
-                `<div>
+                h`<div>
                     <button onclick="this.action.add(1000)" >Add 1000</button>
                     <button onclick="this.action.add(10000)" >Add 10000</button>
                     <button onclick="this.action.reverse()" >Reverse</button>
@@ -120,9 +120,9 @@
 
     Doz.component('doz-list', {
         store: 'list',
-        template() {
+        template(h) {
             return (
-                `<div>
+                h`<div>
                     <ul>${this.each(this.props.record, item => `<li>${item}</li>`)}</ul>
                 </div>`
             );

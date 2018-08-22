@@ -12,7 +12,7 @@ module.exports = {
         EMPTY: 'doz-empty',
         MOUNT: 'doz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'te-xt'
+        TEXT_NODE_PLACE: 'doz-text-node-place'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,

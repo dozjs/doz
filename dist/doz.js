@@ -95,7 +95,7 @@ module.exports = {
         EMPTY: 'doz-empty',
         MOUNT: 'doz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'te-xt'
+        TEXT_NODE_PLACE: 'doz-text-node-place'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -284,7 +284,7 @@ var queueReady = __webpack_require__(30);
 var extendInstance = __webpack_require__(31);
 var cloneObject = __webpack_require__(32);
 var toLiteralString = __webpack_require__(14);
-var h = __webpack_require__(34);
+var h = __webpack_require__(33);
 
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1815,10 +1815,11 @@ module.exports = __webpack_require__(16);
 
 
 module.exports = __webpack_require__(17);
-module.exports.component = __webpack_require__(33);
+module.exports.component = __webpack_require__(34);
 module.exports.collection = __webpack_require__(2);
 module.exports.update = __webpack_require__(11).updateElement;
 module.exports.transform = __webpack_require__(8).transform;
+module.exports.h = __webpack_require__(33);
 module.exports.html = __webpack_require__(4);
 module.exports.version = '1.4.4';
 
@@ -2786,6 +2787,43 @@ module.exports = cloneObject;
 "use strict";
 
 
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
+
+var tag = TAG.TEXT_NODE_PLACE;
+
+var regOpen = new RegExp('<' + tag + '>(\\s+)?<', 'gi');
+var regClose = new RegExp('>(\\s+)?</' + tag + '>', 'gi');
+
+module.exports = function (strings) {
+    var result = strings[0];
+    var allowTag = false;
+
+    for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        value[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < value.length; ++i) {
+        Array.from(strings[i]).forEach(function (char) {
+            if (char === '<') allowTag = false;
+            if (char === '>') allowTag = true;
+        });
+
+        if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
+    }
+
+    result = result.replace(regOpen, '<').replace(regClose, '>');
+
+    return result;
+};
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var extend = __webpack_require__(1);
 
 var _require = __webpack_require__(2),
@@ -2823,47 +2861,6 @@ function component(tag) {
 }
 
 module.exports = component;
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(0),
-    TAG = _require.TAG;
-
-var tag = TAG.TEXT_NODE_PLACE;
-var re = [new RegExp('<' + tag + '>', 'gi'), new RegExp('></' + tag + '>', 'gi'), new RegExp('="<' + tag + '>(.*?)</' + tag + '>', 'gi'), new RegExp('<(.*?\\s)<' + tag + '>(.*?)</' + tag + '>', 'gi'), new RegExp('(\\son.*)<' + tag + '>(.*?)</' + tag + '>(.*?")', 'gi')];
-
-module.exports = function (strings) {
-    var result = strings[0];
-
-    for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        value[_key - 1] = arguments[_key];
-    }
-
-    for (var i = 0; i < value.length; ++i) {
-        result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];
-    }
-
-    result = result.replace(/<te-xt></gi, '<');
-    result = result.replace(/><\/te-xt>/gi, '>');
-    result = result.replace(/="<te-xt>(.*?)<\/te-xt>"/gi, '="$1"');
-    result = result.replace(/<(.*?\s)<te-xt>(.*?)<\/te-xt>/gi, '<$1 $2');
-    result = result.replace(/(\son.*)<te-xt>(.*?)<\/te-xt>(.*?")/gi, '$1$2$3');
-    /*
-        console.log(re)
-        result = result.replace(re[0], '<');
-        result = result.replace(re[1], '>');
-        result = result.replace(re[2], '="$1"');
-        result = result.replace(re[3], '<$1 $2');
-        result = result.replace(re[4], '$1$2$3');*/
-    //console.log(result);
-
-    return result;
-};
 
 /***/ })
 /******/ ]);

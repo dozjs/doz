@@ -141,8 +141,8 @@
     };
 
     Doz.component('doz-todo-item', {
-        template() {
-            return `
+        template(h) {
+            return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
@@ -165,8 +165,8 @@
 
     Doz.component('doz-todo', {
         store: 'todo',
-        template() {
-            return `
+        template(h) {
+            return h`
                 <div>
                     <div class="todo-input">
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
@@ -209,7 +209,7 @@
 
             this.each(this.props.record, (item, i) => {
                 this.mounted.push(
-                    this.mount(`<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`, {
+                    this.mount(Doz.h`<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`, {
                         selector: '.todo-each'
                     })
                 );
