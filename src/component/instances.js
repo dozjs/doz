@@ -52,13 +52,28 @@ function get(cfg = {}) {
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
-                const newElement = new Component(cmp, {
-                    root: child,
-                    app: cfg.app,
-                    props,
-                    dProps,
-                    parentCmp: parent.cmp
-                });
+                let newElement;
+
+                //console.log(cmp);
+
+                if (typeof cmp.cfg === 'function') {
+                    newElement = new cmp.cfg({
+                        root: child,
+                        app: cfg.app,
+                        props,
+                        dProps,
+                        parentCmp: parent.cmp
+                    });
+                } else {
+                    newElement = new Component({
+                        cmp,
+                        root: child,
+                        app: cfg.app,
+                        props,
+                        dProps,
+                        parentCmp: parent.cmp
+                    });
+                }
 
                 if (!newElement) {
                     child = child.nextSibling;

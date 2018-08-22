@@ -20,34 +20,41 @@ class Component {
     /**
      * @return {*}
      */
-    constructor(cmp, cfg) {
+    constructor(opt) {
+        if (opt.cmp) {
+            this._props = extend.copy(opt.props,
+                typeof opt.cmp.cfg.props === 'function'
+                    ? opt.cmp.cfg.props()
+                    : opt.cmp.cfg.props
+            );
 
-        const props = extend.copy(cfg.props,
-            typeof cmp.cfg.props === 'function'
-                ? cmp.cfg.props()
-                : cmp.cfg.props
-        );
-
-        if (typeof cmp.cfg.template === 'string') {
-            let contentTpl = cmp.cfg.template;
-            if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
-                cmp.cfg.template = function () {
-                    let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                    return eval('`' + contentStr + '`')
+            if (typeof opt.cmp.cfg.template === 'string') {
+                let contentTpl = opt.cmp.cfg.template;
+                if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
+                    opt.cmp.cfg.template = function () {
+                        let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
+                        return eval('`' + contentStr + '`')
+                    }
+                } else {
+                    opt.cmp.cfg.template = function () {
+                        contentTpl = toLiteralString(contentTpl);
+                        return eval('`' + contentTpl + '`');
+                    }
                 }
-            } else {
-                cmp.cfg.template = function () {
-                    contentTpl = toLiteralString(contentTpl);
-                    return eval('`' + contentTpl + '`');
-                }
+            }
+        } else {
+            this._props = Object.assign({}, opt.props);
+            opt.cmp = {
+                tag: null,
+                cfg: {}
             }
         }
 
         // Private
-        this._cfgRoot = cfg.root;
-        this._publicProps = Object.assign({}, cfg.props);
-        this._initialProps = cloneObject(props);
-        this._callback = cfg.dProps['callback'];
+        this._cfgRoot = opt.root;
+        this._publicProps = Object.assign({}, opt.props);
+        this._initialProps = cloneObject(this._props);
+        this._callback = opt.dProps['callback'];
         this._isCreated = false;
         this._prev = null;
         this._rootElement = null;
@@ -59,11 +66,11 @@ class Component {
         this._unmountedParentNode = null;
 
         // Public
-        this.tag = cmp.tag;
-        this.app = cfg.app;
-        this.parent = cfg.parentCmp;
-        this.appRoot = cfg.app._root;
-        this.action = cfg.app.action;
+        this.tag = opt.cmp.tag;
+        this.app = opt.app;
+        this.parent = opt.parentCmp;
+        this.appRoot = opt.app._root;
+        this.action = opt.app.action;
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
@@ -72,14 +79,14 @@ class Component {
         this.updateChildrenProps = true;
 
         // Assign cfg to instance
-        extendInstance(this, cmp.cfg, cfg.dProps);
+        extendInstance(this, opt.cmp.cfg, opt.dProps);
 
         const beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false)
             return undefined;
 
         // Create observer to props
-        observer.create(this, props);
+        observer.create(this);
         // Create shared store
         store.create(this);
         // Create ID
@@ -254,9 +261,6 @@ class Component {
         hooks.callDestroy(this);
     }
 
-    static define() {
-
-    }
 }
 
 function drawDynamic(instance) {

@@ -27,7 +27,7 @@ class MyComponent extends Component{
         super();
         this.props = {
             name: 'Mondo'
-        }
+        };
     }
 
     template() {
