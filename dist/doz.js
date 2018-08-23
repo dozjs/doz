@@ -807,6 +807,7 @@ var Component = function () {
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
+
         this.autoCreateChildren = true;
         this.updateChildrenProps = true;
 

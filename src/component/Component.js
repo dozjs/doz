@@ -80,6 +80,7 @@ class Component {
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
+
         this.autoCreateChildren = true;
         this.updateChildrenProps = true;
 
@@ -94,7 +95,7 @@ class Component {
             return undefined;
 
         // Create observer to props
-        if(!isSubclass)
+        if (!isSubclass)
             observer.create(this);
         // Create shared store
         store.create(this);
@@ -237,7 +238,8 @@ class Component {
     }
 
     unmount(onlyInstance = false, byDestroy, silently) {
-        if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
+        if (!onlyInstance && (Boolean(this._unmountedParentNode)
+            || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
             return;
         }
 
