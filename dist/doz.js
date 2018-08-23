@@ -745,7 +745,7 @@ var extendInstance = __webpack_require__(33);
 var cloneObject = __webpack_require__(34);
 var toLiteralString = __webpack_require__(15);
 var h = __webpack_require__(16);
-var loadLocal = __webpack_require__(36);
+var loadLocal = __webpack_require__(35);
 
 var Component = function () {
     /**
@@ -1856,7 +1856,7 @@ module.exports = __webpack_require__(18);
 
 
 module.exports = __webpack_require__(19);
-module.exports.component = __webpack_require__(35);
+module.exports.component = __webpack_require__(36);
 module.exports.define = module.exports.component;
 module.exports.Component = __webpack_require__(9).Component;
 module.exports.collection = __webpack_require__(2);
@@ -2813,6 +2813,38 @@ module.exports = cloneObject;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function loadLocal(instance) {
+
+    // Add local components
+    if (Array.isArray(instance.components)) {
+        instance.components.forEach(function (cmp) {
+            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    } else if (_typeof(instance.components) === 'object') {
+        Object.keys(instance.components).forEach(function (objName) {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: instance.components[objName]
+            };
+        });
+        delete instance.components;
+    }
+}
+
+module.exports = loadLocal;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _require = __webpack_require__(2),
     register = _require.register;
 
@@ -2840,38 +2872,6 @@ function component(tag) {
 }
 
 module.exports = component;
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function loadLocal(instance) {
-
-    // Add local components
-    if (Array.isArray(instance.components)) {
-        instance.components.forEach(function (cmp) {
-            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                instance._components[cmp.tag] = cmp;
-            }
-        });
-        delete instance.components;
-    } else if (_typeof(instance.components) === 'object') {
-        Object.keys(instance.components).forEach(function (objName) {
-            instance._components[objName] = {
-                tag: objName,
-                cfg: instance.components[objName]
-            };
-        });
-        delete instance.components;
-    }
-}
-
-module.exports = loadLocal;
 
 /***/ })
 /******/ ]);
