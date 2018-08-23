@@ -24,13 +24,14 @@
 
     Doz.define('doz-clock', class extends Doz.Component {
 
-        constructor(cfg) {
-            super(cfg);
+        constructor(o) {
+            super(o);
 
             this.props = {
                 time: '--:--:--',
-                    color: 'black'
+                color: 'violet'
             }
+
         }
 
         template(h){
@@ -39,16 +40,7 @@
             `
         }
 
-        onCreate() {
-            console.log('cmp created')
-        }
-
-        onBeforeMount() {
-            console.log('cmp before mount')
-        }
-
         onMount() {
-            console.log('cmp mount')
             setInterval(() => this.currentTime(), 1000)
         }
 
@@ -60,7 +52,10 @@
 
     new Doz({
         root: document.getElementById('app'),
-        template: `<doz-clock title="it's"></doz-clock>`
+        template: `
+            <doz-clock title="it's"></doz-clock>
+            <doz-clock title="sono le"></doz-clock>
+        `
     });
 
 </script>

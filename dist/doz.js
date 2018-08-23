@@ -754,7 +754,7 @@ var Component = function () {
         _classCallCheck(this, Component);
 
         if (opt.cmp) {
-            this._props = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
+            this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
 
             if (typeof opt.cmp.cfg.template === 'string') {
                 var contentTpl = opt.cmp.cfg.template;
@@ -771,7 +771,8 @@ var Component = function () {
                 }
             }
         } else {
-            this._props = Object.assign({}, opt.props);
+            this._rawProps = Object.assign({}, opt.props);
+            //this._rawProps = opt.props;
             opt.cmp = {
                 tag: null,
                 cfg: {}
@@ -779,9 +780,10 @@ var Component = function () {
         }
 
         // Private
+        this._opt = opt;
         this._cfgRoot = opt.root;
         this._publicProps = Object.assign({}, opt.props);
-        this._initialProps = cloneObject(this._props);
+        this._initialProps = cloneObject(this._rawProps);
         this._callback = opt.dProps['callback'];
         this._isCreated = false;
         this._prev = null;
@@ -792,6 +794,7 @@ var Component = function () {
         this._dynamicChildren = [];
         this._unmounted = false;
         this._unmountedParentNode = null;
+        this._props = {};
 
         // Public
         this.tag = opt.cmp.tag;
@@ -802,7 +805,6 @@ var Component = function () {
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
-        this.props = {};
         this.autoCreateChildren = true;
         this.updateChildrenProps = true;
 
@@ -839,6 +841,7 @@ var Component = function () {
     }, {
         key: 'beginSafeRender',
         value: function beginSafeRender() {
+            //console.log('p', this.props)
             proxy.beginRender(this.props);
         }
     }, {
@@ -1010,6 +1013,15 @@ var Component = function () {
             });
 
             hooks.callDestroy(this);
+        }
+    }, {
+        key: 'props',
+        set: function set(props) {
+            this._rawProps = Object.assign({}, props, this._opt.props);
+            observer.create(this);
+        },
+        get: function get() {
+            return this._props;
         }
     }]);
 
@@ -2238,7 +2250,8 @@ function updateBound(instance, changes) {
 }
 
 function create(instance) {
-    instance.props = proxy.create(instance._props, null, function (changes) {
+
+    instance._props = proxy.create(instance._rawProps, null, function (changes) {
         instance.render();
         updateBound(instance, changes);
         if (instance._isCreated) {
@@ -2247,7 +2260,8 @@ function create(instance) {
             });
         }
     });
-    proxy.beforeChange(instance.props, function (changes) {
+
+    proxy.beforeChange(instance._props, function (changes) {
         var res = events.callBeforeUpdate(instance, changes);
         if (res === false) return false;
     });

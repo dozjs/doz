@@ -27,7 +27,8 @@ function updateBound(instance, changes) {
 }
 
 function create(instance) {
-    instance.props = proxy.create(instance._props, null, changes => {
+
+    instance._props = proxy.create(instance._rawProps, null, changes => {
         instance.render();
         updateBound(instance, changes);
         if (instance._isCreated) {
@@ -36,7 +37,8 @@ function create(instance) {
             });
         }
     });
-    proxy.beforeChange(instance.props, changes => {
+
+    proxy.beforeChange(instance._props, changes => {
         const res = events.callBeforeUpdate(instance, changes);
         if (res === false)
             return false;

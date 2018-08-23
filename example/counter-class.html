@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - counter</title>
+    <title>Title</title>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
+    <script src="../dist/doz.js?589654"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        button {
+            height: 50px;
+            width: 100px;
+        }
+
+        .counter {
+            background: red;
+            padding: 5px;
+            border-radius: 50%;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            font-size: 15px;
+            line-height: 25px;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+    Doz.define('doz-button-counter', class extends Doz.Component{
+
+        constructor(obj) {
+            super(obj);
+
+            this.props = {
+                counter: {
+                    value: 0
+                }
+            }
+        }
+
+        template(){
+            return `<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter.value}</span></div>`
+        }
+
+        myClickHandler() {
+            this.props.counter.value += 1;
+        }
+    });
+
+    new Doz({
+        root: document.getElementById('app'),
+        template: `
+            <doz-button-counter title="Click me!"></doz-button-counter>
+            <doz-button-counter title="Touch me!"></doz-button-counter>
+        `
+    });
+
+</script>
+</body>
+</html>

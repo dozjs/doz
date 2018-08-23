@@ -21,8 +21,9 @@ class Component {
      * @return {*}
      */
     constructor(opt) {
+
         if (opt.cmp) {
-            this._props = extend.copy(opt.props,
+            this._rawProps = extend.copy(opt.props,
                 typeof opt.cmp.cfg.props === 'function'
                     ? opt.cmp.cfg.props()
                     : opt.cmp.cfg.props
@@ -43,7 +44,8 @@ class Component {
                 }
             }
         } else {
-            this._props = Object.assign({}, opt.props);
+            this._rawProps = Object.assign({}, opt.props);
+            //this._rawProps = opt.props;
             opt.cmp = {
                 tag: null,
                 cfg: {}
@@ -51,9 +53,10 @@ class Component {
         }
 
         // Private
+        this._opt = opt;
         this._cfgRoot = opt.root;
         this._publicProps = Object.assign({}, opt.props);
-        this._initialProps = cloneObject(this._props);
+        this._initialProps = cloneObject(this._rawProps);
         this._callback = opt.dProps['callback'];
         this._isCreated = false;
         this._prev = null;
@@ -64,6 +67,7 @@ class Component {
         this._dynamicChildren = [];
         this._unmounted = false;
         this._unmountedParentNode = null;
+        this._props = {};
 
         // Public
         this.tag = opt.cmp.tag;
@@ -74,7 +78,6 @@ class Component {
         this.ref = {};
         this.children = {};
         this.rawChildren = [];
-        this.props = {};
         this.autoCreateChildren = true;
         this.updateChildrenProps = true;
 
@@ -105,11 +108,21 @@ class Component {
 
     }
 
+    set props(props) {
+        this._rawProps = Object.assign({}, props, this._opt.props);
+        observer.create(this);
+    }
+
+    get props() {
+        return this._props;
+    }
+
     getHTMLElement() {
         return this._rootElement.parentNode;
     }
 
     beginSafeRender() {
+        //console.log('p', this.props)
         proxy.beginRender(this.props)
     }
 
