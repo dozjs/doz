@@ -54,8 +54,8 @@
             }
         }
 
-        template(){
-            return `<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter.value}</span></div>`
+        template(h){
+            return h`<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter.value}</span></div>`
         }
 
         myClickHandler() {

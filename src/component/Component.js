@@ -15,6 +15,7 @@ const extendInstance = require('./extend-instance');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 const h = require('../vdom/h');
+const loadLocal = require('./load-local');
 
 class Component {
     /**
@@ -22,7 +23,9 @@ class Component {
      */
     constructor(opt) {
 
-        if (opt.cmp) {
+        const isSubclass = this.__proto__.constructor !== Component;
+
+        if (!isSubclass) {
             this._rawProps = extend.copy(opt.props,
                 typeof opt.cmp.cfg.props === 'function'
                     ? opt.cmp.cfg.props()
@@ -45,11 +48,10 @@ class Component {
             }
         } else {
             this._rawProps = Object.assign({}, opt.props);
-            //this._rawProps = opt.props;
             opt.cmp = {
                 tag: null,
                 cfg: {}
-            }
+            };
         }
 
         // Private
@@ -84,12 +86,16 @@ class Component {
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg, opt.dProps);
 
+        // Load local components
+        loadLocal(this, isSubclass);
+
         const beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false)
             return undefined;
 
         // Create observer to props
-        observer.create(this);
+        if(!isSubclass)
+            observer.create(this);
         // Create shared store
         store.create(this);
         // Create ID
@@ -122,7 +128,6 @@ class Component {
     }
 
     beginSafeRender() {
-        //console.log('p', this.props)
         proxy.beginRender(this.props)
     }
 

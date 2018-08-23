@@ -745,6 +745,7 @@ var extendInstance = __webpack_require__(33);
 var cloneObject = __webpack_require__(34);
 var toLiteralString = __webpack_require__(15);
 var h = __webpack_require__(16);
+var loadLocal = __webpack_require__(36);
 
 var Component = function () {
     /**
@@ -753,7 +754,9 @@ var Component = function () {
     function Component(opt) {
         _classCallCheck(this, Component);
 
-        if (opt.cmp) {
+        var isSubclass = this.__proto__.constructor !== Component;
+
+        if (!isSubclass) {
             this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
 
             if (typeof opt.cmp.cfg.template === 'string') {
@@ -772,7 +775,6 @@ var Component = function () {
             }
         } else {
             this._rawProps = Object.assign({}, opt.props);
-            //this._rawProps = opt.props;
             opt.cmp = {
                 tag: null,
                 cfg: {}
@@ -811,11 +813,14 @@ var Component = function () {
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg, opt.dProps);
 
+        // Load local components
+        loadLocal(this, isSubclass);
+
         var beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false) return undefined;
 
         // Create observer to props
-        observer.create(this);
+        if (!isSubclass) observer.create(this);
         // Create shared store
         store.create(this);
         // Create ID
@@ -841,7 +846,6 @@ var Component = function () {
     }, {
         key: 'beginSafeRender',
         value: function beginSafeRender() {
-            //console.log('p', this.props)
             proxy.beginRender(this.props);
         }
     }, {
@@ -2251,6 +2255,8 @@ function updateBound(instance, changes) {
 
 function create(instance) {
 
+    if (instance._props.__isProxy) proxy.remove(instance._props);
+
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         instance.render();
         updateBound(instance, changes);
@@ -2781,28 +2787,8 @@ module.exports = {
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
-
-    // Add local components
-    if (Array.isArray(cfg.components)) {
-        cfg.components.forEach(function (cmp) {
-            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                instance._components[cmp.tag] = cmp;
-            }
-        });
-        delete instance.components;
-    } else if (_typeof(cfg.components) === 'object') {
-        Object.keys(cfg.components).forEach(function (objName) {
-            instance._components[objName] = {
-                tag: objName,
-                cfg: cfg.components[objName]
-            };
-        });
-        delete instance.components;
-    }
 }
 
 module.exports = extendInstance;
@@ -2854,6 +2840,38 @@ function component(tag) {
 }
 
 module.exports = component;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function loadLocal(instance) {
+
+    // Add local components
+    if (Array.isArray(instance.components)) {
+        instance.components.forEach(function (cmp) {
+            if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    } else if (_typeof(instance.components) === 'object') {
+        Object.keys(instance.components).forEach(function (objName) {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: instance.components[objName]
+            };
+        });
+        delete instance.components;
+    }
+}
+
+module.exports = loadLocal;
 
 /***/ })
 /******/ ]);

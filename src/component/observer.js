@@ -28,6 +28,9 @@ function updateBound(instance, changes) {
 
 function create(instance) {
 
+    if(instance._props.__isProxy)
+        proxy.remove(instance._props);
+
     instance._props = proxy.create(instance._rawProps, null, changes => {
         instance.render();
         updateBound(instance, changes);
