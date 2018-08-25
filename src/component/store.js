@@ -1,10 +1,10 @@
 function create(instance) {
-
-    if (typeof instance.store === 'string') {
-        if (instance.app._stores[instance.store] !== undefined) {
-            throw new Error(`Store already defined: ${instance.store}`);
+    const storeName = instance.store;
+    if (typeof storeName === 'string') {
+        if (instance.app._stores[storeName] !== undefined) {
+            throw new Error(`Store already defined: ${storeName}`);
         }
-        instance.app._stores[instance.store] = instance.props;
+        instance.app._stores[storeName] = instance.props;
     }
 }
 

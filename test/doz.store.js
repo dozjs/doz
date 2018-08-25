@@ -125,4 +125,122 @@ describe('Doz.store', function () {
             },100);
         });
     });
+
+    describe('(pattern class) create app with component with store defined', function () {
+
+        it('should be ok', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.define('salutation-card', class extends Doz.Component {
+                constructor(obj) {
+                    super(obj);
+                    this.store = 'salutation';
+                }
+
+                template() {
+                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                }
+            });
+
+            Doz.define('caller-o', class extends Doz.Component {
+                constructor(obj) {
+                    super(obj);
+                }
+
+                template() {
+                    return `<div>${this.props.repeater}</div>`
+                }
+
+                onCreate() {
+                    console.log(this.getStore('salutation1'));
+                    this.getStore('salutation1').name = 'Hi by repeater';
+                    this.props.repeater = this.getStore('salutation1').name + ' Teddy'
+                }
+            });
+
+            const view = new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        d:store="salutation1"
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                    <salutation-card
+                        d:store="salutation2"
+                        title="MRS."
+                        name="Tina">
+                    </salutation-card>
+                    <caller-o></caller-o>
+                `
+            });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                //console.log(app);
+                be.err.true(/Hi by repeater</g.test(html));
+                be.err.true(/Hi by repeater Teddy</g.test(html));
+                be.err(done).true(/MRS. Tina/g.test(html));
+            },100);
+
+        });
+
+        it('should be ok with default store name', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.define('salutation-card', class extends Doz.Component {
+                constructor(obj) {
+                    super(obj);
+
+                    this.config = {
+                        store: 'salutation'
+                    };
+
+                }
+
+                template() {
+                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                }
+            });
+
+            Doz.define('caller-o', class extends Doz.Component {
+                constructor(obj) {
+                    super(obj);
+                }
+
+                template() {
+                    return `<div>${this.props.repeater}</div>`
+                }
+
+                onCreate() {
+                    console.log(this.getStore('salutation'));
+                    this.getStore('salutation').name = 'Hi by repeater';
+                    this.props.repeater = this.getStore('salutation').name + ' Teddy'
+                }
+            });
+
+            const view = new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                    <caller-o></caller-o>
+                `
+            });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                //console.log(app);
+                be.err(done).true(/Hi by repeater Teddy</g.test(html));
+            },100);
+
+        });
+
+    });
 });

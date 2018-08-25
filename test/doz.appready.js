@@ -52,6 +52,43 @@ describe('Doz.appready', function () {
 
         });
 
+        it('(pattern class) should be ok', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            Doz.define('hello-world', class extends Doz.Component {
+
+                constructor(obj) {
+                    super(obj);
+                    this.props = {
+                        salutation: 'Hello World'
+                    }
+                }
+
+                template() {
+                    return `
+                        <h2>${this.props.salutation}</h2>
+                    `
+                }
+
+                onAppReady() {
+                    console.log('ready', this.tag);
+                    done()
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template: `
+                    <h1>Welcome to my app:</h1>
+                    <hello-world></hello-world>
+                `
+            });
+
+        });
+
         it('should be empty array queue', function (done) {
 
             document.body.innerHTML = `

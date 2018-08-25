@@ -58,6 +58,7 @@ function get(cfg = {}) {
 
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
+                        tag: cmpName,
                         root: child,
                         app: cfg.app,
                         props,
@@ -66,6 +67,7 @@ function get(cfg = {}) {
                     });
                 } else {
                     newElement = new Component({
+                        tag: cmpName,
                         cmp,
                         root: child,
                         app: cfg.app,

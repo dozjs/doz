@@ -572,6 +572,7 @@ function get() {
 
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
+                        tag: cmpName,
                         root: child,
                         app: cfg.app,
                         props: props,
@@ -580,6 +581,7 @@ function get() {
                     });
                 } else {
                     newElement = new Component({
+                        tag: cmpName,
                         cmp: cmp,
                         root: child,
                         app: cfg.app,
@@ -715,6 +717,8 @@ module.exports = dashToCamel;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -754,9 +758,9 @@ var Component = function () {
     function Component(opt) {
         _classCallCheck(this, Component);
 
-        var isSubclass = this.__proto__.constructor !== Component;
+        this._isSubclass = this.__proto__.constructor !== Component;
 
-        if (!isSubclass) {
+        if (!this._isSubclass) {
             this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
 
             if (typeof opt.cmp.cfg.template === 'string') {
@@ -776,7 +780,7 @@ var Component = function () {
         } else {
             this._rawProps = Object.assign({}, opt.props);
             opt.cmp = {
-                tag: null,
+                tag: opt.tag,
                 cfg: {}
             };
         }
@@ -815,13 +819,13 @@ var Component = function () {
         extendInstance(this, opt.cmp.cfg, opt.dProps);
 
         // Load local components
-        loadLocal(this, isSubclass);
+        loadLocal(this);
 
         var beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false) return undefined;
 
         // Create observer to props
-        if (!isSubclass) observer.create(this);
+        observer.create(this);
         // Create shared store
         store.create(this);
         // Create ID
@@ -835,8 +839,6 @@ var Component = function () {
 
         // Now instance is created
         this._isCreated = true;
-
-        return this;
     }
 
     _createClass(Component, [{
@@ -1027,6 +1029,28 @@ var Component = function () {
         },
         get: function get() {
             return this._props;
+        }
+    }, {
+        key: 'config',
+        set: function set(obj) {
+            if (!this._isSubclass) throw new Error('Config is allowed only for classes');
+
+            if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
+
+            if (typeof obj.store === 'string') {
+                this.store = obj.store;
+                store.create(this);
+            }
+
+            if (typeof obj.id === 'string') {
+                this.id = obj.id;
+                ids.create(this);
+            }
+
+            if (_typeof(obj.style) === 'object') {
+                this.style = obj.style;
+                style.scoped(this);
+            }
         }
     }]);
 
@@ -2673,12 +2697,12 @@ module.exports.getLast = getLast;
 
 
 function create(instance) {
-
-    if (typeof instance.store === 'string') {
-        if (instance.app._stores[instance.store] !== undefined) {
-            throw new Error('Store already defined: ' + instance.store);
+    var storeName = instance.store;
+    if (typeof storeName === 'string') {
+        if (instance.app._stores[storeName] !== undefined) {
+            throw new Error('Store already defined: ' + storeName);
         }
-        instance.app._stores[instance.store] = instance.props;
+        instance.app._stores[storeName] = instance.props;
     }
 }
 
@@ -2695,11 +2719,13 @@ module.exports = {
 
 function create(instance) {
 
-    if (typeof instance.id === 'string') {
-        if (instance.app._ids[instance.id] !== undefined) {
-            throw new Error('ID already defined: ' + instance.id);
+    var id = instance.id;
+
+    if (typeof id === 'string') {
+        if (instance.app._ids[id] !== undefined) {
+            throw new Error('ID already defined: ' + id);
         }
-        instance.app._ids[instance.id] = instance;
+        instance.app._ids[id] = instance;
     }
 }
 

@@ -1,10 +1,12 @@
 function create(instance) {
 
-    if (typeof instance.id === 'string') {
-        if (instance.app._ids[instance.id] !== undefined) {
-            throw new Error(`ID already defined: ${instance.id}`);
+    const id = instance.id;
+
+    if (typeof id === 'string') {
+        if (instance.app._ids[id] !== undefined) {
+            throw new Error(`ID already defined: ${id}`);
         }
-        instance.app._ids[instance.id] = instance;
+        instance.app._ids[id] = instance;
     }
 }
 

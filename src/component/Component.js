@@ -23,9 +23,9 @@ class Component {
      */
     constructor(opt) {
 
-        const isSubclass = this.__proto__.constructor !== Component;
+        this._isSubclass = this.__proto__.constructor !== Component;
 
-        if (!isSubclass) {
+        if (!this._isSubclass) {
             this._rawProps = extend.copy(opt.props,
                 typeof opt.cmp.cfg.props === 'function'
                     ? opt.cmp.cfg.props()
@@ -49,7 +49,7 @@ class Component {
         } else {
             this._rawProps = Object.assign({}, opt.props);
             opt.cmp = {
-                tag: null,
+                tag: opt.tag,
                 cfg: {}
             };
         }
@@ -88,15 +88,14 @@ class Component {
         extendInstance(this, opt.cmp.cfg, opt.dProps);
 
         // Load local components
-        loadLocal(this, isSubclass);
+        loadLocal(this);
 
         const beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false)
             return undefined;
 
         // Create observer to props
-        if (!isSubclass)
-            observer.create(this);
+        observer.create(this);
         // Create shared store
         store.create(this);
         // Create ID
@@ -111,8 +110,6 @@ class Component {
         // Now instance is created
         this._isCreated = true;
 
-        return this;
-
     }
 
     set props(props) {
@@ -122,6 +119,29 @@ class Component {
 
     get props() {
         return this._props;
+    }
+
+    set config(obj) {
+        if (!this._isSubclass)
+            throw new Error('Config is allowed only for classes');
+
+        if (typeof obj !== 'object')
+            throw new TypeError('Config must be an object');
+
+        if(typeof obj.store === 'string') {
+            this.store = obj.store;
+            store.create(this);
+        }
+
+        if(typeof obj.id === 'string') {
+            this.id = obj.id;
+            ids.create(this);
+        }
+
+        if(typeof obj.style === 'object') {
+            this.style = obj.style;
+            style.scoped(this);
+        }
     }
 
     getHTMLElement() {
