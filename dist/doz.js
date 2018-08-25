@@ -801,6 +801,7 @@ var Component = function () {
         this._unmounted = false;
         this._unmountedParentNode = null;
         this._props = {};
+        this._configured = false;
 
         // Public
         this.tag = opt.cmp.tag;
@@ -1026,6 +1027,7 @@ var Component = function () {
         set: function set(props) {
             this._rawProps = Object.assign({}, props, this._opt.props);
             observer.create(this);
+            store.sync(this);
         },
         get: function get() {
             return this._props;
@@ -1034,6 +1036,8 @@ var Component = function () {
         key: 'config',
         set: function set(obj) {
             if (!this._isSubclass) throw new Error('Config is allowed only for classes');
+
+            if (this._configured) throw new Error('Already configured');
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
@@ -1064,6 +1068,8 @@ var Component = function () {
             if (typeof obj.updateChildrenProps === 'boolean') {
                 this.updateChildrenProps = obj.updateChildrenProps;
             }
+
+            this._configured = true;
         }
     }]);
 
@@ -2719,8 +2725,16 @@ function create(instance) {
     }
 }
 
+function sync(instance) {
+    var storeName = instance.store;
+    if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
+        instance.app._stores[storeName] = instance.props;
+    }
+}
+
 module.exports = {
-    create: create
+    create: create,
+    sync: sync
 };
 
 /***/ }),

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - vdom">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - vdom</title>
+    <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
+    <script src="../dist/doz.js?5896545885924921584t"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: peachpuff;
+        }
+
+        .todo-input {
+            margin-bottom: 10px;
+        }
+
+        .todo-input input[type=text] {
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .todo-input button {
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 0;
+            background: coral;
+            color: #fff;
+        }
+
+        .todo-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: bisque;
+            border-radius: 5px;
+        }
+
+        .todo-item input[type=text]{
+            padding: 0;
+            margin: 0;
+            background: #fff;
+            border: none;
+            font-size: inherit;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .todo-item:hover {
+            background: #feffb3;
+        }
+
+        .todo-item.done {
+            opacity: .5;
+        }
+
+        .todo-item button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        .todo-info {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    const actions = {
+        done(index) {
+            const store = this.getStore('todo');
+            store.record[index].done = !store.record[index].done;
+        },
+
+        add() {
+            console.log('add');
+            const store = this.getStore('todo');
+            if (store.todo) {
+                store.record.push({
+                    title: store.todo,
+                    done: false
+                });
+                store.todo = '';
+            }
+        },
+
+        remove(index) {
+            const store = this.getStore('todo');
+            if (confirm(`Remove ${store.record[index].title}?`))
+                store.record.splice(index, 1);
+        },
+
+        removeAll() {
+            const store = this.getStore('todo');
+            if (confirm(`Remove everything?`))
+                store.record = [];
+        },
+
+        updateTotal() {
+            const store = this.getStore('todo');
+            let totalDone = 0;
+            store.total = store.record.length;
+            store.record.forEach(item => item.done ? totalDone++ : '');
+            store.totalDone = totalDone;
+        },
+
+        showInput(e) {
+            const text = e.target;
+            const input = e.target.nextElementSibling;
+            if (!input) return;
+            input.style.display = 'inline';
+            text.style.display = 'none';
+            input.value = text.innerText;
+            input.focus();
+        },
+
+        hideInput(index, e) {
+            const input = e.target;
+            const text = e.target.previousElementSibling;
+            if (!text) return;
+            input.style.display = 'none';
+            text.style.display = 'inline';
+            const store = this.getStore('todo');
+            store.record[index].title = input.value;
+        },
+
+        inputEnterPress(index, e) {
+            if (e.keyCode === 13) {
+                this.action.hideInput(index, e);
+            }
+        },
+
+        enterPress(e) {
+            if (e.keyCode === 13) {
+                this.action.add();
+                e.target.value = '';
+            }
+        }
+    };
+
+    Doz.define('doz-todo-item', class extends Doz.Component{
+        template(h) {
+            return h`
+                <div class="todo-item ${this.props.done ? 'done' : ''} ">
+                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
+                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
+                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                        <strong>${this.props.title}</strong>
+                        <input
+                            onblur="this.action.hideInput(${this.props.id})"
+                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            style="display: none"
+                            type="text"
+                        >
+                    </span>
+                </div>
+            `;
+        }
+        onDestroy() {
+            console.log('DESTROY')
+        }
+    });
+
+    Doz.define('doz-todo-buttons', class extends Doz.Component {
+        template(h) {
+            return h`
+                <button onclick="this.action.add()" >Add</button>
+                <button onclick="this.action.removeAll()" >Remove all</button>
+            `;
+        }
+    });
+
+    Doz.define('doz-todo', class extends Doz.Component {
+
+        constructor(obj) {
+            super(obj);
+
+            this.config = {
+                store: 'todo'
+            };
+
+            this.props = {
+                record: [],
+                todo: '',
+                total: 0,
+                totalDone: 0
+            };
+
+        }
+
+        template(h) {
+            return h`
+                <div>
+                    <div class="todo-input">
+                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
+                        <doz-todo-buttons></doz-todo-buttons>
+                    </div>
+                    ${this.each(this.props.record, (item, i) =>
+                        h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                    )}
+                    <div class="todo-info">
+                        Total: ${this.props.total} - Done: ${this.props.totalDone}
+                    </div>
+                </div>
+            `;
+        }
+
+        onMount() {
+            this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
+                {title: "Buy milk", done: false},
+                {title: "Buy cigarettes", done: false}
+            ];
+            /*this.app._stores.todo = this.props;
+            console.log(this.props);
+            console.log(this.store);
+            console.log(this.app._stores);
+            console.log(this.getStore('todo'));*/
+        }
+
+        onUpdate() {
+            this.action.updateTotal();
+            localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
+        }
+    });
+
+    new Doz({
+        actions,
+        root: document.getElementById('app'),
+        template: `
+            <h1>TO-DO list</h1>
+            <doz-todo></doz-todo>
+        `
+    });
+
+</script>
+</body>
+</html>

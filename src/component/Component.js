@@ -70,6 +70,7 @@ class Component {
         this._unmounted = false;
         this._unmountedParentNode = null;
         this._props = {};
+        this._configured = false;
 
         // Public
         this.tag = opt.cmp.tag;
@@ -115,6 +116,7 @@ class Component {
     set props(props) {
         this._rawProps = Object.assign({}, props, this._opt.props);
         observer.create(this);
+        store.sync(this);
     }
 
     get props() {
@@ -125,6 +127,9 @@ class Component {
         if (!this._isSubclass)
             throw new Error('Config is allowed only for classes');
 
+        if (this._configured)
+            throw new Error('Already configured');
+
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
 
@@ -133,28 +138,30 @@ class Component {
             loadLocal(this);
         }
 
-        if(typeof obj.store === 'string') {
+        if (typeof obj.store === 'string') {
             this.store = obj.store;
             store.create(this);
         }
 
-        if(typeof obj.id === 'string') {
+        if (typeof obj.id === 'string') {
             this.id = obj.id;
             ids.create(this);
         }
 
-        if(typeof obj.style === 'object') {
+        if (typeof obj.style === 'object') {
             this.style = obj.style;
             style.scoped(this);
         }
 
-        if(typeof obj.autoCreateChildren === 'boolean') {
+        if (typeof obj.autoCreateChildren === 'boolean') {
             this.autoCreateChildren = obj.autoCreateChildren;
         }
 
-        if(typeof obj.updateChildrenProps === 'boolean') {
+        if (typeof obj.updateChildrenProps === 'boolean') {
             this.updateChildrenProps = obj.updateChildrenProps;
         }
+
+        this._configured = true;
     }
 
     getHTMLElement() {

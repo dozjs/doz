@@ -8,6 +8,14 @@ function create(instance) {
     }
 }
 
+function sync(instance) {
+    const storeName = instance.store;
+    if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
+        instance.app._stores[storeName] = instance.props;
+    }
+}
+
 module.exports = {
-    create
+    create,
+    sync
 };
