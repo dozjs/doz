@@ -108,6 +108,55 @@ describe('Doz.local.component', function () {
 
         });
 
+        it('(pattern class) should be ok with a nested component', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            Doz.define('my-component', class extends Doz.Component{
+                constructor(obj) {
+                    super(obj);
+                    this.config = {
+                        components
+                    };
+                }
+
+                template() {
+                    return `
+                        <wrapper-component
+                            d-alias="first-component"
+                            id="12"
+                            title="MR."
+                            name="Doz">
+                        </wrapper-component>
+                        <wrapper-component
+                            d-alias="second-component"
+                            id="34"
+                            title="MRS."
+                            name="Luis">
+                        </wrapper-component>
+                    `
+                }
+            });
+
+            const view = new Doz({
+                root: '#app',
+                template: `
+                    <my-component></my-component>
+                `
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML;
+                console.log(html);
+                console.log(view);
+                be.err.true(/Doz component/g.test(html));
+                be.err(done).true(/Luis component/g.test(html));
+            }, 100);
+
+        });
+
         describe('create app with component and sub-component (2)', function () {
 
             it('should be ok with a nested component', function (done) {

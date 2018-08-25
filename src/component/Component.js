@@ -128,6 +128,11 @@ class Component {
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
 
+        if (typeof obj.components === 'object') {
+            this.components = obj.components;
+            loadLocal(this);
+        }
+
         if(typeof obj.store === 'string') {
             this.store = obj.store;
             store.create(this);
@@ -141,6 +146,14 @@ class Component {
         if(typeof obj.style === 'object') {
             this.style = obj.style;
             style.scoped(this);
+        }
+
+        if(typeof obj.autoCreateChildren === 'boolean') {
+            this.autoCreateChildren = obj.autoCreateChildren;
+        }
+
+        if(typeof obj.updateChildrenProps === 'boolean') {
+            this.updateChildrenProps = obj.updateChildrenProps;
         }
     }
 

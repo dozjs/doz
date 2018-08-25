@@ -1037,6 +1037,11 @@ var Component = function () {
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
+            if (_typeof(obj.components) === 'object') {
+                this.components = obj.components;
+                loadLocal(this);
+            }
+
             if (typeof obj.store === 'string') {
                 this.store = obj.store;
                 store.create(this);
@@ -1050,6 +1055,14 @@ var Component = function () {
             if (_typeof(obj.style) === 'object') {
                 this.style = obj.style;
                 style.scoped(this);
+            }
+
+            if (typeof obj.autoCreateChildren === 'boolean') {
+                this.autoCreateChildren = obj.autoCreateChildren;
+            }
+
+            if (typeof obj.updateChildrenProps === 'boolean') {
+                this.updateChildrenProps = obj.updateChildrenProps;
             }
         }
     }]);
