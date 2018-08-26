@@ -12,7 +12,7 @@
         "watch": "webpack --watch --progress --debug",
         "build": "webpack --progress",
         "test": "mocha test",
-        "doc": "./node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
+        "doc": "jsdoc --configure .jsdoc.json --verbose",
         "test-hmr-watch": "parcel watch test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist",
         "test-hmr-build": "parcel build test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist --public-url ./"
     },
@@ -44,6 +44,7 @@
         "bejs": "^2.0.1",
         "chai": "^4.1.2",
         "compression-webpack-plugin": "^1.1.11",
+        "del-cli": "^1.1.0",
         "docdash": "^1.0.0",
         "doz-router": "git+https://github.com/dozjs/doz-router.git",
         "jsdoc": "^3.5.5",
