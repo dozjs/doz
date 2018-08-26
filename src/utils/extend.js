@@ -22,9 +22,9 @@ function extend(targetObj, defaultObj, exclude = []) {
 
 /**
  * Creates new target object and copies deep missing properties to the target object
- * @param args[0] {Object} target object
- * @param args[1] {Object} default object
- * @param args[2] {Array} exclude properties from copy
+ * @param args[0]] {Object} target object
+ * @param args[1]] {Object} default object
+ * @param args[2]] {Array} exclude properties from copy
  * @returns {*}
  */
 function copy(...args) {

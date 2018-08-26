@@ -9,3 +9,4 @@ webpack.config.js
 .travis.yml
 example/
 .postcssrc
+.jsdoc.json
