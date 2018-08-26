@@ -222,15 +222,9 @@
                 {title: "Buy milk", done: false},
                 {title: "Buy cigarettes", done: false}
             ];
-            /*this.app._stores.todo = this.props;
-            console.log(this.props);
-            console.log(this.store);
-            console.log(this.app._stores);
-            console.log(this.getStore('todo'));*/
         }
 
         onUpdate() {
-            console.log(this);
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }

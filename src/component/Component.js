@@ -33,10 +33,6 @@ class Component {
             }
         });
 
-        Object.defineProperty(this, '_isSubclass', {
-            value: this.__proto__.constructor !== Component
-        });
-
         opt.cmp = opt.cmp || {
             tag: opt.tag,
             cfg: {}
