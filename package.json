@@ -12,6 +12,7 @@
         "watch": "webpack --watch --progress --debug",
         "build": "webpack --progress",
         "test": "mocha test",
+        "clear-doc": "del-cli docs/* -f",
         "doc": "jsdoc --configure .jsdoc.json --verbose",
         "test-hmr-watch": "parcel watch test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist",
         "test-hmr-build": "parcel build test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist --public-url ./"

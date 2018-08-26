@@ -4,8 +4,15 @@ const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 
+/**
+ * @class
+ */
 class Doz {
 
+    /**
+     *
+     * @param cfg
+     */
     constructor(cfg = {}) {
         const template = `<${TAG.APP}></${TAG.APP}>`;
 
