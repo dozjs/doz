@@ -758,63 +758,28 @@ var Component = function () {
     function Component(opt) {
         _classCallCheck(this, Component);
 
-        this._isSubclass = this.__proto__.constructor !== Component;
-
-        if (!this._isSubclass) {
-            this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
-
-            if (typeof opt.cmp.cfg.template === 'string') {
-                var contentTpl = opt.cmp.cfg.template;
-                if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
-                    opt.cmp.cfg.template = function () {
-                        var contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                        return eval('`' + contentStr + '`');
-                    };
-                } else {
-                    opt.cmp.cfg.template = function () {
-                        contentTpl = toLiteralString(contentTpl);
-                        return eval('`' + contentTpl + '`');
-                    };
-                }
+        Object.defineProperties(this, {
+            _isSubclass: {
+                value: this.__proto__.constructor !== Component
+            },
+            _rawProps: {
+                value: {},
+                writable: true
             }
-        } else {
-            this._rawProps = Object.assign({}, opt.props);
-            opt.cmp = {
-                tag: opt.tag,
-                cfg: {}
-            };
-        }
+        });
 
-        // Private
-        this._opt = opt;
-        this._cfgRoot = opt.root;
-        this._publicProps = Object.assign({}, opt.props);
-        this._initialProps = cloneObject(this._rawProps);
-        this._callback = opt.dProps['callback'];
-        this._isCreated = false;
-        this._prev = null;
-        this._rootElement = null;
-        this._boundElements = {};
-        this._components = {};
-        this._processing = [];
-        this._dynamicChildren = [];
-        this._unmounted = false;
-        this._unmountedParentNode = null;
-        this._props = {};
-        this._configured = false;
+        Object.defineProperty(this, '_isSubclass', {
+            value: this.__proto__.constructor !== Component
+        });
 
-        // Public
-        this.tag = opt.cmp.tag;
-        this.app = opt.app;
-        this.parent = opt.parentCmp;
-        this.appRoot = opt.app._root;
-        this.action = opt.app.action;
-        this.ref = {};
-        this.children = {};
-        this.rawChildren = [];
+        opt.cmp = opt.cmp || {
+            tag: opt.tag,
+            cfg: {}
+        };
 
-        this.autoCreateChildren = true;
-        this.updateChildrenProps = true;
+        this._initRawProps(opt);
+
+        defineProperties(this, opt);
 
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg, opt.dProps);
@@ -1023,6 +988,35 @@ var Component = function () {
             hooks.callDestroy(this);
         }
     }, {
+        key: '_initTemplate',
+        value: function _initTemplate(opt) {
+            if (typeof opt.cmp.cfg.template === 'string') {
+                var contentTpl = opt.cmp.cfg.template;
+                if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
+                    opt.cmp.cfg.template = function () {
+                        var contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
+                        return eval('`' + contentStr + '`');
+                    };
+                } else {
+                    opt.cmp.cfg.template = function () {
+                        contentTpl = toLiteralString(contentTpl);
+                        return eval('`' + contentTpl + '`');
+                    };
+                }
+            }
+        }
+    }, {
+        key: '_initRawProps',
+        value: function _initRawProps(opt) {
+            if (!this._isSubclass) {
+                this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
+
+                this._initTemplate(opt);
+            } else {
+                this._rawProps = Object.assign({}, opt.props);
+            }
+        }
+    }, {
         key: 'props',
         set: function set(props) {
             this._rawProps = Object.assign({}, props, this._opt.props);
@@ -1076,6 +1070,116 @@ var Component = function () {
     return Component;
 }();
 
+function defineProperties(obj, opt) {
+
+    Object.defineProperties(obj, {
+        //Private
+        _opt: {
+            value: opt
+        },
+        _cfgRoot: {
+            value: opt.root
+        },
+        _publicProps: {
+            value: Object.assign({}, opt.props)
+        },
+        _initialProps: {
+            value: cloneObject(obj._rawProps)
+        },
+        _callback: {
+            value: opt.dProps['callback']
+        },
+        _isCreated: {
+            value: false,
+            writable: true
+        },
+        _prev: {
+            value: null,
+            writable: true
+        },
+        _rootElement: {
+            value: null,
+            writable: true
+        },
+        _boundElements: {
+            value: {},
+            writable: true
+        },
+        _components: {
+            value: {},
+            writable: true
+        },
+        _processing: {
+            value: [],
+            writable: true
+        },
+        _dynamicChildren: {
+            value: [],
+            writable: true
+        },
+        _unmounted: {
+            value: false,
+            writable: true
+        },
+        _unmountedParentNode: {
+            value: null,
+            writable: true
+        },
+        _configured: {
+            value: false,
+            writable: true
+        },
+        _props: {
+            value: {},
+            writable: true
+        },
+
+        //Public
+        tag: {
+            value: opt.cmp.tag,
+            enumerable: true
+        },
+        app: {
+            value: opt.app,
+            enumerable: true
+        },
+        parent: {
+            value: opt.parentCmp,
+            enumerable: true
+        },
+        appRoot: {
+            value: opt.app._root,
+            enumerable: true
+        },
+        action: {
+            value: opt.app.action,
+            enumerable: true
+        },
+        ref: {
+            value: {},
+            enumerable: true
+        },
+        children: {
+            value: {},
+            enumerable: true
+        },
+        rawChildren: {
+            value: [],
+            enumerable: true
+        },
+        autoCreateChildren: {
+            value: true,
+            enumerable: true,
+            writable: true
+        },
+        updateChildrenProps: {
+            value: true,
+            enumerable: true,
+            writable: true
+        }
+    });
+}
+
 function drawDynamic(instance) {
     clearDynamic(instance);
 
@@ -1124,6 +1228,7 @@ function clearDynamic(instance) {
 
 module.exports = {
     Component: Component,
+    defineProperties: defineProperties,
     clearDynamic: clearDynamic,
     drawDynamic: drawDynamic
 };

@@ -230,6 +230,7 @@
         }
 
         onUpdate() {
+            console.log(this);
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }
