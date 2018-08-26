@@ -2000,7 +2000,7 @@ module.exports = __webpack_require__(18);
 "use strict";
 
 
-module.exports = __webpack_require__(37);
+module.exports = __webpack_require__(19);
 module.exports.component = __webpack_require__(36);
 module.exports.define = module.exports.component;
 module.exports.Component = __webpack_require__(9).Component;
@@ -2012,7 +2012,203 @@ module.exports.html = __webpack_require__(1);
 module.exports.version = '1.4.4';
 
 /***/ }),
-/* 19 */,
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var extend = __webpack_require__(5);
+var bind = __webpack_require__(20);
+var instances = __webpack_require__(6);
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG,
+    REGEX = _require.REGEX;
+
+var toLiteralString = __webpack_require__(15);
+
+var Doz = function () {
+    function Doz() {
+        var _this = this;
+
+        var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        _classCallCheck(this, Doz);
+
+        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
+            cfg.root = document.getElementById(cfg.root.substring(1));
+        }
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
+            cfg.template = document.getElementById(cfg.template.substring(1));
+            cfg.template = cfg.template.innerHTML;
+        }
+
+        if (!(cfg.root instanceof HTMLElement)) {
+            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
+        }
+
+        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
+        }
+
+        // Remove if already exists
+        var appNode = document.querySelector(TAG.APP);
+        if (appNode) {
+            appNode.parentNode.removeChild(appNode);
+        }
+
+        this.cfg = extend(cfg, {
+            components: [],
+            actions: {}
+        });
+
+        Object.defineProperties(this, {
+            _components: {
+                value: {},
+                writable: true
+            },
+            _usedComponents: {
+                value: {},
+                writable: true
+            },
+            _stores: {
+                value: {},
+                writable: true
+            },
+            _cache: {
+                value: new Map()
+            },
+            _ids: {
+                value: {},
+                writable: true
+            },
+            _onAppReadyCB: {
+                value: [],
+                writable: true
+            },
+            _callAppReady: {
+                value: function value() {
+                    this._onAppReadyCB.forEach(function (cb) {
+                        if (typeof cb === 'function' && cb._instance) {
+                            cb.call(cb._instance);
+                        }
+                    });
+
+                    this._onAppReadyCB = [];
+                }
+            },
+            _root: {
+                value: this.cfg.root
+            },
+            action: {
+                value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            mount: {
+                value: function value(template, root) {
+                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
+
+
+                    if (typeof root === 'string') {
+                        root = document.querySelector(root);
+                    }
+
+                    root = root || parent._rootElement;
+
+                    if (!(root instanceof HTMLElement)) {
+                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                    }
+
+                    var contentStr = eval('`' + toLiteralString(template) + '`');
+                    var autoCmp = {
+                        tag: TAG.MOUNT,
+                        cfg: {
+                            props: {},
+                            template: function template() {
+                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
+                            }
+                        }
+                    };
+
+                    return instances.get({
+                        root: root,
+                        template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
+                        app: this,
+                        parentCmp: parent,
+                        autoCmp: autoCmp,
+                        mount: true
+                    });
+                },
+                enumerable: true
+            }
+        });
+
+        if (Array.isArray(this.cfg.components)) {
+            this.cfg.components.forEach(function (cmp) {
+                if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                    _this._components[cmp.tag] = cmp;
+                }
+            });
+        } else if (_typeof(this.cfg.components) === 'object') {
+            Object.keys(this.cfg.components).forEach(function (objName) {
+                _this._components[objName] = {
+                    tag: objName,
+                    cfg: _this.cfg.components[objName]
+                };
+            });
+        }
+
+        this._components[TAG.APP] = {
+            tag: TAG.APP,
+            cfg: {
+                template: typeof cfg.template === 'function' ? cfg.template : function () {
+                    var contentStr = toLiteralString(cfg.template);
+                    return eval('`' + contentStr + '`');
+                }
+            }
+        };
+
+        Object.keys(cfg).forEach(function (p) {
+            if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
+        });
+
+        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
+        this._callAppReady();
+    }
+
+    _createClass(Doz, [{
+        key: 'getComponent',
+        value: function getComponent(alias) {
+            return this._tree ? this._tree.children[alias] : undefined;
+        }
+    }, {
+        key: 'getComponentById',
+        value: function getComponentById(id) {
+            return this._ids[id];
+        }
+    }, {
+        key: 'getStore',
+        value: function getStore(store) {
+            return this._stores[store];
+        }
+    }]);
+
+    return Doz;
+}();
+
+module.exports = Doz;
+
+/***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2831,203 +3027,6 @@ function component(tag) {
 }
 
 module.exports = component;
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var extend = __webpack_require__(5);
-var bind = __webpack_require__(20);
-var instances = __webpack_require__(6);
-
-var _require = __webpack_require__(0),
-    TAG = _require.TAG,
-    REGEX = _require.REGEX;
-
-var toLiteralString = __webpack_require__(15);
-
-var Doz = function () {
-    function Doz() {
-        var _this = this;
-
-        var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        _classCallCheck(this, Doz);
-
-        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
-
-        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
-            cfg.root = document.getElementById(cfg.root.substring(1));
-        }
-
-        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
-            cfg.template = document.getElementById(cfg.template.substring(1));
-            cfg.template = cfg.template.innerHTML;
-        }
-
-        if (!(cfg.root instanceof HTMLElement)) {
-            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
-        }
-
-        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
-            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
-        }
-
-        // Remove if already exists
-        var appNode = document.querySelector(TAG.APP);
-        if (appNode) {
-            appNode.parentNode.removeChild(appNode);
-        }
-
-        this.cfg = extend(cfg, {
-            components: [],
-            actions: {}
-        });
-
-        Object.defineProperties(this, {
-            _components: {
-                value: {},
-                writable: true
-            },
-            _usedComponents: {
-                value: {},
-                writable: true
-            },
-            _stores: {
-                value: {},
-                writable: true
-            },
-            _cache: {
-                value: new Map()
-            },
-            _ids: {
-                value: {},
-                writable: true
-            },
-            _onAppReadyCB: {
-                value: [],
-                writable: true
-            },
-            _callAppReady: {
-                value: function value() {
-                    this._onAppReadyCB.forEach(function (cb) {
-                        if (typeof cb === 'function' && cb._instance) {
-                            cb.call(cb._instance);
-                        }
-                    });
-
-                    this._onAppReadyCB = [];
-                }
-            },
-            _root: {
-                value: this.cfg.root
-            },
-            action: {
-                value: bind(this.cfg.actions, this),
-                enumerable: true
-            },
-            mount: {
-                value: function value(template, root) {
-                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
-
-
-                    if (typeof root === 'string') {
-                        root = document.querySelector(root);
-                    }
-
-                    root = root || parent._rootElement;
-
-                    if (!(root instanceof HTMLElement)) {
-                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
-                    }
-
-                    var contentStr = eval('`' + toLiteralString(template) + '`');
-                    var autoCmp = {
-                        tag: TAG.MOUNT,
-                        cfg: {
-                            props: {},
-                            template: function template() {
-                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
-                            }
-                        }
-                    };
-
-                    return instances.get({
-                        root: root,
-                        template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
-                        app: this,
-                        parentCmp: parent,
-                        autoCmp: autoCmp,
-                        mount: true
-                    });
-                },
-                enumerable: true
-            }
-        });
-
-        if (Array.isArray(this.cfg.components)) {
-            this.cfg.components.forEach(function (cmp) {
-                if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                    _this._components[cmp.tag] = cmp;
-                }
-            });
-        } else if (_typeof(this.cfg.components) === 'object') {
-            Object.keys(this.cfg.components).forEach(function (objName) {
-                _this._components[objName] = {
-                    tag: objName,
-                    cfg: _this.cfg.components[objName]
-                };
-            });
-        }
-
-        this._components[TAG.APP] = {
-            tag: TAG.APP,
-            cfg: {
-                template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    var contentStr = toLiteralString(cfg.template);
-                    return eval('`' + contentStr + '`');
-                }
-            }
-        };
-
-        Object.keys(cfg).forEach(function (p) {
-            if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
-        });
-
-        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
-        this._callAppReady();
-    }
-
-    _createClass(Doz, [{
-        key: 'getComponent',
-        value: function getComponent(alias) {
-            return this._tree ? this._tree.children[alias] : undefined;
-        }
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
-            return this._ids[id];
-        }
-    }, {
-        key: 'getStore',
-        value: function getStore(store) {
-            return this._stores[store];
-        }
-    }]);
-
-    return Doz;
-}();
-
-module.exports = Doz;
 
 /***/ })
 /******/ ]);
