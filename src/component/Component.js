@@ -17,13 +17,9 @@ const toLiteralString = require('../utils/to-literal-string');
 const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 
-/**
- * @class
- */
+
 class Component {
-    /**
-     * @return {*}
-     */
+
     constructor(opt) {
 
         Object.defineProperties(this, {
