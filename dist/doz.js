@@ -204,27 +204,21 @@ module.exports = html;
 var data = __webpack_require__(21);
 
 /**
- * Get or create global collection
- * @returns {{}|components|{InjectAsComment: boolean, InjectByTag: boolean}|{InjectAsComment, InjectByTag}|Array|*}
- */
-function getOrCreate() {
-    return data.components;
-}
-
-/**
  * Register a component to global
  * @param cmp
  */
 function register(cmp) {
-    var collection = getOrCreate();
 
     var tag = cmp.tag.toUpperCase();
 
-    if (Object.prototype.hasOwnProperty.call(collection, tag)) console.warn('Doz', 'component ' + tag + ' overwritten');
+    if (Object.prototype.hasOwnProperty.call(data.components, tag)) console.warn('Doz', 'component ' + tag + ' overwritten');
 
-    collection[tag] = cmp;
+    data.components[tag] = cmp;
 }
 
+/**
+ * Remove all global components
+ */
 function removeAll() {
     data.components = {};
 }
@@ -235,12 +229,8 @@ function removeAll() {
  * @returns {*}
  */
 function get(tag) {
-    if (typeof tag !== 'string') throw new TypeError('tag must be a string');
-
     tag = tag.toUpperCase();
-
-    var collection = getOrCreate();
-    return collection[tag];
+    return data.components[tag];
 }
 
 module.exports = {
@@ -2612,7 +2602,7 @@ function updateChildren(cmp, name, value, $target) {
     if (cmp && cmp.updateChildrenProps && $target) {
         name = dashToCamel(name);
         var firstChild = $target.firstChild;
-        if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name)) firstChild[CMP_INSTANCE].props[name] = value;
+        if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) firstChild[CMP_INSTANCE].props[name] = value;
     }
 }
 
@@ -2722,7 +2712,7 @@ function setBind($target, name, value, cmp) {
             });
         });
 
-        if (cmp._boundElements.hasOwnProperty(value)) {
+        if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
             cmp._boundElements[value].push($target);
         } else {
             cmp._boundElements[value] = [$target];
@@ -2750,7 +2740,7 @@ function attach($target, props, cmp) {
     });
 
     for (var i in $target.dataset) {
-        if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
+        if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
         }
     }

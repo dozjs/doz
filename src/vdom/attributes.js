@@ -59,7 +59,7 @@ function updateChildren(cmp, name, value, $target) {
     if (cmp && cmp.updateChildrenProps && $target) {
         name = dashToCamel(name);
         const firstChild = $target.firstChild;
-        if (firstChild && firstChild[CMP_INSTANCE] && firstChild[CMP_INSTANCE]._publicProps.hasOwnProperty(name))
+        if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name))
             firstChild[CMP_INSTANCE].props[name] = value;
     }
 }
@@ -176,7 +176,7 @@ function setBind($target, name, value, cmp) {
             });
         });
 
-        if (cmp._boundElements.hasOwnProperty(value)) {
+        if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
             cmp._boundElements[value].push($target);
         } else {
             cmp._boundElements[value] = [$target];
@@ -204,7 +204,7 @@ function attach($target, props, cmp) {
     });
 
     for (let i in $target.dataset) {
-        if ($target.dataset.hasOwnProperty(i) && REGEX.IS_LISTENER.test(i)) {
+        if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
         }
     }
