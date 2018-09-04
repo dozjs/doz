@@ -1,12 +1,11 @@
-const {ROOT} = require('./constants');
+const data = require('./data');
 
 /**
  * Get or create global collection
  * @returns {{}|components|{InjectAsComment: boolean, InjectByTag: boolean}|{InjectAsComment, InjectByTag}|Array|*}
  */
 function getOrCreate() {
-    window[ROOT] = window[ROOT] || {components: {}};
-    return window[ROOT].components;
+    return data.components;
 }
 
 /**
@@ -18,22 +17,14 @@ function register(cmp) {
 
     const tag = cmp.tag.toUpperCase();
 
-    if (collection.hasOwnProperty(tag))
+    if (Object.prototype.hasOwnProperty.call(collection, tag))
         console.warn('Doz', `component ${tag} overwritten`);
 
     collection[tag] = cmp;
-    /*
-    if (!collection.hasOwnProperty(tag)) {
-        collection[tag] = cmp;
-    } else {
-        throw new Error(`Component ${tag} already defined`);
-    }
-    */
 }
 
 function removeAll() {
-    if (window[ROOT])
-        window[ROOT].components = {};
+    data.components = {};
 }
 
 /**
@@ -54,5 +45,6 @@ function get(tag) {
 module.exports = {
     register,
     get,
-    removeAll
+    removeAll,
+    data
 };

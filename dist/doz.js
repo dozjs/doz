@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,7 +82,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 module.exports = {
-    ROOT: '__DOZ_GLOBAL_COMPONENTS__',
+    ROOT: '__DOZ_GLOBAL__',
     INSTANCE: '__DOZ_INSTANCE__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
@@ -202,18 +202,14 @@ module.exports = html;
 "use strict";
 
 
-var _require = __webpack_require__(0),
-    ROOT = _require.ROOT;
+var data = __webpack_require__(37);
 
 /**
  * Get or create global collection
  * @returns {{}|components|{InjectAsComment: boolean, InjectByTag: boolean}|{InjectAsComment, InjectByTag}|Array|*}
  */
-
-
 function getOrCreate() {
-    window[ROOT] = window[ROOT] || { components: {} };
-    return window[ROOT].components;
+    return data.components;
 }
 
 /**
@@ -225,20 +221,13 @@ function register(cmp) {
 
     var tag = cmp.tag.toUpperCase();
 
-    if (collection.hasOwnProperty(tag)) console.warn('Doz', 'component ' + tag + ' overwritten');
+    if (Object.prototype.hasOwnProperty.call(collection, tag)) console.warn('Doz', 'component ' + tag + ' overwritten');
 
     collection[tag] = cmp;
-    /*
-    if (!collection.hasOwnProperty(tag)) {
-        collection[tag] = cmp;
-    } else {
-        throw new Error(`Component ${tag} already defined`);
-    }
-    */
 }
 
 function removeAll() {
-    if (window[ROOT]) window[ROOT].components = {};
+    data.components = {};
 }
 
 /**
@@ -258,7 +247,8 @@ function get(tag) {
 module.exports = {
     register: register,
     get: get,
-    removeAll: removeAll
+    removeAll: removeAll,
+    data: data
 };
 
 /***/ }),
@@ -368,8 +358,8 @@ module.exports = {
 "use strict";
 
 
-var castStringTo = __webpack_require__(7);
-var dashToCamel = __webpack_require__(8);
+var castStringTo = __webpack_require__(8);
+var dashToCamel = __webpack_require__(9);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
@@ -451,6 +441,203 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var extend = __webpack_require__(6);
+var bind = __webpack_require__(20);
+var instances = __webpack_require__(7);
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG,
+    REGEX = _require.REGEX;
+
+var toLiteralString = __webpack_require__(16);
+
+var Doz = function () {
+    function Doz() {
+        var _this = this;
+
+        var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        _classCallCheck(this, Doz);
+
+        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
+            cfg.root = document.getElementById(cfg.root.substring(1));
+        }
+
+        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
+            cfg.template = document.getElementById(cfg.template.substring(1));
+            cfg.template = cfg.template.innerHTML;
+        }
+
+        if (!(cfg.root instanceof HTMLElement)) {
+            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
+        }
+
+        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
+        }
+
+        // Remove if already exists
+        var appNode = document.querySelector(TAG.APP);
+        if (appNode) {
+            appNode.parentNode.removeChild(appNode);
+        }
+
+        this.cfg = extend(cfg, {
+            components: [],
+            actions: {}
+        });
+
+        Object.defineProperties(this, {
+            _components: {
+                value: {},
+                writable: true
+            },
+            _usedComponents: {
+                value: {},
+                writable: true
+            },
+            _stores: {
+                value: {},
+                writable: true
+            },
+            _cache: {
+                value: new Map()
+            },
+            _ids: {
+                value: {},
+                writable: true
+            },
+            _onAppReadyCB: {
+                value: [],
+                writable: true
+            },
+            _callAppReady: {
+                value: function value() {
+                    this._onAppReadyCB.forEach(function (cb) {
+                        if (typeof cb === 'function' && cb._instance) {
+                            cb.call(cb._instance);
+                        }
+                    });
+
+                    this._onAppReadyCB = [];
+                }
+            },
+            _root: {
+                value: this.cfg.root
+            },
+            action: {
+                value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            mount: {
+                value: function value(template, root) {
+                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
+
+
+                    if (typeof root === 'string') {
+                        root = document.querySelector(root);
+                    }
+
+                    root = root || parent._rootElement;
+
+                    if (!(root instanceof HTMLElement)) {
+                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                    }
+
+                    var contentStr = eval('`' + toLiteralString(template) + '`');
+                    var autoCmp = {
+                        tag: TAG.MOUNT,
+                        cfg: {
+                            props: {},
+                            template: function template() {
+                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
+                            }
+                        }
+                    };
+
+                    return instances.get({
+                        root: root,
+                        template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
+                        app: this,
+                        parentCmp: parent,
+                        autoCmp: autoCmp,
+                        mount: true
+                    });
+                },
+                enumerable: true
+            }
+        });
+
+        if (Array.isArray(this.cfg.components)) {
+            this.cfg.components.forEach(function (cmp) {
+                if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
+                    _this._components[cmp.tag] = cmp;
+                }
+            });
+        } else if (_typeof(this.cfg.components) === 'object') {
+            Object.keys(this.cfg.components).forEach(function (objName) {
+                _this._components[objName] = {
+                    tag: objName,
+                    cfg: _this.cfg.components[objName]
+                };
+            });
+        }
+
+        this._components[TAG.APP] = {
+            tag: TAG.APP,
+            cfg: {
+                template: typeof cfg.template === 'function' ? cfg.template : function () {
+                    var contentStr = toLiteralString(cfg.template);
+                    return eval('`' + contentStr + '`');
+                }
+            }
+        };
+
+        Object.keys(cfg).forEach(function (p) {
+            if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
+        });
+
+        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
+        this._callAppReady();
+    }
+
+    _createClass(Doz, [{
+        key: 'getComponent',
+        value: function getComponent(alias) {
+            return this._tree ? this._tree.children[alias] : undefined;
+        }
+    }, {
+        key: 'getComponentById',
+        value: function getComponentById(id) {
+            return this._ids[id];
+        }
+    }, {
+        key: 'getStore',
+        value: function getStore(store) {
+            return this._stores[store];
+        }
+    }]);
+
+    return Doz;
+}();
+
+module.exports = Doz;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 /**
  * Copies deep missing properties to the target object
  * @param targetObj {Object} target object
@@ -477,9 +664,9 @@ function extend(targetObj, defaultObj) {
 
 /**
  * Creates new target object and copies deep missing properties to the target object
- * @param args[0] {Object} target object
- * @param args[1] {Object} default object
- * @param args[2] {Array} exclude properties from copy
+ * @param args[0]] {Object} target object
+ * @param args[1]] {Object} default object
+ * @param args[2]] {Array} exclude properties from copy
  * @returns {*}
  */
 function copy() {
@@ -495,7 +682,7 @@ module.exports = extend;
 module.exports.copy = copy;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -519,7 +706,7 @@ var _require3 = __webpack_require__(22),
 
 var hmr = __webpack_require__(23);
 
-var _require4 = __webpack_require__(9),
+var _require4 = __webpack_require__(10),
     Component = _require4.Component;
 
 function get() {
@@ -648,7 +835,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -696,7 +883,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -711,7 +898,7 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -723,7 +910,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
+var extend = __webpack_require__(6);
 var html = __webpack_require__(1);
 
 var _require = __webpack_require__(0),
@@ -738,23 +925,20 @@ var hooks = __webpack_require__(3);
 var _require2 = __webpack_require__(4),
     transform = _require2.transform;
 
-var update = __webpack_require__(12).updateElement;
+var update = __webpack_require__(13).updateElement;
 var store = __webpack_require__(28);
 var ids = __webpack_require__(29);
-var proxy = __webpack_require__(10);
-var toInlineStyle = __webpack_require__(14);
+var proxy = __webpack_require__(11);
+var toInlineStyle = __webpack_require__(15);
 var style = __webpack_require__(30);
 var queueReady = __webpack_require__(32);
 var extendInstance = __webpack_require__(33);
 var cloneObject = __webpack_require__(34);
-var toLiteralString = __webpack_require__(15);
-var h = __webpack_require__(16);
+var toLiteralString = __webpack_require__(16);
+var h = __webpack_require__(17);
 var loadLocal = __webpack_require__(35);
 
 var Component = function () {
-    /**
-     * @return {*}
-     */
     function Component(opt) {
         _classCallCheck(this, Component);
 
@@ -1191,7 +1375,7 @@ function drawDynamic(instance) {
 
         if (item.node.innerHTML === '') {
 
-            var dynamicInstance = __webpack_require__(6).get({
+            var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app
@@ -1230,7 +1414,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1860,7 +2044,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1873,7 +2057,7 @@ function delay(cb) {
 module.exports = delay;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1886,7 +2070,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1899,7 +2083,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1907,7 +2091,7 @@ module.exports = camelToDash;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(13);
+var camelToDash = __webpack_require__(14);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -1925,7 +2109,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1938,7 +2122,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1985,15 +2169,6 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(18);
-
-/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2001,15 +2176,6 @@ module.exports = __webpack_require__(18);
 
 
 module.exports = __webpack_require__(19);
-module.exports.component = __webpack_require__(36);
-module.exports.define = module.exports.component;
-module.exports.Component = __webpack_require__(9).Component;
-module.exports.collection = __webpack_require__(2);
-module.exports.update = __webpack_require__(12).updateElement;
-module.exports.transform = __webpack_require__(4).transform;
-module.exports.h = __webpack_require__(16);
-module.exports.html = __webpack_require__(1);
-module.exports.version = '1.4.4';
 
 /***/ }),
 /* 19 */
@@ -2018,195 +2184,16 @@ module.exports.version = '1.4.4';
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var extend = __webpack_require__(5);
-var bind = __webpack_require__(20);
-var instances = __webpack_require__(6);
-
-var _require = __webpack_require__(0),
-    TAG = _require.TAG,
-    REGEX = _require.REGEX;
-
-var toLiteralString = __webpack_require__(15);
-
-var Doz = function () {
-    function Doz() {
-        var _this = this;
-
-        var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        _classCallCheck(this, Doz);
-
-        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
-
-        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
-            cfg.root = document.getElementById(cfg.root.substring(1));
-        }
-
-        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
-            cfg.template = document.getElementById(cfg.template.substring(1));
-            cfg.template = cfg.template.innerHTML;
-        }
-
-        if (!(cfg.root instanceof HTMLElement)) {
-            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
-        }
-
-        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
-            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
-        }
-
-        // Remove if already exists
-        var appNode = document.querySelector(TAG.APP);
-        if (appNode) {
-            appNode.parentNode.removeChild(appNode);
-        }
-
-        this.cfg = extend(cfg, {
-            components: [],
-            actions: {}
-        });
-
-        Object.defineProperties(this, {
-            _components: {
-                value: {},
-                writable: true
-            },
-            _usedComponents: {
-                value: {},
-                writable: true
-            },
-            _stores: {
-                value: {},
-                writable: true
-            },
-            _cache: {
-                value: new Map()
-            },
-            _ids: {
-                value: {},
-                writable: true
-            },
-            _onAppReadyCB: {
-                value: [],
-                writable: true
-            },
-            _callAppReady: {
-                value: function value() {
-                    this._onAppReadyCB.forEach(function (cb) {
-                        if (typeof cb === 'function' && cb._instance) {
-                            cb.call(cb._instance);
-                        }
-                    });
-
-                    this._onAppReadyCB = [];
-                }
-            },
-            _root: {
-                value: this.cfg.root
-            },
-            action: {
-                value: bind(this.cfg.actions, this),
-                enumerable: true
-            },
-            mount: {
-                value: function value(template, root) {
-                    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
-
-
-                    if (typeof root === 'string') {
-                        root = document.querySelector(root);
-                    }
-
-                    root = root || parent._rootElement;
-
-                    if (!(root instanceof HTMLElement)) {
-                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
-                    }
-
-                    var contentStr = eval('`' + toLiteralString(template) + '`');
-                    var autoCmp = {
-                        tag: TAG.MOUNT,
-                        cfg: {
-                            props: {},
-                            template: function template() {
-                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
-                            }
-                        }
-                    };
-
-                    return instances.get({
-                        root: root,
-                        template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
-                        app: this,
-                        parentCmp: parent,
-                        autoCmp: autoCmp,
-                        mount: true
-                    });
-                },
-                enumerable: true
-            }
-        });
-
-        if (Array.isArray(this.cfg.components)) {
-            this.cfg.components.forEach(function (cmp) {
-                if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
-                    _this._components[cmp.tag] = cmp;
-                }
-            });
-        } else if (_typeof(this.cfg.components) === 'object') {
-            Object.keys(this.cfg.components).forEach(function (objName) {
-                _this._components[objName] = {
-                    tag: objName,
-                    cfg: _this.cfg.components[objName]
-                };
-            });
-        }
-
-        this._components[TAG.APP] = {
-            tag: TAG.APP,
-            cfg: {
-                template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    var contentStr = toLiteralString(cfg.template);
-                    return eval('`' + contentStr + '`');
-                }
-            }
-        };
-
-        Object.keys(cfg).forEach(function (p) {
-            if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
-        });
-
-        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
-        this._callAppReady();
-    }
-
-    _createClass(Doz, [{
-        key: 'getComponent',
-        value: function getComponent(alias) {
-            return this._tree ? this._tree.children[alias] : undefined;
-        }
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
-            return this._ids[id];
-        }
-    }, {
-        key: 'getStore',
-        value: function getStore(store) {
-            return this._stores[store];
-        }
-    }]);
-
-    return Doz;
-}();
-
-module.exports = Doz;
+module.exports = __webpack_require__(5);
+module.exports.component = __webpack_require__(36);
+module.exports.define = module.exports.component;
+module.exports.Component = __webpack_require__(10).Component;
+module.exports.collection = __webpack_require__(2);
+module.exports.update = __webpack_require__(13).updateElement;
+module.exports.transform = __webpack_require__(4).transform;
+module.exports.h = __webpack_require__(17);
+module.exports.html = __webpack_require__(1);
+module.exports.version = '1.4.4';
 
 /***/ }),
 /* 20 */
@@ -2369,9 +2356,9 @@ module.exports = hmr;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var proxy = __webpack_require__(10);
+var proxy = __webpack_require__(11);
 var events = __webpack_require__(3);
-var delay = __webpack_require__(11);
+var delay = __webpack_require__(12);
 
 function updateBound(instance, changes) {
     changes.forEach(function (item) {
@@ -2559,11 +2546,11 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR,
     CMP_INSTANCE = _require.CMP_INSTANCE;
 
-var castStringTo = __webpack_require__(7);
-var dashToCamel = __webpack_require__(8);
-var camelToDash = __webpack_require__(13);
+var castStringTo = __webpack_require__(8);
+var dashToCamel = __webpack_require__(9);
+var camelToDash = __webpack_require__(14);
 var objectPath = __webpack_require__(27);
-var delay = __webpack_require__(11);
+var delay = __webpack_require__(12);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -2899,7 +2886,7 @@ module.exports = {
 "use strict";
 
 
-var toInlineStyle = __webpack_require__(14);
+var toInlineStyle = __webpack_require__(15);
 
 function composeStyle(style, tag) {
     var out = '';
@@ -3027,6 +3014,17 @@ function component(tag) {
 }
 
 module.exports = component;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    components: {}
+};
 
 /***/ })
 /******/ ]);
