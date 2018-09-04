@@ -4,7 +4,7 @@ const delay = require('../utils/delay');
 
 function updateBound(instance, changes) {
     changes.forEach(item => {
-        if (instance._boundElements.hasOwnProperty(item.property)) {
+        if (Object.prototype.hasOwnProperty.call(instance._boundElements, item.property)) {
             instance._boundElements[item.property].forEach(element => {
                 if (element.type === 'checkbox') {
                     if(!element.defaultValue)

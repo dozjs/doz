@@ -443,8 +443,8 @@ function extend(targetObj, defaultObj) {
 
     for (var i in defaultObj) {
         /* istanbul ignore else  */
-        if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
-            if (!targetObj.hasOwnProperty(i) || typeof targetObj[i] === 'undefined') {
+        if (Object.prototype.hasOwnProperty.call(defaultObj, i) && exclude.indexOf(i) === -1) {
+            if (!Object.prototype.hasOwnProperty.call(targetObj, i) || typeof targetObj[i] === 'undefined') {
                 targetObj[i] = defaultObj[i];
             } else if (_typeof(targetObj[i]) === 'object') {
                 extend(targetObj[i], defaultObj[i]);
@@ -2363,7 +2363,7 @@ var delay = __webpack_require__(11);
 
 function updateBound(instance, changes) {
     changes.forEach(function (item) {
-        if (instance._boundElements.hasOwnProperty(item.property)) {
+        if (Object.prototype.hasOwnProperty.call(instance._boundElements, item.property)) {
             instance._boundElements[item.property].forEach(function (element) {
                 if (element.type === 'checkbox') {
                     if (!element.defaultValue) element.checked = item.newValue;else if (Array.isArray(item.newValue)) {

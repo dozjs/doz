@@ -9,8 +9,8 @@
 function extend(targetObj, defaultObj, exclude = []) {
     for (let i in defaultObj) {
         /* istanbul ignore else  */
-        if (defaultObj.hasOwnProperty(i) && exclude.indexOf(i) === -1) {
-            if (!targetObj.hasOwnProperty(i) || typeof targetObj[i] === 'undefined') {
+        if (Object.prototype.hasOwnProperty.call(defaultObj, i) && exclude.indexOf(i) === -1) {
+            if (!Object.prototype.hasOwnProperty.call(targetObj, i) || typeof targetObj[i] === 'undefined') {
                 targetObj[i] = defaultObj[i];
             } else if (typeof targetObj[i] === 'object') {
                 extend(targetObj[i], defaultObj[i]);
