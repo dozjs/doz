@@ -1,5 +1,4 @@
 module.exports = {
-    ROOT: '__DOZ_GLOBAL__',
     INSTANCE: '__DOZ_INSTANCE__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
