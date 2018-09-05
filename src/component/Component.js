@@ -48,7 +48,7 @@ class Component {
 
         const beforeCreate = hooks.callBeforeCreate(this);
         if (beforeCreate === false)
-            return undefined;
+            return;
 
         // Create observer to props
         observer.create(this);
