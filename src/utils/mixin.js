@@ -1,18 +1,24 @@
-function mixin(obj, target) {
-    if (typeof obj !== 'object' || obj == null) {
+function mixin(target, sources = []) {
+
+    if (typeof target !== 'object' || target == null) {
         throw new TypeError('expected an object');
     }
 
-    let keys = Object.keys(obj);
+    if (!Array.isArray(sources)) {
+        throw new TypeError('sources must be an array');
+    }
 
-    for (let i = keys.length - 1; i >= 0; --i) {
-        let item = target[keys[i]];
-        if(typeof item === 'function') {
-            target[keys[i]] = item.bind(target);
+    for (let j = sources.length - 1; j >= 0; --j) {
+        let keys = Object.keys(sources[j]);
+        for (let i = keys.length - 1; i >= 0; --i) {
+            let index = keys[i];
+            if (typeof target[index] === 'undefined') {
+                target[index] = sources[j][index];
+            }
         }
     }
 
     return target;
 }
 
-module.exports = bind;
+module.exports = mixin;

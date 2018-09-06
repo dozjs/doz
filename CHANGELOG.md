@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Added** class pattern, now it's possible create component with class syntax
 - **Added** new method `define`, alias of `component`
 - **Added** `h` an helper that improve virtual dom performance
+- **Added** `mixins`, now it's possible add external functions to global
 - **Removed** global namespace `__DOZ_GLOBAL_COMPONENT__`
 
 ## [1.4.4] - 2018-08-12
