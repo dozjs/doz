@@ -24,7 +24,7 @@ describe('Doz.css.class', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
-            Doz.mixins({
+            Doz.mixin({
                myMethod() {
                    be.err.equal(this.props.title, 'MR.');
                    return true;

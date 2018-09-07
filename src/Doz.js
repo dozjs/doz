@@ -166,7 +166,7 @@ class Doz {
         return this._stores[store];
     }
 
-    static mixins(obj) {
+    static mixin(obj) {
         if (!Array.isArray(obj))
             obj = [obj];
 
