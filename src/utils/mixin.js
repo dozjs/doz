@@ -5,7 +5,7 @@ function mixin(target, sources = []) {
     }
 
     if (!Array.isArray(sources)) {
-        throw new TypeError('sources must be an array');
+        sources = [sources];
     }
 
     for (let j = sources.length - 1; j >= 0; --j) {

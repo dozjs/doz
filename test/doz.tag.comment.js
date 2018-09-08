@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.css.class', function () {
+describe('Doz.tag.comment', function () {
 
     this.timeout(5000);
 
@@ -44,7 +44,7 @@ describe('Doz.css.class', function () {
             });
 
             setTimeout(()=>{
-                const emptyTag = document.body.querySelectorAll('doz-empty');
+                const emptyTag = document.body.querySelectorAll('dz-empty');
                 be.err(done).equal(emptyTag.length, 1);
             },100);
         });

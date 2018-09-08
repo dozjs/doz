@@ -16,6 +16,7 @@ const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 const h = require('../vdom/h');
 const loadLocal = require('./load-local');
+const localMixin = require('./local-mixin');
 
 class Component {
 
@@ -42,6 +43,9 @@ class Component {
 
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg, opt.dProps);
+
+        // Create mixin
+        localMixin(this);
 
         // Load local components
         loadLocal(this);
@@ -87,6 +91,11 @@ class Component {
 
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
+
+        if (typeof obj.mixin === 'object') {
+            this.mixin = obj.mixin;
+            localMixin(this);
+        }
 
         if (typeof obj.components === 'object') {
             this.components = obj.components;
@@ -413,6 +422,11 @@ function defineProperties(obj, opt) {
         },
         updateChildrenProps: {
             value: true,
+            enumerable: true,
+            writable: true
+        },
+        mixin: {
+            value: [],
             enumerable: true,
             writable: true
         }
