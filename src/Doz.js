@@ -1,10 +1,8 @@
 const extend = require('./utils/extend');
 const bind = require('./utils/bind');
-const mixin = require('./utils/mixin');
 const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
-const {Component} = require('./component/Component');
 
 class Doz {
 
@@ -164,13 +162,6 @@ class Doz {
 
     getStore(store) {
         return this._stores[store];
-    }
-
-    static mixin(obj) {
-        if (!Array.isArray(obj))
-            obj = [obj];
-
-        mixin(Component.prototype, obj);
     }
 
 }

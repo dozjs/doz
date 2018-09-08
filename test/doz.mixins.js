@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.css.class', function () {
+describe('Doz.global.mixin', function () {
 
     this.timeout(5000);
 
