@@ -1,11 +1,35 @@
 const Doz = require('./Doz');
+const _component = require('./component');
 
-Doz.collection = require('./collection');
-Doz.Component = require('./component/Component').Component;
-Doz.component = require('./component');
-Doz.define = Doz.component;
-Doz.h = require('./vdom/h');
-Doz.mixin = require('./component/global-mixin');
-Doz.version = '[AIV]{version}[/AIV]';
+Object.defineProperties(Doz, {
+   collection: {
+       value: require('./collection'),
+       enumerable: true
+   },
+   Component: {
+       value: require('./component/Component').Component,
+       enumerable: true
+   },
+   component: {
+       value: _component,
+       enumerable: true
+   },
+   define: {
+       value: _component,
+       enumerable: true
+   },
+   h: {
+       value: require('./vdom/h'),
+       enumerable: true
+   },
+   mixin: {
+       value: require('./component/global-mixin'),
+       enumerable: true
+   },
+   version: {
+       value: '[AIV]{version}[/AIV]',
+       enumerable: true
+   }
+});
 
 module.exports = Doz;
