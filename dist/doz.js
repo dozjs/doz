@@ -88,13 +88,13 @@ module.exports = {
         SVG: 'http://www.w3.org/2000/svg'
     },
     TAG: {
-        ROOT: 'doz-root',
-        EACH: 'doz-each-root',
-        APP: 'doz-app',
-        EMPTY: 'doz-empty',
-        MOUNT: 'doz-mount',
+        ROOT: 'dz-root',
+        EACH: 'dz-each-root',
+        APP: 'dz-app',
+        EMPTY: 'dz-empty',
+        MOUNT: 'dz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'doz-text-node-place'
+        TEXT_NODE_PLACE: 'dz-text-node'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -1964,31 +1964,35 @@ module.exports = __webpack_require__(17);
 
 
 var Doz = __webpack_require__(18);
-var _component = __webpack_require__(37);
+var collection = __webpack_require__(1);
+var component = __webpack_require__(37);
+var Component = __webpack_require__(3).Component;
+var h = __webpack_require__(15);
+var mixin = __webpack_require__(38);
 
 Object.defineProperties(Doz, {
     collection: {
-        value: __webpack_require__(1),
+        value: collection,
         enumerable: true
     },
     Component: {
-        value: __webpack_require__(3).Component,
+        value: Component,
         enumerable: true
     },
     component: {
-        value: _component,
+        value: component,
         enumerable: true
     },
     define: {
-        value: _component,
+        value: component,
         enumerable: true
     },
     h: {
-        value: __webpack_require__(15),
+        value: h,
         enumerable: true
     },
     mixin: {
-        value: __webpack_require__(38),
+        value: mixin,
         enumerable: true
     },
     version: {

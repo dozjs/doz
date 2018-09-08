@@ -5,13 +5,13 @@ module.exports = {
         SVG: 'http://www.w3.org/2000/svg'
     },
     TAG: {
-        ROOT: 'doz-root',
-        EACH: 'doz-each-root',
-        APP: 'doz-app',
-        EMPTY: 'doz-empty',
-        MOUNT: 'doz-mount',
+        ROOT: 'dz-root',
+        EACH: 'dz-each-root',
+        APP: 'dz-app',
+        EMPTY: 'dz-empty',
+        MOUNT: 'dz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'doz-text-node-place'
+        TEXT_NODE_PLACE: 'dz-text-node'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
