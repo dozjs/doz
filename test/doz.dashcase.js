@@ -45,11 +45,11 @@ describe('Doz.dashcase.prop', function () {
                 `
             });
 
-            setTimeout(()=>{
+            //setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
                 be.err(done).true(/MR\. Doz/g.test(html));
-            },100);
+            //},100);
         });
     });
 });
