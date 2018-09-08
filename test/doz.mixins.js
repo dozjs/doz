@@ -91,5 +91,49 @@ describe('Doz.global.mixin', function () {
                 `
             });
         });
+
+        it('should be ok with local mixin and class definition', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            const objM = {
+               myMethod() {
+                   be.err.equal(this.props.title, 'MR.');
+                   return true;
+               }
+            };
+
+            Doz.define('salutation-card', class extends Doz.Component {
+
+                constructor(o) {
+                    super(o);
+
+                    this.config = {
+                        mixin: objM
+                    }
+                }
+
+                template() {
+                    return `
+                        <div>Hello ${this.props.title} ${this.props.name}</div>
+                    `
+                }
+
+                onMount() {
+                    be.err.empty(this.mixin);
+                    be.err(done).true(this.myMethod());
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                `
+            });
+        });
     });
 });
