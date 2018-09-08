@@ -126,6 +126,8 @@ class Component {
         }
 
         this._configured = true;
+
+        hooks.callConfigCreate(this);
     }
 
     getHTMLElement() {

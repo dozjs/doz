@@ -119,7 +119,7 @@ describe('Doz.global.mixin', function () {
                     `
                 }
 
-                onMount() {
+                onConfigCreate() {
                     be.err.empty(this.mixin);
                     be.err(done).true(this.myMethod());
                 }

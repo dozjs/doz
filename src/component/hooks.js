@@ -12,6 +12,12 @@ function callCreate(context) {
     }
 }
 
+function callConfigCreate(context) {
+    if(typeof context.onConfigCreate === 'function'){
+        context.onConfigCreate.call(context);
+    }
+}
+
 function callRender(context) {
     if(typeof context.onRender === 'function'){
         deprecate.once('onRender is deprecated since v. 1.0.0, use onMount instead');
@@ -79,6 +85,7 @@ function callDestroy(context) {
 module.exports = {
     callBeforeCreate,
     callCreate,
+    callConfigCreate,
     callRender,
     callBeforeMount,
     callMount,
