@@ -1,6 +1,6 @@
 ## Global API
 
-### Doz.component(tag, definition)
+### Doz.component( tag, definition )
 
 - **Arguments**:
     - `{string} tag`
@@ -17,7 +17,7 @@
   })
   ```
 
-### Doz.define(tag, definition)
+### Doz.define( tag, definition )
 
 - **Arguments**:
     - `{string} tag`
@@ -36,7 +36,7 @@
     })
     ```
 
-### Doz.Component(config)
+### Doz.Component( config )
 
 - **Arguments**:
     - `{Object} config`
@@ -67,7 +67,7 @@
     })
     ```
 
-### Doz.h(template)
+### Doz.h( template )
 
 - **Arguments**:
     - `{string} template`
@@ -95,7 +95,7 @@
     })
     ```
 
-### Doz.mixin(mixin)
+### Doz.mixin( mixin )
 
 - **Arguments**:
     - `{Object | Object[]} mixin`
