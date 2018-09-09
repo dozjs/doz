@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.4.4  
+// [DOZ]  Build version: 1.5.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -131,7 +131,7 @@ module.exports = {
 "use strict";
 
 
-var data = __webpack_require__(20);
+var data = __webpack_require__(21);
 
 /**
  * Register a component to global
@@ -177,7 +177,7 @@ module.exports = {
 "use strict";
 
 
-var deprecate = __webpack_require__(21);
+var deprecate = __webpack_require__(22);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -188,6 +188,12 @@ function callBeforeCreate(context) {
 function callCreate(context) {
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
+    }
+}
+
+function callConfigCreate(context) {
+    if (typeof context.onConfigCreate === 'function') {
+        context.onConfigCreate.call(context);
     }
 }
 
@@ -258,6 +264,7 @@ function callDestroy(context) {
 module.exports = {
     callBeforeCreate: callBeforeCreate,
     callCreate: callCreate,
+    callConfigCreate: callConfigCreate,
     callRender: callRender,
     callBeforeMount: callBeforeMount,
     callMount: callMount,
@@ -292,24 +299,25 @@ var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(24);
+var observer = __webpack_require__(25);
 var hooks = __webpack_require__(2);
 
 var _require2 = __webpack_require__(7),
     transform = _require2.transform;
 
-var update = __webpack_require__(25).updateElement;
-var store = __webpack_require__(29);
-var ids = __webpack_require__(30);
+var update = __webpack_require__(26).updateElement;
+var store = __webpack_require__(30);
+var ids = __webpack_require__(31);
 var proxy = __webpack_require__(10);
 var toInlineStyle = __webpack_require__(13);
-var style = __webpack_require__(31);
-var queueReady = __webpack_require__(33);
-var extendInstance = __webpack_require__(34);
-var cloneObject = __webpack_require__(35);
+var style = __webpack_require__(32);
+var queueReady = __webpack_require__(34);
+var extendInstance = __webpack_require__(35);
+var cloneObject = __webpack_require__(36);
 var toLiteralString = __webpack_require__(14);
 var h = __webpack_require__(15);
-var loadLocal = __webpack_require__(36);
+var loadLocal = __webpack_require__(37);
+var localMixin = __webpack_require__(38);
 
 var Component = function () {
     function Component(opt) {
@@ -336,6 +344,9 @@ var Component = function () {
 
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg, opt.dProps);
+
+        // Create mixin
+        localMixin(this);
 
         // Load local components
         loadLocal(this);
@@ -588,6 +599,11 @@ var Component = function () {
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
+            if (_typeof(obj.mixin) === 'object') {
+                this.mixin = obj.mixin;
+                localMixin(this);
+            }
+
             if (_typeof(obj.components) === 'object') {
                 this.components = obj.components;
                 loadLocal(this);
@@ -617,6 +633,8 @@ var Component = function () {
             }
 
             this._configured = true;
+
+            hooks.callConfigCreate(this);
         }
     }]);
 
@@ -727,6 +745,11 @@ function defineProperties(obj, opt) {
         },
         updateChildrenProps: {
             value: true,
+            enumerable: true,
+            writable: true
+        },
+        mixin: {
+            value: [],
             enumerable: true,
             writable: true
         }
@@ -858,10 +881,10 @@ var hooks = __webpack_require__(2);
 var _require2 = __webpack_require__(7),
     serializeProps = _require2.serializeProps;
 
-var _require3 = __webpack_require__(22),
+var _require3 = __webpack_require__(23),
     extract = _require3.extract;
 
-var hmr = __webpack_require__(23);
+var hmr = __webpack_require__(24);
 
 var _require4 = __webpack_require__(3),
     Component = _require4.Component;
@@ -1954,7 +1977,34 @@ module.exports = function (strings) {
 "use strict";
 
 
-module.exports = __webpack_require__(17);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function mixin(target) {
+    var sources = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+
+    if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) !== 'object' || target == null) {
+        throw new TypeError('expected an object');
+    }
+
+    if (!Array.isArray(sources)) {
+        sources = [sources];
+    }
+
+    for (var j = sources.length - 1; j >= 0; --j) {
+        var keys = Object.keys(sources[j]);
+        for (var i = keys.length - 1; i >= 0; --i) {
+            var index = keys[i];
+            if (typeof target[index] === 'undefined') {
+                target[index] = sources[j][index];
+            }
+        }
+    }
+
+    return target;
+}
+
+module.exports = mixin;
 
 /***/ }),
 /* 17 */
@@ -1963,12 +2013,21 @@ module.exports = __webpack_require__(17);
 "use strict";
 
 
-var Doz = __webpack_require__(18);
+module.exports = __webpack_require__(18);
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(19);
 var collection = __webpack_require__(1);
-var component = __webpack_require__(37);
+var component = __webpack_require__(39);
 var Component = __webpack_require__(3).Component;
 var h = __webpack_require__(15);
-var mixin = __webpack_require__(38);
+var mixin = __webpack_require__(40);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -1996,7 +2055,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.4.4',
+        value: '1.5.0',
         enumerable: true
     }
 });
@@ -2004,7 +2063,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2017,7 +2076,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(4);
-var bind = __webpack_require__(19);
+var bind = __webpack_require__(20);
 var instances = __webpack_require__(5);
 
 var _require = __webpack_require__(0),
@@ -2201,7 +2260,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2233,7 +2292,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2245,7 +2304,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2292,7 +2351,7 @@ module.exports.once = once;
 module.exports._list = _list;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2333,7 +2392,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2365,7 +2424,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2427,20 +2486,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(26);
+var element = __webpack_require__(27);
 
 module.exports = {
     updateElement: element.update
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2448,7 +2507,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(27),
+var _require = __webpack_require__(28),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2561,7 +2620,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2579,7 +2638,7 @@ var _require = __webpack_require__(0),
 var castStringTo = __webpack_require__(8);
 var dashToCamel = __webpack_require__(9);
 var camelToDash = __webpack_require__(12);
-var objectPath = __webpack_require__(28);
+var objectPath = __webpack_require__(29);
 var delay = __webpack_require__(11);
 
 function isEventAttribute(name) {
@@ -2802,7 +2861,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2827,7 +2886,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2856,7 +2915,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2879,7 +2938,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2887,7 +2946,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var composeStyle = __webpack_require__(32);
+var composeStyle = __webpack_require__(33);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -2910,7 +2969,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2935,7 +2994,7 @@ function composeStyle(style, tag) {
 module.exports = composeStyle;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2953,7 +3012,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2966,7 +3025,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2979,7 +3038,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3011,7 +3070,23 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 37 */
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var mixin = __webpack_require__(16);
+
+function localMixin(instance) {
+    mixin(instance, instance.mixin);
+    instance.mixin = [];
+}
+
+module.exports = localMixin;
+
+/***/ }),
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3046,7 +3121,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3055,51 +3130,13 @@ module.exports = component;
 var _require = __webpack_require__(3),
     Component = _require.Component;
 
-var mixin = __webpack_require__(39);
+var mixin = __webpack_require__(16);
 
 function globalMixin(obj) {
-    if (!Array.isArray(obj)) obj = [obj];
-
     mixin(Component.prototype, obj);
 }
 
 module.exports = globalMixin;
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function mixin(target) {
-    var sources = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-
-    if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) !== 'object' || target == null) {
-        throw new TypeError('expected an object');
-    }
-
-    if (!Array.isArray(sources)) {
-        throw new TypeError('sources must be an array');
-    }
-
-    for (var j = sources.length - 1; j >= 0; --j) {
-        var keys = Object.keys(sources[j]);
-        for (var i = keys.length - 1; i >= 0; --i) {
-            var index = keys[i];
-            if (typeof target[index] === 'undefined') {
-                target[index] = sources[j][index];
-            }
-        }
-    }
-
-    return target;
-}
-
-module.exports = mixin;
 
 /***/ })
 /******/ ]);
