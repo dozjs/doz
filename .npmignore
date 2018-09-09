@@ -10,3 +10,5 @@ webpack.config.js
 example/
 .postcssrc
 .jsdoc.json
+README.hbs
+_config.yml
