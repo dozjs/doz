@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.5.0] - 2018-09-09
 - **Added** class pattern, now it's possible create component with class ES6 syntax
 - **Added** new property `config` to component class, available only with class ES6
 - **Added** new method `define` to module, alias of `component`
