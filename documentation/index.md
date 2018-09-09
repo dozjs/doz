@@ -36,6 +36,8 @@ Below some basic concepts:
 - [Scoped style](#scoped-style)
 - [Inline style](#inline-style)
 - [Actions](#actions)
+- [Mixins](#mixins)
+- [ES6 Class](#es6-class)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
@@ -165,6 +167,8 @@ props: function(){
 }
 ```
 
+But if you use the new ES6 pattern class, the problem does not arise. More info [ES6 Class](#es6-class)
+
 ### Methods
 The methods are defined inside a single object where there are also props and events.
 **Why this choice?** Because during development it's essential to have an exact reference of `this` context.
@@ -212,12 +216,14 @@ When a component is defined it inherits some methods and properties:
 | `getStore` | function | Get store by name | no | no | |
 | `id` | string | A unique name that identify the component inside the app. More info on [directives](#directives) | no | yes | |
 | `mount` | function | This method can mount a new component as child. More info on [mount](#async-mount) | no | no | |
+| `mixin` | object|object[] | More info on [Mixins](#mixins) | no | no | |
 | `onAppReady`| function | This method is called after that app is rendered that is all initial component are mounted on the DOM | no | no | |
 | `onBeforeCreate`| function | This method is called before that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
 | `onBeforeDestroy`| function | This method is called before that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
 | `onBeforeMount`| function | This method is called before that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
 | `onBeforeUnmount`| function | This method is called before that component instance is unmounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
 | `onBeforeUpdate`| function | This method is called before that component instance is updated. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
+| `onConfigCreate`| function | This method is called after that component instance is created but only when `config` is set and with ES6 pattern. More info on [ES6 Class](#es6-class) | no | no | |
 | `onCreate`| function | This method is called after that component instance is created. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
 | `onDestroy`| function | This method is called after that component instance is destroyed. More info on [Lifecycle methods](#lifecycle-methods) | no | no | |
 | `onMount`| function | This method is called after that component instance is mounted. More info on [Lifecycle methods](#lifecycle-methods) | no | no | 1.0.0 |
@@ -267,7 +273,10 @@ new Doz({
 ---
 
 #### Inline logic
-Since **1.3.2** version, Doz supports also inline logic. Normally `this` is reference of HTML element but in Doz it's every reference of component instance.
+
+**Since 1.3.2**
+
+Doz supports also inline logic. Normally `this` is reference of HTML element but in Doz it's every reference of component instance.
 
 ```javascript
 Doz.component('my-button', {
@@ -356,6 +365,7 @@ new Doz({
 In order all hooks:
 - `onBeforeCreate`: called before that instance is created.
 - `onCreate`: called after that instance is created.
+- `onConfigCreate`: called after that instance is created (Only in ES6 pattern and if `config` object is set) [ES6 Class](#es6-class).
 - `onBeforeMount`: called before that instance is mounted on DOM.
 - `onMount`: called after that instance is mounted on DOM.
 - `onMountAsync`: called after that instance is mounted on DOM.
@@ -392,7 +402,6 @@ Using the argument "changes" (only for `onBeforeUpdate` and `onUpdate`) you can 
     }
 ]
 ```
-
 
 A complete example
 
@@ -500,7 +509,9 @@ new Doz({
 });
 ```
 
-Since 1.1.0 also components supports local components:
+Also components supports local components:
+
+**Since 1.1.0**
 
 ```javascript
 // First
@@ -947,7 +958,10 @@ new Doz({
 ---
 
 ### Scoped style
-Doz provide since 1.4.0 version a property called `style` that allows you to add a pseudo scoped css as object literal.
+
+**Since 1.4.0**
+
+Doz provide a property called `style` that allows you to add a pseudo scoped css as object literal.
 
 ```javascript
 
@@ -1004,7 +1018,10 @@ If you need something stronger, please use other solution like [CSS Loader](http
 ---
 
 ### Inline style
-Doz provide since 1.3.4 version a method called `toStyle` that allows you to transform an object to inline style string.
+
+**Since 1.3.4**
+
+Doz provide a method called `toStyle` that allows you to transform an object to inline style string.
 
 ```javascript
 
@@ -1072,6 +1089,119 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/je6ggukd/)
 
 ---
+
+### Mixins
+
+**Since 1.5.0**
+
+Doz provide you two way for add reusable functions to components:
+
+#### Global mixin
+The functions are available for every component.
+
+```javascript
+Doz.mixin({
+   sum(a, b) {
+       return a + b;
+   }
+});
+
+Doz.component('a-component', {
+    template() {
+        return `
+            <div>Sum of 4 + 5 = ${this.sum(4, 5)}</div>
+        `
+    }
+});
+```
+
+#### Local mixin
+The functions are available only for a component.
+
+```javascript
+const myFunctions = {
+   sum(a, b) {
+       return a + b;
+   }
+};
+
+Doz.component('a-component', {
+    mixin: myFunctions,
+    template() {
+        return `
+            <div>Sum of 4 + 5 = ${this.sum(4, 5)}</div>
+        `
+    }
+});
+
+// Sum method is undefined
+Doz.component('other-component', {
+    template() {
+        return `
+            <div>Sum of 10 + 10 = ${this.sum(10, 10)}</div>
+        `
+    }
+});
+```
+
+Ps: Mixins **don't overwrite** existing functions
+
+### ES6 Class
+
+**Since 1.5.0**
+
+If you prefer programming with ES6 class syntax:
+
+```javascript
+Doz.define('a-component', class extends Doz.Component{
+    constructor(o) {
+        super(o);
+    }
+
+    template(){
+        return `<div>Hello ES6</div>`
+    }
+});
+```
+
+Define default props
+
+```javascript
+Doz.define('a-component', class extends Doz.Component{
+    constructor(o) {
+        super(o);
+
+        this.props = {
+            name: 'ES6'
+        };
+    }
+
+    template(){
+        return `<div>Hello ${this.props.name}</div>`
+    }
+});
+```
+
+Define default config with `config` property (available only for this pattern)
+
+```javascript
+Doz.define('a-component', class extends Doz.Component{
+    constructor(o) {
+        super(o);
+
+        this.config = {
+            store: 'myStoreName',
+            id: 'myComponentId'
+        };
+    }
+
+    template(){
+        return `<div>Hello ${this.props.name}</div>`
+    }
+});
+```
+
+To registering a global component now we use `define` an alias of `component` for don't confuse you with `Component` subclass
 
 ### Component logic inside Doz constructor
 It's also possible creating an app with component logic inside Doz constructor like so:
