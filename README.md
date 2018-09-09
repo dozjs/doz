@@ -37,7 +37,7 @@ Doz.component('button-counter', {
     props: {
         counter: 0
     },
-    template: function() {
+    template() {
         return `
             <div>
                 <button onclick="this.props.counter++">
