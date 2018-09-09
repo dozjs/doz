@@ -42,6 +42,7 @@ Below some basic concepts:
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
 - [Write a component](#develop-and-production)
+- [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
 
 ## Installation
 ```
