@@ -21,7 +21,15 @@ In the web there are many frameworks that do all the same things. But a lot of t
 
 ## Installation
 ```
-npm install --save doz
+$ npm install --save doz
+```
+
+## Start with doz-cli
+```
+$ npm install -g doz-cli
+$ doz app my-app
+$ cd my-app
+$ npm run start
 ```
 
 ## Example
