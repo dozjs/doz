@@ -11,6 +11,7 @@ const proxy = require('../utils/proxy');
 const toInlineStyle = require('../utils/to-inline-style');
 const style = require('./style');
 const queueReady = require('./queue-ready');
+const queueDraw = require('./queue-draw');
 const extendInstance = require('./extend-instance');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
@@ -62,6 +63,8 @@ class Component {
         ids.create(this);
         // Add callback to ready queue
         queueReady.add(this);
+        // Add callback app draw
+        queueDraw.add(this);
         // Call create
         hooks.callCreate(this);
         //Apply scoped style
@@ -191,6 +194,8 @@ class Component {
 
         const tpl = html.create(template, TAG.ROOT);
         let next = transform(tpl);
+
+        queueDraw.emit(this, next, this._prev);
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 

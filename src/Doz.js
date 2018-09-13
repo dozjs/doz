@@ -72,6 +72,10 @@ class Doz {
                     this._onAppReadyCB = [];
                 }
             },
+            _onAppDrawCB: {
+                value: [],
+                writable: true
+            },
             _root: {
                 value: this.cfg.root
             },
