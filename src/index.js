@@ -1,8 +1,8 @@
 const Doz = require('./Doz');
 const collection = require('./collection');
 const component = require('./component');
-const use = require('./plugin').use;
-const Component = require('./component/Component').Component;
+const {use} = require('./plugin');
+const {Component} = require('./component/Component');
 const h = require('./vdom/h');
 const mixin = require('./component/global-mixin');
 
