@@ -8,7 +8,7 @@ const plugin = require('./plugin');
 class Doz {
 
     constructor(cfg = {}) {
-        const template = `<${TAG.APP}></${TAG.APP}>`;
+        this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
@@ -35,7 +35,8 @@ class Doz {
 
         this.cfg = extend(cfg, {
             components: [],
-            actions: {}
+            actions: {},
+            autoDraw: true
         });
 
         Object.defineProperties(this, {
@@ -157,9 +158,25 @@ class Doz {
 
         plugin.load(this);
 
-        this._tree = instances.get({root: this.cfg.root, template, app: this}) || [];
+        if (this.cfg.autoDraw)
+            this.draw();
+
         this._callAppReady();
         this.emit('appReady', this);
+    }
+
+    draw() {
+
+        if (!this.cfg.autoDraw)
+            this.cfg.root.innerHTML = '';
+
+        this._tree = instances.get({
+            root: this.cfg.root,
+            template: this.baseTemplate,
+            app: this
+        }) || [];
+
+        return this;
     }
 
     getComponent(alias) {
@@ -188,6 +205,8 @@ class Doz {
         }
 
         this._onAppCB[event].push(callback);
+
+        return this;
     }
 
     emit(event, ...params) {
@@ -196,6 +215,8 @@ class Doz {
                 func.apply(this, params);
             });
         }
+
+        return this;
     }
 }
 
