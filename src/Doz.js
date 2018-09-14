@@ -159,6 +159,7 @@ class Doz {
 
         this._tree = instances.get({root: this.cfg.root, template, app: this}) || [];
         this._callAppReady();
+        this.emit('appReady', this);
     }
 
     getComponent(alias) {

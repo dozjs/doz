@@ -54,8 +54,6 @@ function get(cfg = {}) {
 
                 let newElement;
 
-                //console.log(cmp);
-
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
                         tag: cmpName,
