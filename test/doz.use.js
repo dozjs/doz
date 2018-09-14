@@ -26,7 +26,7 @@ describe('Doz.use', function () {
 
             const myPluginAddCiao = function(Doz) {
                 Doz.mixin({
-                    myCiao() {
+                    myCiao2() {
                         done();
                         return 'Ciao'
                     }
@@ -38,7 +38,7 @@ describe('Doz.use', function () {
             Doz.component('salutation-card', {
                 template() {
                     return `
-                        <div>${this.myCiao()} ${this.props.title} ${this.props.name}</div>
+                        <div>${this.myCiao2()} ${this.props.title} ${this.props.name}</div>
                     `
                 }
             });

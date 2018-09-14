@@ -24,6 +24,8 @@ describe('Doz.on', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
+            let called = false;
+
             const myPluginAddCiao = function(Doz, app) {
                 Doz.mixin({
                     myCiao() {
@@ -32,7 +34,9 @@ describe('Doz.on', function () {
                 });
 
                 app.on('appDraw', (next, prev) => {
+                    if (called) return;
                     console.log(next);
+                    called = true;
                     done();
                 })
             };
