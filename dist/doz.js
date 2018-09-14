@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -131,13 +131,13 @@ module.exports = {
 "use strict";
 
 
-var data = __webpack_require__(21);
+var data = __webpack_require__(22);
 
 /**
  * Register a component to global
  * @param cmp
  */
-function register(cmp) {
+function registerComponent(cmp) {
 
     var tag = cmp.tag.toUpperCase();
 
@@ -151,6 +151,7 @@ function register(cmp) {
  */
 function removeAll() {
     data.components = {};
+    data.plugins = [];
 }
 
 /**
@@ -158,14 +159,23 @@ function removeAll() {
  * @param tag
  * @returns {*}
  */
-function get(tag) {
+function getComponent(tag) {
     tag = tag.toUpperCase();
     return data.components[tag];
 }
 
+/**
+ * Register a plugin to global
+ * @param plugin
+ */
+function registerPlugin(plugin) {
+    data.plugins.push(plugin);
+}
+
 module.exports = {
-    register: register,
-    get: get,
+    registerComponent: registerComponent,
+    registerPlugin: registerPlugin,
+    getComponent: getComponent,
     removeAll: removeAll,
     data: data
 };
@@ -177,7 +187,7 @@ module.exports = {
 "use strict";
 
 
-var deprecate = __webpack_require__(22);
+var deprecate = __webpack_require__(23);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -299,25 +309,26 @@ var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(25);
+var observer = __webpack_require__(26);
 var hooks = __webpack_require__(2);
 
 var _require2 = __webpack_require__(7),
     transform = _require2.transform;
 
-var update = __webpack_require__(26).updateElement;
-var store = __webpack_require__(30);
-var ids = __webpack_require__(31);
+var update = __webpack_require__(27).updateElement;
+var store = __webpack_require__(31);
+var ids = __webpack_require__(32);
 var proxy = __webpack_require__(10);
 var toInlineStyle = __webpack_require__(13);
-var style = __webpack_require__(32);
-var queueReady = __webpack_require__(34);
-var extendInstance = __webpack_require__(35);
-var cloneObject = __webpack_require__(36);
+var style = __webpack_require__(33);
+var queueReady = __webpack_require__(35);
+var queueDraw = __webpack_require__(36);
+var extendInstance = __webpack_require__(37);
+var cloneObject = __webpack_require__(38);
 var toLiteralString = __webpack_require__(14);
 var h = __webpack_require__(15);
-var loadLocal = __webpack_require__(37);
-var localMixin = __webpack_require__(38);
+var loadLocal = __webpack_require__(39);
+var localMixin = __webpack_require__(40);
 
 var Component = function () {
     function Component(opt) {
@@ -362,6 +373,8 @@ var Component = function () {
         ids.create(this);
         // Add callback to ready queue
         queueReady.add(this);
+        // Add callback app draw
+        queueDraw.add(this);
         // Call create
         hooks.callCreate(this);
         //Apply scoped style
@@ -450,6 +463,9 @@ var Component = function () {
 
             var tpl = html.create(template, TAG.ROOT);
             var next = transform(tpl);
+
+            this.app.emit('appDraw', next, this._prev, this);
+            queueDraw.emit(this, next, this._prev);
 
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
@@ -881,10 +897,10 @@ var hooks = __webpack_require__(2);
 var _require2 = __webpack_require__(7),
     serializeProps = _require2.serializeProps;
 
-var _require3 = __webpack_require__(23),
+var _require3 = __webpack_require__(24),
     extract = _require3.extract;
 
-var hmr = __webpack_require__(24);
+var hmr = __webpack_require__(25);
 
 var _require4 = __webpack_require__(3),
     Component = _require4.Component;
@@ -915,7 +931,7 @@ function get() {
                 localComponents = parent.cmp._components;
             }
 
-            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.get(child.nodeName);
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(child.nodeName);
 
             if (cmp) {
 
@@ -934,8 +950,6 @@ function get() {
                 var dProps = extract(props);
 
                 var newElement = void 0;
-
-                //console.log(cmp);
 
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
@@ -2013,7 +2027,32 @@ module.exports = mixin;
 "use strict";
 
 
-module.exports = __webpack_require__(18);
+var _require = __webpack_require__(1),
+    registerPlugin = _require.registerPlugin,
+    data = _require.data;
+
+function use(plugin) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (typeof plugin !== 'function') {
+        throw new TypeError('Plugin must be a function');
+    }
+
+    plugin['options'] = options;
+
+    registerPlugin(plugin);
+}
+
+function load(app) {
+    data.plugins.forEach(function (func) {
+        func(app.constructor, app, func.options);
+    });
+}
+
+module.exports = {
+    use: use,
+    load: load
+};
 
 /***/ }),
 /* 18 */
@@ -2022,12 +2061,27 @@ module.exports = __webpack_require__(18);
 "use strict";
 
 
-var Doz = __webpack_require__(19);
+module.exports = __webpack_require__(19);
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(20);
 var collection = __webpack_require__(1);
-var component = __webpack_require__(39);
-var Component = __webpack_require__(3).Component;
+var component = __webpack_require__(41);
+
+var _require = __webpack_require__(17),
+    use = _require.use;
+
+var _require2 = __webpack_require__(3),
+    Component = _require2.Component;
+
 var h = __webpack_require__(15);
-var mixin = __webpack_require__(40);
+var mixin = __webpack_require__(42);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -2054,6 +2108,10 @@ Object.defineProperties(Doz, {
         value: mixin,
         enumerable: true
     },
+    use: {
+        value: use,
+        enumerable: true
+    },
     version: {
         value: '1.5.0',
         enumerable: true
@@ -2063,7 +2121,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2076,7 +2134,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(4);
-var bind = __webpack_require__(20);
+var bind = __webpack_require__(21);
 var instances = __webpack_require__(5);
 
 var _require = __webpack_require__(0),
@@ -2084,6 +2142,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var toLiteralString = __webpack_require__(14);
+var plugin = __webpack_require__(17);
 
 var Doz = function () {
     function Doz() {
@@ -2093,7 +2152,7 @@ var Doz = function () {
 
         _classCallCheck(this, Doz);
 
-        var template = '<' + TAG.APP + '></' + TAG.APP + '>';
+        this.baseTemplate = '<' + TAG.APP + '></' + TAG.APP + '>';
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
@@ -2120,7 +2179,8 @@ var Doz = function () {
 
         this.cfg = extend(cfg, {
             components: [],
-            actions: {}
+            actions: {},
+            autoDraw: true
         });
 
         Object.defineProperties(this, {
@@ -2157,6 +2217,14 @@ var Doz = function () {
 
                     this._onAppReadyCB = [];
                 }
+            },
+            _onAppDrawCB: {
+                value: [],
+                writable: true
+            },
+            _onAppCB: {
+                value: {},
+                writable: true
             },
             _root: {
                 value: this.cfg.root
@@ -2233,11 +2301,29 @@ var Doz = function () {
             if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
         });
 
-        this._tree = instances.get({ root: this.cfg.root, template: template, app: this }) || [];
+        plugin.load(this);
+
+        if (this.cfg.autoDraw) this.draw();
+
         this._callAppReady();
+        this.emit('appReady', this);
     }
 
     _createClass(Doz, [{
+        key: 'draw',
+        value: function draw() {
+
+            if (!this.cfg.autoDraw) this.cfg.root.innerHTML = '';
+
+            this._tree = instances.get({
+                root: this.cfg.root,
+                template: this.baseTemplate,
+                app: this
+            }) || [];
+
+            return this;
+        }
+    }, {
         key: 'getComponent',
         value: function getComponent(alias) {
             return this._tree ? this._tree.children[alias] : undefined;
@@ -2252,6 +2338,38 @@ var Doz = function () {
         value: function getStore(store) {
             return this._stores[store];
         }
+    }, {
+        key: 'on',
+        value: function on(event, callback) {
+            if (typeof event !== 'string') throw new TypeError('Event must be a string');
+
+            if (typeof callback !== 'function') throw new TypeError('Callback must be a function');
+
+            if (!this._onAppCB[event]) {
+                this._onAppCB[event] = [];
+            }
+
+            this._onAppCB[event].push(callback);
+
+            return this;
+        }
+    }, {
+        key: 'emit',
+        value: function emit(event) {
+            var _this2 = this;
+
+            for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                params[_key - 1] = arguments[_key];
+            }
+
+            if (this._onAppCB[event]) {
+                this._onAppCB[event].forEach(function (func) {
+                    func.apply(_this2, params);
+                });
+            }
+
+            return this;
+        }
     }]);
 
     return Doz;
@@ -2260,7 +2378,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2292,7 +2410,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2300,11 +2418,11 @@ module.exports = bind;
 
 module.exports = {
     components: {},
-    plugins: {}
+    plugins: []
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2351,7 +2469,7 @@ module.exports.once = once;
 module.exports._list = _list;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2392,7 +2510,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2424,7 +2542,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2486,20 +2604,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(27);
+var element = __webpack_require__(28);
 
 module.exports = {
     updateElement: element.update
 };
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2507,7 +2625,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(28),
+var _require = __webpack_require__(29),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2620,7 +2738,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2638,7 +2756,7 @@ var _require = __webpack_require__(0),
 var castStringTo = __webpack_require__(8);
 var dashToCamel = __webpack_require__(9);
 var camelToDash = __webpack_require__(12);
-var objectPath = __webpack_require__(29);
+var objectPath = __webpack_require__(30);
 var delay = __webpack_require__(11);
 
 function isEventAttribute(name) {
@@ -2861,7 +2979,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2886,7 +3004,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2915,7 +3033,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2938,7 +3056,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2946,7 +3064,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var composeStyle = __webpack_require__(33);
+var composeStyle = __webpack_require__(34);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -2969,7 +3087,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2994,7 +3112,7 @@ function composeStyle(style, tag) {
 module.exports = composeStyle;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3012,7 +3130,34 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function add(instance) {
+    if (typeof instance.onAppDraw === 'function') {
+        instance.onAppDraw._instance = instance;
+        instance.app._onAppDrawCB.push(instance.onAppDraw);
+    }
+}
+
+function emit(instance, next, prev) {
+    instance.app._onAppDrawCB.forEach(function (cb) {
+        if (typeof cb === 'function' && cb._instance) {
+            cb.call(cb._instance, next, prev, instance);
+        }
+    });
+}
+
+module.exports = {
+    add: add,
+    emit: emit
+};
+
+/***/ }),
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3025,7 +3170,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3038,7 +3183,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3070,7 +3215,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3086,14 +3231,14 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var _require = __webpack_require__(1),
-    register = _require.register;
+    registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX;
@@ -3115,13 +3260,13 @@ function component(tag) {
         cfg: cfg
     };
 
-    register(cmp);
+    registerComponent(cmp);
 }
 
 module.exports = component;
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
