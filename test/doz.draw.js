@@ -57,8 +57,6 @@ describe('Doz.draw', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
-            let called = false;
-
             Doz.component('salutation-card', {
                 template() {
                     return `
