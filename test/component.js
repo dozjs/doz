@@ -22,7 +22,7 @@ describe('component', function () {
         it('should be registered', function () {
             const tag = 'my-component';
             component(tag);
-            const result = collection.get(tag);
+            const result = collection.getComponent(tag);
             console.log(result);
             be.err.not.undefined(result);
         });

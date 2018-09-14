@@ -1,4 +1,4 @@
-const {register} = require('../collection');
+const {registerComponent} = require('../collection');
 const {REGEX} = require('../constants');
 
 function component(tag, cfg = {}) {
@@ -16,7 +16,7 @@ function component(tag, cfg = {}) {
         cfg
     };
 
-    register(cmp);
+    registerComponent(cmp);
 }
 
 module.exports = component;

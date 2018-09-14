@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `use` to module, a method for define plugins :)
+- **Added** app instance events
+    - `on` adds a listener given an event name
+    - `emit` call an event
+
 ## [1.5.0] - 2018-09-09
 - **Added** class pattern, now it's possible create component with class ES6 syntax
 - **Added** new property `config` to component class, available only with class ES6

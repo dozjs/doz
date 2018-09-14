@@ -4,7 +4,7 @@ const data = require('./data');
  * Register a component to global
  * @param cmp
  */
-function register(cmp) {
+function registerComponent(cmp) {
 
     const tag = cmp.tag.toUpperCase();
 
@@ -19,6 +19,7 @@ function register(cmp) {
  */
 function removeAll() {
     data.components = {};
+    data.plugins = [];
 }
 
 /**
@@ -26,14 +27,23 @@ function removeAll() {
  * @param tag
  * @returns {*}
  */
-function get(tag) {
+function getComponent(tag) {
     tag = tag.toUpperCase();
     return data.components[tag];
 }
 
+/**
+ * Register a plugin to global
+ * @param plugin
+ */
+function registerPlugin(plugin) {
+    data.plugins.push(plugin);
+}
+
 module.exports = {
-    register,
-    get,
+    registerComponent,
+    registerPlugin,
+    getComponent,
     removeAll,
     data
 };

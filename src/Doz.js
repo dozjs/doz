@@ -3,6 +3,7 @@ const bind = require('./utils/bind');
 const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
+const plugin = require('./plugin');
 
 class Doz {
 
@@ -74,6 +75,10 @@ class Doz {
             },
             _onAppDrawCB: {
                 value: [],
+                writable: true
+            },
+            _onAppCB: {
+                value: {},
                 writable: true
             },
             _root: {
@@ -150,6 +155,8 @@ class Doz {
                 this._components[TAG.APP].cfg[p] = cfg[p];
         });
 
+        plugin.load(this);
+
         this._tree = instances.get({root: this.cfg.root, template, app: this}) || [];
         this._callAppReady();
     }
@@ -168,6 +175,27 @@ class Doz {
         return this._stores[store];
     }
 
+    on(event, callback) {
+        if (typeof event !== 'string')
+            throw new TypeError('Event must be a string');
+
+        if (typeof callback !== 'function')
+            throw new TypeError('Callback must be a function');
+
+        if (!this._onAppCB[event]) {
+            this._onAppCB[event] = [];
+        }
+
+        this._onAppCB[event].push(callback);
+    }
+
+    emit(event, ...params) {
+        if (this._onAppCB[event]) {
+            this._onAppCB[event].forEach(func => {
+                func.apply(this, params);
+            });
+        }
+    }
 }
 
 module.exports = Doz;

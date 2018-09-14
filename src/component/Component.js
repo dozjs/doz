@@ -195,6 +195,7 @@ class Component {
         const tpl = html.create(template, TAG.ROOT);
         let next = transform(tpl);
 
+        this.app.emit('appDraw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);

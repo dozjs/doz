@@ -1,4 +1,4 @@
 module.exports = {
     components: {},
-    plugins: {}
+    plugins: []
 };

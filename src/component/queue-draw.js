@@ -6,11 +6,6 @@ function add(instance) {
 }
 
 function emit(instance, next, prev) {
-
-    window.dispatchEvent(new CustomEvent('doz@draw', {
-        detail: {next, prev, instance}
-    }));
-
     instance.app._onAppDrawCB.forEach(cb => {
         if (typeof cb === 'function' && cb._instance) {
             cb.call(cb._instance, next, prev, instance);

@@ -34,7 +34,7 @@ function get(cfg = {}) {
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
-                collection.get(child.nodeName);
+                collection.getComponent(child.nodeName);
 
             if (cmp) {
 
