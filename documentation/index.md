@@ -37,11 +37,12 @@ Below some basic concepts:
 - [Inline style](#inline-style)
 - [Actions](#actions)
 - [Mixins](#mixins)
+- [Plugins](#plugins)
 - [ES6 Class](#es6-class)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
-- [Write a component](#develop-and-production)
+- [Write app or component](#develop-and-production)
 - [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
 
 ## Installation
@@ -1146,6 +1147,61 @@ Doz.component('other-component', {
 ```
 
 Ps: Mixins **don't overwrite** existing functions
+
+### Plugins
+
+**Since 1.6.0**
+
+Sometimes it's useful to have methods at global level that extend
+new functionality to framework, for this, Doz since 1.6.x version
+provide you "Doz.use". Write a plugin is very easy:
+
+```javascript
+const myPlugin = function(Doz, app, options) {
+
+    // You can adds mixin function
+    Doz.mixin({
+        localTime() {
+            return new Date().toLocaleTimeString();
+        }
+    });
+
+    // Manipulate virtual dom like:
+    // Add a button to component that have an attribute "with-button"
+    function addButton(child) {
+        child.children.forEach(el => {
+            if (el.props && el.props['with-button'] !== undefined) {
+
+                // Doz.compile transforms HTML string to tree object
+                const compiled = Doz.compile(`
+                    <button onclick="console.log($this)">${options.buttonLabel}</button>
+                `);
+
+                el.children.push(compiled)
+            }
+        })
+    }
+
+    app.on('draw', (next, prev, componentInstance) => {
+        addButton(next);
+    });
+
+};
+
+Doz.use(myPlugin, {
+    buttonLabel: 'click me'
+});
+
+Doz.component('my-component', {
+    template() {
+        return `
+            <div with-button>
+                current time: ${this.currentTime()}
+            </div>
+        `
+    }
+});
+```
 
 ### ES6 Class
 
