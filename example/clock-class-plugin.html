@@ -32,9 +32,12 @@
         function walk(child) {
             child.children.forEach(el => {
                 if (el.props && el.props['with-button'] !== undefined) {
-                    el.children.push(Doz.compile(`
+
+                    const compiled = Doz.compile(`
                         <button onclick="console.log($this)">click me</button>
-                    `))
+                    `);
+
+                    el.children.push(compiled)
                 }
             })
         }
