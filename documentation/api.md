@@ -19,6 +19,8 @@
 
 ### Doz.define( tag, definition )
 
+- **Since**: 1.5.0
+
 - **Arguments**:
     - `{string} tag`
     - `{Function | Object} definition`
@@ -69,6 +71,8 @@
 
 ### Doz.h( template )
 
+- **Since**: 1.5.0
+
 - **Arguments**:
     - `{string} template`
 
@@ -96,6 +100,8 @@
     ```
 
 ### Doz.mixin( mixin )
+
+- **Since**: 1.5.0
 
 - **Arguments**:
     - `{Object | Object[]} mixin`
@@ -128,6 +134,8 @@
 
 ### Doz.use( plugin )
 
+- **Since**: 1.6.0
+
 - **Arguments**:
     - `{Function} plugin`
 
@@ -146,6 +154,8 @@
     ```
 
 ### Doz.compile( string )
+
+- **Since**: 1.6.0
 
 - **Arguments**:
     - `{string} string`
