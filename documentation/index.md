@@ -1182,12 +1182,14 @@ const myPlugin = function(Doz, app, options) {
         })
     }
 
+    // This event is called to every change of the whole app
     app.on('draw', (next, prev, componentInstance) => {
         addButton(next);
     });
 
 };
 
+// Add plugin to Doz
 Doz.use(myPlugin, {
     buttonLabel: 'click me'
 });
