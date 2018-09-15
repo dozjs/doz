@@ -126,6 +126,52 @@
     })
     ```
 
+### Doz.use( plugin )
+
+- **Arguments**:
+    - `{Function} plugin`
+
+- **Details**: Add a plugin to Doz.
+
+- **Usage**:
+
+    ``` js
+    const myPlugin = function(Doz, app, options) {
+        //Doz, the Doz framework
+        //app, app instance
+        //options, an object
+    }
+
+    Doz.use(myPlugin);
+    ```
+
+### Doz.compile( string )
+
+- **Arguments**:
+    - `{string} string`
+
+- **Details**: Transforms HTML string to tree object.
+
+- **Usage**:
+
+    ``` js
+    Doz.compile(`
+        <button onclick="console.log($this)">Click me</button>
+    `);
+
+    /*
+        {
+            type: 'BUTTON',
+            children: ['Click me'],
+            props: {
+                onclick: 'console.log($this)'
+            },
+            isSVG: false
+        }
+    */
+
+    ```
+
 ### Doz.version()
 
 - **Details**: Retrieve Doz version.
