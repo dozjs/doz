@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - clock class and plugin</title>
-    <script src="../dist/doz.js?5896549830"></script>
+    <script src="../dist/doz.js?58965498304"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -29,8 +29,23 @@
             }
         });
 
+
+        function walk(child) {
+            child.children.forEach(el => {
+                if (el.props && el.props['with-button'] !== undefined) {
+                    el.children.push({
+                        type: 'BUTTON',
+                        children: ['click'],
+                        props: {
+                            onclick: 'console.log($this)'
+                        }
+                    })
+                }
+            })
+        }
+
         app.on('draw', (next) => {
-            console.log(next);
+            walk(next);
         })
     }
 
@@ -50,9 +65,12 @@
 
         template(h){
             return h`
-                <div style="color: ${this.props.color}">
-                    ${this.props.title}: ${this.props.time}
+                <div>
+                    <div style="color: ${this.props.color}" with-button>
+                        ${this.props.title}: ${this.props.time}
+                    </div>
                 </div>
+
             `
         }
 

@@ -109,7 +109,8 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/
+        TRIM_QUOTES: /^["'](.*)["']$/,
+        THIS_TARGET: /(?<!\w)\$this(?!\w)/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -2878,6 +2879,8 @@ function addEventListener($target, name, value, cmp) {
             value = args ? method.bind.apply(method, [cmp].concat(_toConsumableArray(args))) : method.bind(cmp);
         }
     }
+
+    value = value.replace(REGEX.THIS_TARGET, '$target');
 
     if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
         var _func = function _func() {

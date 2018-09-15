@@ -26,7 +26,8 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
-        TRIM_QUOTES: /^["'](.*)["']$/
+        TRIM_QUOTES: /^["'](.*)["']$/,
+        THIS_TARGET: /(?<!\w)\$this(?!\w)/
     },
     ATTR: {
         // Attributes for HTMLElement
