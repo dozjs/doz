@@ -27,7 +27,7 @@ module.exports = {
         IS_STRING_QUOTED: /^"\w+"/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
-        THIS_TARGET: /(?<!\w)\$this(?!\w)/g
+        THIS_TARGET: /\B\$this(?!\w)/g
     },
     ATTR: {
         // Attributes for HTMLElement
