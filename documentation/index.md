@@ -1189,7 +1189,7 @@ const myPlugin = function(Doz, app, options) {
 
 };
 
-// Add plugin to Doz
+// Add plugin to Doz passing some options
 Doz.use(myPlugin, {
     buttonLabel: 'click me'
 });
