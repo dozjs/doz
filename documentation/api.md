@@ -40,6 +40,8 @@
 
 ### Doz.Component( config )
 
+- **Since**: 1.5.0
+
 - **Arguments**:
     - `{Object} config`
 
