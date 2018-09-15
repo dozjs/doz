@@ -133,14 +133,14 @@ function addEventListener($target, name, value, cmp) {
         }
     }
 
-    value = value.replace(REGEX.THIS_TARGET, '$target');
-
     if (typeof value === 'function')
         $target.addEventListener(
             extractEventName(name),
             value
         );
     else {
+        value = value.replace(REGEX.THIS_TARGET, '$target');
+
         const _func = function () {
             eval(value)
         };

@@ -2880,9 +2880,9 @@ function addEventListener($target, name, value, cmp) {
         }
     }
 
-    value = value.replace(REGEX.THIS_TARGET, '$target');
-
     if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
+        value = value.replace(REGEX.THIS_TARGET, '$target');
+
         var _func = function _func() {
             eval(value);
         };
