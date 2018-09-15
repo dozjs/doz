@@ -28,6 +28,10 @@
                 return new Date().toLocaleTimeString();
             }
         });
+
+        app.on('draw', (next) => {
+            console.log(next);
+        })
     }
 
     Doz.use(myTime);
@@ -67,7 +71,6 @@
         root: document.getElementById('app'),
         template: `
             <doz-clock title="it's"></doz-clock>
-            <doz-clock title="sono le" time="..:..:.."></doz-clock>
         `
     });
 

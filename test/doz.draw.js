@@ -44,7 +44,7 @@ describe('Doz.draw', function () {
                     </salutation-card>
                 `
             })
-                .on('appDraw', (next, prev) => {
+                .on('draw', (next, prev) => {
                     if (called) return;
                     console.log(next);
                     called = true;

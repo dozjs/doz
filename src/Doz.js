@@ -162,7 +162,7 @@ class Doz {
             this.draw();
 
         this._callAppReady();
-        this.emit('appReady', this);
+        this.emit('ready', this);
     }
 
     draw() {

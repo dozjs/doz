@@ -33,7 +33,7 @@ describe('Doz.on', function () {
                     }
                 });
 
-                app.on('appDraw', (next, prev) => {
+                app.on('draw', (next, prev) => {
                     if (called) return;
                     console.log(next);
                     called = true;

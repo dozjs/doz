@@ -464,7 +464,7 @@ var Component = function () {
             var tpl = html.create(template, TAG.ROOT);
             var next = transform(tpl);
 
-            this.app.emit('appDraw', next, this._prev, this);
+            this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
@@ -2306,7 +2306,7 @@ var Doz = function () {
         if (this.cfg.autoDraw) this.draw();
 
         this._callAppReady();
-        this.emit('appReady', this);
+        this.emit('ready', this);
     }
 
     _createClass(Doz, [{
