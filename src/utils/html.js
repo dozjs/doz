@@ -17,12 +17,10 @@ const html = {
         let template = document.createElement('div');
         template.innerHTML = str;
 
-        if(template.childNodes.length > 1) {
+        if(wrapper && template.childNodes.length > 1) {
             element = document.createElement(wrapper);
-            //console.log('TEMPLATE',template.innerHTML);
             element.innerHTML = template.innerHTML;
         } else {
-            //console.log('TEMPLATE',template.innerHTML);
             element = template.firstChild || document.createTextNode('');
         }
 

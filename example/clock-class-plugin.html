@@ -29,17 +29,12 @@
             }
         });
 
-
         function walk(child) {
             child.children.forEach(el => {
                 if (el.props && el.props['with-button'] !== undefined) {
-                    el.children.push({
-                        type: 'BUTTON',
-                        children: ['click'],
-                        props: {
-                            onclick: 'console.log($this)'
-                        }
-                    })
+                    el.children.push(Doz.compile(`
+                        <button onclick="console.log($this)">click me</button>
+                    `))
                 }
             })
         }

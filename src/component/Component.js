@@ -1,9 +1,7 @@
 const extend = require('../utils/extend');
-const html = require('../utils/html');
 const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
-const {transform} = require('../vdom/parser');
 const update = require('../vdom').updateElement;
 const store = require('./store');
 const ids = require('./ids');
@@ -18,6 +16,7 @@ const toLiteralString = require('../utils/to-literal-string');
 const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 const localMixin = require('./local-mixin');
+const compile = require('./compile');
 
 class Component {
 
@@ -189,11 +188,10 @@ class Component {
 
     render(initial) {
         this.beginSafeRender();
-        const template = this.template(h).trim();
+        const template = this.template(h);
         this.endSafeRender();
 
-        const tpl = html.create(template, TAG.ROOT);
-        let next = transform(tpl);
+        let next = compile(template);
 
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);

@@ -302,7 +302,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(4);
-var html = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -312,10 +311,6 @@ var _require = __webpack_require__(0),
 
 var observer = __webpack_require__(26);
 var hooks = __webpack_require__(2);
-
-var _require2 = __webpack_require__(7),
-    transform = _require2.transform;
-
 var update = __webpack_require__(27).updateElement;
 var store = __webpack_require__(31);
 var ids = __webpack_require__(32);
@@ -330,6 +325,7 @@ var toLiteralString = __webpack_require__(14);
 var h = __webpack_require__(15);
 var loadLocal = __webpack_require__(39);
 var localMixin = __webpack_require__(40);
+var compile = __webpack_require__(43);
 
 var Component = function () {
     function Component(opt) {
@@ -459,11 +455,10 @@ var Component = function () {
             var _this = this;
 
             this.beginSafeRender();
-            var template = this.template(h).trim();
+            var template = this.template(h);
             this.endSafeRender();
 
-            var tpl = html.create(template, TAG.ROOT);
-            var next = transform(tpl);
+            var next = compile(template);
 
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
@@ -1055,12 +1050,10 @@ var html = {
         var template = document.createElement('div');
         template.innerHTML = str;
 
-        if (template.childNodes.length > 1) {
+        if (wrapper && template.childNodes.length > 1) {
             element = document.createElement(wrapper);
-            //console.log('TEMPLATE',template.innerHTML);
             element.innerHTML = template.innerHTML;
         } else {
-            //console.log('TEMPLATE',template.innerHTML);
             element = template.firstChild || document.createTextNode('');
         }
 
@@ -1153,7 +1146,6 @@ function transform(node) {
                 obj.children = [];
                 obj.props = serializeProps(node);
                 obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
-                //console.dir(node);
             }
 
             if (!Object.keys(root).length) root = obj;
@@ -2083,10 +2075,15 @@ var _require2 = __webpack_require__(3),
 
 var h = __webpack_require__(15);
 var mixin = __webpack_require__(42);
+var compile = __webpack_require__(43);
 
 Object.defineProperties(Doz, {
     collection: {
         value: collection,
+        enumerable: true
+    },
+    compile: {
+        value: compile,
         enumerable: true
     },
     Component: {
@@ -3285,6 +3282,31 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var html = __webpack_require__(6);
+
+var _require = __webpack_require__(7),
+    transform = _require.transform;
+
+var _require2 = __webpack_require__(0),
+    TAG = _require2.TAG;
+
+function compile() {
+    var template = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    template = template.trim();
+    var tpl = html.create(template, TAG.ROOT);
+    return transform(tpl);
+}
+
+module.exports = compile;
 
 /***/ })
 /******/ ]);

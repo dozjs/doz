@@ -5,10 +5,15 @@ const {use} = require('./plugin');
 const {Component} = require('./component/Component');
 const h = require('./vdom/h');
 const mixin = require('./component/global-mixin');
+const compile = require('./component/compile');
 
 Object.defineProperties(Doz, {
     collection: {
         value: collection,
+        enumerable: true
+    },
+    compile: {
+        value: compile,
         enumerable: true
     },
     Component: {

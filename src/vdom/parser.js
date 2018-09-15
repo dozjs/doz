@@ -49,7 +49,6 @@ function transform(node) {
                 obj.children = [];
                 obj.props = serializeProps(node);
                 obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
-                //console.dir(node);
             }
 
             if (!Object.keys(root).length)
