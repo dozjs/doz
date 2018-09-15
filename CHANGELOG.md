@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Added** `autoDraw` property to Doz constructor, by default it's false
 - **Added** `draw` method to Doz instance
 - **Added** "$this", a special placeholder for indicate "this" of DOM element in listener context
+- **Exposed** `compile` function
 
 ## [1.5.0] - 2018-09-09
 - **Added** class pattern, now it's possible create component with class ES6 syntax
