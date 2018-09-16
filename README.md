@@ -24,7 +24,7 @@ In the web there are many frameworks that do all the same things. But a lot of t
 $ npm install --save doz
 ```
 
-## Get started now and quickly?? Use [doz-cli](https://github.com/dozjs/doz-cli)
+## Get started now and quickly? Use [doz-cli](https://github.com/dozjs/doz-cli).
 ```
 $ npm install -g doz-cli
 $ doz app my-app
