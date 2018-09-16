@@ -161,85 +161,88 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 ## Methods
 
-### beginSafeRender
+### component.beginSafeRender()
 
 - **Since**: 0.0.21
 - **Type**: `function`
 - **Description**: This method enable encoding of props into HTML entities before they are called.
 
-### destroy
+### component.destroy()
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: Destroy component and his children.
 
-### each
+### component.each( obj, func )
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `object` obj
+    - `function` func
 - **Description**: This method serves to iterate parts of the template. More info on [loops](https://github.com/dozjs/doz/blob/master/documentation/index.md#loops).
 
-### emit
+### component.emit()
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method call a callback given an event name. More info on [emitter](https://github.com/dozjs/doz/blob/master/documentation/index.md#emitter).
 
-### endSafeRender
+### component.endSafeRender()
 
 - **Since**: 0.0.21
 - **Type**: `function`
 - **Description**: This method disable encoding of props into HTML entities before they are called.
 
-### getCmp
+### component.getCmp( id )
 
 - **Since**: 1.4.0
 - **Type**: `function`
 - **Alias**: `getComponentById`.
 
-### getComponentById
+### component.getComponentById( id )
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: Get component by id.
 
-### getHTMLElement
+### component.getHTMLElement()
 
 - **Since**: 1.2.0
 - **Type**: `function`
 - **Description**: Returns HTML element of component.
 
-### getStore
+### component.getStore( store )
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: Get store by name.
 
-### mount
+### component.mount( string )
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method can mount a new component as child. More info on [mount](https://github.com/dozjs/doz/blob/master/documentation/index.md#async-mount).
 
-### render
+### component.render()
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method is called after changes detected, then updates the component part.
 
-### template
+### component.template( h )
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method must be return the component template literals.
 
-### toStyle
+### component.toStyle( obj )
 
 - **Since**: 1.4.0
 - **Type**: `function`
 - **Description**: This method generate inline style from an object inside the template. More info on [inline style](https://github.com/dozjs/doz/blob/master/documentation/index.md#inline-style).
 
-### unmount
+### component.unmount()
 
 - **Since**: 0.0.19
 - **Type**: `function`

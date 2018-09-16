@@ -4,8 +4,8 @@
 
 - **Since**: 0.0.19
 - **Arguments**:
-    - `{string} tag`
-    - `{Function | Object} definition`
+    - `string` tag
+    - `function` | `object` definition
 - **Details**: Register a global component.
 - **Usage**:
   ``` js
@@ -19,8 +19,8 @@
 
 - **Since**: 1.5.0
 - **Arguments**:
-    - `{string} tag`
-    - `{Function | Object} definition`
+    - `string` tag
+    - `function` | `object` definition
 - **Details**:
     This is an alias of `component` for don't confuse you with Component subclass.
 - **Usage**:
@@ -35,7 +35,7 @@
 
 - **Since**: 1.5.0
 - **Arguments**:
-    - `{Object} config`
+    - `object` config
 - **Details**:
     This class it's used by Doz internally to creating component instances.
     If you want use ES6 class to define a component you must extend this class.
@@ -63,7 +63,7 @@
 
 - **Since**: 1.5.0
 - **Arguments**:
-    - `{string} template`
+    - `string` template
 - **Details**: This helper improve the virtual dom performance.
 - **Usage**:
     ``` js
@@ -89,7 +89,7 @@
 
 - **Since**: 1.5.0
 - **Arguments**:
-    - `{Object | Object[]} mixin`
+    - `object` | `object[]` mixin
 - **Details**: Add external functions to global components.
 - **Usage**:
     ``` js
@@ -118,7 +118,7 @@
 
 - **Since**: 1.6.0
 - **Arguments**:
-    - `{Function} plugin`
+    - `function` plugin
 - **Details**: Add a plugin to Doz.
 - **Usage**:
     ``` js
@@ -135,7 +135,7 @@
 
 - **Since**: 1.6.0
 - **Arguments**:
-    - `{string} string`
+    - `string` string
 - **Details**: Transforms HTML string to tree object.
 - **Usage**:
     ``` js

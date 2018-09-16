@@ -209,10 +209,10 @@ class Doz {
         return this;
     }
 
-    emit(event, ...params) {
+    emit(event, ...args) {
         if (this._onAppCB[event]) {
             this._onAppCB[event].forEach(func => {
-                func.apply(this, params);
+                func.apply(this, args);
             });
         }
 
