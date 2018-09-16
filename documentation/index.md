@@ -37,7 +37,7 @@ Below some basic concepts:
 - [Actions](#actions)
 - [Mixins](#mixins)
 - [Plugins](#plugins)
-- [ES6 Class](#es6-class)
+- [ES6 class](#es6-class)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
@@ -101,6 +101,8 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/ut18kyy1/)
+
+> How define a component with [ES6 class](#es6-class)?
 
 ---
 
@@ -168,7 +170,7 @@ props: function(){
 }
 ```
 
-But if you use the new ES6 pattern class, the problem does not arise. More info [ES6 Class](#es6-class)
+But if you use the new ES6 pattern class, the problem does not arise. More info [ES6 class](#es6-class)
 
 ### Methods
 The methods are defined inside a single object where there are also props and events.
@@ -315,7 +317,7 @@ new Doz({
 In order all hooks:
 - `onBeforeCreate`: called before that instance is created.
 - `onCreate`: called after that instance is created.
-- `onConfigCreate`: called after that instance is created (Only in ES6 pattern and if `config` object is set) [ES6 Class](#es6-class).
+- `onConfigCreate`: called after that instance is created (Only in ES6 pattern and if `config` object is set) [ES6 class](#es6-class).
 - `onBeforeMount`: called before that instance is mounted on DOM.
 - `onMount`: called after that instance is mounted on DOM.
 - `onMountAsync`: called after that instance is mounted on DOM.
@@ -1153,7 +1155,7 @@ Doz.component('my-component', {
 });
 ```
 
-### ES6 Class
+### ES6 class
 
 **Since 1.5.0**
 
