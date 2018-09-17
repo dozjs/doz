@@ -280,6 +280,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/1wj852pd/)
 
+> If you want the HTMLElement reference inside the handler you can use `$this`.
+
 ---
 
 ### Emitter
@@ -328,7 +330,7 @@ In order all hooks:
 - `onBeforeDestroy`: called before that instance is destroyed.
 - `onDestroy`: called after that instance is destroyed.
 
-Any event with prefix "onBefore" if returns `false` the next event will not called.
+> Any event with prefix "onBefore" if returns `false` the next event will not called.
 
 ```javascript
 //..
@@ -956,7 +958,7 @@ new Doz({
 });
 ```
 
-**Caution**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
+> **Caution**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
 
 ```
 <head>
@@ -965,7 +967,7 @@ new Doz({
 </head>
 ```
 
-If you need something stronger, please use other solution like [CSS Loader](https://github.com/webpack-contrib/css-loader).
+> If you need something stronger, please use other solution like [CSS Loader](https://github.com/webpack-contrib/css-loader).
 
 ---
 
@@ -1210,7 +1212,7 @@ Doz.define('a-component', class extends Doz.Component{
 });
 ```
 
-To registering a global component now we use `define` an alias of `component` for don't confuse you with `Component` subclass
+> To registering a global component now we use `define` an alias of `component` for don't confuse you with `Component` subclass
 
 ### Component logic inside Doz constructor
 It's also possible creating an app with component logic inside Doz constructor like so:
