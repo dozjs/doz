@@ -182,10 +182,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
     - `function` func
 - **Description**: This method serves to iterate parts of the template. More info on [loops](https://github.com/dozjs/doz/blob/master/documentation/index.md#loops).
 
-### component.emit()
+### component.emit( event, ...args )
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `string` event
+    - `any` args
 - **Description**: This method call a callback given an event name. More info on [emitter](https://github.com/dozjs/doz/blob/master/documentation/index.md#emitter).
 
 ### component.endSafeRender()
@@ -198,12 +201,16 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 - **Since**: 1.4.0
 - **Type**: `function`
+- **Arguments**:
+    - `string` id
 - **Alias**: `getComponentById`.
 
 ### component.getComponentById( id )
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `string` id
 - **Description**: Get component by id.
 
 ### component.getHTMLElement()
@@ -216,12 +223,16 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `string` store
 - **Description**: Get store by name.
 
-### component.mount( string )
+### component.mount( template )
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `string` template
 - **Description**: This method can mount a new component as child. More info on [mount](https://github.com/dozjs/doz/blob/master/documentation/index.md#async-mount).
 
 ### component.render()
@@ -230,7 +241,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `function`
 - **Description**: This method is called after changes detected, then updates the component part.
 
-### component.template( h )
+### component.template()
 
 - **Since**: 0.0.19
 - **Type**: `function`
@@ -240,6 +251,8 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 - **Since**: 1.4.0
 - **Type**: `function`
+- **Arguments**:
+    - `object` obj
 - **Description**: This method generate inline style from an object inside the template. More info on [inline style](https://github.com/dozjs/doz/blob/master/documentation/index.md#inline-style).
 
 ### component.unmount()
