@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.6.0] - 2018-09-17
 - **Added** `use` to module, a method for define plugins :)
 - **Added** app instance events
     - `on` adds a listener given an event name
