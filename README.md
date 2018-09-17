@@ -8,11 +8,11 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 <a href="https://travis-ci.org/dozjs/doz" target="_blank"><img src="https://travis-ci.org/dozjs/doz.svg?branch=master" title="Build Status"/></a>
 <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" title="License: MIT"/></a>
 <br/><br/>
-<a href="https://github.com/dozjs/doz/blob/master/documentation/index.md">Documentation</a> | <a href="https://dozjs.github.io/doz/example/">Demo</a>
+<a href="https://github.com/dozjs/doz/blob/master/documentation/index.md">Documentation</a> | <a href="https://github.com/dozjs/doz/blob/master/documentation/api.md">API</a> | <a href="https://dozjs.github.io/doz/example/">Demo</a>
 <br/><br/>
 </div>
 
-Tiny size: 9KB (gzip)
+Tiny size: 10KB (gzip)
 
 ## Why another framework?
 In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this", some introduce other syntaxes like JSX. All you need is HTML, CSS and Doz.
@@ -22,14 +22,6 @@ In the web there are many frameworks that do all the same things. But a lot of t
 ## Installation
 ```
 $ npm install --save doz
-```
-
-## Get started now and quickly? Use [doz-cli](https://github.com/dozjs/doz-cli).
-```
-$ npm install -g doz-cli
-$ doz app my-app
-$ cd my-app
-$ npm run start
 ```
 
 ## Example
@@ -68,6 +60,13 @@ new Doz({
 });
 ```
 
+## Get started now and quickly? Use [doz-cli](https://github.com/dozjs/doz-cli).
+```
+$ npm install -g doz-cli
+$ doz app my-app
+$ cd my-app
+$ npm run start
+```
 
 #### CDN unpkg
 ```html

@@ -295,7 +295,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `function`
 - **Description**: This method is called before that component instance is unmounted.
 
-### onBeforeUpdate
+### onBeforeUpdate ( [changes](#example-of-changes-object) )
 
 - **Since**: 0.0.19
 - **Type**: `function`
@@ -344,10 +344,21 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `function`
 - **Description**: This method is called after that component instance is unmounted.
 
-### onUpdate
+### onUpdate ( [changes](#example-of-changes-object) )
 
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method is called after that component instance is updated.
+
+##### Example of changes object
+```
+{
+    currentPath: "time"
+    newValue: "22:59:47"
+    previousValue: "22:59:46"
+    property: "time"
+    type: "update" // or delete
+}
+```
 
 More info on [Lifecycle hooks](https://github.com/dozjs/doz/blob/master/documentation/index.md#lifecycle-hooks).

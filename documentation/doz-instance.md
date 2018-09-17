@@ -2,6 +2,22 @@
 
 ## new Doz( opt )
 
+Basic usage
+
+```js
+new Doz({
+    root: '#app',
+    template() {
+        return `
+            <div>
+                <h1>My App</h1>
+                <a-component></a-component>
+            </div>
+        `
+    }
+});
+```
+
 ### Options
 
 #### actions
@@ -54,25 +70,49 @@
     - `string` event
     - `any` args
 - **Returns** doz
-- **Description**: This method draws app in the root.
+- **Description**: Emits an event.
 
 #### doz.getComponentById( id )
 
 - **Since**: 0.0.19
 - **Type**: `function`
+- **Arguments**:
+    - `string` id
 - **Returns** doz
-- **Description**: This method draws app in the root.
+- **Description**: Retrieve a component instance by id.
 
 #### doz.getStore( store )
 
 - **Since**: 1.6.0
 - **Type**: `function`
+- **Arguments**:
+    - `string` store
 - **Returns** doz
-- **Description**: This method draws app in the root.
+- **Description**: Retrieve a props store by name.
 
 #### doz.on( event, callback )
 
 - **Since**: 1.6.0
 - **Type**: `function`
+- **Arguments**:
+    - `string` event
+    - `function` callback
 - **Returns** doz
-- **Description**: This method draws app in the root.
+- **Description**: Adds event listener to Doz app instance.
+
+
+### Events
+
+#### "draw" (next, prev, component)
+
+- **Since**: 1.6.0
+- **Arguments**:
+    - `object` next Object that contains next virtual DOM
+    - `object` prev Object that contains previous virtual DOM
+    - `Component` component Component instance
+- **Description**: Triggered every app render.
+
+#### "ready"
+
+- **Since**: 1.6.0
+- **Description**: Triggered when all initial component are mounted on the DOM.
