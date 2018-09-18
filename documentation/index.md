@@ -687,6 +687,9 @@ new Doz({
 ---
 
 ##### d-is
+
+**Since 1.6.1**
+
 Sometimes it is necessary to render a component inside tags like UL which only accepts LI as child nodes. The "d-is" directive can identify any HTML element as a Doz component.
 
 ```javascript
