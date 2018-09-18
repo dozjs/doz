@@ -9,6 +9,3 @@ webpack.config.js
 .travis.yml
 example/
 .postcssrc
-.jsdoc.json
-README.hbs
-_config.yml
