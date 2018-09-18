@@ -8,4 +8,5 @@ webpack.config.js
 .gitignore
 .travis.yml
 example/
+documentation/
 .postcssrc
