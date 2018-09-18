@@ -19,12 +19,18 @@ function get(cfg = {}) {
 
     let component = null;
     let parentElement;
+    let cmpName;
     const trash = [];
 
     function walk(child, parent = {}) {
         while (child) {
 
-            const cmpName = child.nodeName.toLowerCase();
+            if (typeof child.getAttribute === 'function' && child.hasAttribute('d-is')) {
+                cmpName = child.getAttribute('d-is').toLowerCase();
+                child.removeAttribute('d-is')
+            } else
+                cmpName = child.nodeName.toLowerCase();
+
             let localComponents = {};
 
             if (parent.cmp && parent.cmp._components) {
@@ -34,7 +40,8 @@ function get(cfg = {}) {
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
-                collection.getComponent(child.nodeName);
+                //collection.getComponent(child.nodeName);
+                collection.getComponent(cmpName);
 
             if (cmp) {
 

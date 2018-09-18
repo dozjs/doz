@@ -782,7 +782,6 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-
             var dynamicInstance = __webpack_require__(5).get({
                 root: root,
                 template: item.node.outerHTML,
@@ -913,6 +912,7 @@ function get() {
 
     var component = null;
     var parentElement = void 0;
+    var cmpName = void 0;
     var trash = [];
 
     function walk(child) {
@@ -920,14 +920,20 @@ function get() {
 
         while (child) {
 
-            var cmpName = child.nodeName.toLowerCase();
+            if (typeof child.getAttribute === 'function' && child.hasAttribute('d-is')) {
+                cmpName = child.getAttribute('d-is').toLowerCase();
+                child.removeAttribute('d-is');
+            } else cmpName = child.nodeName.toLowerCase();
+
             var localComponents = {};
 
             if (parent.cmp && parent.cmp._components) {
                 localComponents = parent.cmp._components;
             }
 
-            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(child.nodeName);
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] ||
+            //collection.getComponent(child.nodeName);
+            collection.getComponent(cmpName);
 
             if (cmp) {
 
@@ -2682,9 +2688,7 @@ function create(node, cmp, initial) {
     node.children.map(function (item) {
         return create(item, cmp, initial);
     }).forEach($el.appendChild.bind($el));
-
-    if (node.type.indexOf('-') !== -1 && !initial) {
-        //console.log('ADD TO DYNAMIC', $el)
+    if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute('d-is')) && !initial) {
         cmp._processing.push({ node: $el, action: 'create' });
     }
 

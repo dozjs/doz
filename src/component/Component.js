@@ -453,7 +453,6 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,

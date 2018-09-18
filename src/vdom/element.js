@@ -29,9 +29,10 @@ function create(node, cmp, initial) {
     node.children
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
-
-    if (node.type.indexOf('-')!== -1 && !initial) {
-        //console.log('ADD TO DYNAMIC', $el)
+    if (typeof $el.hasAttribute === 'function')
+    if ((node.type.indexOf('-')!== -1
+        || (typeof $el.hasAttribute === 'function' && $el.hasAttribute('d-is')))
+        && !initial) {
         cmp._processing.push({node: $el, action: 'create'});
     }
 
