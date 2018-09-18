@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.6.0  
+// [DOZ]  Build version: 1.6.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -116,6 +116,7 @@ module.exports = {
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
+        IS: 'd-is',
         // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
@@ -884,7 +885,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var html = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
-    CMP_INSTANCE = _require.CMP_INSTANCE;
+    CMP_INSTANCE = _require.CMP_INSTANCE,
+    ATTR = _require.ATTR;
 
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(2);
@@ -920,9 +922,9 @@ function get() {
 
         while (child) {
 
-            if (typeof child.getAttribute === 'function' && child.hasAttribute('d-is')) {
-                cmpName = child.getAttribute('d-is').toLowerCase();
-                child.removeAttribute('d-is');
+            if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+                cmpName = child.getAttribute(ATTR.IS).toLowerCase();
+                child.removeAttribute(ATTR.IS);
             } else cmpName = child.nodeName.toLowerCase();
 
             var localComponents = {};
@@ -2142,7 +2144,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.6.0',
+        value: '1.6.1',
         enumerable: true
     }
 });
@@ -2664,7 +2666,8 @@ var _require2 = __webpack_require__(0),
     INSTANCE = _require2.INSTANCE,
     TAG = _require2.TAG,
     NS = _require2.NS,
-    CMP_INSTANCE = _require2.CMP_INSTANCE;
+    CMP_INSTANCE = _require2.CMP_INSTANCE,
+    ATTR = _require2.ATTR;
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -2688,7 +2691,7 @@ function create(node, cmp, initial) {
     node.children.map(function (item) {
         return create(item, cmp, initial);
     }).forEach($el.appendChild.bind($el));
-    if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute('d-is')) && !initial) {
+    if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
