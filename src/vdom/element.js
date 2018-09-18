@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {INSTANCE, TAG, NS, CMP_INSTANCE} = require('../constants');
+const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -31,7 +31,7 @@ function create(node, cmp, initial) {
         .forEach($el.appendChild.bind($el));
     if (typeof $el.hasAttribute === 'function')
     if ((node.type.indexOf('-')!== -1
-        || (typeof $el.hasAttribute === 'function' && $el.hasAttribute('d-is')))
+        || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
         && !initial) {
         cmp._processing.push({node: $el, action: 'create'});
     }

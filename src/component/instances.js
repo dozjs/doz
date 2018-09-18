@@ -1,5 +1,5 @@
 const html = require('../utils/html');
-const {CMP_INSTANCE} = require('../constants');
+const {CMP_INSTANCE, ATTR} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const { serializeProps} = require('../vdom/parser');
@@ -25,9 +25,9 @@ function get(cfg = {}) {
     function walk(child, parent = {}) {
         while (child) {
 
-            if (typeof child.getAttribute === 'function' && child.hasAttribute('d-is')) {
-                cmpName = child.getAttribute('d-is').toLowerCase();
-                child.removeAttribute('d-is')
+            if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+                cmpName = child.getAttribute(ATTR.IS).toLowerCase();
+                child.removeAttribute(ATTR.IS)
             } else
                 cmpName = child.nodeName.toLowerCase();
 

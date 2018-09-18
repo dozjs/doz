@@ -33,6 +33,7 @@ module.exports = {
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
+        IS: 'd-is',
         // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
