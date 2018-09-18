@@ -26,6 +26,7 @@ Below some basic concepts:
         - [HTML element](#html-element)
             - [d-bind](#d-bind)
             - [d-ref](#d-ref)
+            - [d-is](#d-is)
         - [DOZ component](#doz-component)
             - [d:id](#did)
             - [d:store](#dstore)
@@ -685,6 +686,54 @@ new Doz({
 
 ---
 
+##### d-is
+Sometimes it is necessary to render a component inside tags like UL which only accepts LI as child nodes. The "d-is" directive can identify any HTML element as a Doz component.
+
+```javascript
+Doz.component('my-item', {
+    template() {
+        return `
+            <span>${this.props.color}</span>
+        `
+    }
+});
+
+Doz.component('my-list', {
+    props: {
+        colors: [
+            {
+                name: 'Red'
+            },
+            {
+                name: 'Green'
+            },
+            {
+                name: 'Orange'
+            }
+        ]
+    },
+    template() {
+        return `
+            <ul>
+                ${this.each(this.props.colors, color => `
+                    <li d-is="my-item" color="${color.name}"></li>
+                `)}
+            </ul>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h1>Welcome to my app:</h1>
+        <my-list></my-list>
+    `
+});
+```
+
+---
+
 #### DOZ component
 Directives that works only on component
 
@@ -892,7 +941,9 @@ Doz.component('my-list', {
     template() {
         return `
             <ul>
-                ${this.each(this.props.colors, (color,  i) => `<li>${i}) ${color.name}</li>`)}
+                ${this.each(this.props.colors, (color,  i) => `
+                    <li>${i}) ${color.name}</li>
+                `)}
             </ul>
         `
     }
