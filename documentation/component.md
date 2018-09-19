@@ -8,8 +8,8 @@ A component can be created in two ways:
         props: {
             something: 'how are you?'
         },
-        template() {
-            return `
+        template(h) {
+            return h`
                 <div>
                     Hello Doz! ${this.props.something}
                 </div>
@@ -30,8 +30,8 @@ A component can be created in two ways:
             };
         }
 
-        template() {
-            return `
+        template(h) {
+            return h`
                 <div>
                     Hello Doz! ${this.props.something}
                 </div>

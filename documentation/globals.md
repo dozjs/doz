@@ -50,8 +50,8 @@
             };
         }
 
-        template() {
-            return `
+        template(h) {
+            return h`
                 <div>${this.props.name}</div>
             `
         }
@@ -103,8 +103,8 @@
 
     Doz.component('my-component', {
 
-        template() {
-            return `<div>${this.myFunc1('Hello')}</div>`
+        template(h) {
+            return h`<div>${this.myFunc1('Hello')}</div>`
         },
 
         onMount() {

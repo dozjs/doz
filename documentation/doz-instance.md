@@ -7,8 +7,8 @@ Basic usage
 ```js
 new Doz({
     root: '#app',
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>
                 <h1>My App</h1>
                 <a-component></a-component>

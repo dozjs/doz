@@ -68,10 +68,12 @@ import Doz from 'doz'
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <h2>Hello World</h2>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <h2>Hello World</h2>
+        `
+    }
 });
 ```
 
@@ -85,8 +87,8 @@ The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/m
 
 ```javascript
 Doz.component('hello-world', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>Hello World</h2>
         `
     }
@@ -94,10 +96,12 @@ Doz.component('hello-world', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <hello-world></hello-world>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <hello-world></hello-world>
+        `
+    }
 });
 ```
 
@@ -116,8 +120,8 @@ Doz.component('my-clock', {
     props: {
         time: '--:--:--'
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>${this.props.title} <span>${this.props.time}</span></h2>
         `
     },
@@ -128,10 +132,12 @@ Doz.component('my-clock', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-clock title="it's"></my-clock>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-clock title="it's"></my-clock>
+        `
+    }
 });
 ```
 
@@ -182,8 +188,8 @@ Doz.component('my-component', {
     props: {
         title: 'Hello World'
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h1>${this.props.title}</h2>
         `
     },
@@ -202,8 +208,8 @@ All HTML element of a component accepts standard events. It's possible also pass
 
 ```javascript
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.clickme()">Click me!</button>
         `
     },
@@ -214,10 +220,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -236,8 +244,8 @@ Doz.component('my-button', {
     props: {
         count: 0
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.props.count++">Click me!</button>
         `
     }
@@ -245,10 +253,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -258,8 +268,8 @@ The method passed to event is transformed by Doz (in reality it's a string) so t
 
 ```javascript
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.clickme('hello', 'world', this)">Click me!</button>
         `
     },
@@ -272,10 +282,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -290,8 +302,8 @@ Any component can emit a custom event. See also [component directives](#doz-comp
 
 ```javascript
 Doz.component('salutation-card', {
-    template() {
-        return `<caller-o d:on-mycallback="aCallback"></caller-o>`
+    template(h) {
+        return h`<caller-o d:on-mycallback="aCallback"></caller-o>`
     },
     aCallback: function(arg) {
         alert('callback is called: ' + arg);
@@ -299,16 +311,18 @@ Doz.component('salutation-card', {
 });
 
 Doz.component('caller-o', {
-    template() {
-        return `<button onclick="this.emit('mycallback', 'hello world')">Callback</button>`
+    template(h) {
+        return h`<button onclick="this.emit('mycallback', 'hello world')">Callback</button>`
     }
 });
 
 new Doz({
     root: '#app',
-    template: `
-        <salutation-card></salutation-card>
-    `
+    template(h) {
+        return h`
+            <salutation-card></salutation-card>
+        `
+    }
 });
 ```
 
@@ -365,8 +379,8 @@ Doz.component('hello-world', {
     props: {
         salutation: 'Hello World'
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>${this.props.salutation}</h2>
         `
     },
@@ -406,10 +420,12 @@ Doz.component('hello-world', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <hello-world></hello-world>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <hello-world></hello-world>
+        `
+    }
 });
 ```
 
@@ -426,8 +442,8 @@ Doz also allows you to create local components:
 const helloWorld = {
     tag: 'hello-world',
     cfg: {
-        template() {
-            return `
+        template(h) {
+            return h`
                 <h2>Hello World</h2>
             `
         }
@@ -437,16 +453,18 @@ const helloWorld = {
 new Doz({
     components: [helloWorld],
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <hello-world></hello-world>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <hello-world></hello-world>
+        `
+    }
 });
 
 // Second way
 const helloWorld = {
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>Hello World</h2>
         `
     }
@@ -457,10 +475,12 @@ new Doz({
         'hello-world': helloWorld
     },
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <hello-world></hello-world>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <hello-world></hello-world>
+        `
+    }
 });
 ```
 
@@ -471,8 +491,8 @@ Also components supports local components:
 ```javascript
 // First
 const hello = {
-    template() {
-        return `
+    template(h) {
+        return h`
             <span>Hello</span>
         `
     }
@@ -480,8 +500,8 @@ const hello = {
 
 // Second
 const world = {
-    template() {
-        return `
+    template(h) {
+        return h`
             <span>World</span>
         `
     }
@@ -493,8 +513,8 @@ const HelloWorld = {
         'hello-tag': hello,
         'world-tag': world
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>
                 <hello-tag></hello-tag>
                 <world-tag></world-tag>
@@ -509,10 +529,12 @@ new Doz({
         'hello-world': HelloWorld
     },
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <hello-world></hello-world>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <hello-world></hello-world>
+        `
+    }
 });
 ```
 
@@ -526,16 +548,16 @@ this method allows you to "append" a new component inside another.
 
 ```javascript
 Doz.component('hello-world', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>Hello World</h2>
         `
     }
 });
 
 Doz.component('my-wrapper', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>
                 <button onclick="this.mount('<hello-world></hello-world>')">Mount</button>
             </div>
@@ -545,10 +567,12 @@ Doz.component('my-wrapper', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-wrapper></my-wrapper>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-wrapper></my-wrapper>
+        `
+    }
 });
 ```
 
@@ -560,16 +584,16 @@ Mount component in a specific root inside a parent:
 
 ```javascript
 Doz.component('hello-world', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2>Hello World</h2>
         `
     }
 });
 
 Doz.component('my-wrapper', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>
                 <button onclick="this.append()">Mount</button>
                 <div class="my-root" style="border: 1px solid #000"></div>
@@ -583,10 +607,12 @@ Doz.component('my-wrapper', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-wrapper></my-wrapper>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-wrapper></my-wrapper>
+        `
+    }
 });
 ```
 
@@ -599,8 +625,8 @@ You can also unmount a component.
 
 ```javascript
 Doz.component('my-wrapper', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>
                 <h2>Hello World</h2>
                 <button onclick="this.unmount()">Unmount</button>
@@ -611,10 +637,12 @@ Doz.component('my-wrapper', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-wrapper></my-wrapper>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-wrapper></my-wrapper>
+        `
+    }
 });
 ```
 
@@ -632,8 +660,8 @@ This directive bind an input element to a props:
 
 ```javascript
 Doz.component('input-message', {
-    template(){
-        return `
+    template(h){
+        return h`
             <div>
                 <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
                 <p>${this.props.message}</p>
@@ -647,9 +675,11 @@ Doz.component('input-message', {
 
 new Doz({
     root: '#app',
-    template: `
-        <input-message placeholder="write a message"></input-message>
-    `
+    template(h) {
+        return h`
+            <input-message placeholder="write a message"></input-message>
+        `
+    }
 });
 ```
 
@@ -662,8 +692,8 @@ Sometimes it's necessary to have a easy reference to an HTML element in your com
 
 ```javascript
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2 d-ref="title">I'm a title</h2>
             <button onclick="this.clickme()">Get H2 ref!</button>
         `
@@ -675,10 +705,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -694,8 +726,8 @@ Sometimes it is necessary to render a component inside tags like UL which only a
 
 ```javascript
 Doz.component('my-item', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <span>${this.props.color}</span>
         `
     }
@@ -715,10 +747,10 @@ Doz.component('my-list', {
             }
         ]
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <ul>
-                ${this.each(this.props.colors, color => `
+                ${this.each(this.props.colors, color => h`
                     <li d-is="my-item" color="${color.name}"></li>
                 `)}
             </ul>
@@ -728,10 +760,12 @@ Doz.component('my-list', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-list></my-list>
-    `
+    template(h){
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-list></my-list>
+        `
+    }
 });
 ```
 
@@ -745,16 +779,16 @@ This attribute allows you to define an unique name that identify the component l
 
 ```javascript
 Doz.component('my-label', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <label>I'm a label</label>
         `
     }
 });
 
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.clickme()">Get component by alias!</button>
             <my-label d:alias="foo"></my-label>
         `
@@ -766,10 +800,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -778,16 +814,16 @@ This attribute allows you to define an unique name that identify the component g
 
 ```javascript
 Doz.component('my-label', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <label>I'm a label</label>
         `
     }
 });
 
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.clickme()">Get component by alias!</button>
         `
     },
@@ -798,11 +834,13 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-label d:id="wowo"></my-label>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-label d:id="wowo"></my-label>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -818,16 +856,16 @@ Doz.component('my-label', {
     props: {
         title: "I'm a label"
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <label>${this.props.title}</label>
         `
     }
 });
 
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.clickme()">Update label</button>
         `
     },
@@ -838,11 +876,13 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-label d:store="wowo"></my-label>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-label d:store="wowo"></my-label>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -855,8 +895,8 @@ This attribute allows you to define an event name.
 
 ```javascript
 Doz.component('salutation-card', {
-    template() {
-        return `<div>${this.props.salutation} ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="aCallback"></caller-o></div>`
+    template(h) {
+        return h`<div>${this.props.salutation} ${this.props.title} ${this.props.name} <caller-o d:on-mycallback="aCallback"></caller-o></div>`
     },
     aCallback: function(newSalutation) {
         this.props.salutation = newSalutation;
@@ -865,8 +905,8 @@ Doz.component('salutation-card', {
 });
 
 Doz.component('caller-o', {
-    template() {
-        return `<div>This component emit an event</div>`
+    template(h) {
+        return h`<div>This component emit an event</div>`
     },
     onCreate() {
         setTimeout(()=>{
@@ -877,13 +917,15 @@ Doz.component('caller-o', {
 
 new Doz({
     root: '#app',
-    template: `
-        <salutation-card
-            salutation="Hello"
-            title="MR."
-            name="Doz">
-        </salutation-card>
-    `
+    template(h) {
+        return h`
+            <salutation-card
+                salutation="Hello"
+                title="MR."
+                name="Doz">
+            </salutation-card>
+        `
+    }
 });
 ```
 
@@ -899,8 +941,8 @@ Doz.component('my-button', {
     props: {
         done: true
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2 style="color:${this.props.done ? 'red' : 'green' }">I'm a color</h2>
             <button onclick="this.clickme()">Toggle color</button>
         `
@@ -912,10 +954,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -941,10 +985,10 @@ Doz.component('my-list', {
             }
         ]
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <ul>
-                ${this.each(this.props.colors, (color,  i) => `
+                ${this.each(this.props.colors, (color,  i) => h`
                     <li>${i}) ${color.name}</li>
                 `)}
             </ul>
@@ -954,10 +998,12 @@ Doz.component('my-list', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-list></my-list>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-list></my-list>
+        `
+    }
 });
 ```
 
@@ -992,8 +1038,8 @@ Doz.component('my-salutation', {
             }
         }
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>
                 <h1>Hello</h1>
                 <h2>Doz</h2>
@@ -1006,9 +1052,11 @@ Doz.component('my-salutation', {
 
 new Doz({
     root: '#app',
-    template: `
-        <my-salutation></my-salutation>
-    `
+    template(h) {
+        return h`
+            <my-salutation></my-salutation>
+        `
+    }
 });
 ```
 
@@ -1039,8 +1087,8 @@ const css = {
 };
 
 Doz.component('my-button', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <button
                 ${this.toStyle(css)}
             >Hello button</button>
@@ -1050,10 +1098,12 @@ Doz.component('my-button', {
 
 new Doz({
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -1076,8 +1126,8 @@ Doz.component('my-button', {
     props: {
         done: true
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h2 style="color:${this.props.done ? 'red' : 'green' }">I'm a color</h2>
             <button onclick="this.action.toggleColor()">Toggle color</button>
         `
@@ -1087,10 +1137,12 @@ Doz.component('my-button', {
 new Doz({
     actions,
     root: '#app',
-    template: `
-        <h1>Welcome to my app:</h1>
-        <my-button></my-button>
-    `
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
 });
 ```
 
@@ -1115,8 +1167,8 @@ Doz.mixin({
 });
 
 Doz.component('a-component', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>Sum of 4 + 5 = ${this.sum(4, 5)}</div>
         `
     }
@@ -1135,8 +1187,8 @@ const myFunctions = {
 
 Doz.component('a-component', {
     mixin: myFunctions,
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>Sum of 4 + 5 = ${this.sum(4, 5)}</div>
         `
     }
@@ -1144,8 +1196,8 @@ Doz.component('a-component', {
 
 // Sum method is undefined
 Doz.component('other-component', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div>Sum of 10 + 10 = ${this.sum(10, 10)}</div>
         `
     }
@@ -1201,8 +1253,8 @@ Doz.use(myPlugin, {
 });
 
 Doz.component('my-component', {
-    template() {
-        return `
+    template(h) {
+        return h`
             <div with-button>
                 current time: ${this.currentTime()}
             </div>
@@ -1223,8 +1275,8 @@ Doz.define('a-component', class extends Doz.Component{
         super(o);
     }
 
-    template(){
-        return `<div>Hello ES6</div>`
+    template(h){
+        return h`<div>Hello ES6</div>`
     }
 });
 ```
@@ -1241,8 +1293,8 @@ Doz.define('a-component', class extends Doz.Component{
         };
     }
 
-    template(){
-        return `<div>Hello ${this.props.name}</div>`
+    template(h){
+        return h`<div>Hello ${this.props.name}</div>`
     }
 });
 ```
@@ -1260,8 +1312,8 @@ Doz.define('a-component', class extends Doz.Component{
         };
     }
 
-    template(){
-        return `<div>Hello ${this.props.name}</div>`
+    template(h){
+        return h`<div>Hello ${this.props.name}</div>`
     }
 });
 ```
@@ -1277,8 +1329,8 @@ new Doz({
     props: {
         name: 'super DOZ'
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <h1>Welcome to ${this.props.name}</h1>
             <my-button onclick="this.$clickMe()"></my-button>
         `
@@ -1303,8 +1355,8 @@ Doz.component('my-counter', {
     props: {
         count: 0
     },
-    template() {
-        return `
+    template(h) {
+        return h`
             <button onclick="this.props.count++">Count ${this.props.count}</button>
         `
     }
