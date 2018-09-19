@@ -646,7 +646,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/2/)
+[FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/8/)
 
 ### Directives
 The directives are special attributes that are specified inside component tag.
