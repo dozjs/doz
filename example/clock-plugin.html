@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - clock class and plugin</title>
+    <script src="../dist/doz.js?5896549830904"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+    function myTime(Doz, app, option) {
+        Doz.mixin({
+            localTime() {
+                return new Date().toLocaleTimeString();
+            }
+        });
+
+        function walk(child) {
+            child.children.forEach(el => {
+                if (el.props && el.props['with-button'] !== undefined) {
+
+                    const compiled = Doz.compile(`
+                        <button onclick="console.log($this)">click me</button>
+                    `);
+
+                    el.children.push(compiled)
+                }
+            })
+        }
+
+        app.on('draw', (next) => {
+            walk(next);
+        })
+    }
+
+    Doz.use(myTime);
+
+    Doz.component('doz-clock', {
+
+        props: {
+            time: '--:--:--',
+            color: 'violet'
+        },
+
+        template(h) {
+            return h`
+                <div>
+                    <div style="color: ${this.props.color}" with-button>
+                        ${this.props.title}: ${this.props.time}
+                    </div>
+                </div>
+
+            `
+        },
+
+        onMount() {
+            setInterval(() => this.currentTime(), 1000)
+        },
+
+        currentTime() {
+            this.props.time = this.localTime();
+            this.props.color = this.props.color === 'violet' ? 'red' : 'violet';
+        },
+
+    });
+
+    new Doz({
+        root: document.getElementById('app'),
+        template(h) {
+            return h`
+                <doz-clock title="it's"></doz-clock>
+            `
+        }
+    });
+
+</script>
+</body>
+</html>
