@@ -7,51 +7,6 @@ const h = require('./vdom/h');
 const mixin = require('./component/global-mixin');
 const compile = require('./component/compile');
 
-/**
- * @property {Object}
- * @name collection
- */
-
-/**
- * @property {Function}
- * @name compile
- */
-
-/**
- * @property {Component}
- * @name Component
- */
-
-/**
- * @property {Function}
- * @name component
- */
-
-/**
- * @property {Function}
- * @name define
- */
-
-/**
- * @property {Function}
- * @name h
- */
-
-/**
- * @property {Function}
- * @name mixin
- */
-
-/**
- * @property {Function}
- * @name use
- */
-
-/**
- * @property {String}
- * @name version
- */
-
 Object.defineProperties(Doz, {
     collection: {
         value: collection,
