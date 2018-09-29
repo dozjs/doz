@@ -1,4 +1,5 @@
 import ComponentClass from './Component'
+import ConfigComponent from './config-component'
 
 export = Doz;
 export as namespace Doz;
@@ -7,9 +8,15 @@ declare namespace Doz {
 
     class Component extends ComponentClass{}
 
-    function component(name: string, options: object): void
+    /**
+     *
+     * @param {string} name
+     * @param {ConfigComponent} options
+     * @alias define
+     */
+    function component(name: string, options: ConfigComponent): void
 
-    function define(name: string, options: object): void
+    function define(name: string, options: ConfigComponent): void
 
     function use(plugin: Function, options: object): void
 
