@@ -3,6 +3,7 @@
     "version": "1.6.1",
     "description": "A JavaScript framework for building UI, almost like writing in VanillaJS.",
     "main": "dist/doz.js",
+    "typings": "types/index.d.ts",
     "scripts": {
         "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
         "release:major": "webpack --env.major && npm run-script release:publish",
@@ -12,8 +13,8 @@
         "watch": "webpack --watch --progress --debug",
         "build": "webpack --progress",
         "test": "mocha test",
-        "test-hmr-watch": "parcel watch test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist",
-        "test-hmr-build": "parcel build test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist --public-url ./"
+        "test:hmr-watch": "parcel watch test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist",
+        "test:hmr-build": "parcel build test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist --public-url ./"
     },
     "repository": {
         "type": "git",
@@ -48,6 +49,7 @@
         "jsdom-global": "^3.0.2",
         "mocha": "^5.0.4",
         "postcss-modules": "^1.3.0",
+        "typescript": "^3.1.1",
         "unminified-webpack-plugin": "^1.4.2",
         "webpack": "^3.10.0",
         "webpack-auto-inject-version": "^1.0.0"
