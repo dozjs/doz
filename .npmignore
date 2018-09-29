@@ -10,3 +10,5 @@ webpack.config.js
 example/
 documentation/
 .postcssrc
+src/
+CHANGELOG.md
