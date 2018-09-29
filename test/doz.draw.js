@@ -1,4 +1,4 @@
-const Doz = require('../index');
+const Doz = require('../');
 const be = require('bejs');
 
 describe('Doz.draw', function () {
