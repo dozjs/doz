@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.2] - 2018-09-29
+- **Added** types definition
+- **Removed** src folder from npm distribution
+
 ## [1.6.1] - 2018-09-18
 - **Added** directive `d-is`
 - **Removed** unused dev libraries
