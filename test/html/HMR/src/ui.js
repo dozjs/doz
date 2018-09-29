@@ -1,4 +1,4 @@
-import {component} from '../../../../index'
+import {component} from '../../../../'
 import './cmp/hello/index'
 
 component('app-ui', {

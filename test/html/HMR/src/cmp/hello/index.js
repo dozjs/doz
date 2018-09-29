@@ -1,4 +1,4 @@
-import {component} from '../../../../../../index'
+import {component} from '../../../../../../'
 import './world'
 
 component('app-hello', {

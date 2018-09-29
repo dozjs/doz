@@ -1,4 +1,4 @@
-import {component} from '../../../../../../../index'
+import {component} from '../../../../../../../'
 import style from './style.css'
 
 component('app-world', {

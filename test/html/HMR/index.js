@@ -1,4 +1,4 @@
-import Doz from '../../../index'
+import Doz from '../../../'
 import './src/ui'
 
 new Doz({

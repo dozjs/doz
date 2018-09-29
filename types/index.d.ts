@@ -5,7 +5,7 @@ export as namespace Doz;
 
 declare namespace Doz {
 
-    type Component = ComponentClass;
+    class Component extends ComponentClass{}
 
     function component(name: string, options: object): void
 
