@@ -25,6 +25,10 @@ function setAttribute($target, name, value, cmp) {
     if (REGEX.IS_CUSTOM_TAG.test($target.nodeName))
         name = camelToDash(name);
     if (isCustomAttribute(name)) {
+        if (/-/.test(name)) {
+            $target.removeAttribute(name)
+        }
+
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
