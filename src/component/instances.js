@@ -59,8 +59,8 @@ function get(cfg = {}) {
                 const props = serializeProps(child);
                 const dProps = extract(props);
 
-                console.log('props', props);
-                console.log('dProps', dProps);
+                //console.log('props', props);
+                //console.log('dProps', dProps);
 
                 let newElement;
 

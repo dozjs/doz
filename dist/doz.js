@@ -958,8 +958,8 @@ function get() {
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
-                console.log('props', props);
-                console.log('dProps', dProps);
+                //console.log('props', props);
+                //console.log('dProps', dProps);
 
                 var newElement = void 0;
 
