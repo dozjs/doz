@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.3] - 2018-10-02
+- **Improved** W3C standard
+
 ## [1.6.2] - 2018-09-29
 - **Added** basic types definition
 - **Removed** src folder from npm distribution
