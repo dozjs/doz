@@ -22,12 +22,15 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName))
+    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
+        // convert to data attribute for w3c standards
         name = camelToDash(name);
+        //console.log('IS-CUSTOM', name)
+    }
     if (isCustomAttribute(name)) {
-        if (/-/.test(name)) {
+        /*if (/^(?!accept-|data-|area-)\w+-\w+/.test(name)) {
             $target.removeAttribute(name)
-        }
+        }*/
 
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
@@ -61,10 +64,16 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 
 function updateChildren(cmp, name, value, $target) {
     if (cmp && cmp.updateChildrenProps && $target) {
-        name = dashToCamel(name);
+        name = dashToCamel(name);//.replace('data-', '');
+        //console.log('UPDATE-CHILDREN', name)
         const firstChild = $target.firstChild;
-        if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name))
+        /*if (firstChild && firstChild[CMP_INSTANCE]) {
+            console.log('pppppppppp', firstChild[CMP_INSTANCE]._publicProps, name)
+        }*/
+        if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
+            //console.log('VVVVVVVVVVVVVV',firstChild[CMP_INSTANCE]._publicProps)
             firstChild[CMP_INSTANCE].props[name] = value;
+        }
     }
 }
 
