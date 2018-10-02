@@ -466,6 +466,11 @@ var Component = function () {
 
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+            //Remove attributes from component tag
+            for (var i = this._cfgRoot.attributes.length - 1; i >= 0; i--) {
+                this._cfgRoot.removeAttribute(this._cfgRoot.attributes[i].name);
+            }
+
             setTimeout(function () {
                 drawDynamic(_this);
             });
@@ -953,7 +958,15 @@ function get() {
                 var props = serializeProps(child);
                 var dProps = extract(props);
 
+                console.log('props', props);
+                console.log('dProps', dProps);
+
                 var newElement = void 0;
+
+                //Remove attributes from component tag
+                for (var i = child.attributes.length - 1; i >= 0; i--) {
+                    child.removeAttribute(child.attributes[i].name);
+                }
 
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
@@ -2810,7 +2823,6 @@ function setAttribute($target, name, value, cmp) {
         // convert to data attribute for w3c standards
         name = camelToDash(name);
         //console.log('IS-CUSTOM', name)
-        return;
     }
     if (isCustomAttribute(name)) {
         /*if (/^(?!accept-|data-|area-)\w+-\w+/.test(name)) {

@@ -198,6 +198,11 @@ class Component {
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+        //Remove attributes from component tag
+        for (let i = this._cfgRoot.attributes.length - 1; i >= 0; i--){
+            this._cfgRoot.removeAttribute(this._cfgRoot.attributes[i].name);
+        }
+
         setTimeout(() => {
             drawDynamic(this);
         });
