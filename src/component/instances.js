@@ -64,11 +64,6 @@ function get(cfg = {}) {
 
                 let newElement;
 
-                //Remove attributes from component tag
-                for (let i = child.attributes.length - 1; i >= 0; i--){
-                    child.removeAttribute(child.attributes[i].name);
-                }
-
                 if (typeof cmp.cfg === 'function') {
                     newElement = new cmp.cfg({
                         tag: cmpName,
