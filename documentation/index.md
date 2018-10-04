@@ -1375,7 +1375,7 @@ You can use [doz-cli](https://github.com/dozjs/doz-cli) at the moment the right 
 Doz uses ES6 proxy that unfortunately is not supported by IE11. You must include two polyfills in your document.
 
 ```html
-<script src="https://cdn.polyfill.io/v2/polyfill.min.js">
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Array.prototype.includes">
 <script src="https://unpkg.com/doz/polyfill/proxy.js">
 ```
 
