@@ -27,7 +27,12 @@
         "framework",
         "ui",
         "virtual dom",
-        "v-dom"
+        "v-dom",
+        "component",
+        "pre-render",
+        "server side rendering",
+        "ssr",
+        "component-based"
     ],
     "author": "Fabio Ricali",
     "license": "MIT",
