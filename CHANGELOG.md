@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.6.4] - 2018-10-04
 - **Improved** rendering performance
+- **Improved** IE11 compatibility
 
 ## [1.6.3] - 2018-10-02
 - **Improved** W3C standard
