@@ -328,6 +328,7 @@ var h = __webpack_require__(15);
 var loadLocal = __webpack_require__(41);
 var localMixin = __webpack_require__(42);
 var compile = __webpack_require__(17);
+var delay = __webpack_require__(11);
 
 var Component = function () {
     function Component(opt) {
@@ -470,7 +471,7 @@ var Component = function () {
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot);
 
-            setTimeout(function () {
+            delay(function () {
                 drawDynamic(_this);
             });
 
