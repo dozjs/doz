@@ -214,6 +214,7 @@ function attach($target, props, cmp) {
     }
 
     if (typeof bindValue !== 'undefined') {
+
         delay(() => {
             let inputs;
             if ($target.type === 'radio') {

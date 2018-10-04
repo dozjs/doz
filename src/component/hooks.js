@@ -1,4 +1,5 @@
 const deprecate = require('../utils/deprecate');
+const delay = require('../utils/delay');
 
 function callBeforeCreate(context) {
     if(typeof context.onBeforeCreate === 'function'){
@@ -39,7 +40,7 @@ function callMount(context) {
 
 function callMountAsync(context) {
     if(typeof context.onMountAsync === 'function'){
-        setTimeout(()=>{
+        delay(()=>{
             context.onMountAsync.call(context);
         });
     }

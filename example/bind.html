@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - model</title>
     <title>Title</title>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
     <script src="../dist/doz.js?58965495473562"></script>
     <style>
         body {
@@ -28,7 +27,7 @@
         template(h){
             return h`
                 <div>
-                    <input type="text" d-ref="cccc" d-bind="message" placeholder="${this.props.placeholder}"/>
+                    <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
                     <p>Value: ${this.props.message}</p>
                     <button onclick="this.setNew()">Set to hello</button>
                 </div>
