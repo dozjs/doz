@@ -43,6 +43,7 @@ Below some basic concepts:
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
 - [Write app or component](#develop-and-production)
+- [IE11 support](#ie11-support)
 - [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
 
 ## Installation
@@ -1367,6 +1368,16 @@ Doz.component('my-counter', {
 
 ### Write app or component
 You can use [doz-cli](https://github.com/dozjs/doz-cli) at the moment the right way to creating a component or an app.
+
+---
+
+### IE11 support
+Doz uses ES6 proxy that unfortunately is not supported by IE11. You must include two polyfills in your document.
+
+```html
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js">
+<script src="https://unpkg.com/doz/polyfill/proxy.js">
+```
 
 ---
 

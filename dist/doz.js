@@ -2332,7 +2332,7 @@ var Doz = function () {
             cfg: {
                 template: typeof cfg.template === 'function' ? cfg.template : function () {
                     var contentStr = toLiteralString(cfg.template);
-                    return eval('`' + contentStr + '`');
+                    if (/\${.*?}/g.test(contentStr)) return eval('`' + contentStr + '`');else return contentStr;
                 }
             }
         };

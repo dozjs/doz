@@ -146,7 +146,10 @@ class Doz {
             cfg: {
                 template: typeof cfg.template === 'function' ? cfg.template : function () {
                     const contentStr = toLiteralString(cfg.template);
-                    return eval('`' + contentStr + '`');
+                    if (/\${.*?}/g.test(contentStr))
+                        return eval('`' + contentStr + '`');
+                    else
+                        return contentStr;
                 }
             }
         };

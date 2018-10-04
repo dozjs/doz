@@ -62,7 +62,7 @@ new Doz({
 });
 ```
 
-## Get started now and quickly? Use [doz-cli](https://github.com/dozjs/doz-cli).
+## Quick start: try [doz-cli](https://github.com/dozjs/doz-cli).
 ```
 $ npm install -g doz-cli
 $ doz app my-app
