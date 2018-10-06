@@ -1139,23 +1139,28 @@ var _require = __webpack_require__(0),
 
 function serializeProps(node) {
     var props = {};
+
     if (node.attributes) {
         var attributes = Array.from(node.attributes);
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
-            var isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-            if (isComponentListener) {
-                if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
-                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-                delete props[attr.name];
-            } else {
-                var value = attr.nodeValue;
-                if (REGEX.IS_STRING_QUOTED.test(value)) value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[REGEX.IS_CUSTOM_TAG.test(node.nodeName) ? dashToCamel(attr.name) : attr.name] = attr.name === ATTR.FORCE_UPDATE ? true : castStringTo(value);
-            }
+
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
         }
     }
     return props;
+}
+
+function propsFixer(nName, aName, aValue, props) {
+    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    if (isComponentListener) {
+        if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
+        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
+        delete props[aName];
+    } else {
+        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(/"/g, '&quot;');
+        props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    }
 }
 
 function transform(node) {
@@ -1199,7 +1204,8 @@ function transform(node) {
 
 module.exports = {
     transform: transform,
-    serializeProps: serializeProps
+    serializeProps: serializeProps,
+    propsFixer: propsFixer
 };
 
 /***/ }),
@@ -2039,18 +2045,24 @@ module.exports = mixin;
 
 var html = __webpack_require__(7);
 
-var _require = __webpack_require__(8),
-    transform = _require.transform;
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
 
-var _require2 = __webpack_require__(0),
-    TAG = _require2.TAG;
+var _require2 = __webpack_require__(8),
+    transform = _require2.transform,
+    serializeProps = _require2.serializeProps;
+
+var parser2 = __webpack_require__(45);
 
 function compile() {
     var template = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
-    template = template.trim();
-    var tpl = html.create(template, TAG.ROOT);
-    return transform(tpl);
+    return parser2(template);
+    /*template = template.trim();
+    const tpl = html.create(template, TAG.ROOT);
+      //console.log(parser2(template))
+    //console.log(transform(tpl))
+      return transform(tpl);*/
 }
 
 module.exports = compile;
@@ -2686,7 +2698,10 @@ function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
-        return document.createTextNode(node);
+        //node = node.replace('&', 'E');
+        var n = document.createTextNode(node);
+        console.dir(n);
+        return n; //document.createTextNode(node);
     }
 
     if (node.type[0] === '#') {
@@ -3348,6 +3363,170 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _require = __webpack_require__(0),
+    TAG = _require.TAG;
+
+var _require2 = __webpack_require__(8),
+    propsFixer = _require2.propsFixer;
+
+// https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
+
+
+var markupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
+var attributePattern = /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig;
+//const attributePattern = /(^|\s)([\w-:]+)\s*=\s*("([^"]+)"|'([^']+)'|(\S+))/ig;
+
+var selfClosingElements = {
+    meta: true,
+    img: true,
+    link: true,
+    input: true,
+    area: true,
+    br: true,
+    hr: true
+};
+
+var elementsClosedByOpening = {
+    li: { li: true },
+    p: { p: true, div: true },
+    td: { td: true, th: true },
+    th: { td: true, th: true }
+};
+
+var elementsClosedByClosing = {
+    li: { ul: true, ol: true },
+    a: { div: true },
+    b: { div: true },
+    i: { div: true },
+    p: { div: true },
+    td: { tr: true, table: true },
+    th: { tr: true, table: true }
+};
+
+function last(arr) {
+    return arr[arr.length - 1];
+}
+
+function removeNLS(str) {
+    return str.replace(/\n\s+/gm, ' ');
+}
+
+var Element = function () {
+    function Element(name, props, isSVG) {
+        _classCallCheck(this, Element);
+
+        this.type = name;
+        this.props = Object.assign({}, props);
+        this.children = [];
+        this.isSVG = isSVG || /^svg$/.test(name);
+    }
+
+    _createClass(Element, [{
+        key: 'appendChild',
+        value: function appendChild(node) {
+            this.children.push(node);
+            return node;
+        }
+    }]);
+
+    return Element;
+}();
+
+function parser(data) {
+
+    var root = new Element(null, {});
+    var stack = [root];
+    var currentParent = root;
+    var lastTextPos = -1;
+    var match = void 0;
+    var props = void 0;
+
+    while (match = markupPattern.exec(data)) {
+
+        if (lastTextPos > -1) {
+            if (lastTextPos > -1 && lastTextPos + match[0].length < markupPattern.lastIndex) {
+                // remove new line space
+                var text = removeNLS(data.substring(lastTextPos, markupPattern.lastIndex - match[0].length));
+                // if has content
+                if (text) currentParent.appendChild(text);
+            }
+        }
+
+        lastTextPos = markupPattern.lastIndex;
+        if (match[0][1] === '!') {
+            // this is a comment
+            continue;
+        }
+
+        // exclude special text node
+        if (new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$').test(match[0])) {
+            continue;
+        }
+
+        if (!match[1]) {
+            // not </ tags
+            props = {};
+            for (var attMatch; attMatch = attributePattern.exec(match[3]);) {
+                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props);
+            }
+
+            if (!match[4] && elementsClosedByOpening[currentParent.type]) {
+                if (elementsClosedByOpening[currentParent.type][match[2]]) {
+                    stack.pop();
+                    currentParent = last(stack);
+                }
+            }
+
+            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+            stack.push(currentParent);
+        }
+
+        if (match[1] || match[4] || selfClosingElements[match[2]]) {
+            // </ or /> or <br> etc.
+            while (true) {
+                if (currentParent.type === match[2]) {
+                    stack.pop();
+                    currentParent = last(stack);
+                    break;
+                } else {
+                    // Trying to close current tag, and move on
+                    if (elementsClosedByClosing[currentParent.type]) {
+                        if (elementsClosedByClosing[currentParent.type][match[2]]) {
+                            stack.pop();
+                            currentParent = last(stack);
+                            continue;
+                        }
+                    }
+                    // Use aggressive strategy to handle unmatching markups.
+                    break;
+                }
+            }
+        }
+    }
+
+    if (root.children.length > 1) {
+        root.type = TAG.ROOT;
+    } else if (root.children.length) {
+        return root.children[0];
+    }
+
+    return root;
+}
+
+module.exports = parser;
 
 /***/ })
 /******/ ]);

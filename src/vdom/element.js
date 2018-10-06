@@ -13,7 +13,10 @@ function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
-        return document.createTextNode(node);
+        //node = node.replace('&', 'E');
+        let n = document.createTextNode(node);
+        console.dir(n);
+        return n;//document.createTextNode(node);
     }
 
     if (node.type[0] === '#') {

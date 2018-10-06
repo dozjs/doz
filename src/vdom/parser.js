@@ -4,31 +4,37 @@ const {REGEX, ATTR, TAG} = require('../constants');
 
 function serializeProps(node) {
     const props = {};
+
     if (node.attributes) {
         const attributes = Array.from(node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-            let isComponentListener = attr.name.match(REGEX.IS_COMPONENT_LISTENER);
-            if (isComponentListener) {
-                if (props[ATTR.LISTENER] === undefined)
-                    props[ATTR.LISTENER] = {};
-                props[ATTR.LISTENER][isComponentListener[1]] = attr.nodeValue;
-                delete props[attr.name];
-            } else {
-                let value = attr.nodeValue;
-                if (REGEX.IS_STRING_QUOTED.test(value))
-                    value = attr.nodeValue.replace(/"/g, '&quot;');
-                props[
-                    REGEX.IS_CUSTOM_TAG.test(node.nodeName)
-                        ? dashToCamel(attr.name)
-                        : attr.name
-                    ] = attr.name === ATTR.FORCE_UPDATE
-                    ? true
-                    : castStringTo(value);
-            }
+
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
+
         }
     }
     return props;
+}
+
+function propsFixer(nName, aName, aValue, props) {
+    let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    if (isComponentListener) {
+        if (props[ATTR.LISTENER] === undefined)
+            props[ATTR.LISTENER] = {};
+        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
+        delete props[aName];
+    } else {
+        if (REGEX.IS_STRING_QUOTED.test(aValue))
+            aValue = aValue.replace(/"/g, '&quot;');
+        props[
+            REGEX.IS_CUSTOM_TAG.test(nName)
+                ? dashToCamel(aName)
+                : aName
+            ] = aName === ATTR.FORCE_UPDATE
+            ? true
+            : castStringTo(aValue);
+    }
 }
 
 function transform(node) {
@@ -73,5 +79,6 @@ function transform(node) {
 
 module.exports = {
     transform,
-    serializeProps
+    serializeProps,
+    propsFixer
 };
