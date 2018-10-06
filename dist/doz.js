@@ -310,13 +310,99 @@ module.exports = {
 "use strict";
 
 
+var castStringTo = __webpack_require__(9);
+var dashToCamel = __webpack_require__(10);
+
+var _require = __webpack_require__(0),
+    REGEX = _require.REGEX,
+    ATTR = _require.ATTR,
+    TAG = _require.TAG;
+
+function serializeProps(node) {
+    var props = {};
+
+    if (node.attributes) {
+        var attributes = Array.from(node.attributes);
+        for (var j = attributes.length - 1; j >= 0; --j) {
+            var attr = attributes[j];
+
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
+        }
+    }
+    return props;
+}
+
+function propsFixer(nName, aName, aValue, props) {
+    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    if (isComponentListener) {
+        if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
+        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
+        delete props[aName];
+    } else {
+        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(/"/g, '&quot;');
+        props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    }
+}
+
+function transform(node) {
+
+    var root = {};
+
+    function walking(node, parent) {
+        while (node) {
+            var obj = void 0;
+
+            if (node.nodeType === 3) {
+                obj = node.nodeValue;
+            } else if (node.nodeName.toLowerCase() === TAG.TEXT_NODE_PLACE) {
+                obj = node.innerText;
+            } else {
+                obj = {};
+                obj.type = node.nodeName;
+                obj.children = [];
+                obj.props = serializeProps(node);
+                obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
+            }
+
+            if (!Object.keys(root).length) root = obj;
+
+            if (parent && parent.children) {
+                parent.children.push(obj);
+            }
+
+            if (node.hasChildNodes()) {
+                walking(node.firstChild, obj);
+            }
+
+            node = node.nextSibling;
+        }
+    }
+
+    walking(node, root);
+
+    return root;
+}
+
+module.exports = {
+    transform: transform,
+    serializeProps: serializeProps,
+    propsFixer: propsFixer
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
+var extend = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -802,7 +888,7 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-            var dynamicInstance = __webpack_require__(6).get({
+            var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app
@@ -841,7 +927,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -893,7 +979,7 @@ module.exports = extend;
 module.exports.copy = copy;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -901,7 +987,7 @@ module.exports.copy = copy;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var html = __webpack_require__(7);
+var html = __webpack_require__(8);
 
 var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
@@ -910,7 +996,7 @@ var _require = __webpack_require__(0),
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(3);
 
-var _require2 = __webpack_require__(8),
+var _require2 = __webpack_require__(4),
     serializeProps = _require2.serializeProps;
 
 var _require3 = __webpack_require__(25),
@@ -918,7 +1004,7 @@ var _require3 = __webpack_require__(25),
 
 var hmr = __webpack_require__(26);
 
-var _require4 = __webpack_require__(4),
+var _require4 = __webpack_require__(5),
     Component = _require4.Component;
 
 function get() {
@@ -1055,7 +1141,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1121,92 +1207,6 @@ var html = {
 };
 
 module.exports = html;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var castStringTo = __webpack_require__(9);
-var dashToCamel = __webpack_require__(10);
-
-var _require = __webpack_require__(0),
-    REGEX = _require.REGEX,
-    ATTR = _require.ATTR,
-    TAG = _require.TAG;
-
-function serializeProps(node) {
-    var props = {};
-
-    if (node.attributes) {
-        var attributes = Array.from(node.attributes);
-        for (var j = attributes.length - 1; j >= 0; --j) {
-            var attr = attributes[j];
-
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
-        }
-    }
-    return props;
-}
-
-function propsFixer(nName, aName, aValue, props) {
-    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
-    if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
-        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
-        delete props[aName];
-    } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(/"/g, '&quot;');
-        props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
-    }
-}
-
-function transform(node) {
-
-    var root = {};
-
-    function walking(node, parent) {
-        while (node) {
-            var obj = void 0;
-
-            if (node.nodeType === 3) {
-                obj = node.nodeValue;
-            } else if (node.nodeName.toLowerCase() === TAG.TEXT_NODE_PLACE) {
-                obj = node.innerText;
-            } else {
-                obj = {};
-                obj.type = node.nodeName;
-                obj.children = [];
-                obj.props = serializeProps(node);
-                obj.isSVG = typeof node.ownerSVGElement !== 'undefined';
-            }
-
-            if (!Object.keys(root).length) root = obj;
-
-            if (parent && parent.children) {
-                parent.children.push(obj);
-            }
-
-            if (node.hasChildNodes()) {
-                walking(node.firstChild, obj);
-            }
-
-            node = node.nextSibling;
-        }
-    }
-
-    walking(node, root);
-
-    return root;
-}
-
-module.exports = {
-    transform: transform,
-    serializeProps: serializeProps,
-    propsFixer: propsFixer
-};
 
 /***/ }),
 /* 9 */
@@ -2043,16 +2043,16 @@ module.exports = mixin;
 "use strict";
 
 
-var html = __webpack_require__(7);
+var html = __webpack_require__(8);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG;
 
-var _require2 = __webpack_require__(8),
+var _require2 = __webpack_require__(4),
     transform = _require2.transform,
     serializeProps = _require2.serializeProps;
 
-var parser2 = __webpack_require__(45);
+var parser2 = __webpack_require__(43);
 
 function compile() {
     var template = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -2119,16 +2119,16 @@ module.exports = __webpack_require__(20);
 
 var Doz = __webpack_require__(21);
 var collection = __webpack_require__(1);
-var component = __webpack_require__(43);
+var component = __webpack_require__(44);
 
 var _require = __webpack_require__(18),
     use = _require.use;
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(5),
     Component = _require2.Component;
 
 var h = __webpack_require__(15);
-var mixin = __webpack_require__(44);
+var mixin = __webpack_require__(45);
 var compile = __webpack_require__(17);
 
 Object.defineProperties(Doz, {
@@ -2185,9 +2185,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
+var extend = __webpack_require__(6);
 var bind = __webpack_require__(22);
-var instances = __webpack_require__(6);
+var instances = __webpack_require__(7);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -2690,6 +2690,15 @@ var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
     ATTR = _require2.ATTR;
 
+/*const fakeElement = (function () {
+    return document.createElement('div');
+})();
+
+function setFake(str) {
+    fakeElement.innerHTML = str;
+    return fakeElement.innerHTML;
+}*/
+
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
@@ -2698,10 +2707,7 @@ function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
-        //node = node.replace('&', 'E');
-        var n = document.createTextNode(node);
-        console.dir(n);
-        return n; //document.createTextNode(node);
+        return document.createTextNode(node);
     }
 
     if (node.type[0] === '#') {
@@ -3318,59 +3324,6 @@ module.exports = localMixin;
 "use strict";
 
 
-var _require = __webpack_require__(1),
-    registerComponent = _require.registerComponent;
-
-var _require2 = __webpack_require__(0),
-    REGEX = _require2.REGEX;
-
-function component(tag) {
-    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-    if (typeof tag !== 'string') {
-        throw new TypeError('Tag must be a string');
-    }
-
-    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
-        throw new TypeError('Tag must contain a dash (-) like my-component');
-    }
-
-    var cmp = {
-        tag: tag,
-        cfg: cfg
-    };
-
-    registerComponent(cmp);
-}
-
-module.exports = component;
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(4),
-    Component = _require.Component;
-
-var mixin = __webpack_require__(16);
-
-function globalMixin(obj) {
-    mixin(Component.prototype, obj);
-}
-
-module.exports = globalMixin;
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3378,7 +3331,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var _require = __webpack_require__(0),
     TAG = _require.TAG;
 
-var _require2 = __webpack_require__(8),
+var _require2 = __webpack_require__(4),
     propsFixer = _require2.propsFixer;
 
 // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
@@ -3527,6 +3480,59 @@ function parser(data) {
 }
 
 module.exports = parser;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    registerComponent = _require.registerComponent;
+
+var _require2 = __webpack_require__(0),
+    REGEX = _require2.REGEX;
+
+function component(tag) {
+    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+    if (typeof tag !== 'string') {
+        throw new TypeError('Tag must be a string');
+    }
+
+    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
+        throw new TypeError('Tag must contain a dash (-) like my-component');
+    }
+
+    var cmp = {
+        tag: tag,
+        cfg: cfg
+    };
+
+    registerComponent(cmp);
+}
+
+module.exports = component;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(5),
+    Component = _require.Component;
+
+var mixin = __webpack_require__(16);
+
+function globalMixin(obj) {
+    mixin(Component.prototype, obj);
+}
+
+module.exports = globalMixin;
 
 /***/ })
 /******/ ]);

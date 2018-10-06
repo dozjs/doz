@@ -2,6 +2,15 @@ const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 
+/*const fakeElement = (function () {
+    return document.createElement('div');
+})();
+
+function setFake(str) {
+    fakeElement.innerHTML = str;
+    return fakeElement.innerHTML;
+}*/
+
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
@@ -13,10 +22,7 @@ function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
-        //node = node.replace('&', 'E');
-        let n = document.createTextNode(node);
-        console.dir(n);
-        return n;//document.createTextNode(node);
+        return document.createTextNode(node);
     }
 
     if (node.type[0] === '#') {
