@@ -1038,9 +1038,7 @@ function get() {
                 localComponents = parent.cmp._components;
             }
 
-            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] ||
-            //collection.getComponent(child.nodeName);
-            collection.getComponent(cmpName);
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
             if (cmp) {
 
@@ -1057,9 +1055,6 @@ function get() {
 
                 var props = serializeProps(child);
                 var dProps = extract(props);
-
-                //console.log('props', props);
-                //console.log('dProps', dProps);
 
                 var newElement = void 0;
 
