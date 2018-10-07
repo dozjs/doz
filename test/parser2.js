@@ -19,7 +19,7 @@ describe('parser2', function () {
         //printObj(root);
         assert.strictEqual(root.type, 'main');
         assert.strictEqual(root.props['d:store'], 'mystore');
-        assert.strictEqual(root.children[0].props['data-any'], 2);
+        assert.strictEqual(root.children[1].props['data-any'], 2);
 
     });
 
@@ -41,9 +41,9 @@ describe('parser2', function () {
 
         //printObj(root);
         assert.strictEqual(root.isSVG, false);
-        assert.strictEqual(root.children[0].isSVG, true);
-        assert.strictEqual(root.children[0].children[0].isSVG, true);
-        assert.strictEqual(root.children[1].isSVG, false);
+        assert.strictEqual(root.children[1].isSVG, true);
+        assert.strictEqual(root.children[1].children[1].isSVG, true);
+        assert.strictEqual(root.children[3].isSVG, false);
 
     });
 
@@ -56,7 +56,7 @@ describe('parser2', function () {
         `);
 
         //printObj(root);
-        assert.strictEqual(root.children[0], 'Hello text');
+        assert.strictEqual(root.children[1], 'Hello text');
     });
 
     it('should get attribute without value', function () {

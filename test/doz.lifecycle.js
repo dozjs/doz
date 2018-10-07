@@ -31,7 +31,7 @@ describe('Doz.lifecycle', function () {
 
             Doz.component('nested-nested-component', {
                 template() {
-                    return 'nested-nested-component';
+                    return '<div>nested-nested-component</div>';
                 },
                 onBeforeMount() {
                     console.log('before mount', this.tag);

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.tag.comment', function () {
+describe.skip('Doz.tag.comment', function () {
 
     this.timeout(5000);
 
