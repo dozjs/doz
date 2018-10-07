@@ -208,7 +208,7 @@ describe('Doz', function () {
             const view = new Doz({
                 root: document.getElementById('app'),
                 template() {
-                    return `ciao`
+                    return `<div>ciao</div>`
                 },
                 onMount() {
                     be.err.equal(this.appRoot.id, 'app');
