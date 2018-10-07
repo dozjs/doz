@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - benchmark</title>
-    <script src="../../dist/doz.js?58965r4888"></script>
+    <script src="../../dist/doz.js?58965r48886"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -53,31 +53,31 @@
         },
 
         clear() {
-            console.time(currentBench = 'clear');
+            //console.time(currentBench = 'clear');
             this.getStore('list').record = [];
         },
 
         reverse() {
-            console.time(currentBench = 'reverse');
+            //console.time(currentBench = 'reverse');
             let record = Object.assign([], this.getStore('list').record);
             this.getStore('list').record = record.reverse();
         },
 
         sort() {
-            console.time(currentBench = 'sort');
+            //console.time(currentBench = 'sort');
             let record = Object.assign([], this.getStore('list').record);
             this.getStore('list').record = record.sort();
         },
 
         remove() {
-            console.time(currentBench = 'remove');
+            //console.time(currentBench = 'remove');
             let record = Object.assign([], this.getStore('list').record);
             record.splice(Math.floor(Math.random()*record.length), 1);
             this.getStore('list').record = record;
         },
 
         removeFirst() {
-            console.time(currentBench = 'removeFirst');
+            //console.time(currentBench = 'removeFirst');
             let record = Object.assign([], this.getStore('list').record);
             record.splice(0, 1);
             this.getStore('list').record = record
@@ -91,7 +91,7 @@
             let tmp = record[i1];
             record[i1] = record[i2];
             record[i2] = tmp;
-            console.time(currentBench = "swap");
+            //console.time(currentBench = "swap");
             this.getStore('list').record = record;
         }
     };
@@ -161,13 +161,13 @@
         },
 
         onBeforeUpdate() {
-            console.log('before');
+            //console.log('before');
             //console.timeEnd(currentBench);
         },
 
         onUpdate() {
-            console.log('update');
-            console.timeEnd(currentBench);
+            //console.log('update');
+            //console.timeEnd(currentBench);
         }
 
     });

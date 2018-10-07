@@ -1,41 +1,37 @@
-function castStringTo(obj) {
+const test = {
+    'undefined': undefined,
+    'null': null,
+    'NaN': NaN,
+    'Infinity': Infinity,
+    'true': true,
+    'false': false,
+    '0': 0
+};
 
+function castStringTo(obj) {
     if (typeof obj !== 'string') {
         return obj;
     }
 
-    switch (obj) {
-        case 'undefined':
-            return undefined;
-        case 'null':
-            return null;
-        case 'NaN':
-            return NaN;
-        case 'Infinity':
-            return Infinity;
-        case 'true':
-            return true;
-        case 'false':
-            return false;
-        case '0':
-            return 0;//obj;
-        default:
-            try {
-                return JSON.parse(obj)
-            } catch (e) {}
-            break;
-    }
-
-    const num = parseFloat(obj);
-    if (!isNaN(num) && isFinite(obj)) {
-        if (obj.toLowerCase().indexOf('0x') === 0) {
-            return parseInt(obj, 16);
+    if (test.hasOwnProperty(obj)) {
+        return test[obj];
+    } else if (/^[{\[]/.test(obj)) {
+        try {
+            return JSON.parse(obj)
+        } catch (e) {
         }
-        return num;
+    } else if(/^[0-9]/.test(obj)){
+        const num = parseFloat(obj);
+        if (!isNaN(num)) {
+            if (isFinite(obj)) {
+                if (obj.toLowerCase().indexOf('0x') === 0) {
+                    return parseInt(obj, 16);
+                }
+                return num;
+            }
+        }
     }
-
     return obj;
-
 }
 
 module.exports = castStringTo;

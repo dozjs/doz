@@ -1210,42 +1210,38 @@ module.exports = html;
 "use strict";
 
 
-function castStringTo(obj) {
+var test = {
+    'undefined': undefined,
+    'null': null,
+    'NaN': NaN,
+    'Infinity': Infinity,
+    'true': true,
+    'false': false,
+    '0': 0
+};
 
+function castStringTo(obj) {
     if (typeof obj !== 'string') {
         return obj;
     }
 
-    switch (obj) {
-        case 'undefined':
-            return undefined;
-        case 'null':
-            return null;
-        case 'NaN':
-            return NaN;
-        case 'Infinity':
-            return Infinity;
-        case 'true':
-            return true;
-        case 'false':
-            return false;
-        case '0':
-            return 0; //obj;
-        default:
-            try {
-                return JSON.parse(obj);
-            } catch (e) {}
-            break;
-    }
-
-    var num = parseFloat(obj);
-    if (!isNaN(num) && isFinite(obj)) {
-        if (obj.toLowerCase().indexOf('0x') === 0) {
-            return parseInt(obj, 16);
+    if (test.hasOwnProperty(obj)) {
+        return test[obj];
+    } else if (/^[{\[]/.test(obj)) {
+        try {
+            return JSON.parse(obj);
+        } catch (e) {}
+    } else if (/^[0-9]/.test(obj)) {
+        var num = parseFloat(obj);
+        if (!isNaN(num)) {
+            if (isFinite(obj)) {
+                if (obj.toLowerCase().indexOf('0x') === 0) {
+                    return parseInt(obj, 16);
+                }
+                return num;
+            }
         }
-        return num;
     }
-
     return obj;
 }
 
@@ -3393,6 +3389,8 @@ var Element = function () {
 }();
 
 function parser(data) {
+
+    if (!data) return '';
 
     var root = new Element(null, {});
     var stack = [root];
