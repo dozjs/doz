@@ -2991,44 +2991,51 @@ function setRef($target, name, value, cmp) {
 }
 
 function attach($target, props, cmp) {
-    var bindValue = void 0;
 
-    Object.keys(props).forEach(function (name) {
+    var bindValue = void 0;
+    var name = void 0;
+
+    var propsKeys = Object.keys(props);
+
+    for (var i = 0, len = propsKeys.length; i < len; i++) {
+        name = propsKeys[i];
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
         if (setBind($target, name, props[name], cmp)) {
             bindValue = cmp.props[props[name]];
         }
         setRef($target, name, props[name], cmp);
-    });
+    }
 
-    for (var i in $target.dataset) {
-        if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
-            addEventListener($target, i, $target.dataset[i], cmp);
+    for (var _i in $target.dataset) {
+        if (Object.prototype.hasOwnProperty.call($target.dataset, _i) && REGEX.IS_LISTENER.test(_i)) {
+            addEventListener($target, _i, $target.dataset[_i], cmp);
         }
     }
 
-    if (typeof bindValue !== 'undefined') {
+    if (typeof bindValue === 'undefined') return;
 
-        delay(function () {
-            var inputs = void 0;
-            if ($target.type === 'radio') {
-                inputs = document.querySelectorAll('input[name=' + $target.name + '][type=radio]');
-                inputs.forEach(function (input) {
-                    return input.checked = bindValue === input.value;
-                });
-            } else if ($target.type === 'checkbox') {
-                if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
-                    inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
-                    inputs.forEach(function (input) {
-                        return input.checked = Array.from(bindValue).includes(input.value);
-                    });
-                } else $target.checked = bindValue;
-            } else {
-                $target.value = bindValue;
+    delay(function () {
+        var inputs = void 0;
+        var input = void 0;
+        if ($target.type === 'radio') {
+            inputs = document.querySelectorAll('input[name=' + $target.name + '][type=radio]');
+            for (var _i2 = 0, _len = inputs.length; _i2 < _len; _i2++) {
+                input = inputs[_i2];
+                input.checked = bindValue === input.value;
             }
-        });
-    }
+        } else if ($target.type === 'checkbox') {
+            if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
+                inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
+                for (var _i3 = 0, _len2 = inputs.length; _i3 < _len2; _i3++) {
+                    input = inputs[_i3];
+                    input.checked = Array.from(bindValue).includes(input.value);
+                }
+            } else $target.checked = bindValue;
+        } else {
+            $target.value = bindValue;
+        }
+    });
 }
 
 module.exports = {

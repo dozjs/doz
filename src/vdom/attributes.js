@@ -196,16 +196,21 @@ function setRef($target, name, value, cmp) {
 }
 
 function attach($target, props, cmp) {
-    let bindValue;
 
-    Object.keys(props).forEach(name => {
+    let bindValue;
+    let name;
+
+    const propsKeys = Object.keys(props);
+
+    for(let i = 0, len = propsKeys.length; i < len; i++) {
+        name = propsKeys[i];
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
         if (setBind($target, name, props[name], cmp)) {
             bindValue = cmp.props[props[name]];
         }
         setRef($target, name, props[name], cmp);
-    });
+    }
 
     for (let i in $target.dataset) {
         if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
@@ -213,24 +218,31 @@ function attach($target, props, cmp) {
         }
     }
 
-    if (typeof bindValue !== 'undefined') {
+    if (typeof bindValue === 'undefined')
+        return;
 
-        delay(() => {
-            let inputs;
-            if ($target.type === 'radio') {
-                inputs = document.querySelectorAll(`input[name=${$target.name}][type=radio]`);
-                inputs.forEach(input => input.checked = bindValue === input.value);
-            } else if ($target.type === 'checkbox') {
-                if(typeof bindValue === 'object') {
-                    inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
-                    inputs.forEach(input => input.checked = Array.from(bindValue).includes(input.value));
-                } else
-                    $target.checked = bindValue;
-            } else {
-                $target.value = bindValue;
+    delay(() => {
+        let inputs;
+        let input;
+        if ($target.type === 'radio') {
+            inputs = document.querySelectorAll(`input[name=${$target.name}][type=radio]`);
+            for(let i = 0, len = inputs.length; i < len; i++) {
+                input = inputs[i];
+                input.checked = bindValue === input.value;
             }
-        });
-    }
+        } else if ($target.type === 'checkbox') {
+            if(typeof bindValue === 'object') {
+                inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                for(let i = 0, len = inputs.length; i < len; i++) {
+                    input = inputs[i];
+                    input.checked = Array.from(bindValue).includes(input.value);
+                }
+            } else
+                $target.checked = bindValue;
+        } else {
+            $target.value = bindValue;
+        }
+    });
 }
 
 module.exports = {
