@@ -38,7 +38,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(/\n\s+/gm, ' ')
+    return str.replace(/\n\s+/gm, '')
 }
 
 class Element {
@@ -58,6 +58,8 @@ class Element {
 }
 
 function parser(data) {
+
+    if (!data) return {};
 
     const root = new Element(null, {});
     const stack = [root];
