@@ -1,15 +1,7 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
-
-/*const fakeElement = (function () {
-    return document.createElement('div');
-})();
-
-function setFake(str) {
-    fakeElement.innerHTML = str;
-    return fakeElement.innerHTML;
-}*/
+const html = require('../utils/html');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -22,7 +14,12 @@ function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
     if (typeof node === 'string') {
-        return document.createTextNode(node);
+        return document.createTextNode(
+            // use decode only if necessary
+            /&\w+;/.test(node)
+                ? html.decode(node)
+                : node
+        );
     }
 
     if (node.type[0] === '#') {
@@ -39,11 +36,11 @@ function create(node, cmp, initial) {
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
     if (typeof $el.hasAttribute === 'function')
-    if ((node.type.indexOf('-')!== -1
-        || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
-        && !initial) {
-        cmp._processing.push({node: $el, action: 'create'});
-    }
+        if ((node.type.indexOf('-') !== -1
+            || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
+            && !initial) {
+            cmp._processing.push({node: $el, action: 'create'});
+        }
 
     return $el;
 }

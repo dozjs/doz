@@ -1,6 +1,7 @@
 const regexN = /\n/g;
 const regexS = /\s+/g;
 const replace = ' ';
+let decoder;
 
 const html = {
     /**
@@ -9,7 +10,7 @@ const html = {
      * @param wrapper tag string
      * @returns {Element | Node | null}
      */
-    create: function (str, wrapper) {
+    create(str, wrapper) {
         let element;
         str = str.replace(regexN, replace);
         str = str.replace(regexS, replace);
@@ -24,38 +25,15 @@ const html = {
             element = template.firstChild || document.createTextNode('');
         }
 
-        if (!this.isValidNode(element))
-            throw new Error('Element not valid');
         return element;
     },
 
-    /**
-     * Check if is a valid Node
-     * @param {*} el
-     * @returns {Boolean}
-     */
-    isValidNode: function (el) {
-        return el && 'nodeType' in el;
-    },
-
-    getAllNodes: function (el) {
-
-        const nodes = [];
-
-        function scanner(n) {
-            while (n) {
-                nodes.push(n);
-                if (n.hasChildNodes()) {
-                    scanner(n.firstChild)
-                }
-                n = n.nextSibling;
-            }
-        }
-
-        scanner(el);
-
-        return nodes;
+    decode(str) {
+        decoder = decoder || document.createElement('div');
+        decoder.innerHTML = str;
+        return decoder.textContent;
     }
+
 };
 
 module.exports = html;

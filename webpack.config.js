@@ -20,7 +20,8 @@ module.exports = {
             test: /\.js?$/,
             loader: 'babel-loader',
             options: {
-                presets: ['env']
+                presets: ['env'],
+                plugins: ['babel-plugin-loop-optimizer']
             }
         }]
     },
