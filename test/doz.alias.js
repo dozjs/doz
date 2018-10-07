@@ -3,16 +3,6 @@ const be = require('bejs');
 
 describe('Doz.alias', function () {
 
-    this.timeout(5000);
-
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
-
     beforeEach(function () {
         document.body.innerHTML = '';
         Doz.collection.removeAll();

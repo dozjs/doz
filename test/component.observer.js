@@ -10,14 +10,6 @@ describe('observable-slim.js', _ => {
         p = ObservableSlim.create(test, false, function(changes) { return null; });
     });
 
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
-
     it('Add a new string property.', () => {
         ObservableSlim.observe(p, function(changes) {
             expect(changes[0].type).to.equal("add");
