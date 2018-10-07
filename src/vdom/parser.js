@@ -1,8 +1,6 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const {REGEX, ATTR, TAG} = require('../constants');
-const markupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
-const attributePattern = /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig;
 
 const selfClosingElements = {
     meta: true,
@@ -45,7 +43,7 @@ class Element {
         this.type = name;
         this.props = Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || /^svg$/.test(name);
+        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
     }
 
     appendChild(node) {
@@ -66,19 +64,19 @@ function compile(data) {
     let match;
     let props;
 
-    while (match = markupPattern.exec(data)) {
+    while (match = REGEX.HTML_MARKUP.exec(data)) {
 
         if (lastTextPos > -1) {
-            if (lastTextPos > -1 && lastTextPos + match[0].length < markupPattern.lastIndex) {
+            if (lastTextPos > -1 && lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
-                const text = removeNLS(data.substring(lastTextPos, markupPattern.lastIndex - match[0].length));
+                const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text)
                     currentParent.appendChild(text);
             }
         }
 
-        lastTextPos = markupPattern.lastIndex;
+        lastTextPos = REGEX.HTML_MARKUP.lastIndex;
         if (match[0][1] === '!') {
             // this is a comment
             continue;
@@ -92,7 +90,7 @@ function compile(data) {
         if (!match[1]) {
             // not </ tags
             props = {};
-            for (let attMatch; attMatch = attributePattern.exec(match[3]);) {
+            for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
                 propsFixer(
                     match[0].substring(1, match[0].length-1),
