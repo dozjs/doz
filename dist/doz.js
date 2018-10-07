@@ -701,6 +701,7 @@ var Component = function () {
     }, {
         key: 'props',
         set: function set(props) {
+            if (typeof props === 'function') props = props();
             this._rawProps = Object.assign({}, props, this._opt.props);
             observer.create(this);
             store.sync(this);
