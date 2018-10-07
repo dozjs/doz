@@ -1,4 +1,4 @@
-const {transform} = require('../src/vdom/parser');
+const {compile} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
 const be = require('bejs');
@@ -23,15 +23,15 @@ describe('parser', function () {
         it('should be return nodes', function () {
             document.body.innerHTML = `<div id="app"></div>`;
             const appRoot = document.getElementById('app');
-            const initial = transform(html.create(`
+            const initial = compile(`
                 <div>hello
                     <button disabled>testo</button>
                 </div>
-                `));
+                `);
 
             updateElement(appRoot, initial);
             console.log(document.body.innerHTML);
-            const next = transform(html.create(`<div>hello<button disabled>rere</button></div>`));
+            const next = compile(`<div>hello<button disabled>rere</button></div>`);
             //next.children[1].children[0] = 'clicca';
             updateElement(appRoot, next, initial);
             console.log(document.body.innerHTML);
@@ -39,10 +39,10 @@ describe('parser', function () {
         it('should be return nodes without indent', function () {
             document.body.innerHTML = `<div id="app"></div>`;
             const appRoot = document.getElementById('app');
-            const initial = transform(html.create(`
+            const initial = compile(`
                 <div>hello world
                     <button disabled>testo</button>
-                    </div>`));
+                    </div>`);
 
             /*updateElement(appRoot, initial);
             console.log(document.body.innerHTML);

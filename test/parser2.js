@@ -1,4 +1,4 @@
-const parser = require('../src/vdom/parser2');
+const {compile} = require('../src/vdom/parser');
 const assert = require('assert');
 
 function printObj(obj) {
@@ -8,7 +8,7 @@ function printObj(obj) {
 describe('parser2', function () {
     it('should ok', function () {
 
-        const root = parser(`
+        const root = compile(`
             <main id="hola" d:store="mystore">
                 <ul id="list" data-any="2">
                     <li onclick="console.log('hello')" data-o="cia">Hello World</li>
@@ -24,7 +24,7 @@ describe('parser2', function () {
     });
 
     it('should be SVG', function () {
-        const root = parser(`
+        const root = compile(`
             <div>
                 <svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" 
                     preserveAspectRatio="xMidYMid" class="lds-dual-ring" style="background: none;">
@@ -48,7 +48,7 @@ describe('parser2', function () {
     });
 
     it('should convert dz-text-node', function () {
-        const root = parser(`
+        const root = compile(`
             <div>
                 <dz-text-node>Hello text</dz-text-node>
                 <p>Ciao Mondo</p>
@@ -60,13 +60,13 @@ describe('parser2', function () {
     });
 
     it('should get attribute without value', function () {
-        const root = parser(`
+        const root = compile(`
             <button class="myColor" disabled id="test">
                 click me!
             </button>
         `);
 
-        printObj(root);
+        //printObj(root);
         assert.strictEqual(root.props.disabled, '');
     });
 
