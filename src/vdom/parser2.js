@@ -59,7 +59,7 @@ class Element {
 
 function parser(data) {
 
-    if (!data) return {};
+    if (!data) return '';
 
     const root = new Element(null, {});
     const stack = [root];
