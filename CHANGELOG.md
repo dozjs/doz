@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Improved** rendering performance
+- **Fixed** issue when props is passed as function
+
 ## [1.6.4] - 2018-10-04
 - **Improved** rendering performance
 - **Improved** IE11 compatibility

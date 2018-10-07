@@ -108,9 +108,12 @@ module.exports = {
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
+        IS_SVG: /^svg$/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
-        THIS_TARGET: /\B\$this(?!\w)/g
+        THIS_TARGET: /\B\$this(?!\w)/g,
+        HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
+        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -312,13 +315,208 @@ module.exports = {
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) { descriptor.writable = true; } Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) { defineProperties(Constructor.prototype, protoProps); } if (staticProps) { defineProperties(Constructor, staticProps); } return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var castStringTo = __webpack_require__(9);
+var dashToCamel = __webpack_require__(10);
+
+var _require = __webpack_require__(0),
+    REGEX = _require.REGEX,
+    ATTR = _require.ATTR,
+    TAG = _require.TAG;
+
+var selfClosingElements = {
+    meta: true,
+    img: true,
+    link: true,
+    input: true,
+    area: true,
+    br: true,
+    hr: true
+};
+
+var elementsClosedByOpening = {
+    li: { li: true },
+    p: { p: true, div: true },
+    td: { td: true, th: true },
+    th: { td: true, th: true }
+};
+
+var elementsClosedByClosing = {
+    li: { ul: true, ol: true },
+    a: { div: true },
+    b: { div: true },
+    i: { div: true },
+    p: { div: true },
+    td: { tr: true, table: true },
+    th: { tr: true, table: true }
+};
+
+function last(arr) {
+    return arr[arr.length - 1];
+}
+
+function removeNLS(str) {
+    return str.replace(/\n\s+/gm, ' ');
+}
+
+var Element = function () {
+    function Element(name, props, isSVG) {
+        _classCallCheck(this, Element);
+
+        this.type = name;
+        this.props = Object.assign({}, props);
+        this.children = [];
+        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+    }
+
+    _createClass(Element, [{
+        key: 'appendChild',
+        value: function appendChild(node) {
+            this.children.push(node);
+            return node;
+        }
+    }]);
+
+    return Element;
+}();
+
+function compile(data) {
+
+    if (!data) {
+        return '';
+    }var root = new Element(null, {});
+    var stack = [root];
+    var currentParent = root;
+    var lastTextPos = -1;
+    var match = void 0;
+    var props = void 0;
+
+    while (match = REGEX.HTML_MARKUP.exec(data)) {
+
+        if (lastTextPos > -1) {
+            if (lastTextPos > -1 && lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
+                // remove new line space
+                var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+                // if has content
+                if (text) {
+                    currentParent.appendChild(text);
+                }
+            }
+        }
+
+        lastTextPos = REGEX.HTML_MARKUP.lastIndex;
+        if (match[0][1] === '!') {
+            // this is a comment
+            continue;
+        }
+
+        // exclude special text node
+        if (new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$').test(match[0])) {
+            continue;
+        }
+
+        if (!match[1]) {
+            // not </ tags
+            props = {};
+            for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
+                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props);
+            }
+
+            if (!match[4] && elementsClosedByOpening[currentParent.type]) {
+                if (elementsClosedByOpening[currentParent.type][match[2]]) {
+                    stack.pop();
+                    currentParent = last(stack);
+                }
+            }
+
+            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+            stack.push(currentParent);
+        }
+
+        if (match[1] || match[4] || selfClosingElements[match[2]]) {
+            // </ or /> or <br> etc.
+            while (true) {
+                if (currentParent.type === match[2]) {
+                    stack.pop();
+                    currentParent = last(stack);
+                    break;
+                } else {
+                    // Trying to close current tag, and move on
+                    if (elementsClosedByClosing[currentParent.type]) {
+                        if (elementsClosedByClosing[currentParent.type][match[2]]) {
+                            stack.pop();
+                            currentParent = last(stack);
+                            continue;
+                        }
+                    }
+                    // Use aggressive strategy to handle unmatching markups.
+                    break;
+                }
+            }
+        }
+    }
+
+    if (root.children.length > 1) {
+        root.type = TAG.ROOT;
+    } else if (root.children.length) {
+        return root.children[0];
+    }
+
+    return root;
+}
+
+function serializeProps(node) {
+    var props = {};
+
+    if (node.attributes) {
+        var attributes = Array.from(node.attributes);
+        for (var j = attributes.length - 1; j >= 0; --j) {
+            var attr = attributes[j];
+
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
+        }
+    }
+    return props;
+}
+
+function propsFixer(nName, aName, aValue, props) {
+    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    if (isComponentListener) {
+        if (props[ATTR.LISTENER] === undefined) {
+            props[ATTR.LISTENER] = {};
+        }props[ATTR.LISTENER][isComponentListener[1]] = aValue;
+        delete props[aName];
+    } else {
+        if (REGEX.IS_STRING_QUOTED.test(aValue)) {
+            aValue = aValue.replace(/"/g, '&quot;');
+        }props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    }
+}
+
+module.exports = {
+    compile: compile,
+    serializeProps: serializeProps,
+    propsFixer: propsFixer
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) { descriptor.writable = true; } Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) { defineProperties(Constructor.prototype, protoProps); } if (staticProps) { defineProperties(Constructor, staticProps); } return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
+var extend = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -344,7 +542,7 @@ var h = __webpack_require__(15);
 var loadLocal = __webpack_require__(40);
 var localMixin = __webpack_require__(41);
 
-var _require2 = __webpack_require__(8),
+var _require2 = __webpack_require__(4),
     compile = _require2.compile;
 
 var delay = __webpack_require__(2);
@@ -857,7 +1055,7 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-            var dynamicInstance = __webpack_require__(6).get({
+            var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app
@@ -896,7 +1094,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -948,7 +1146,7 @@ module.exports = extend;
 module.exports.copy = copy;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -956,7 +1154,7 @@ module.exports.copy = copy;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var html = __webpack_require__(7);
+var html = __webpack_require__(8);
 
 var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
@@ -965,7 +1163,7 @@ var _require = __webpack_require__(0),
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(3);
 
-var _require2 = __webpack_require__(8),
+var _require2 = __webpack_require__(4),
     serializeProps = _require2.serializeProps;
 
 var _require3 = __webpack_require__(24),
@@ -973,7 +1171,7 @@ var _require3 = __webpack_require__(24),
 
 var hmr = __webpack_require__(25);
 
-var _require4 = __webpack_require__(4),
+var _require4 = __webpack_require__(5),
     Component = _require4.Component;
 
 function get() {
@@ -1113,7 +1311,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1156,204 +1354,6 @@ var html = {
 };
 
 module.exports = html;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) { descriptor.writable = true; } Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) { defineProperties(Constructor.prototype, protoProps); } if (staticProps) { defineProperties(Constructor, staticProps); } return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var castStringTo = __webpack_require__(9);
-var dashToCamel = __webpack_require__(10);
-
-var _require = __webpack_require__(0),
-    REGEX = _require.REGEX,
-    ATTR = _require.ATTR,
-    TAG = _require.TAG;
-
-var markupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
-var attributePattern = /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig;
-
-var selfClosingElements = {
-    meta: true,
-    img: true,
-    link: true,
-    input: true,
-    area: true,
-    br: true,
-    hr: true
-};
-
-var elementsClosedByOpening = {
-    li: { li: true },
-    p: { p: true, div: true },
-    td: { td: true, th: true },
-    th: { td: true, th: true }
-};
-
-var elementsClosedByClosing = {
-    li: { ul: true, ol: true },
-    a: { div: true },
-    b: { div: true },
-    i: { div: true },
-    p: { div: true },
-    td: { tr: true, table: true },
-    th: { tr: true, table: true }
-};
-
-function last(arr) {
-    return arr[arr.length - 1];
-}
-
-function removeNLS(str) {
-    return str.replace(/\n\s+/gm, ' ');
-}
-
-var Element = function () {
-    function Element(name, props, isSVG) {
-        _classCallCheck(this, Element);
-
-        this.type = name;
-        this.props = Object.assign({}, props);
-        this.children = [];
-        this.isSVG = isSVG || /^svg$/.test(name);
-    }
-
-    _createClass(Element, [{
-        key: 'appendChild',
-        value: function appendChild(node) {
-            this.children.push(node);
-            return node;
-        }
-    }]);
-
-    return Element;
-}();
-
-function compile(data) {
-
-    if (!data) {
-        return '';
-    }var root = new Element(null, {});
-    var stack = [root];
-    var currentParent = root;
-    var lastTextPos = -1;
-    var match = void 0;
-    var props = void 0;
-
-    while (match = markupPattern.exec(data)) {
-
-        if (lastTextPos > -1) {
-            if (lastTextPos > -1 && lastTextPos + match[0].length < markupPattern.lastIndex) {
-                // remove new line space
-                var text = removeNLS(data.substring(lastTextPos, markupPattern.lastIndex - match[0].length));
-                // if has content
-                if (text) {
-                    currentParent.appendChild(text);
-                }
-            }
-        }
-
-        lastTextPos = markupPattern.lastIndex;
-        if (match[0][1] === '!') {
-            // this is a comment
-            continue;
-        }
-
-        // exclude special text node
-        if (new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$').test(match[0])) {
-            continue;
-        }
-
-        if (!match[1]) {
-            // not </ tags
-            props = {};
-            for (var attMatch; attMatch = attributePattern.exec(match[3]);) {
-                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
-                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props);
-            }
-
-            if (!match[4] && elementsClosedByOpening[currentParent.type]) {
-                if (elementsClosedByOpening[currentParent.type][match[2]]) {
-                    stack.pop();
-                    currentParent = last(stack);
-                }
-            }
-
-            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
-            stack.push(currentParent);
-        }
-
-        if (match[1] || match[4] || selfClosingElements[match[2]]) {
-            // </ or /> or <br> etc.
-            while (true) {
-                if (currentParent.type === match[2]) {
-                    stack.pop();
-                    currentParent = last(stack);
-                    break;
-                } else {
-                    // Trying to close current tag, and move on
-                    if (elementsClosedByClosing[currentParent.type]) {
-                        if (elementsClosedByClosing[currentParent.type][match[2]]) {
-                            stack.pop();
-                            currentParent = last(stack);
-                            continue;
-                        }
-                    }
-                    // Use aggressive strategy to handle unmatching markups.
-                    break;
-                }
-            }
-        }
-    }
-
-    if (root.children.length > 1) {
-        root.type = TAG.ROOT;
-    } else if (root.children.length) {
-        return root.children[0];
-    }
-
-    return root;
-}
-
-function serializeProps(node) {
-    var props = {};
-
-    if (node.attributes) {
-        var attributes = Array.from(node.attributes);
-        for (var j = attributes.length - 1; j >= 0; --j) {
-            var attr = attributes[j];
-
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
-        }
-    }
-    return props;
-}
-
-function propsFixer(nName, aName, aValue, props) {
-    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
-    if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined) {
-            props[ATTR.LISTENER] = {};
-        }props[ATTR.LISTENER][isComponentListener[1]] = aValue;
-        delete props[aName];
-    } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue)) {
-            aValue = aValue.replace(/"/g, '&quot;');
-        }props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
-    }
-}
-
-module.exports = {
-    compile: compile,
-    serializeProps: serializeProps,
-    propsFixer: propsFixer
-};
 
 /***/ }),
 /* 9 */
@@ -2279,13 +2279,13 @@ var _require = __webpack_require__(17),
 
 var component = __webpack_require__(42);
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(5),
     Component = _require2.Component;
 
 var mixin = __webpack_require__(43);
 var h = __webpack_require__(15);
 
-var _require3 = __webpack_require__(8),
+var _require3 = __webpack_require__(4),
     compile = _require3.compile;
 
 Object.defineProperties(Doz, {
@@ -2342,9 +2342,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
+var extend = __webpack_require__(6);
 var bind = __webpack_require__(21);
-var instances = __webpack_require__(6);
+var instances = __webpack_require__(7);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -2948,7 +2948,7 @@ var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
     ATTR = _require2.ATTR;
 
-var html = __webpack_require__(7);
+var html = __webpack_require__(8);
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -3742,7 +3742,7 @@ module.exports = component;
 "use strict";
 
 
-var _require = __webpack_require__(4),
+var _require = __webpack_require__(5),
     Component = _require.Component;
 
 var mixin = __webpack_require__(16);
