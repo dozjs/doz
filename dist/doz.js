@@ -2950,6 +2950,8 @@ var _require2 = __webpack_require__(0),
 
 var html = __webpack_require__(8);
 
+var store = Object.create(null);
+
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
@@ -2967,7 +2969,15 @@ function create(node, cmp, initial) {
         node.type = TAG.EMPTY;
     }
 
-    var $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
+    var $el = void 0;
+    var cloned = store[node.type];
+    if (cloned) {
+        $el = cloned.cloneNode(false);
+    } else {
+        $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
+
+        store[node.type] = $el;
+    }
 
     attach($el, node.props, cmp);
 

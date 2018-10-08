@@ -3,6 +3,8 @@ const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 const html = require('../utils/html');
 
+const store = Object.create(null);
+
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
@@ -26,9 +28,17 @@ function create(node, cmp, initial) {
         node.type = TAG.EMPTY;
     }
 
-    const $el = node.isSVG
-        ? document.createElementNS(NS.SVG, node.type)
-        : document.createElement(node.type);
+    let $el;
+    let cloned = store[node.type];
+    if (cloned) {
+        $el = cloned.cloneNode(false);
+    } else {
+        $el = node.isSVG
+            ? document.createElementNS(NS.SVG, node.type)
+            : document.createElement(node.type);
+
+        store[node.type] = $el;
+    }
 
     attach($el, node.props, cmp);
 
