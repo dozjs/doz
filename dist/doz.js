@@ -2991,7 +2991,7 @@ function clearDead() {
         deadChildren.splice(dl, 1);
     }
 
-    //console.log('store text',storeTextNode);
+    console.log('store text', storeTextNode);
     //console.log('store element',storeElementNode);
 }
 
