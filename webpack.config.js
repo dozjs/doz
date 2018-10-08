@@ -21,7 +21,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
                 presets: ['env'],
-                plugins: ['babel-plugin-loop-optimizer']
+                plugins: ['faster.js']
             }
         }]
     },

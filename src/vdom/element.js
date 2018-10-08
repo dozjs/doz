@@ -3,7 +3,8 @@ const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 const html = require('../utils/html');
 
-const store = Object.create(null);
+const storeElementNode = Object.create(null);
+const storeTextNode = Object.create(null);
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -15,29 +16,38 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
+    let nodeStored;
+    let $el;
+
     if (typeof node === 'string') {
-        return document.createTextNode(
-            // use decode only if necessary
-            /&\w+;/.test(node)
-                ? html.decode(node)
-                : node
-        );
+        nodeStored = storeTextNode[node];
+        if (nodeStored) {
+            $el = nodeStored.cloneNode();
+        }else {
+            $el = document.createTextNode(
+                // use decode only if necessary
+                /&\w+;/.test(node)
+                    ? html.decode(node)
+                    : node
+            );
+           storeTextNode[node] = $el;
+        }
+        return $el;
     }
 
     if (node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
 
-    let $el;
-    let cloned = store[node.type];
-    if (cloned) {
-        $el = cloned.cloneNode(false);
+    nodeStored = storeElementNode[node.type];
+    if (nodeStored) {
+        $el = nodeStored.cloneNode();
     } else {
         $el = node.isSVG
             ? document.createElementNS(NS.SVG, node.type)
             : document.createElement(node.type);
 
-        store[node.type] = $el;
+        storeElementNode[node.type] = $el;
     }
 
     attach($el, node.props, cmp);
@@ -128,6 +138,10 @@ function clearDead() {
         deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
         deadChildren.splice(dl, 1);
     }
+
+    //console.log('store text',storeTextNode);
+    //console.log('store element',storeElementNode);
+
 }
 
 module.exports = {
