@@ -4,7 +4,7 @@ const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 const html = require('../utils/html');
 
 const storeElementNode = Object.create(null);
-const storeTextNode = Object.create(null);
+const sampleNode = document.createTextNode('');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -20,19 +20,12 @@ function create(node, cmp, initial) {
     let $el;
 
     if (typeof node === 'string') {
-        nodeStored = storeTextNode[node];
-        if (nodeStored) {
-            $el = nodeStored.cloneNode();
-        }else {
-            $el = document.createTextNode(
-                // use decode only if necessary
-                /&\w+;/.test(node)
-                    ? html.decode(node)
-                    : node
-            );
-           storeTextNode[node] = $el;
-        }
-        return $el;
+        return document.createTextNode(
+            // use decode only if necessary
+            /&\w+;/.test(node)
+                ? html.decode(node)
+                : node
+        );
     }
 
     if (node.type[0] === '#') {
@@ -78,8 +71,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        const newElement = create(newNode, cmp, initial);
         const oldElement = $parent.childNodes[index];
+        // Reuse text node
+        if (typeof newNode === 'string' && typeof oldNode === 'string') {
+            oldElement.textContent = newNode;
+            return oldElement;
+        }
+
+        const newElement = create(newNode, cmp, initial);
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {

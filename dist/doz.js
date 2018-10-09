@@ -2855,7 +2855,7 @@ var _require2 = __webpack_require__(0),
 var html = __webpack_require__(8);
 
 var storeElementNode = Object.create(null);
-var storeTextNode = Object.create(null);
+var sampleNode = document.createTextNode('');
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -2868,16 +2868,9 @@ function create(node, cmp, initial) {
     var $el = void 0;
 
     if (typeof node === 'string') {
-        nodeStored = storeTextNode[node];
-        if (nodeStored) {
-            $el = nodeStored.cloneNode();
-        } else {
-            $el = document.createTextNode(
-            // use decode only if necessary
-            /&\w+;/.test(node) ? html.decode(node) : node);
-            storeTextNode[node] = $el;
-        }
-        return $el;
+        return document.createTextNode(
+        // use decode only if necessary
+        /&\w+;/.test(node) ? html.decode(node) : node);
     }
 
     if (node.type[0] === '#') {
@@ -2935,8 +2928,14 @@ function update($parent, newNode, oldNode) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        var newElement = create(newNode, cmp, initial);
         var oldElement = $parent.childNodes[index];
+        // Reuse text node
+        if (typeof newNode === 'string' && typeof oldNode === 'string') {
+            oldElement.textContent = newNode;
+            return oldElement;
+        }
+
+        var newElement = create(newNode, cmp, initial);
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
@@ -2991,7 +2990,7 @@ function clearDead() {
         deadChildren.splice(dl, 1);
     }
 
-    console.log('store text', storeTextNode);
+    //console.log('store text',storeTextNode);
     //console.log('store element',storeElementNode);
 }
 
