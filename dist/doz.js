@@ -2855,7 +2855,6 @@ var _require2 = __webpack_require__(0),
 var html = __webpack_require__(8);
 
 var storeElementNode = Object.create(null);
-var sampleNode = document.createTextNode('');
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -2883,7 +2882,7 @@ function create(node, cmp, initial) {
     } else {
         $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
 
-        storeElementNode[node.type] = $el;
+        storeElementNode[node.type] = $el.cloneNode(true);
     }
 
     attach($el, node.props, cmp);
@@ -2989,9 +2988,6 @@ function clearDead() {
         deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
         deadChildren.splice(dl, 1);
     }
-
-    //console.log('store text',storeTextNode);
-    //console.log('store element',storeElementNode);
 }
 
 module.exports = {

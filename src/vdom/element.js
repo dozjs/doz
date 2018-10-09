@@ -4,7 +4,6 @@ const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 const html = require('../utils/html');
 
 const storeElementNode = Object.create(null);
-const sampleNode = document.createTextNode('');
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -40,7 +39,7 @@ function create(node, cmp, initial) {
             ? document.createElementNS(NS.SVG, node.type)
             : document.createElement(node.type);
 
-        storeElementNode[node.type] = $el;
+        storeElementNode[node.type] = $el.cloneNode(true);
     }
 
     attach($el, node.props, cmp);
@@ -137,10 +136,6 @@ function clearDead() {
         deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
         deadChildren.splice(dl, 1);
     }
-
-    //console.log('store text',storeTextNode);
-    //console.log('store element',storeElementNode);
-
 }
 
 module.exports = {
