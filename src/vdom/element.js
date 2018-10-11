@@ -12,6 +12,12 @@ function isChanged(nodeA, nodeB) {
         nodeA.props && nodeA.props.forceupdate;
 }
 
+function canDecode(str) {
+    return /&\w+;/.test(str)
+        ? html.decode(str)
+        : str
+}
+
 function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
@@ -21,9 +27,7 @@ function create(node, cmp, initial) {
     if (typeof node === 'string') {
         return document.createTextNode(
             // use decode only if necessary
-            /&\w+;/.test(node)
-                ? html.decode(node)
-                : node
+            canDecode(node)
         );
     }
 
@@ -73,7 +77,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         const oldElement = $parent.childNodes[index];
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
-            oldElement.textContent = newNode;
+            oldElement.textContent = canDecode(newNode);
             return oldElement;
         }
 
