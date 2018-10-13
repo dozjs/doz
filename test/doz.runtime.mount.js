@@ -4,16 +4,6 @@ const be = require('bejs');
 
 describe('Doz.runtime.mount', function () {
 
-    this.timeout(4000);
-
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
-
     beforeEach(function () {
         document.body.innerHTML = '';
         Doz.collection.removeAll();

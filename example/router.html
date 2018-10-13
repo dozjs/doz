@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - ROUTER">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - router</title>
-    <script src="../dist/doz.js?589654888l303493"></script>
+    <script src="../dist/doz.js?5896564888l3034493"></script>
     <script src="../node_modules/doz-router/dist/bundle.js?7545426208"></script>
     <style>
         body {
@@ -50,8 +50,6 @@
 <div id="app"></div>
 
 <script>
-
-    Doz.component('doz-router', DozRouter);
 
     Doz.component('home-page', {
         template() {
@@ -145,6 +143,7 @@
             `
         },
         onCreate() {
+            console.log(this.getComponentById('router'))
             this.props.query = this.getComponentById('router').$_query['t'];
             console.log(this.tag, 'created')
         },
@@ -200,23 +199,23 @@
         root: '#app',
         template: `
             <nav>
-                <a router-link href="/">Home</a>
-                <a router-link href="/about">About</a>
-                <a router-link href="/profile/me">Profile</a>
-                <a router-link href="/profile.html">.html</a>
-                <a router-link href="/user/">User</a>
-                <a router-link href="/search/?t=hello">Search</a>
-                <a router-link href="/contact">Contact</a>
-                <a router-link href="/not-found-page-bla-bla">Not found</a>
-                <a router-link href="/section/1">Section 1</a>
-                <a router-link href="/section/2">Section 2</a>
-                <a router-link href="/section/3">Section 3</a>
-                <a router-link href="/section/4">Section 4</a>
+                <a data-router-link href="/">Home</a>
+                <a data-router-link href="/about">About</a>
+                <a data-router-link href="/profile/me">Profile</a>
+                <a data-router-link href="/profile.html">.html</a>
+                <a data-router-link href="/user/">User</a>
+                <a data-router-link href="/search/?t=hello">Search</a>
+                <a data-router-link href="/contact">Contact</a>
+                <a data-router-link href="/not-found-page-bla-bla">Not found</a>
+                <a data-router-link href="/section/1">Section 1</a>
+                <a data-router-link href="/section/2">Section 2</a>
+                <a data-router-link href="/section/3">Section 3</a>
+                <a data-router-link href="/section/4">Section 4</a>
             </nav>
             <div class="container">
                 <doz-router d:id="router">
                     <home-page route="/"></home-page>
-                    <about-page route="/about"></about-page>
+                    <about-page route="/about" ></about-page>
                     <contact-page route="/contact"></contact-page>
                     <extension-page route="/profile.html"></extension-page>
                     <profile-page route="/profile/me"></profile-page>
@@ -227,7 +226,11 @@
                     <section-page route="/section/:id" preserve></section-page>
                 </doz-router>
             </div>
-        `
+        `,
+
+        onMount() {
+            console.log(this)
+        }
     });
 
 </script>

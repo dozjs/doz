@@ -17,7 +17,7 @@ const removeAllAttributes = require('../utils/remove-all-attributes');
 const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 const localMixin = require('./local-mixin');
-const compile = require('./compile');
+const {compile} = require('../vdom/parser');
 const delay = require('../utils/delay');
 
 class Component {
@@ -77,6 +77,8 @@ class Component {
     }
 
     set props(props) {
+        if (typeof props === 'function')
+            props = props();
         this._rawProps = Object.assign({}, props, this._opt.props);
         observer.create(this);
         store.sync(this);

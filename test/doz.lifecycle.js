@@ -4,16 +4,6 @@ const be = require('bejs');
 
 describe('Doz.lifecycle', function () {
 
-    this.timeout(5000);
-
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
-
     beforeEach(function () {
         document.body.innerHTML = '';
         Doz.collection.removeAll();
@@ -31,7 +21,7 @@ describe('Doz.lifecycle', function () {
 
             Doz.component('nested-nested-component', {
                 template() {
-                    return 'nested-nested-component';
+                    return '<div>nested-nested-component</div>';
                 },
                 onBeforeMount() {
                     console.log('before mount', this.tag);

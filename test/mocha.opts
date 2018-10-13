@@ -1,0 +1,3 @@
+-r jsdom-global/register
+--timeout 5000
+--exit

@@ -3,16 +3,6 @@ const be = require('bejs');
 
 describe('Doz', function () {
 
-    this.timeout(5000);
-
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
-
     beforeEach(function () {
         document.body.innerHTML = '';
         Doz.collection.removeAll();
@@ -208,7 +198,7 @@ describe('Doz', function () {
             const view = new Doz({
                 root: document.getElementById('app'),
                 template() {
-                    return `ciao`
+                    return `<div>ciao</div>`
                 },
                 onMount() {
                     be.err.equal(this.appRoot.id, 'app');

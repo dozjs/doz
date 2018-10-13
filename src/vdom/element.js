@@ -1,6 +1,9 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
+const html = require('../utils/html');
+
+const storeElementNode = Object.create(null);
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -9,20 +12,39 @@ function isChanged(nodeA, nodeB) {
         nodeA.props && nodeA.props.forceupdate;
 }
 
+function canDecode(str) {
+    return /&\w+;/.test(str)
+        ? html.decode(str)
+        : str
+}
+
 function create(node, cmp, initial) {
     if (typeof node === 'undefined') return;
 
+    let nodeStored;
+    let $el;
+
     if (typeof node === 'string') {
-        return document.createTextNode(node);
+        return document.createTextNode(
+            // use decode only if necessary
+            canDecode(node)
+        );
     }
 
     if (node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
 
-    const $el = node.isSVG
-        ? document.createElementNS(NS.SVG, node.type)
-        : document.createElement(node.type);
+    nodeStored = storeElementNode[node.type];
+    if (nodeStored) {
+        $el = nodeStored.cloneNode();
+    } else {
+        $el = node.isSVG
+            ? document.createElementNS(NS.SVG, node.type)
+            : document.createElement(node.type);
+
+        storeElementNode[node.type] = $el.cloneNode(true);
+    }
 
     attach($el, node.props, cmp);
 
@@ -30,11 +52,11 @@ function create(node, cmp, initial) {
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
     if (typeof $el.hasAttribute === 'function')
-    if ((node.type.indexOf('-')!== -1
-        || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
-        && !initial) {
-        cmp._processing.push({node: $el, action: 'create'});
-    }
+        if ((node.type.indexOf('-') !== -1
+            || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
+            && !initial) {
+            cmp._processing.push({node: $el, action: 'create'});
+        }
 
     return $el;
 }
@@ -52,8 +74,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        const newElement = create(newNode, cmp, initial);
         const oldElement = $parent.childNodes[index];
+        // Reuse text node
+        if (typeof newNode === 'string' && typeof oldNode === 'string') {
+            oldElement.textContent = canDecode(newNode);
+            return oldElement;
+        }
+
+        const newElement = create(newNode, cmp, initial);
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {

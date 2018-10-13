@@ -1,17 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.tag.comment', function () {
-
-    this.timeout(5000);
-
-    before(function () {
-        this.jsdom = require('jsdom-global')()
-    });
-
-    after(function () {
-        this.jsdom()
-    });
+describe.skip('Doz.tag.comment', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

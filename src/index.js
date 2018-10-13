@@ -1,11 +1,11 @@
 const Doz = require('./Doz');
 const collection = require('./collection');
-const component = require('./component');
 const {use} = require('./plugin');
+const component = require('./component');
 const {Component} = require('./component/Component');
-const h = require('./vdom/h');
 const mixin = require('./component/global-mixin');
-const compile = require('./component/compile');
+const h = require('./vdom/h');
+const {compile} = require('./vdom/parser');
 
 Object.defineProperties(Doz, {
     collection: {

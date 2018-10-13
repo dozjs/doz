@@ -40,7 +40,6 @@ function get(cfg = {}) {
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
-                //collection.getComponent(child.nodeName);
                 collection.getComponent(cmpName);
 
             if (cmp) {
@@ -58,9 +57,6 @@ function get(cfg = {}) {
 
                 const props = serializeProps(child);
                 const dProps = extract(props);
-
-                //console.log('props', props);
-                //console.log('dProps', dProps);
 
                 let newElement;
 
