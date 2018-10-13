@@ -12,7 +12,7 @@ interface ConfigClass {
     parentCmp: Component
 }
 
-export default class Component {
+export class Component {
 
     /**
      * This object contains all app actions.

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.7] - 2018-10-13
+- **Improved** types definition
+
 ## [1.6.6] - 2018-10-11
 - **Fixed** text is not decoded when reuse textnode element
 
