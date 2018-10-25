@@ -70,10 +70,6 @@ class Component {
         hooks.callCreate(this);
         //Apply scoped style
         style.scoped(this);
-
-        // Now instance is created
-        this._isCreated = true;
-
     }
 
     set props(props) {
@@ -350,7 +346,7 @@ function defineProperties(obj, opt) {
         _callback: {
             value: opt.dProps['callback']
         },
-        _isCreated: {
+        _isRendered: {
             value: false,
             writable: true
         },

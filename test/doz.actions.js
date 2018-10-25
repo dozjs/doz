@@ -27,7 +27,7 @@ describe('Doz.actions', function () {
                 template() {
                     return `<div>Hello ${this.props.title} ${this.props.name}</div>`
                 },
-                onRender() {
+                onMount() {
                     this.action.updateTitle('Dear', 'Teddy');
                 }
             });

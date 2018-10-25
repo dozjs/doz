@@ -590,9 +590,6 @@ var Component = function () {
         hooks.callCreate(this);
         //Apply scoped style
         style.scoped(this);
-
-        // Now instance is created
-        this._isCreated = true;
     }
 
     _createClass(Component, [{
@@ -908,7 +905,7 @@ function defineProperties(obj, opt) {
         _callback: {
             value: opt.dProps['callback']
         },
-        _isCreated: {
+        _isRendered: {
             value: false,
             writable: true
         },
@@ -1219,6 +1216,7 @@ function get() {
                 }
 
                 if (hooks.callBeforeMount(newElement) !== false) {
+                    newElement._isRendered = true;
                     newElement.render(true);
 
                     if (!component) {
@@ -2798,13 +2796,13 @@ function create(instance) {
     if (instance._props.__isProxy) proxy.remove(instance._props);
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
+        if (!instance._isRendered) return;
         instance.render();
         updateBound(instance, changes);
-        if (instance._isCreated) {
-            delay(function () {
-                events.callUpdate(instance, changes);
-            });
-        }
+        //if (instance._isCreated)
+        delay(function () {
+            events.callUpdate(instance, changes);
+        });
     });
 
     proxy.beforeChange(instance._props, function (changes) {

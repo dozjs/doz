@@ -32,13 +32,13 @@ function create(instance) {
         proxy.remove(instance._props);
 
     instance._props = proxy.create(instance._rawProps, null, changes => {
+        if(!instance._isRendered) return;
         instance.render();
         updateBound(instance, changes);
-        if (instance._isCreated) {
+        //if (instance._isCreated)
             delay(() => {
                 events.callUpdate(instance, changes);
             });
-        }
     });
 
     proxy.beforeChange(instance._props, changes => {

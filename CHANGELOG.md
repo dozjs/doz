@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.9] - 2018-10-25
+- **Fixed** call render method only if rendered to DOM
+
 ## [1.6.8] - 2018-10-13
 - **Improved** types definition
 

@@ -91,6 +91,7 @@ function get(cfg = {}) {
                 }
 
                 if (hooks.callBeforeMount(newElement) !== false) {
+                    newElement._isRendered = true;
                     newElement.render(true);
 
                     if (!component) {
