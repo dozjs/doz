@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.6.9  
+// [DOZ]  Build version: 1.6.10  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -83,6 +83,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
+    DIR_IS: '__DOZ_D_IS__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -323,7 +324,8 @@ var dashToCamel = __webpack_require__(10);
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
-    TAG = _require.TAG;
+    TAG = _require.TAG,
+    DIR_IS = _require.DIR_IS;
 
 var selfClosingElements = {
     meta: true,
@@ -473,13 +475,13 @@ function serializeProps(node) {
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
 
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
         }
     }
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props) {
+function propsFixer(nName, aName, aValue, props, dIS) {
     var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
         if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
@@ -487,7 +489,7 @@ function propsFixer(nName, aName, aValue, props) {
         delete props[aName];
     } else {
         if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(/"/g, '&quot;');
-        props[REGEX.IS_CUSTOM_TAG.test(nName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+        props[REGEX.IS_CUSTOM_TAG.test(nName) || dIS ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
     }
 }
 
@@ -1118,7 +1120,8 @@ var html = __webpack_require__(8);
 
 var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
-    ATTR = _require.ATTR;
+    ATTR = _require.ATTR,
+    DIR_IS = _require.DIR_IS;
 
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(3);
@@ -1157,6 +1160,7 @@ function get() {
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
                 cmpName = child.getAttribute(ATTR.IS).toLowerCase();
                 child.removeAttribute(ATTR.IS);
+                child[DIR_IS] = true;
             } else cmpName = child.nodeName.toLowerCase();
 
             var localComponents = {};
@@ -2260,7 +2264,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.6.9',
+        value: '1.6.10',
         enumerable: true
     }
 });
@@ -3012,7 +3016,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
-    CMP_INSTANCE = _require.CMP_INSTANCE;
+    CMP_INSTANCE = _require.CMP_INSTANCE,
+    DIR_IS = _require.DIR_IS;
 
 var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
@@ -3037,7 +3042,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
+    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
         name = camelToDash(name);
     }
     if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
