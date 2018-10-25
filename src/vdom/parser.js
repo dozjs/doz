@@ -1,6 +1,6 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const {REGEX, ATTR, TAG} = require('../constants');
+const {REGEX, ATTR, TAG, DIR_IS} = require('../constants');
 
 const selfClosingElements = {
     meta: true,
@@ -151,14 +151,14 @@ function serializeProps(node) {
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
 
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props);
+            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
 
         }
     }
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props) {
+function propsFixer(nName, aName, aValue, props, dIS) {
     let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
         if (props[ATTR.LISTENER] === undefined)
@@ -169,7 +169,7 @@ function propsFixer(nName, aName, aValue, props) {
         if (REGEX.IS_STRING_QUOTED.test(aValue))
             aValue = aValue.replace(/"/g, '&quot;');
         props[
-            REGEX.IS_CUSTOM_TAG.test(nName)
+            REGEX.IS_CUSTOM_TAG.test(nName) || dIS
                 ? dashToCamel(aName)
                 : aName
             ] = aName === ATTR.FORCE_UPDATE

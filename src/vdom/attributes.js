@@ -1,4 +1,4 @@
-const {REGEX, ATTR, CMP_INSTANCE} = require('../constants');
+const {REGEX, ATTR, CMP_INSTANCE, DIR_IS} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const camelToDash = require('../utils/camel-to-dash');
@@ -22,7 +22,7 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
+    if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
         name = camelToDash(name);
     }
     if (isCustomAttribute(name)) {

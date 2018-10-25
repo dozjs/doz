@@ -20,7 +20,7 @@ describe('Doz.dashcase.prop', function () {
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 },
-                onUpdate() {
+                onCreate() {
                     console.log(this.props)
                 }
             });
@@ -52,7 +52,7 @@ describe('Doz.dashcase.prop', function () {
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 },
-                onUpdate() {
+                onCreate() {
                     console.log(this.props)
                 }
             });

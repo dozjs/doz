@@ -1,5 +1,5 @@
 const html = require('../utils/html');
-const {CMP_INSTANCE, ATTR} = require('../constants');
+const {CMP_INSTANCE, ATTR, DIR_IS} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -27,7 +27,8 @@ function get(cfg = {}) {
 
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
                 cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-                child.removeAttribute(ATTR.IS)
+                child.removeAttribute(ATTR.IS);
+                child[DIR_IS] = true;
             } else
                 cmpName = child.nodeName.toLowerCase();
 

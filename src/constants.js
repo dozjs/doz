@@ -1,5 +1,6 @@
 module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
+    DIR_IS: '__DOZ_D_IS__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
