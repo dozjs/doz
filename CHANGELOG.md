@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** new hook `onAfterRender`
+
 ## [1.6.10] - 2018-10-25
 - **Fixed** with `d-is` directive the dashed attributes are not transformed into camelcase
 
