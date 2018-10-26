@@ -210,6 +210,8 @@ class Component {
         }
 
         this._prev = next;
+
+        hooks.callAfterRender(this);
     }
 
     mount(template, cfg = {}) {

@@ -266,6 +266,12 @@ function callUpdate(context, changes) {
     }
 }
 
+function callAfterRender(context, changes) {
+    if (typeof context.onAfterRender === 'function') {
+        return context.onAfterRender.call(context, changes);
+    }
+}
+
 function callBeforeUnmount(context) {
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
@@ -301,6 +307,7 @@ module.exports = {
     callMountAsync: callMountAsync,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
+    callAfterRender: callAfterRender,
     callBeforeUnmount: callBeforeUnmount,
     callUnmount: callUnmount,
     callBeforeDestroy: callBeforeDestroy,
@@ -690,6 +697,8 @@ var Component = function () {
             }
 
             this._prev = next;
+
+            hooks.callAfterRender(this);
         }
     }, {
         key: 'mount',

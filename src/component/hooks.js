@@ -58,6 +58,12 @@ function callUpdate(context, changes) {
     }
 }
 
+function callAfterRender(context, changes) {
+    if(typeof context.onAfterRender === 'function'){
+        return context.onAfterRender.call(context, changes);
+    }
+}
+
 function callBeforeUnmount(context) {
     if(typeof context.onBeforeUnmount === 'function'){
         return context.onBeforeUnmount.call(context);
@@ -93,6 +99,7 @@ module.exports = {
     callMountAsync,
     callBeforeUpdate,
     callUpdate,
+    callAfterRender,
     callBeforeUnmount,
     callUnmount,
     callBeforeDestroy,

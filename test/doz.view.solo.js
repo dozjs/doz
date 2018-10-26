@@ -75,8 +75,10 @@ describe('Doz.view.solo', function () {
                 'onBeforeCreate',
                 'onCreate',
                 'onBeforeMount',
+                'onAfterRender',
                 'onMount',
                 'onBeforeUpdate',
+                'onAfterRender',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
@@ -108,6 +110,9 @@ describe('Doz.view.solo', function () {
                 },
                 onMountAsync() {
                     queueEvents.push('onMountAsync');
+                },
+                onAfterRender() {
+                    queueEvents.push('onAfterRender');
                 },
                 onBeforeUpdate() {
                     queueEvents.push('onBeforeUpdate');

@@ -103,6 +103,10 @@ describe('Doz.lifecycle', function () {
                     step++;
                     setTimeout(() => this.destroy(), 1000)
                 },
+                onAfterRender() {
+                    console.log('after render');
+                    step++;
+                },
                 onBeforeUnmount() {
                     console.log('before unmount');
                     step++;
@@ -120,7 +124,7 @@ describe('Doz.lifecycle', function () {
                     step++;
 
                     console.log('step', step);
-                    if (step === 19) done()
+                    if (step === 21) done()
 
                 }
             });
