@@ -90,7 +90,7 @@
 - **Since**: 1.5.0
 - **Arguments**:
     - `object` | `object[]` mixin
-- **Details**: Add external functions to global components.
+- **Details**: Add external functions to global components. Mixin **don't overwrite** existing functions, since 1.7.0 a warning message will be showed into console.
 - **Usage**:
     ``` js
     const someFunctions = {

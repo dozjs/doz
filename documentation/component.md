@@ -262,7 +262,6 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Description**: This method unmount a component from DOM. More info on [unmount](https://github.com/dozjs/doz/blob/master/documentation/index.md#unmount).
 
 
-
 ## Lifecycle Hooks
 
 ### onAfterRender

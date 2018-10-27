@@ -1206,7 +1206,7 @@ Doz.component('other-component', {
 });
 ```
 
-Ps: Mixins **don't overwrite** existing functions, a warning message will be showed into console.
+Ps: Mixins **don't overwrite** existing functions, since 1.7.0 a warning message will be showed into console.
 
 ### Plugins
 
