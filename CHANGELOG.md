@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.7.0] - 2018-10-27
 - **Added** new hook `onAfterRender`
 - **Added** mixin warning message
 - **Improved** `onUpdate` performance
+- **Fixed** router example
 
 ## [1.6.10] - 2018-10-25
 - **Fixed** with `d-is` directive the dashed attributes are not transformed into camelcase
