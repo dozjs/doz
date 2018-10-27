@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 - **Added** new hook `onAfterRender`
+- **Added** mixin warning message
 - **Improved** `onUpdate` performance
 
 ## [1.6.10] - 2018-10-25

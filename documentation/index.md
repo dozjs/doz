@@ -337,6 +337,7 @@ In order all hooks:
 - `onCreate`: called after that instance is created.
 - `onConfigCreate`: called after that instance is created (Only in ES6 pattern and if `config` object is set) [ES6 class](#es6-class).
 - `onBeforeMount`: called before that instance is mounted on DOM.
+- `onAfterRender`: called every time after that `render()` method has been called.
 - `onMount`: called after that instance is mounted on DOM.
 - `onMountAsync`: called after that instance is mounted on DOM.
 - `onBeforeUpdate`: called before that instance is updated.
@@ -1205,7 +1206,7 @@ Doz.component('other-component', {
 });
 ```
 
-Ps: Mixins **don't overwrite** existing functions
+Ps: Mixins **don't overwrite** existing functions, a warning message will be showed into console.
 
 ### Plugins
 

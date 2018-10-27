@@ -2157,6 +2157,8 @@ function mixin(target) {
             var index = keys[i];
             if (typeof target[index] === 'undefined') {
                 target[index] = sources[j][index];
+            } else {
+                console.warn('Doz', 'mixin failed for already defined property: ' + index);
             }
         }
     }

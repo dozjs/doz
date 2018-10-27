@@ -265,6 +265,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 ## Lifecycle Hooks
 
+### onAfterRender
+
+- **Since**: 1.7.0
+- **Type**: `function`
+- **Description**: This method is called every time after that `render()` method has been called.
+
 ### onAppReady
 
 - **Since**: 0.1.0
