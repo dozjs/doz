@@ -32,7 +32,10 @@
         "pre-render",
         "server side rendering",
         "ssr",
-        "component-based"
+        "component-based",
+        "webcomponent",
+        "tagged-template-literals",
+        "template-literals"
     ],
     "author": "Fabio Ricali",
     "license": "MIT",
