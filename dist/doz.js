@@ -2810,12 +2810,9 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
+        events.callUpdate(instance, changes);
         instance.render();
         updateBound(instance, changes);
-        //if (instance._isCreated)
-        delay(function () {
-            events.callUpdate(instance, changes);
-        });
     });
 
     proxy.beforeChange(instance._props, function (changes) {

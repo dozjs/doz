@@ -78,11 +78,11 @@ describe('Doz.view.solo', function () {
                 'onAfterRender',
                 'onMount',
                 'onBeforeUpdate',
-                'onAfterRender',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
                 'onBeforeDestroy',
+                'onAfterRender',
                 'onMountAsync',
                 'onDestroy'
             ];
