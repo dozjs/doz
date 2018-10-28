@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.7.0  
+// [DOZ]  Build version: 1.7.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -194,7 +194,7 @@ module.exports = {
 
 
 var deprecate = __webpack_require__(23);
-var delay = __webpack_require__(3);
+var delay = __webpack_require__(8);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -303,19 +303,6 @@ module.exports = {
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -507,7 +494,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -519,7 +506,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(6);
+var extend = __webpack_require__(5);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -545,7 +532,7 @@ var h = __webpack_require__(15);
 var loadLocal = __webpack_require__(40);
 var localMixin = __webpack_require__(41);
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(3),
     compile = _require2.compile;
 
 var Component = function () {
@@ -1020,7 +1007,7 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-            var dynamicInstance = __webpack_require__(7).get({
+            var dynamicInstance = __webpack_require__(6).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app
@@ -1059,7 +1046,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1111,7 +1098,7 @@ module.exports = extend;
 module.exports.copy = copy;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1119,7 +1106,7 @@ module.exports.copy = copy;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var html = __webpack_require__(8);
+var html = __webpack_require__(7);
 
 var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
@@ -1129,7 +1116,7 @@ var _require = __webpack_require__(0),
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(2);
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(3),
     serializeProps = _require2.serializeProps;
 
 var _require3 = __webpack_require__(24),
@@ -1137,7 +1124,7 @@ var _require3 = __webpack_require__(24),
 
 var hmr = __webpack_require__(25);
 
-var _require4 = __webpack_require__(5),
+var _require4 = __webpack_require__(4),
     Component = _require4.Component;
 
 function get() {
@@ -1281,7 +1268,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1324,6 +1311,19 @@ var html = {
 };
 
 module.exports = html;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
 
 /***/ }),
 /* 9 */
@@ -2232,13 +2232,13 @@ var _require = __webpack_require__(17),
 
 var component = __webpack_require__(42);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(4),
     Component = _require2.Component;
 
 var mixin = __webpack_require__(43);
 var h = __webpack_require__(15);
 
-var _require3 = __webpack_require__(4),
+var _require3 = __webpack_require__(3),
     compile = _require3.compile;
 
 Object.defineProperties(Doz, {
@@ -2275,7 +2275,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.7.0',
+        value: '1.7.1',
         enumerable: true
     }
 });
@@ -2295,9 +2295,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(6);
+var extend = __webpack_require__(5);
 var bind = __webpack_require__(21);
-var instances = __webpack_require__(7);
+var instances = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -2756,7 +2756,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var proxy = __webpack_require__(11);
 var events = __webpack_require__(2);
-var delay = __webpack_require__(3);
 
 function updateBound(instance, changes) {
     var _defined = function _defined(item) {
@@ -2812,10 +2811,7 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
-        //delay(()=>{
         events.callUpdate(instance, changes);
-        //});
-
         instance.render();
         updateBound(instance, changes);
     });
@@ -2865,7 +2861,7 @@ var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
     ATTR = _require2.ATTR;
 
-var html = __webpack_require__(8);
+var html = __webpack_require__(7);
 
 var storeElementNode = Object.create(null);
 
@@ -3034,7 +3030,7 @@ var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
 var camelToDash = __webpack_require__(12);
 var objectPath = __webpack_require__(30);
-var delay = __webpack_require__(3);
+var delay = __webpack_require__(8);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -3656,7 +3652,7 @@ module.exports = component;
 "use strict";
 
 
-var _require = __webpack_require__(5),
+var _require = __webpack_require__(4),
     Component = _require.Component;
 
 var mixin = __webpack_require__(16);
