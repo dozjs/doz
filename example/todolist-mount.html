@@ -5,8 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../dist/doz.js?58196548884"></script>
+    <script src="../dist/doz.js?581496k548888884"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -198,8 +197,7 @@
         mounted: [],
 
         onUpdate() {
-
-            console.log('draw');
+            console.log('DRAW', this.tag);
 
             this.mounted.forEach(cmp => {
                 cmp.destroy();
@@ -209,7 +207,11 @@
 
             this.each(this.props.record, (item, i) => {
                 this.mounted.push(
-                    this.mount(Doz.h`<li><doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item></li>`, {
+                    this.mount(Doz.h`
+                            <li>
+                                <doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>
+                            </li>
+                        `, {
                         selector: '.todo-each'
                     })
                 );
@@ -217,6 +219,10 @@
 
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
+        },
+
+        onAfterRender() {
+            console.log('AFTER', this.tag)
         }
     });
 

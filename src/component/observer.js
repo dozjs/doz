@@ -33,7 +33,10 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, changes => {
         if(!instance._isRendered) return;
-        events.callUpdate(instance, changes);
+        //delay(()=>{
+            events.callUpdate(instance, changes);
+        //});
+
         instance.render();
         updateBound(instance, changes);
     });

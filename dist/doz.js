@@ -193,21 +193,8 @@ module.exports = {
 "use strict";
 
 
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var deprecate = __webpack_require__(23);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -313,6 +300,19 @@ module.exports = {
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
 
 /***/ }),
 /* 4 */
@@ -528,7 +528,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(26);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(2);
 var update = __webpack_require__(27).updateElement;
 var store = __webpack_require__(31);
 var ids = __webpack_require__(32);
@@ -547,8 +547,6 @@ var localMixin = __webpack_require__(41);
 
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
-
-var delay = __webpack_require__(2);
 
 var Component = function () {
     function Component(opt) {
@@ -687,8 +685,7 @@ var Component = function () {
 
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot);
-
-            delay(function () {
+            setTimeout(function () {
                 drawDynamic(_this);
             });
 
@@ -1133,7 +1130,7 @@ var _require = __webpack_require__(0),
     DIR_IS = _require.DIR_IS;
 
 var collection = __webpack_require__(1);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(2);
 
 var _require2 = __webpack_require__(4),
     serializeProps = _require2.serializeProps;
@@ -1185,6 +1182,12 @@ function get() {
                 if (parent.cmp) {
                     var rawChild = child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
+                }
+
+                // For node created by mount method
+                if (child.innerHTML && cmp.cfg.autoCreateChildren !== false) {
+                    child = child.nextSibling;
+                    continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
@@ -2755,8 +2758,8 @@ module.exports = hmr;
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var proxy = __webpack_require__(11);
-var events = __webpack_require__(3);
-var delay = __webpack_require__(2);
+var events = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 function updateBound(instance, changes) {
     var _defined = function _defined(item) {
@@ -2812,7 +2815,10 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
+        //delay(()=>{
         events.callUpdate(instance, changes);
+        //});
+
         instance.render();
         updateBound(instance, changes);
     });
@@ -3031,7 +3037,7 @@ var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
 var camelToDash = __webpack_require__(12);
 var objectPath = __webpack_require__(30);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);

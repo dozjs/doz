@@ -50,6 +50,12 @@ function get(cfg = {}) {
                     parent.cmp.rawChildren.push(rawChild);
                 }
 
+                // For node created by mount method
+                if (child.innerHTML && cmp.cfg.autoCreateChildren !== false) {
+                    child = child.nextSibling;
+                    continue;
+                }
+
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push(child);
                     child = child.nextSibling;
