@@ -1,6 +1,5 @@
 const proxy = require('../utils/proxy');
 const events = require('./hooks');
-const delay = require('../utils/delay');
 
 function updateBound(instance, changes) {
     changes.forEach(item => {
@@ -33,10 +32,7 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, changes => {
         if(!instance._isRendered) return;
-        //delay(()=>{
-            events.callUpdate(instance, changes);
-        //});
-
+        events.callUpdate(instance, changes);
         instance.render();
         updateBound(instance, changes);
     });

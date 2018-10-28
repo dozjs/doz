@@ -51,7 +51,7 @@ function get(cfg = {}) {
                 }
 
                 // For node created by mount method
-                if (child.innerHTML && cmp.cfg.autoCreateChildren !== false) {
+                if (parent.cmp && parent.cmp.mounted) {
                     child = child.nextSibling;
                     continue;
                 }

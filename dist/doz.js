@@ -670,8 +670,6 @@ var Component = function () {
     }, {
         key: 'render',
         value: function render(initial) {
-            var _this = this;
-
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
@@ -681,13 +679,12 @@ var Component = function () {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
+            drawDynamic(this);
+
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot);
-            setTimeout(function () {
-                drawDynamic(_this);
-            });
 
             if (!this._rootElement && rootElement) {
                 this._rootElement = rootElement;
@@ -700,7 +697,7 @@ var Component = function () {
     }, {
         key: 'mount',
         value: function mount(template) {
-            var _this2 = this;
+            var _this = this;
 
             var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -715,7 +712,7 @@ var Component = function () {
                 hooks.callMount(this);
 
                 var _defined = function _defined(child) {
-                    _this2.children[child].mount();
+                    _this.children[child].mount();
                 };
 
                 var _defined2 = Object.keys(this.children);
@@ -747,7 +744,7 @@ var Component = function () {
         value: function unmount() {
             var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-            var _this3 = this;
+            var _this2 = this;
 
             var byDestroy = arguments[1];
             var silently = arguments[2];
@@ -769,7 +766,7 @@ var Component = function () {
             if (!silently) hooks.callUnmount(this);
 
             var _defined3 = function _defined3(child) {
-                _this3.children[child].unmount(onlyInstance, byDestroy, silently);
+                _this2.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
             var _defined4 = Object.keys(this.children);
@@ -783,7 +780,7 @@ var Component = function () {
     }, {
         key: 'destroy',
         value: function destroy(onlyInstance) {
-            var _this4 = this;
+            var _this3 = this;
 
             if (this.unmount(onlyInstance, true) === false) return;
 
@@ -792,7 +789,7 @@ var Component = function () {
             }
 
             var _defined5 = function _defined5(child) {
-                _this4.children[child].destroy();
+                _this3.children[child].destroy();
             };
 
             var _defined6 = Object.keys(this.children);
@@ -1185,7 +1182,7 @@ function get() {
                 }
 
                 // For node created by mount method
-                if (child.innerHTML && cmp.cfg.autoCreateChildren !== false) {
+                if (parent.cmp && parent.cmp.mounted) {
                     child = child.nextSibling;
                     continue;
                 }

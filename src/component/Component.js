@@ -195,15 +195,12 @@ class Component {
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
-
+        drawDynamic(this);
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag
         removeAllAttributes(this._cfgRoot);
-        setTimeout(()=>{
-            drawDynamic(this);
-        })
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
