@@ -178,6 +178,17 @@ props: function(){
 }
 ```
 
+or put definition into `onCreate` hook
+```javascript
+onCreate: function(){
+    this.props = {
+        other: {
+            value: 0
+        }
+    }
+}
+```
+
 But if you use the new ES6 pattern class, the problem does not arise. More info [ES6 class](#es6-class)
 
 ### Methods
