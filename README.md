@@ -12,12 +12,19 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 <br/><br/>
 </div>
 
-Tiny size: 11KB (gzip)
+## Why
+- 🎼 Works with tagged template literals
+- 🔫 Fast performance
+- 🗜 Tiny size ±12KB (gzip)
+- 📡 Uses ES6 proxy to observe changes
+- 🎳 Component based
+- 👶🏼 Simple and familiar API
+- 🤷🏼‍ No extra syntax like JSX
+- 🤘🏼 No confusion with props and state
+- 🛠 Extensible
 
-## Why another framework?
-In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this", some introduce other syntaxes like JSX. Doz works with tagged template literals.
-
-**Doz uses ES6 proxy to observe changes.**
+## Another framework?
+In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this".
 
 ## Installation
 ```
