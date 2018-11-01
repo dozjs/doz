@@ -93,7 +93,7 @@ $ npm run start
 You can view the changelog <a target="_blank" href="https://github.com/dozjs/doz/blob/master/CHANGELOG.md">here</a>
 
 ## License
-DOZ is open-sourced software licensed under the <a target="_blank" href="http://opensource.org/licenses/MIT">MIT license</a>
+Doz is open-sourced software licensed under the <a target="_blank" href="http://opensource.org/licenses/MIT">MIT license</a>
 
 ## Author
 <a target="_blank" href="http://rica.li">Fabio Ricali</a>
