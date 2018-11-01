@@ -20,8 +20,8 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 - 🎳 Component based
 - 👶🏼 Simple and familiar API
 - 🤷🏼‍ No extra syntax like JSX
-- 🤘🏼 No confusion with props and state
-- 🛠 Extensible
+- 💣 No confusion with props and state
+- ⛏ Extensible
 
 ## Another framework?
 In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this".
