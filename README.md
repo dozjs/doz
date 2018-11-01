@@ -18,8 +18,8 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 - 🗜 Tiny size ±12KB (gzip)
 - 📡 Uses ES6 proxy to observe changes
 - 🎳 Component based
-- 👶🏼 Simple and familiar API
-- 🤷🏼‍ No extra syntax like JSX
+- 😁 Simple and familiar API
+- 🤯‍ No extra syntax like JSX
 - 💣 No confusion with props and state
 - ⛏ Extensible
 
