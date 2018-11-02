@@ -1,4 +1,3 @@
-const deprecate = require('../utils/deprecate');
 const delay = require('../utils/delay');
 
 function callBeforeCreate(context) {
@@ -21,7 +20,7 @@ function callConfigCreate(context) {
 
 function callRender(context) {
     if(typeof context.onRender === 'function'){
-        deprecate.once('onRender is deprecated since v. 1.0.0, use onMount instead');
+        console.warn('onRender is deprecated since v. 1.0.0, use onMount instead');
         context.onRender.call(context);
     }
 }

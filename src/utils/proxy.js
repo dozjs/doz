@@ -435,7 +435,6 @@ const ObservableSlim = (function () {
         } else {
             targets.push(target);
             targetsProxy.push([proxyItem]);
-            targetPosition = targets.length - 1;
         }
 
         return proxy;
@@ -496,40 +495,6 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-        },
-
-        /**
-         * Pause
-         * @param proxy {Proxy} the ES6 Proxy returned by the create() method
-         */
-        pause: function (proxy) {
-            let i = observables.length;
-            let foundMatch = false;
-            while (i--) {
-                if (observables[i].parentProxy === proxy) {
-                    observables[i].paused = true;
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (foundMatch === false) throw new Error('DOZ could not pause observable -- matching proxy not found.');
-        },
-
-        /**
-         * Resume
-         * @param proxy {Proxy} the ES6 Proxy returned by the create() method
-         */
-        resume: function (proxy) {
-            let i = observables.length;
-            let foundMatch = false;
-            while (i--) {
-                if (observables[i].parentProxy === proxy) {
-                    observables[i].paused = false;
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (foundMatch === false) throw new Error('DOZ could not resume observable -- matching proxy not found.');
         },
 
         /**
