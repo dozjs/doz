@@ -486,7 +486,7 @@ const ObservableSlim = (function () {
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method. We want to observe changes made to this object.
          * @param observer {Function} this function will be invoked when a change is made to the observable (not to be confused with the observer defined in the create() method).
          */
-        observe: function (proxy, observer) {
+        /*observe: function (proxy, observer) {
             // loop over all the observables created by the _create() function
             let i = observables.length;
             while (i--) {
@@ -495,7 +495,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-        },
+        },*/
 
         /**
          * Remove
