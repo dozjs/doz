@@ -952,7 +952,8 @@ function defineProperties(obj, opt) {
         },
         parent: {
             value: opt.parentCmp,
-            enumerable: true
+            enumerable: true,
+            configurable: true
         },
         appRoot: {
             value: opt.app._root,
@@ -1009,7 +1010,8 @@ function drawDynamic(instance) {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
                 template: item.node.outerHTML,
-                app: instance.app
+                app: instance.app,
+                parent: instance
             });
 
             if (dynamicInstance) {
@@ -1141,6 +1143,13 @@ function get() {
     var cmpName = void 0;
     var trash = [];
 
+    function continueNextSibiling(child) {
+        var resetParent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        if (resetParent) parentElement = undefined;
+        return child.nextSibling;
+    }
+
     function walk(child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1169,13 +1178,13 @@ function get() {
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child, false);
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push(child);
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child);
                     continue;
                 }
 
@@ -1191,7 +1200,7 @@ function get() {
                         app: cfg.app,
                         props: props,
                         dProps: dProps,
-                        parentCmp: parent.cmp
+                        parentCmp: parent.cmp || cfg.parent
                     });
                 } else {
                     newElement = new Component({
@@ -1201,12 +1210,12 @@ function get() {
                         app: cfg.app,
                         props: props,
                         dProps: dProps,
-                        parentCmp: parent.cmp
+                        parentCmp: parent.cmp || cfg.parent
                     });
                 }
 
                 if (!newElement) {
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child);
                     continue;
                 }
 
@@ -1870,16 +1879,16 @@ var ObservableSlim = function () {
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method. We want to observe changes made to this object.
          * @param observer {Function} this function will be invoked when a change is made to the observable (not to be confused with the observer defined in the create() method).
          */
-        /*observe: function (proxy, observer) {
+        observe: function observe(proxy, observer) {
             // loop over all the observables created by the _create() function
-            let i = observables.length;
+            var i = observables.length;
             while (i--) {
                 if (observables[i].parentProxy === proxy) {
                     observables[i].observers.push(observer);
                     break;
                 }
             }
-        },*/
+        },
 
         /**
          * Remove

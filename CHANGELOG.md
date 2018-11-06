@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unrelased]
 - **Improved** bundle size
+- **Fixed** when function "drawnDynamic" is called, parent property is set to wrong parent
 
 ## [1.7.2] - 2018-11-01
 - **Updated** README

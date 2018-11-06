@@ -401,7 +401,8 @@ function defineProperties(obj, opt) {
         },
         parent: {
             value: opt.parentCmp,
-            enumerable: true
+            enumerable: true,
+            configurable: true
         },
         appRoot: {
             value: opt.app._root,
@@ -458,7 +459,8 @@ function drawDynamic(instance) {
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
-                app: instance.app
+                app: instance.app,
+                parent: instance
             });
 
             if (dynamicInstance) {

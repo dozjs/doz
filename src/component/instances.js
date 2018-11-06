@@ -22,6 +22,12 @@ function get(cfg = {}) {
     let cmpName;
     const trash = [];
 
+    function continueNextSibiling(child, resetParent = true) {
+        if (resetParent)
+            parentElement = undefined;
+        return child.nextSibling;
+    }
+
     function walk(child, parent = {}) {
         while (child) {
 
@@ -52,13 +58,13 @@ function get(cfg = {}) {
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child, false);
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push(child);
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child);
                     continue;
                 }
 
@@ -74,7 +80,7 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         dProps,
-                        parentCmp: parent.cmp
+                        parentCmp: parent.cmp || cfg.parent
                     });
                 } else {
                     newElement = new Component({
@@ -84,12 +90,12 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         dProps,
-                        parentCmp: parent.cmp
+                        parentCmp: parent.cmp || cfg.parent
                     });
                 }
 
                 if (!newElement) {
-                    child = child.nextSibling;
+                    child = continueNextSibiling(child);
                     continue;
                 }
 
