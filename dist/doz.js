@@ -963,6 +963,11 @@ function defineProperties(obj, opt) {
             value: opt.app.action,
             enumerable: true
         },
+        shared: {
+            value: opt.app.shared,
+            writable: true,
+            enumerable: true
+        },
         ref: {
             value: {},
             enumerable: true
@@ -2314,6 +2319,7 @@ var Doz = function () {
 
         this.cfg = extend(cfg, {
             components: [],
+            shared: {},
             actions: {},
             autoDraw: true
         });
@@ -2372,6 +2378,11 @@ var Doz = function () {
             },
             action: {
                 value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            shared: {
+                value: this.cfg.shared,
+                writable: true,
                 enumerable: true
             },
             mount: {
