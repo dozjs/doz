@@ -23,7 +23,6 @@ describe('Doz.parent', function () {
                 },
                 template(h) {
                     return h`
-                            <x-prev/>
                             <span>Hello Doz a span tag</span>
                             <x-child-a/>
                             ${this.each(this.props.rows, i => h`<x-child-b v="${i}" />`)}
@@ -74,12 +73,21 @@ describe('Doz.parent', function () {
                 }
             });
 
-            Doz.component('x-prev', {
+            Doz.component('x-after', {
                 onCreate() {
                     console.log(this.tag, this.parent.tag)
                 },
                 template() {
-                    return `<div>prev</div>`
+                    return `<div>prev</div><x-after-inner/>`
+                }
+            });
+
+            Doz.component('x-after-inner', {
+                onCreate() {
+                    console.log(this.tag, this.parent.tag)
+                },
+                template() {
+                    return `<div>after-inner</div>`
                 }
             });
 
@@ -88,6 +96,7 @@ describe('Doz.parent', function () {
                 template: `
                     <x-parent/>
                     <div></div>
+                    <x-after/>
                 `
             });
 
