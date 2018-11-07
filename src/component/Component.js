@@ -412,6 +412,11 @@ function defineProperties(obj, opt) {
             value: opt.app.action,
             enumerable: true
         },
+        shared: {
+            value: opt.app.shared,
+            writable: true,
+            enumerable: true
+        },
         ref: {
             value: {},
             enumerable: true

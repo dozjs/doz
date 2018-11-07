@@ -35,6 +35,7 @@ class Doz {
 
         this.cfg = extend(cfg, {
             components: [],
+            shared: {},
             actions: {},
             autoDraw: true
         });
@@ -87,6 +88,11 @@ class Doz {
             },
             action: {
                 value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            shared: {
+                value: this.cfg.shared,
+                writable: true,
                 enumerable: true
             },
             mount: {
