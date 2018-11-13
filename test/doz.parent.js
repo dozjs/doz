@@ -25,7 +25,12 @@ describe('Doz.parent', function () {
                     return h`
                             <span>Hello Doz a span tag</span>
                             <x-child-a/>
-                            ${this.each(this.props.rows, i => h`<x-child-b v="${i}" />`)}
+                            <div>
+                                <x-child-c/>
+                                <div>
+                                    ${this.each(this.props.rows, i => h`<x-child-b v="${i}" />`)}
+                                </div>
+                            </div>
                         `
                 },
                 onMount() {
@@ -69,7 +74,7 @@ describe('Doz.parent', function () {
                     console.log(this.tag, this.parent.tag)
                 },
                 template() {
-                    return `<div>child a</div>`
+                    return `<div>child c</div>`
                 }
             });
 

@@ -1148,13 +1148,6 @@ function get() {
     var cmpName = void 0;
     var trash = [];
 
-    function continueNextSibiling(child) {
-        var resetParent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-        if (resetParent) parentElement = undefined;
-        return child.nextSibling;
-    }
-
     function walk(child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1183,13 +1176,13 @@ function get() {
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    child = continueNextSibiling(child, false);
+                    child = child.nextSibling;
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push(child);
-                    child = continueNextSibiling(child);
+                    child = child.nextSibling;
                     continue;
                 }
 
@@ -1220,7 +1213,7 @@ function get() {
                 }
 
                 if (!newElement) {
-                    child = continueNextSibiling(child);
+                    child = child.nextSibling;
                     continue;
                 }
 
@@ -1257,6 +1250,10 @@ function get() {
 
             if (child.hasChildNodes()) {
                 walk(child.firstChild, { cmp: parentElement });
+            }
+
+            if (!cmp) {
+                parentElement = parent.cmp;
             }
 
             child = child.nextSibling;
