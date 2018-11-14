@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unrelased]
-- **Improved** bundle size
+- **Added** support for scoped style into template function
+- **Added** `shared` api for sharing things between component
 - **Fixed** when function "drawnDynamic" is called, parent property is set to wrong parent
 
 ## [1.7.2] - 2018-11-01

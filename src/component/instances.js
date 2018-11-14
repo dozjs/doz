@@ -1,4 +1,5 @@
 const html = require('../utils/html');
+const {scopedInner} = require('./style');
 const {CMP_INSTANCE, ATTR, DIR_IS} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
@@ -24,6 +25,14 @@ function get(cfg = {}) {
 
     function walk(child, parent = {}) {
         while (child) {
+
+            if (child.nodeName === 'STYLE') {
+                scopedInner(child.innerText, parent.cmp.tag);
+                const emptyStyle = document.createElement('script');
+                emptyStyle.type = 'text/style';
+                emptyStyle.innerText = ' ';
+                child.parentNode.replaceChild(emptyStyle, child);
+            }
 
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
                 cmpName = child.getAttribute(ATTR.IS).toLowerCase();

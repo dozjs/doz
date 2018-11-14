@@ -78,7 +78,7 @@ function compile(data) {
 
         lastTextPos = REGEX.HTML_MARKUP.lastIndex;
         if (match[0][1] === '!') {
-            // this is a comment
+            // this is a comment or style
             continue;
         }
 
