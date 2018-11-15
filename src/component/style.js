@@ -27,7 +27,7 @@ function scoped(instance) {
 function scopedInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
     cssContent = cssContent
-        .replace(/:root(?:\s+)?{/g, '{')
+        .replace(/:root(?:\s+)?{/g, `${tag} {`)
         .replace(REGEX.CSS_SELECTOR, `${tag} $1`);
     return createStyle(cssContent, tag);
 }
