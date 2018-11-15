@@ -32,6 +32,8 @@ function get(cfg = {}) {
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
                 child.parentNode.replaceChild(emptyStyle, child);
+                child = emptyStyle.nextSibling;
+                continue;
             }
 
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
