@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - button inline style</title>
-    <script src="../../dist/doz.js?5896548894899"></script>
+    <script src="../../dist/doz.js?589654889489959"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -36,6 +36,11 @@
                             background-color: green;
                         }
                     }
+
+                    @keyframes example {
+                        from {background-color: red;}
+                        to {background-color: yellow;}
+                    }
                 </style>
                 <button
                     onclick="this.props.count++"
@@ -54,6 +59,9 @@
                 }
                 button {
                     background: #5063ff;
+                }
+                any-ok {
+                    color: red
                 }
                 </style>
                 <div>
