@@ -32,7 +32,7 @@ module.exports = {
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
-        CSS_SELECTOR: /([-_\.#:\w]+(?:\s+)?[{,])/g
+        CSS_SELECTOR: /([-_\.#:\w]+(?:\s+)?[{,>])/g
     },
     ATTR: {
         // Attributes for HTMLElement

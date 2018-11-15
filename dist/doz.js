@@ -115,7 +115,7 @@ module.exports = {
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
-        CSS_SELECTOR: /([-_\.#:\w]+(?:\s+)?[{,])/g
+        CSS_SELECTOR: /([-_\.#:\w]+(?:\s+)?[{,>])/g
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -1163,6 +1163,8 @@ function get() {
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
                 child.parentNode.replaceChild(emptyStyle, child);
+                child = emptyStyle.nextSibling;
+                continue;
             }
 
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
@@ -1373,7 +1375,27 @@ function scoped(instance) {
 
 function scopedInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
-    cssContent = cssContent.replace(REGEX.CSS_SELECTOR, tag + ' $1').replace(/:root(?:\s+)?{/g, '{');
+    var usedRoot = false;
+
+    var rules = cssContent.split('}');
+
+    for (var i = 0; i < rules.length; i++) {
+        usedRoot = false;
+        rules[i] = rules[i].replace(REGEX.CSS_SELECTOR, function (match, p1) {
+            if (/^:root/.test(p1)) {
+                usedRoot = true;
+                return tag + ' ' + p1[p1.length - 1];
+            } else {
+                if (usedRoot) {
+                    return '' + p1;
+                }
+                return tag + ' ' + p1;
+            }
+        });
+    }
+
+    cssContent = rules.join('}');
+
     return createStyle(cssContent, tag);
 }
 

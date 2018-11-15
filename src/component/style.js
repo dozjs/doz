@@ -26,9 +26,27 @@ function scoped(instance) {
 
 function scopedInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
-    cssContent = cssContent
-        .replace(REGEX.CSS_SELECTOR, `${tag} $1`)
-        .replace(/:root(?:\s+)?{/g, `{`);
+    let usedRoot = false;
+
+    const rules = cssContent.split('}');
+
+    for (let i = 0; i < rules.length; i++) {
+        usedRoot = false;
+        rules[i] = rules[i].replace(REGEX.CSS_SELECTOR, (match, p1) => {
+            if (/^:root/.test(p1)) {
+                usedRoot = true;
+                return `${tag} ${p1[p1.length - 1]}`;
+            } else {
+                if (usedRoot) {
+                    return `${p1}`
+                }
+                return `${tag} ${p1}`
+            }
+        });
+    }
+
+    cssContent = rules.join('}');
+
     return createStyle(cssContent, tag);
 }
 

@@ -48,10 +48,21 @@
         root: '#app',
         template() {
             return `
+                <style>
+                :root > div {
+                    background-color: orangered;
+                }
+                button {
+                    background: #5063ff;
+                }
+                </style>
                 <div>
                     <styled-button></styled-button>
                     <styled-button></styled-button>
                     <button>button without style</button>
+                </div>
+                <div>
+                    A div
                 </div>
             `;
         }
