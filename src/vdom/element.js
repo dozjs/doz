@@ -2,6 +2,7 @@ const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
 const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
 const html = require('../utils/html');
+const composeStyleInner = require('../utils/compose-style-inner');
 
 const storeElementNode = Object.create(null);
 
@@ -78,6 +79,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             oldElement.textContent = canDecode(newNode);
+            if($parent.nodeName === 'SCRIPT') {
+                // it could be heavy
+                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner);
+                }
+            }
             return oldElement;
         }
 

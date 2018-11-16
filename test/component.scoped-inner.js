@@ -22,7 +22,7 @@ describe('Component.scoped-inner', function () {
 
         const result = scopedInner(style, 'x-any');
 
-        be.err.true(/x-any button, x-any img{/g.test(result));
+        be.err.true(/x-any button,x-any img{/g.test(result));
         be.err.true(/x-any button {/g.test(result));
 
     });

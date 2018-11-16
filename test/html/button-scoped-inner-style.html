@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - button inline style</title>
-    <script src="../../dist/doz.js?589654889489959"></script>
+    <script src="../../dist/doz.js?5896548894869959"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -27,7 +27,7 @@
                     button {
                         color: red;
                         background-color: yellow;
-                        font-size: 20px;
+                        font-size: ${10 + this.props.count}px;
                         padding: 20px;
                     }
                     @media only screen and (max-width: 600px) {
@@ -66,8 +66,7 @@
                 </style>
                 <div>
                     <styled-button></styled-button>
-                    <styled-button></styled-button>
-                    <button>button without style</button>
+                    <button>button without styler</button>
                 </div>
                 <div>
                     A div

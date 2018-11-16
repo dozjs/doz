@@ -31,6 +31,8 @@ function get(cfg = {}) {
                 const emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
+                emptyStyle.dataset.id = parent.cmp.tag + '--style';
+                emptyStyle.dataset.owner = parent.cmp.tag;
                 child.parentNode.replaceChild(emptyStyle, child);
                 child = emptyStyle.nextSibling;
                 continue;

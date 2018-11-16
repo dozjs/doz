@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 20);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,8 +114,7 @@ module.exports = {
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
-        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
-        CSS_SELECTOR: /([-_.#:\w]+(?:\s+)?[{,>])/g
+        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -138,7 +137,7 @@ module.exports = {
 "use strict";
 
 
-var data = __webpack_require__(24);
+var data = __webpack_require__(26);
 
 /**
  * Register a component to global
@@ -194,7 +193,7 @@ module.exports = {
 "use strict";
 
 
-var delay = __webpack_require__(11);
+var delay = __webpack_require__(12);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -312,8 +311,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(12);
-var dashToCamel = __webpack_require__(13);
+var castStringTo = __webpack_require__(13);
+var dashToCamel = __webpack_require__(14);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
@@ -514,23 +513,23 @@ var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(27);
+var observer = __webpack_require__(29);
 var hooks = __webpack_require__(2);
-var update = __webpack_require__(28).updateElement;
-var store = __webpack_require__(32);
-var ids = __webpack_require__(33);
-var proxy = __webpack_require__(14);
+var update = __webpack_require__(30).updateElement;
+var store = __webpack_require__(34);
+var ids = __webpack_require__(35);
+var proxy = __webpack_require__(15);
 var toInlineStyle = __webpack_require__(9);
 var style = __webpack_require__(8);
-var queueReady = __webpack_require__(34);
-var queueDraw = __webpack_require__(35);
-var extendInstance = __webpack_require__(36);
-var cloneObject = __webpack_require__(37);
-var toLiteralString = __webpack_require__(15);
-var removeAllAttributes = __webpack_require__(38);
-var h = __webpack_require__(16);
-var loadLocal = __webpack_require__(39);
-var localMixin = __webpack_require__(40);
+var queueReady = __webpack_require__(36);
+var queueDraw = __webpack_require__(37);
+var extendInstance = __webpack_require__(38);
+var cloneObject = __webpack_require__(39);
+var toLiteralString = __webpack_require__(16);
+var removeAllAttributes = __webpack_require__(40);
+var h = __webpack_require__(17);
+var loadLocal = __webpack_require__(41);
+var localMixin = __webpack_require__(42);
 
 var _require2 = __webpack_require__(3),
     compile = _require2.compile;
@@ -1129,10 +1128,10 @@ var hooks = __webpack_require__(2);
 var _require3 = __webpack_require__(3),
     serializeProps = _require3.serializeProps;
 
-var _require4 = __webpack_require__(25),
+var _require4 = __webpack_require__(27),
     extract = _require4.extract;
 
-var hmr = __webpack_require__(26);
+var hmr = __webpack_require__(28);
 
 var _require5 = __webpack_require__(4),
     Component = _require5.Component;
@@ -1162,6 +1161,8 @@ function get() {
                 var emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
+                emptyStyle.dataset.id = parent.cmp.tag + '--style';
+                emptyStyle.dataset.owner = parent.cmp.tag;
                 child.parentNode.replaceChild(emptyStyle, child);
                 child = emptyStyle.nextSibling;
                 continue;
@@ -1345,27 +1346,9 @@ module.exports = html;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var composeStyle = __webpack_require__(23);
-
-var _require = __webpack_require__(0),
-    REGEX = _require.REGEX;
-
-function createStyle(cssContent, tag) {
-    var result = void 0;
-    var styleId = tag + '--style';
-    var styleExists = document.querySelector('#' + styleId);
-
-    if (styleExists) {
-        result = styleExists.innerHTML = cssContent;
-    } else {
-        var styleEl = document.createElement('style');
-        styleEl.id = styleId;
-        result = styleEl.innerHTML = cssContent;
-        document.head.appendChild(styleEl);
-    }
-
-    return result;
-}
+var composeStyle = __webpack_require__(24);
+var composeStyleInner = __webpack_require__(11);
+var createStyle = __webpack_require__(25);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -1373,88 +1356,15 @@ function scoped(instance) {
     return createStyle(cssContent, instance.tag);
 }
 
-function _scopedInner(cssContent, tag) {
-    if (typeof cssContent !== 'string') return;
-    var usedRoot = false;
-
-    var rules = cssContent.split('}');
-
-    for (var i = 0; i < rules.length; i++) {
-        usedRoot = false;
-        if (/^@/.test(rules[i])) continue;
-        rules[i] = rules[i].replace(REGEX.CSS_SELECTOR, function (match, p1) {
-            if (/^:root/.test(p1)) {
-                usedRoot = true;
-                return tag + ' ' + p1[p1.length - 1];
-            } else {
-                if (usedRoot) {
-                    return '' + p1;
-                }
-                return tag + ' ' + p1;
-            }
-        });
-    }
-
-    cssContent = rules.join('}');
-
-    return createStyle(cssContent, tag);
-}
-
 function scopedInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
-    var usedRoot = false;
-
-    //const rules = cssContent.split('}');
-
-    //console.log(rules)
-
-    //for (let i = 0; i < rules.length; i++) {
-    //usedRoot = false;
-    /*if (/^@/.test(rules[i]))
-        continue;*/
-    //rules[i] = rules[i].replace(/{/g, '{\n').replace(/[^\s].*{/gm, match => {
-    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/,/g, ' , ').replace(/>/g, ' > ').replace(/:root/g, tag).replace(/[^\s].*{/gm, function (match) {
-
-        if (/^(@|(from|to)[^-_])/.test(match)) return match;
-
-        var part = match.split(' ');
-        var lastSymbol = '';
-
-        for (var i = 0; i < part.length; i++) {
-            if (part[i] === tag) continue;
-            if (/[\w-_#.]/.test(part[i])) {
-                //console.log(part[i], 'name');
-                part[i] = tag + ' ' + part[i];
-            } else if (part[i] && part[i] !== '{' && part[i] !== '}') {
-                lastSymbol = part[i];
-            }
-        }
-
-        match = part.join(' ');
-        match = match.replace(/\s{2,}/g, ' ');
-
-        return match;
-        /*if (/^:root/.test(p1)) {
-            usedRoot = true;
-            return `${tag} ${p1[p1.length - 1]}`;
-        } else {
-            if (usedRoot) {
-                return `${p1}`
-            }
-            return `${tag} ${p1}`
-        }*/
-    });
-    //}
-
-    //cssContent = rules.join('}');
-
+    cssContent = composeStyleInner(cssContent, tag);
     return createStyle(cssContent, tag);
 }
 
 module.exports = {
     scoped: scoped,
-    scopedInner: scopedInner,
-    createStyle: createStyle
+    scopedInner: scopedInner
 };
 
 /***/ }),
@@ -1514,6 +1424,36 @@ module.exports = camelToDash;
 "use strict";
 
 
+function composeStyleInner(cssContent, tag) {
+    if (typeof cssContent !== 'string') return;
+    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/:root/g, '').replace(/[^\s].*{/gm, function (match) {
+
+        if (/^(@|(from|to)[^-_])/.test(match)) return match;
+
+        var part = match.split(',');
+
+        for (var i = 0; i < part.length; i++) {
+            if (part[i] === tag) continue;
+            part[i] = tag + ' ' + part[i];
+        }
+        match = part.join(',');
+        return match;
+    });
+
+    cssContent = cssContent.replace(/\s{2,}/g, ' ').replace(/{ /g, '{').replace(/ }/g, '}').replace(/\n/g, '').trim();
+
+    return cssContent;
+}
+
+module.exports = composeStyleInner;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function delay(cb) {
     if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
 }
@@ -1521,7 +1461,7 @@ function delay(cb) {
 module.exports = delay;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1565,7 +1505,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1580,7 +1520,7 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2175,7 +2115,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2188,7 +2128,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2241,7 +2181,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2279,7 +2219,7 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2319,34 +2259,34 @@ module.exports = {
 };
 
 /***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(20);
-
-/***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Doz = __webpack_require__(21);
+module.exports = __webpack_require__(21);
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(22);
 var collection = __webpack_require__(1);
 
-var _require = __webpack_require__(18),
+var _require = __webpack_require__(19),
     use = _require.use;
 
-var component = __webpack_require__(41);
+var component = __webpack_require__(43);
 
 var _require2 = __webpack_require__(4),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(42);
-var h = __webpack_require__(16);
+var mixin = __webpack_require__(44);
+var h = __webpack_require__(17);
 
 var _require3 = __webpack_require__(3),
     compile = _require3.compile;
@@ -2393,7 +2333,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2406,15 +2346,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var extend = __webpack_require__(5);
-var bind = __webpack_require__(22);
+var bind = __webpack_require__(23);
 var instances = __webpack_require__(6);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(15);
-var plugin = __webpack_require__(18);
+var toLiteralString = __webpack_require__(16);
+var plugin = __webpack_require__(19);
 
 var Doz = function () {
     function Doz() {
@@ -2686,7 +2626,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2718,7 +2658,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2751,7 +2691,33 @@ function composeStyle(style, tag) {
 module.exports = composeStyle;
 
 /***/ }),
-/* 24 */
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function createStyle(cssContent, tag) {
+    var result = void 0;
+    var styleId = tag + '--style';
+    var styleExists = document.querySelector('#' + styleId);
+
+    if (styleExists) {
+        result = styleExists.innerHTML = cssContent;
+    } else {
+        var styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        result = styleEl.innerHTML = cssContent;
+        document.head.appendChild(styleEl);
+    }
+
+    return result;
+}
+
+module.exports = createStyle;
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2763,7 +2729,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2804,7 +2770,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2848,7 +2814,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2856,7 +2822,7 @@ module.exports = hmr;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var proxy = __webpack_require__(14);
+var proxy = __webpack_require__(15);
 var events = __webpack_require__(2);
 
 function updateBound(instance, changes) {
@@ -2929,20 +2895,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(29);
+var element = __webpack_require__(31);
 
 module.exports = {
     updateElement: element.update
 };
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2950,7 +2916,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(30),
+var _require = __webpack_require__(32),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2964,6 +2930,7 @@ var _require2 = __webpack_require__(0),
     ATTR = _require2.ATTR;
 
 var html = __webpack_require__(7);
+var composeStyleInner = __webpack_require__(11);
 
 var storeElementNode = Object.create(null);
 
@@ -3047,6 +3014,12 @@ function update($parent, newNode, oldNode) {
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             oldElement.textContent = canDecode(newNode);
+            if ($parent.nodeName === 'SCRIPT') {
+                // it could be heavy
+                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner);
+                }
+            }
             return oldElement;
         }
 
@@ -3112,7 +3085,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3128,11 +3101,11 @@ var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
     DIR_IS = _require.DIR_IS;
 
-var castStringTo = __webpack_require__(12);
-var dashToCamel = __webpack_require__(13);
+var castStringTo = __webpack_require__(13);
+var dashToCamel = __webpack_require__(14);
 var camelToDash = __webpack_require__(10);
-var objectPath = __webpack_require__(31);
-var delay = __webpack_require__(11);
+var objectPath = __webpack_require__(33);
+var delay = __webpack_require__(12);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -3413,7 +3386,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3438,7 +3411,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3467,7 +3440,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3490,7 +3463,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3508,7 +3481,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3541,7 +3514,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3554,7 +3527,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3567,7 +3540,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3587,7 +3560,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3633,13 +3606,13 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var mixin = __webpack_require__(17);
+var mixin = __webpack_require__(18);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -3649,7 +3622,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3684,7 +3657,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3693,7 +3666,7 @@ module.exports = component;
 var _require = __webpack_require__(4),
     Component = _require.Component;
 
-var mixin = __webpack_require__(17);
+var mixin = __webpack_require__(18);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
