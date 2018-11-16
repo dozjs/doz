@@ -14,7 +14,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
                 return match;
 
             let part = match.split(',');
-            const sameTag = new RegExp(`^${tag}(\\s+)?{`);
+            const sameTag = new RegExp(`^${tag.replace(/[[\]]/g, '\\$&')}(\\s+)?{`);
 
             for (let i = 0; i < part.length; i++) {
                 if (sameTag.test(part[i].trim())) continue;

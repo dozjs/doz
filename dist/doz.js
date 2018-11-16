@@ -1438,7 +1438,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
         if (/^(@|(from|to)[^-_])/.test(match)) return match;
 
         var part = match.split(',');
-        var sameTag = new RegExp('^' + tag + '(\\s+)?{');
+        var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
 
         for (var i = 0; i < part.length; i++) {
             if (sameTag.test(part[i].trim())) continue;
