@@ -1352,6 +1352,7 @@ var createStyle = __webpack_require__(25);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
+    console.warn('Style object is deprecated since 1.8.0, use style tag inside template instead.');
     var cssContent = composeStyle(instance.style, instance.tag);
     return createStyle(cssContent, instance.tag);
 }
