@@ -27,12 +27,18 @@ function get(cfg = {}) {
         while (child) {
 
             if (child.nodeName === 'STYLE') {
-                scopedInner(child.innerText, parent.cmp.tag);
+                const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+                let tagByData;
+                if (dataSetId)
+                    tagByData = `[data-is="${dataSetId}"]`;
+                scopedInner(child.innerText, parent.cmp.tag, tagByData);
                 const emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
                 emptyStyle.dataset.id = parent.cmp.tag + '--style';
                 emptyStyle.dataset.owner = parent.cmp.tag;
+                if (tagByData)
+                    emptyStyle.dataset.ownerByData = tagByData;
                 child.parentNode.replaceChild(emptyStyle, child);
                 child = emptyStyle.nextSibling;
                 continue;
@@ -41,6 +47,7 @@ function get(cfg = {}) {
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
                 cmpName = child.getAttribute(ATTR.IS).toLowerCase();
                 child.removeAttribute(ATTR.IS);
+                child.dataset.is = cmpName;
                 child[DIR_IS] = true;
             } else
                 cmpName = child.nodeName.toLowerCase();

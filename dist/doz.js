@@ -659,9 +659,7 @@ var Component = function () {
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
-
             var next = compile(template);
-
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
@@ -670,7 +668,7 @@ var Component = function () {
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
             //Remove attributes from component tag
-            removeAllAttributes(this._cfgRoot);
+            removeAllAttributes(this._cfgRoot, ['data-is']);
 
             if (!this._rootElement && rootElement) {
                 this._rootElement = rootElement;
@@ -1157,12 +1155,16 @@ function get() {
         while (child) {
 
             if (child.nodeName === 'STYLE') {
-                scopedInner(child.innerText, parent.cmp.tag);
+                var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+                var tagByData = void 0;
+                if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
+                scopedInner(child.innerText, parent.cmp.tag, tagByData);
                 var emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
                 emptyStyle.innerText = ' ';
                 emptyStyle.dataset.id = parent.cmp.tag + '--style';
                 emptyStyle.dataset.owner = parent.cmp.tag;
+                if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
                 child.parentNode.replaceChild(emptyStyle, child);
                 child = emptyStyle.nextSibling;
                 continue;
@@ -1171,6 +1173,7 @@ function get() {
             if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
                 cmpName = child.getAttribute(ATTR.IS).toLowerCase();
                 child.removeAttribute(ATTR.IS);
+                child.dataset.is = cmpName;
                 child[DIR_IS] = true;
             } else cmpName = child.nodeName.toLowerCase();
 
@@ -1357,9 +1360,9 @@ function scoped(instance) {
     return createStyle(cssContent, instance.tag);
 }
 
-function scopedInner(cssContent, tag) {
+function scopedInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
-    cssContent = composeStyleInner(cssContent, tag);
+    cssContent = composeStyleInner(cssContent, tag, tagByData);
     return createStyle(cssContent, tag);
 }
 
@@ -1425,8 +1428,11 @@ module.exports = camelToDash;
 "use strict";
 
 
-function composeStyleInner(cssContent, tag) {
+function composeStyleInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
+
+    tag = tagByData || tag;
+
     cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/:root/g, '').replace(/[^\s].*{/gm, function (match) {
 
         if (/^(@|(from|to)[^-_])/.test(match)) return match;
@@ -2929,7 +2935,8 @@ var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
     NS = _require2.NS,
     CMP_INSTANCE = _require2.CMP_INSTANCE,
-    ATTR = _require2.ATTR;
+    ATTR = _require2.ATTR,
+    DIR_IS = _require2.DIR_IS;
 
 var html = __webpack_require__(7);
 var composeStyleInner = __webpack_require__(11);
@@ -3019,7 +3026,7 @@ function update($parent, newNode, oldNode) {
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner);
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
             return oldElement;
@@ -3036,6 +3043,7 @@ function update($parent, newNode, oldNode) {
         $parent.replaceChild(newElement, oldElement);
         return newElement;
     } else if (newNode.type) {
+
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {

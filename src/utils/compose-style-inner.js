@@ -1,5 +1,8 @@
-function composeStyleInner(cssContent, tag) {
+function composeStyleInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
+
+    tag = tagByData || tag;
+
     cssContent = cssContent
         .replace(/{/g, '{\n')
         .replace(/}/g, '}\n')

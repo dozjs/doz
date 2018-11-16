@@ -189,9 +189,7 @@ class Component {
         this.beginSafeRender();
         const template = this.template(h);
         this.endSafeRender();
-
         let next = compile(template);
-
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
@@ -200,7 +198,7 @@ class Component {
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag
-        removeAllAttributes(this._cfgRoot);
+        removeAllAttributes(this._cfgRoot, ['data-is']);
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;

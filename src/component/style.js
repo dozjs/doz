@@ -9,9 +9,9 @@ function scoped(instance) {
     return createStyle(cssContent, instance.tag);
 }
 
-function scopedInner(cssContent, tag) {
+function scopedInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
-    cssContent = composeStyleInner(cssContent, tag);
+    cssContent = composeStyleInner(cssContent, tag, tagByData);
     return createStyle(cssContent, tag);
 }
 

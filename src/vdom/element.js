@@ -1,6 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const deadChildren = [];
-const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR} = require('../constants');
+const {INSTANCE, TAG, NS, CMP_INSTANCE, ATTR, DIR_IS} = require('../constants');
 const html = require('../utils/html');
 const composeStyleInner = require('../utils/compose-style-inner');
 
@@ -82,7 +82,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner);
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
             return oldElement;
@@ -102,6 +102,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         );
         return newElement;
     } else if (newNode.type) {
+
         let updated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
