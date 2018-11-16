@@ -1158,10 +1158,10 @@ function get() {
                 var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
                 var tagByData = void 0;
                 if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
-                scopedInner(child.innerText, parent.cmp.tag, tagByData);
+                scopedInner(child.textContent, parent.cmp.tag, tagByData);
                 var emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
-                emptyStyle.innerText = ' ';
+                emptyStyle.textContent = ' ';
                 emptyStyle.dataset.id = parent.cmp.tag + '--style';
                 emptyStyle.dataset.owner = parent.cmp.tag;
                 if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
@@ -1433,14 +1433,15 @@ function composeStyleInner(cssContent, tag, tagByData) {
 
     tag = tagByData || tag;
 
-    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/:root/g, '').replace(/[^\s].*{/gm, function (match) {
+    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {').replace(/:root/g, '').replace(/[^\s].*{/gm, function (match) {
 
         if (/^(@|(from|to)[^-_])/.test(match)) return match;
 
         var part = match.split(',');
+        var sameTag = new RegExp('^' + tag + '(\\s+)?{');
 
         for (var i = 0; i < part.length; i++) {
-            if (part[i].trim() === tag) continue;
+            if (sameTag.test(part[i].trim())) continue;
 
             if (/^:global/.test(part[i])) part[i] = part[i].replace(':global', '');else part[i] = tag + ' ' + part[i];
         }

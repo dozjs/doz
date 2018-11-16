@@ -31,10 +31,10 @@ function get(cfg = {}) {
                 let tagByData;
                 if (dataSetId)
                     tagByData = `[data-is="${dataSetId}"]`;
-                scopedInner(child.innerText, parent.cmp.tag, tagByData);
+                scopedInner(child.textContent, parent.cmp.tag, tagByData);
                 const emptyStyle = document.createElement('script');
                 emptyStyle.type = 'text/style';
-                emptyStyle.innerText = ' ';
+                emptyStyle.textContent = ' ';
                 emptyStyle.dataset.id = parent.cmp.tag + '--style';
                 emptyStyle.dataset.owner = parent.cmp.tag;
                 if (tagByData)

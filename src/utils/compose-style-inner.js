@@ -6,6 +6,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
     cssContent = cssContent
         .replace(/{/g, '{\n')
         .replace(/}/g, '}\n')
+        .replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {')
         .replace(/:root/g, '')
         .replace(/[^\s].*{/gm, match => {
 
@@ -13,9 +14,10 @@ function composeStyleInner(cssContent, tag, tagByData) {
                 return match;
 
             let part = match.split(',');
+            const sameTag = new RegExp(`^${tag}(\\s+)?{`);
 
             for (let i = 0; i < part.length; i++) {
-                if (part[i].trim() === tag) continue;
+                if (sameTag.test(part[i].trim())) continue;
 
                 if (/^:global/.test(part[i]))
                     part[i] = part[i].replace(':global', '');
