@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unrelased]
+## [1.8.0] - 2018-11-17
 - **Added** support for scoped style into template function
 - **Added** `shared` api for sharing things between component
 - **Added** `propsListener` api for props changes
