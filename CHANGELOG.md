@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unrelased]
 - **Added** support for scoped style into template function
 - **Added** `shared` api for sharing things between component
+- **Added** `propsListener` api for props changes
 - **Fixed** when function "drawnDynamic" is called, parent property is set to wrong parent
 - **Deprecated** style object in favor of tag style inside template function
 

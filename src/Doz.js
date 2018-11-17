@@ -36,6 +36,7 @@ class Doz {
         this.cfg = extend(cfg, {
             components: [],
             shared: {},
+            propsListener: null,
             actions: {},
             autoDraw: true
         });

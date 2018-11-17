@@ -515,21 +515,21 @@ var _require = __webpack_require__(0),
 
 var observer = __webpack_require__(29);
 var hooks = __webpack_require__(2);
-var update = __webpack_require__(30).updateElement;
-var store = __webpack_require__(34);
-var ids = __webpack_require__(35);
+var update = __webpack_require__(32).updateElement;
+var store = __webpack_require__(36);
+var ids = __webpack_require__(37);
 var proxy = __webpack_require__(15);
 var toInlineStyle = __webpack_require__(9);
 var style = __webpack_require__(8);
-var queueReady = __webpack_require__(36);
-var queueDraw = __webpack_require__(37);
-var extendInstance = __webpack_require__(38);
-var cloneObject = __webpack_require__(39);
+var queueReady = __webpack_require__(38);
+var queueDraw = __webpack_require__(39);
+var extendInstance = __webpack_require__(40);
+var cloneObject = __webpack_require__(41);
 var toLiteralString = __webpack_require__(16);
-var removeAllAttributes = __webpack_require__(40);
+var removeAllAttributes = __webpack_require__(42);
 var h = __webpack_require__(17);
-var loadLocal = __webpack_require__(41);
-var localMixin = __webpack_require__(42);
+var loadLocal = __webpack_require__(43);
+var localMixin = __webpack_require__(44);
 
 var _require2 = __webpack_require__(3),
     compile = _require2.compile;
@@ -2289,12 +2289,12 @@ var collection = __webpack_require__(1);
 var _require = __webpack_require__(19),
     use = _require.use;
 
-var component = __webpack_require__(43);
+var component = __webpack_require__(45);
 
 var _require2 = __webpack_require__(4),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(44);
+var mixin = __webpack_require__(46);
 var h = __webpack_require__(17);
 
 var _require3 = __webpack_require__(3),
@@ -2401,6 +2401,7 @@ var Doz = function () {
         this.cfg = extend(cfg, {
             components: [],
             shared: {},
+            propsListener: null,
             actions: {},
             autoDraw: true
         });
@@ -2829,12 +2830,43 @@ module.exports = hmr;
 "use strict";
 
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var proxy = __webpack_require__(15);
 var events = __webpack_require__(2);
+var updateBoundElements = __webpack_require__(30);
+var propsListener = __webpack_require__(31);
 
-function updateBound(instance, changes) {
+function create(instance) {
+
+    if (instance._props.__isProxy) proxy.remove(instance._props);
+
+    instance._props = proxy.create(instance._rawProps, null, function (changes) {
+        if (!instance._isRendered) return;
+        events.callUpdate(instance, changes);
+        instance.render();
+        propsListener(instance, changes);
+        updateBoundElements(instance, changes);
+    });
+
+    proxy.beforeChange(instance._props, function (changes) {
+        var res = events.callBeforeUpdate(instance, changes);
+        if (res === false) return false;
+    });
+}
+
+module.exports = {
+    create: create
+};
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function updateBoundElements(instance, changes) {
     var _defined = function _defined(item) {
         if (Object.prototype.hasOwnProperty.call(instance._boundElements, item.property)) {
             var _defined2 = function _defined2(element) {
@@ -2882,39 +2914,7 @@ function updateBound(instance, changes) {
     }
 }
 
-function create(instance) {
-
-    if (instance._props.__isProxy) proxy.remove(instance._props);
-
-    instance._props = proxy.create(instance._rawProps, null, function (changes) {
-        if (!instance._isRendered) return;
-        events.callUpdate(instance, changes);
-        instance.render();
-        updateBound(instance, changes);
-    });
-
-    proxy.beforeChange(instance._props, function (changes) {
-        var res = events.callBeforeUpdate(instance, changes);
-        if (res === false) return false;
-    });
-}
-
-module.exports = {
-    create: create
-};
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var element = __webpack_require__(31);
-
-module.exports = {
-    updateElement: element.update
-};
+module.exports = updateBoundElements;
 
 /***/ }),
 /* 31 */
@@ -2925,7 +2925,46 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(32),
+function propsListener(instance, changes) {
+    if (!instance.propsListener || _typeof(instance.propsListener) !== 'object') return;
+
+    for (var i = 0; i < changes.length; i++) {
+        var item = changes[i];
+        var propPath = instance.propsListener[item.currentPath];
+        if (item.type === 'update' && propPath) {
+            var func = instance[propPath];
+            if (typeof func === 'function') {
+                func(item.newValue, item.previousValue);
+            }
+        }
+    }
+}
+
+module.exports = propsListener;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var element = __webpack_require__(33);
+
+module.exports = {
+    updateElement: element.update
+};
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(34),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -3096,7 +3135,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3115,7 +3154,7 @@ var _require = __webpack_require__(0),
 var castStringTo = __webpack_require__(13);
 var dashToCamel = __webpack_require__(14);
 var camelToDash = __webpack_require__(10);
-var objectPath = __webpack_require__(33);
+var objectPath = __webpack_require__(35);
 var delay = __webpack_require__(12);
 
 function isEventAttribute(name) {
@@ -3397,7 +3436,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3422,7 +3461,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3451,7 +3490,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3474,7 +3513,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3492,7 +3531,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3525,7 +3564,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3538,7 +3577,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3551,7 +3590,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3571,7 +3610,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3617,7 +3656,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3633,7 +3672,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3668,7 +3707,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
