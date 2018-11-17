@@ -46,11 +46,18 @@ Doz.component('button-counter', {
     },
     template(h) {
         return h`
-            <div>
-                <button onclick="this.props.counter++">
-                    ${this.props.title} ${this.props.counter}
-                </button>
-            </div>
+
+            <style>
+                button {
+                    background: #ff000;
+                    color: #fff;
+                }
+            </style>
+
+            <button onclick="this.props.counter++">
+                ${this.props.title} ${this.props.counter}
+            </button>
+
         `
     }
 });
