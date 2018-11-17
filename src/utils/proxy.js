@@ -89,7 +89,7 @@ const ObservableSlim = (function () {
                 }, 10);
             }
 
-            // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
+            // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
                 setTimeout(function () {
@@ -552,7 +552,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         },
 
         /**
@@ -570,7 +570,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         },
 
         /**
@@ -588,7 +588,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         }
     };
 })();
