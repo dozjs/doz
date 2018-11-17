@@ -13,6 +13,7 @@ Below some basic concepts:
 - [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
+    - [Props listener](#props-listener)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -31,6 +32,7 @@ Below some basic concepts:
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
+- [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
 - [Scoped style](#scoped-style)
@@ -143,6 +145,47 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/3)
+
+---
+
+### Props listener
+
+**Since 1.8.0**
+
+Doz provides an API called propsListener that allows you to associate an handler to determinate prop.
+The handler will be triggered to every change for given prop.
+
+```javascript
+Doz.component('my-clock', {
+    props: {
+        time: '--:--:--'
+    },
+    propsListener: {
+        time: 'myHandlerTime'
+    },
+    myHandlerTime(newValue, oldValue) {
+        console.log('Prop time is changed', newValue, oldValue);
+    }
+    template(h) {
+        return h`
+            <h2>${this.props.title} <span>${this.props.time}</span></h2>
+        `
+    },
+    onMount() {
+        setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-clock title="it's"></my-clock>
+        `
+    }
+});
+```
 
 ---
 
@@ -946,6 +989,36 @@ new Doz({
 
 ---
 
+### Sharing things
+
+**Since 1.8.0**
+
+Doz provides an API called `shared` that allows you of sharing things between components.
+
+```javascript
+Doz.component('my-button', {
+    template(h) {
+        return h`
+            <button>Click ${this.shared.foo}</button>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    shared: {
+        foo: 'bar
+    },
+    template(h) {
+        return h`
+            <my-button></my-button>
+        `
+    }
+});
+```
+
+---
+
 ### Conditional statements
 As said previously Doz use [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals):
 
@@ -1026,39 +1099,47 @@ new Doz({
 
 ### Scoped style
 
-**Since 1.4.0**
+**Since 1.8.0**
 
-Doz provide a property called `style` that allows you to add a pseudo scoped css as object literal.
+Doz allows you to add the style inside template function, this emulate a scoped style.
 
 ```javascript
 
 Doz.component('my-salutation', {
-    style: {
-        h1: {
-            color: 'red',
-            fontWeight: 'bold'
-        },
-        h2: {
-            color: 'yellow'
-        },
-        '.foo, .bar': {
-            display: 'inline'
-        },
-        '@media only screen and (max-width: 600px)': {
-            'h1, h2': {
-                color: 'white',
-                backgroundColor: 'green'
-            }
-        }
-    },
     template(h) {
         return h`
-            <div>
-                <h1>Hello</h1>
-                <h2>Doz</h2>
-                <div class="foo">foo</div>
-                <div class="bar">bar</div>
-            </div>
+
+            <style>
+                /* :root rule referring to container in this case my-salutation */
+                :root {
+                    border: 1px solid #ff0000;
+                }
+
+                /* :global rule refering to global item */
+                :global button {
+                    background: #ffcc00;
+                }
+
+                h1 {
+                    color: red;
+                    font-weight: bold;
+                }
+
+                .foo{
+                    display: inline;
+                }
+
+                @media only screen and (max-width: 600px) {
+                    h1 {
+                        color: white;
+                        background-color: green;
+                    }
+                }
+            </style>
+
+            <h1>Hello Doz</h1>
+            <div class="foo">foo</div>
+
         `
     }
 });
@@ -1073,7 +1154,7 @@ new Doz({
 });
 ```
 
-> **Caution**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
+> **Psss**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
 
 ```
 <head>
@@ -1081,8 +1162,6 @@ new Doz({
  <style> my-component .myClass{color:#000}</style>
 </head>
 ```
-
-> If you need something stronger, please use other solution like [CSS Loader](https://github.com/webpack-contrib/css-loader).
 
 ---
 

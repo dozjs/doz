@@ -51,6 +51,12 @@ new Doz({
 - **Default**: undefined
 - **Description**: Function or string that contains the template.
 
+### shared
+
+- **Since**: 1.8.0
+- **Type**: `object`
+- **Default**: undefined
+- **Description**: This object allow to sharing things between components.
 
 
 ### Methods

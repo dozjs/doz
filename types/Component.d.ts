@@ -40,6 +40,11 @@ export class Component {
     props: object;
 
     /**
+     * This object contains all things shared between components.
+     */
+    shared: object;
+
+    /**
      * An array that contains all children components as string.
      */
     rawChildren: Array<string>;

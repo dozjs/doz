@@ -99,6 +99,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `object`
 - **Default**: undefined
 - **Description**: An object that contains component style in object literal. More info on [scoped style](https://github.com/dozjs/doz/blob/master/documentation/index.md#scoped-style).
+- **Deprecated** since 1.8.0 in favor of tag style inside template function.
 
 ### store
 
@@ -106,6 +107,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `string`
 - **Default**: ''
 - **Description**: An unique store name to expose the props with other components of the app.
+
+### propsListener
+
+- **Since**: 1.8.0
+- **Type**: `object`
+- **Default**: undefined
+- **Description**: Defines listeners to detect props changes.
 
 
 ## Properties
@@ -157,6 +165,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 0.0.19
 - **Type**: `string`
 - **Description**: Component tag name.
+
+### shared
+
+- **Since**: 1.8.0
+- **Type**: `object`
+- **Description**: An object that contains all things shared between components.
 
 
 ## Methods
