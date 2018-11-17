@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.7.2  
+// [DOZ]  Build version: 1.8.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -838,6 +838,10 @@ var Component = function () {
                 localMixin(this);
             }
 
+            if (_typeof(obj.propsListener) === 'object') {
+                this.propsListener = obj.propsListener;
+            }
+
             if (_typeof(obj.components) === 'object') {
                 this.components = obj.components;
                 loadLocal(this);
@@ -1622,7 +1626,7 @@ var ObservableSlim = function () {
                 }, 10);
             }
 
-            // execute observer functions on a 10ms settimeout, this prevents the observer functions from being executed
+            // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
                 setTimeout(function () {
@@ -2080,7 +2084,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         },
 
         /**
@@ -2098,7 +2102,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         },
 
         /**
@@ -2116,7 +2120,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('DOZ -- matching proxy not found.');
+            if (foundMatch === false) throw new Error('Matching proxy not found.');
         }
     };
 }();
@@ -2334,7 +2338,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.7.2',
+        value: '1.8.0',
         enumerable: true
     }
 });
