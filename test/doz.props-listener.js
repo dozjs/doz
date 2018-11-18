@@ -67,6 +67,7 @@ describe('Doz.props-listener', function () {
                 },
 
                 descHandler(value, oldValue) {
+                    be.err.not.undefined(this.props);
                     console.log('call descHandler', value, oldValue);
                     result.push(value);
                 },
