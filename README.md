@@ -15,6 +15,7 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 ## Why
 - 🎼 Works with tagged template literals
 - 🔫 Fast performance
+- 💅 Scoped style
 - 🗜 Tiny size ±12KB (gzip)
 - 📡 Uses ES6 proxy to observe changes
 - 🎳 Component based
@@ -41,9 +42,11 @@ $ npm install --save doz
 
 ```javascript
 Doz.component('button-counter', {
+
     props: {
         counter: 0
     },
+
     template(h) {
         return h`
 
@@ -60,6 +63,7 @@ Doz.component('button-counter', {
 
         `
     }
+
 });
 ```
 
@@ -67,12 +71,15 @@ Doz.component('button-counter', {
 
 ```javascript
 new Doz({
+
     root: '#app',
+
     template(h) {
         return h`
             <button-counter title="Click me!"></button-counter>
         `
     }
+
 });
 ```
 
