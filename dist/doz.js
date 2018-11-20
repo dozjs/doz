@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.8.1  
+// [DOZ]  Build version: 1.8.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2338,7 +2338,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.8.1',
+        value: '1.8.2',
         enumerable: true
     }
 });
@@ -2936,7 +2936,7 @@ function propsListener(instance, changes) {
         var item = changes[i];
         var propPath = instance.propsListener[item.currentPath];
         if (item.type === 'update' && propPath) {
-            var func = instance[propPath];
+            var func = instance[propPath] || propPath;
             if (typeof func === 'function') {
                 func.call(instance, item.newValue, item.previousValue);
             }
