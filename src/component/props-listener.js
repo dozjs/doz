@@ -5,7 +5,7 @@ function propsListener(instance, changes) {
         const item = changes[i];
         const propPath = instance.propsListener[item.currentPath];
         if (item.type === 'update' && propPath) {
-            const func = instance[propPath];
+            const func = instance[propPath] || propPath;
             if (typeof func === 'function') {
                 func.call(instance, item.newValue, item.previousValue);
             }

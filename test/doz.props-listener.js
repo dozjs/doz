@@ -77,7 +77,74 @@ describe('Doz.props-listener', function () {
                 }
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
+                be.err(done).equal(result, ['a desc', 'a name', 'a title'])
+            }, 500);
+
+        });
+
+        it('should be ok with function', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            const result = [];
+
+            Doz.component('salutation-card', {
+                propsListener: {
+                    myTitle: function(value, oldValue) {
+                        console.log('call myTitleHandler', value, oldValue);
+                        result.push(value);
+                    },
+                    name: (value, oldValue) => {
+                        console.log('call nameHandler', value, oldValue);
+                        result.push(value);
+                    }
+                },
+
+                template() {
+                    return `
+                        <div>Hello ${this.props.myTitle} ${this.props.name}</div>
+                    `
+                },
+                onMount() {
+                    this.props.name = 'a name';
+                    this.props.myTitle = 'a title';
+                }
+            });
+
+            new Doz({
+                root: '#app',
+
+                propsListener: {
+                    desc: function(value, oldValue){
+                        be.err.not.undefined(this.props);
+                        console.log('call descHandler', value, oldValue);
+                        result.push(value);
+                    }
+                },
+
+                props: {
+                    desc: 'hello'
+                },
+
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.nameA}
+                            <salutation-card
+                                my-title="MR."
+                                name="Doz">
+                            </salutation-card>
+                        </div>
+                    `
+                },
+
+                onMount() {
+                    this.props.desc = 'a desc';
+                }
+            });
+
+            setTimeout(() => {
                 be.err(done).equal(result, ['a desc', 'a name', 'a title'])
             }, 500);
 
