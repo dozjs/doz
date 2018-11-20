@@ -24,6 +24,9 @@ module.exports = function (strings, ...value) {
                 allowTag = true;
         });
 
+        if(/<\/?style>/ig.test(strings[i]))
+            allowTag = false;
+
         if(allowTag)
             result += `<${tag}>${value[i]}</${tag}>${strings[i + 1]}`;
         else

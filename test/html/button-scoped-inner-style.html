@@ -21,8 +21,8 @@
             count: 0
         },
 
-        template() {
-            return `
+        template(h) {
+            return h`
                 <style>
                     button {
                         color: red;
@@ -30,6 +30,7 @@
                         font-size: ${10 + this.props.count}px;
                         padding: 20px;
                     }
+
                     @media only screen and (max-width: 600px) {
                         button {
                             color: white;
@@ -41,10 +42,11 @@
                         from {background-color: red;}
                         to {background-color: yellow;}
                     }
+
                 </style>
                 <button
                     onclick="this.props.count++"
-                >Count ${this.props.count}</button>
+                >Count ${this.props.count}</button> count ${this.props.count}
             `;
         }
     });

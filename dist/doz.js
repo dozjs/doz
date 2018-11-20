@@ -2185,6 +2185,8 @@ module.exports = function (strings) {
             _defined(_defined2[_i2], _i2, _defined2);
         }
 
+        if (/<\/?style>/ig.test(strings[i])) allowTag = false;
+
         if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
