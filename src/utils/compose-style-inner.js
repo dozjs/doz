@@ -1,3 +1,11 @@
+/*
+// Add tag prefix to animation name inside keyframe
+(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)
+
+// Add tag prefix to animation
+((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
+ */
+
 function composeStyleInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
 
@@ -10,7 +18,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
         .replace(/:root/g, '')
         .replace(/[^\s].*{/gm, match => {
 
-            if (/^(@|(from|to)[^-_])/.test(match))
+            if (/^(@|(from|to|\d+%)[^-_])/.test(match))
                 return match;
 
             let part = match.split(',');

@@ -1432,6 +1432,11 @@ module.exports = camelToDash;
 "use strict";
 
 
+/*
+// Replace all keyframes
+(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)
+ */
+
 function composeStyleInner(cssContent, tag, tagByData) {
     if (typeof cssContent !== 'string') return;
 
@@ -1439,7 +1444,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
 
     cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {').replace(/:root/g, '').replace(/[^\s].*{/gm, function (match) {
 
-        if (/^(@|(from|to)[^-_])/.test(match)) return match;
+        if (/^(@|(from|to|\d+%)[^-_])/.test(match)) return match;
 
         var part = match.split(',');
         var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
