@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.8.4] - 2018-11-22
+- **Fixed** scoped style issue when using animation
+
 ## [1.8.3] - 2018-11-20
 - **Fixed** possible issue when using style tag inside `h` tagged function
 
