@@ -32,6 +32,11 @@
             time: '--:--:--',
             color: 'black'
         },
+        propsComputed: {
+            time: function (v, o) {
+                return `new time, ${v}`
+            }
+        },
         onMount() {
             setInterval(() => this.currentTime(), 1000)
         },

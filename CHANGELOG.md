@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `propsComputed` api for props manipulation
+
 ## [1.8.4] - 2018-11-22
 - **Fixed** scoped style issue when using animation
 

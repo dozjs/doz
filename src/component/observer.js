@@ -14,7 +14,7 @@ function create(instance) {
         instance.render();
         propsListener(instance, changes);
         updateBoundElements(instance, changes);
-    });
+    }, instance);
 
     proxy.beforeChange(instance._props, changes => {
         const res = events.callBeforeUpdate(instance, changes);
