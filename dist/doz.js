@@ -1587,7 +1587,7 @@ var ObservableSlim = function () {
     // to track that a given Proxy was modified from the 'set' handler
     var dupProxy = null;
 
-    var _instance = null;
+    var _manipulate = null;
 
     var _getProperty = function _getProperty(obj, path) {
         return path.split('.').reduce(function (prev, curr) {
@@ -1790,18 +1790,12 @@ var ObservableSlim = function () {
                     // get the path of the object property being modified
                     var currentPath = _getPath(target, property);
 
-                    // determine if we're adding something new or modifying somethat that already existed
+                    // determine if we're adding something new or modifying some that already existed
                     var type = 'update';
                     if (typeOfTargetProp === 'undefined') type = 'add';
 
-                    if (_instance.propsComputed) {
-                        if (_typeof(_instance.propsComputed) === 'object') {
-                            var propPath = _instance.propsComputed[currentPath];
-                            var func = _instance[propPath] || propPath;
-                            if (typeof func === 'function') {
-                                value = func.call(_instance, value, receiver[property]);
-                            }
-                        }
+                    if (typeof _manipulate === 'function') {
+                        value = _manipulate(value, receiver[property], currentPath);
                     }
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
@@ -1996,12 +1990,12 @@ var ObservableSlim = function () {
          * @param target {Object} required, plain JavaScript object that we want to observe for changes.
          * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
-         * @param instance
+         * @param manipulate {Function}
          * @returns {Object}
          */
-        create: function create(target, domDelay, observer, instance) {
+        create: function create(target, domDelay, observer, manipulate) {
 
-            _instance = instance;
+            _manipulate = manipulate;
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -2855,6 +2849,8 @@ module.exports = hmr;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var proxy = __webpack_require__(15);
 var events = __webpack_require__(2);
 var updateBoundElements = __webpack_require__(30);
@@ -2870,7 +2866,18 @@ function create(instance) {
         instance.render();
         propsListener(instance, changes);
         updateBoundElements(instance, changes);
-    }, instance);
+    }, function (value, oldValue, currentPath) {
+        if (instance.propsComputed) {
+            if (_typeof(instance.propsComputed) === 'object') {
+                var propPath = instance.propsComputed[currentPath];
+                var func = instance[propPath] || propPath;
+                if (typeof func === 'function') {
+                    return func.call(instance, value, oldValue);
+                }
+            }
+        }
+        return value;
+    });
 
     proxy.beforeChange(instance._props, function (changes) {
         var res = events.callBeforeUpdate(instance, changes);
