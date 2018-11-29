@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 - **Added** `propsComputed` api for props manipulation
+- **Fixed** parentNode is `null` when using scoped style without others tags
 
 ## [1.8.4] - 2018-11-22
 - **Fixed** scoped style issue when using animation

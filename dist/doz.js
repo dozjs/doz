@@ -588,7 +588,7 @@ var Component = function () {
     _createClass(Component, [{
         key: 'getHTMLElement',
         value: function getHTMLElement() {
-            return this._rootElement.parentNode;
+            return this._parentElement;
         }
     }, {
         key: 'beginSafeRender',
@@ -672,6 +672,7 @@ var Component = function () {
 
             if (!this._rootElement && rootElement) {
                 this._rootElement = rootElement;
+                this._parentElement = rootElement.parentNode;
             }
 
             this._prev = next;
@@ -907,6 +908,10 @@ function defineProperties(obj, opt) {
             writable: true
         },
         _rootElement: {
+            value: null,
+            writable: true
+        },
+        _parentElement: {
             value: null,
             writable: true
         },

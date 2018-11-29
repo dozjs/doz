@@ -136,7 +136,7 @@ class Component {
     }
 
     getHTMLElement() {
-        return this._rootElement.parentNode;
+        return this._parentElement;
     }
 
     beginSafeRender() {
@@ -206,6 +206,7 @@ class Component {
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
+            this._parentElement = rootElement.parentNode;
         }
 
         this._prev = next;
@@ -356,6 +357,10 @@ function defineProperties(obj, opt) {
             writable: true
         },
         _rootElement: {
+            value: null,
+            writable: true
+        },
+        _parentElement: {
             value: null,
             writable: true
         },
