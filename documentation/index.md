@@ -14,6 +14,7 @@ Below some basic concepts:
 - [Component definition](#component-definition)
     - [Props](#props)
     - [Props listener](#props-listener)
+    - [Props computed](#props-computed)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -161,11 +162,50 @@ Doz.component('my-clock', {
         time: '--:--:--'
     },
     propsListener: {
-        time: 'myHandlerTime'
+        time: function(newValue, oldValue) {
+            console.log('Prop time is changed', newValue, oldValue);
+        }
     },
-    myHandlerTime(newValue, oldValue) {
-        console.log('Prop time is changed', newValue, oldValue);
+    template(h) {
+        return h`
+            <h2>${this.props.title} <span>${this.props.time}</span></h2>
+        `
+    },
+    onMount() {
+        setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
     }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-clock title="it's"></my-clock>
+        `
+    }
+});
+```
+
+---
+
+### Props computed
+
+**Since 1.9.0**
+
+If you need to manipulate or check a value of a determinate prop before the rendering.
+This is for you:
+
+```javascript
+Doz.component('my-clock', {
+    props: {
+        time: '--:--:--'
+    },
+    propsComputed: {
+        time: function(newValue, oldValue) {
+            return `Prepend this string before: ${newValue}`;
+        }
+    },
     template(h) {
         return h`
             <h2>${this.props.title} <span>${this.props.time}</span></h2>
