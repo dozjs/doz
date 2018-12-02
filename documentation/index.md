@@ -227,6 +227,8 @@ new Doz({
 });
 ```
 
+[FIDDLE](https://jsfiddle.net/fabioricali/qpw0m7s3/5/)
+
 ---
 
 ### Reusing components
