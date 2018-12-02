@@ -1049,7 +1049,7 @@ Doz.component('my-button', {
 new Doz({
     root: '#app',
     shared: {
-        foo: 'bar
+        foo: 'bar'
     },
     template(h) {
         return h`
