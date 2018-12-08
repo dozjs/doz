@@ -6,7 +6,6 @@ const store = require('./store');
 const ids = require('./ids');
 const proxy = require('../utils/proxy');
 const toInlineStyle = require('../utils/to-inline-style');
-const style = require('./style');
 const queueReady = require('./queue-ready');
 const queueDraw = require('./queue-draw');
 const extendInstance = require('./extend-instance');
@@ -66,8 +65,6 @@ class Component {
         queueDraw.add(this);
         // Call create
         hooks.callCreate(this);
-        //Apply scoped style
-        style.scoped(this);
     }
 
     set props(props) {
@@ -114,11 +111,6 @@ class Component {
         if (typeof obj.id === 'string') {
             this.id = obj.id;
             ids.create(this);
-        }
-
-        if (typeof obj.style === 'object') {
-            this.style = obj.style;
-            style.scoped(this);
         }
 
         if (typeof obj.autoCreateChildren === 'boolean') {
