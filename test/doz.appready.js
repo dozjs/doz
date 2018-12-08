@@ -94,7 +94,7 @@ describe('Doz.appready', function () {
                         <h2>${this.props.salutation}</h2>
                     `
                 },
-                onRender() {
+                onMount() {
                     setTimeout(() => {
                         this.destroy();
                     },1000)

@@ -9,9 +9,6 @@ module.exports = {
         },
         onCreate() {
             console.log('onCreate')
-        },
-        onRender() {
-            console.log('onRender');
         }
     }
 };

@@ -37,8 +37,8 @@ describe('Doz', function () {
                 onCreate() {
                     console.log('onCreate')
                 },
-                onRender() {
-                    console.log('onRender');
+                onMount() {
+                    console.log('onMount');
                     this.props.name = 'D O Z'
                 }
             });
@@ -86,10 +86,6 @@ describe('Doz', function () {
                 },
                 onCreate() {
                     console.log('onCreate')
-                },
-                onRender() {
-                    console.log('onRender');
-                    //this.props.name = 'D O Z'
                 }
             });
 
@@ -162,8 +158,8 @@ describe('Doz', function () {
                 onCreate() {
                     console.log('onCreate')
                 },
-                onRender() {
-                    console.log('onRender');
+                onMount() {
+                    console.log('onMount');
                     this.props.name = 'D O Z';
                 }
             });

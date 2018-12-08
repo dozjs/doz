@@ -213,13 +213,6 @@ function callConfigCreate(context) {
     }
 }
 
-function callRender(context) {
-    if (typeof context.onRender === 'function') {
-        console.warn('onRender is deprecated since v. 1.0.0, use onMount instead');
-        context.onRender.call(context);
-    }
-}
-
 function callBeforeMount(context) {
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
@@ -287,7 +280,6 @@ module.exports = {
     callBeforeCreate: callBeforeCreate,
     callCreate: callCreate,
     callConfigCreate: callConfigCreate,
-    callRender: callRender,
     callBeforeMount: callBeforeMount,
     callMount: callMount,
     callMountAsync: callMountAsync,
@@ -1206,7 +1198,6 @@ function get() {
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
-                    hooks.callRender(newElement);
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
                 }

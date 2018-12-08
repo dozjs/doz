@@ -129,7 +129,6 @@ function get(cfg = {}) {
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
-                    hooks.callRender(newElement);
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
                 }
