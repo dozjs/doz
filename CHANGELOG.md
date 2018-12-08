@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.10.0] - 2018-12-08
 - **Removed** `style` object, deprecated since 1.8.0
 - **Removed** `onRender` hooks in favor of `onMount`, deprecated since 1.0.0
 - **Improved** bundle size
