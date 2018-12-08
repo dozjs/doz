@@ -1,4 +1,3 @@
-const extend = require('../utils/extend');
 const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
@@ -315,10 +314,11 @@ class Component {
 
     _initRawProps(opt) {
         if (!this._isSubclass) {
-            this._rawProps = extend.copy(opt.props,
+            this._rawProps = Object.assign({},
                 typeof opt.cmp.cfg.props === 'function'
                     ? opt.cmp.cfg.props()
-                    : opt.cmp.cfg.props
+                    : opt.cmp.cfg.props,
+                opt.props
             );
 
             this._initTemplate(opt);

@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -137,7 +137,7 @@ module.exports = {
 "use strict";
 
 
-var data = __webpack_require__(26);
+var data = __webpack_require__(25);
 
 /**
  * Register a component to global
@@ -193,7 +193,7 @@ module.exports = {
 "use strict";
 
 
-var delay = __webpack_require__(12);
+var delay = __webpack_require__(11);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -311,8 +311,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(13);
-var dashToCamel = __webpack_require__(14);
+var castStringTo = __webpack_require__(12);
+var dashToCamel = __webpack_require__(13);
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
@@ -505,31 +505,29 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
-
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
     CMP_INSTANCE = _require.CMP_INSTANCE,
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(29);
+var observer = __webpack_require__(28);
 var hooks = __webpack_require__(2);
-var update = __webpack_require__(32).updateElement;
-var store = __webpack_require__(36);
-var ids = __webpack_require__(37);
-var proxy = __webpack_require__(15);
-var toInlineStyle = __webpack_require__(9);
-var style = __webpack_require__(8);
-var queueReady = __webpack_require__(38);
-var queueDraw = __webpack_require__(39);
-var extendInstance = __webpack_require__(40);
-var cloneObject = __webpack_require__(41);
-var toLiteralString = __webpack_require__(16);
-var removeAllAttributes = __webpack_require__(42);
-var h = __webpack_require__(17);
-var loadLocal = __webpack_require__(43);
-var localMixin = __webpack_require__(44);
+var update = __webpack_require__(31).updateElement;
+var store = __webpack_require__(35);
+var ids = __webpack_require__(36);
+var proxy = __webpack_require__(14);
+var toInlineStyle = __webpack_require__(8);
+var style = __webpack_require__(7);
+var queueReady = __webpack_require__(37);
+var queueDraw = __webpack_require__(38);
+var extendInstance = __webpack_require__(39);
+var cloneObject = __webpack_require__(40);
+var toLiteralString = __webpack_require__(15);
+var removeAllAttributes = __webpack_require__(41);
+var h = __webpack_require__(16);
+var loadLocal = __webpack_require__(42);
+var localMixin = __webpack_require__(43);
 
 var _require2 = __webpack_require__(3),
     compile = _require2.compile;
@@ -807,7 +805,7 @@ var Component = function () {
         key: '_initRawProps',
         value: function _initRawProps(opt) {
             if (!this._isSubclass) {
-                this._rawProps = extend.copy(opt.props, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props);
+                this._rawProps = Object.assign({}, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props, opt.props);
 
                 this._initTemplate(opt);
             } else {
@@ -1019,7 +1017,7 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-            var dynamicInstance = __webpack_require__(6).get({
+            var dynamicInstance = __webpack_require__(5).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app,
@@ -1067,61 +1065,9 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/**
- * Copies deep missing properties to the target object
- * @param targetObj {Object} target object
- * @param defaultObj {Object} default object
- * @param exclude {Array} exclude properties from copy
- * @returns {*}
- */
+var html = __webpack_require__(6);
 
-function extend(targetObj, defaultObj) {
-    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-    for (var i in defaultObj) {
-        /* istanbul ignore else  */
-        if (Object.prototype.hasOwnProperty.call(defaultObj, i) && exclude.indexOf(i) === -1) {
-            if (!Object.prototype.hasOwnProperty.call(targetObj, i) || typeof targetObj[i] === 'undefined') {
-                targetObj[i] = defaultObj[i];
-            } else if (_typeof(targetObj[i]) === 'object') {
-                extend(targetObj[i], defaultObj[i]);
-            }
-        }
-    }
-    return targetObj;
-}
-
-/**
- * Creates new target object and copies deep missing properties to the target object
- * @param args[0]] {Object} target object
- * @param args[1]] {Object} default object
- * @param args[2]] {Array} exclude properties from copy
- * @returns {*}
- */
-function copy() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    args[0] = Object.assign({}, args[0]);
-    return extend.apply(this, args);
-}
-
-module.exports = extend;
-module.exports.copy = copy;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var html = __webpack_require__(7);
-
-var _require = __webpack_require__(8),
+var _require = __webpack_require__(7),
     scopedInner = _require.scopedInner;
 
 var _require2 = __webpack_require__(0),
@@ -1135,10 +1081,10 @@ var hooks = __webpack_require__(2);
 var _require3 = __webpack_require__(3),
     serializeProps = _require3.serializeProps;
 
-var _require4 = __webpack_require__(27),
+var _require4 = __webpack_require__(26),
     extract = _require4.extract;
 
-var hmr = __webpack_require__(28);
+var hmr = __webpack_require__(27);
 
 var _require5 = __webpack_require__(4),
     Component = _require5.Component;
@@ -1305,7 +1251,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1350,7 +1296,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1358,9 +1304,9 @@ module.exports = html;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var composeStyle = __webpack_require__(24);
-var composeStyleInner = __webpack_require__(11);
-var createStyle = __webpack_require__(25);
+var composeStyle = __webpack_require__(23);
+var composeStyleInner = __webpack_require__(10);
+var createStyle = __webpack_require__(24);
 
 function scoped(instance) {
     if (_typeof(instance.style) !== 'object') return;
@@ -1381,7 +1327,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1389,7 +1335,7 @@ module.exports = {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(10);
+var camelToDash = __webpack_require__(9);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -1418,7 +1364,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1431,7 +1377,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1474,7 +1420,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
 module.exports = composeStyleInner;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1487,7 +1433,7 @@ function delay(cb) {
 module.exports = delay;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1531,7 +1477,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1546,7 +1492,7 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2146,7 +2092,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2159,7 +2105,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2214,7 +2160,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2252,7 +2198,7 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2292,34 +2238,34 @@ module.exports = {
 };
 
 /***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(20);
+
+/***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(21);
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Doz = __webpack_require__(22);
+var Doz = __webpack_require__(21);
 var collection = __webpack_require__(1);
 
-var _require = __webpack_require__(19),
+var _require = __webpack_require__(18),
     use = _require.use;
 
-var component = __webpack_require__(45);
+var component = __webpack_require__(44);
 
 var _require2 = __webpack_require__(4),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(46);
-var h = __webpack_require__(17);
+var mixin = __webpack_require__(45);
+var h = __webpack_require__(16);
 
 var _require3 = __webpack_require__(3),
     compile = _require3.compile;
@@ -2366,7 +2312,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2378,16 +2324,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var extend = __webpack_require__(5);
-var bind = __webpack_require__(23);
-var instances = __webpack_require__(6);
+var bind = __webpack_require__(22);
+var instances = __webpack_require__(5);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(16);
-var plugin = __webpack_require__(19);
+var toLiteralString = __webpack_require__(15);
+var plugin = __webpack_require__(18);
 
 var Doz = function () {
     function Doz() {
@@ -2422,13 +2367,13 @@ var Doz = function () {
             appNode.parentNode.removeChild(appNode);
         }
 
-        this.cfg = extend(cfg, {
+        this.cfg = Object.assign({}, {
             components: [],
             shared: {},
             propsListener: null,
             actions: {},
             autoDraw: true
-        });
+        }, cfg);
 
         Object.defineProperties(this, {
             _components: {
@@ -2660,7 +2605,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2692,13 +2637,13 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var toInlineStyle = __webpack_require__(9);
+var toInlineStyle = __webpack_require__(8);
 
 function composeStyle(style, tag) {
     var out = '';
@@ -2725,7 +2670,7 @@ function composeStyle(style, tag) {
 module.exports = composeStyle;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2751,7 +2696,7 @@ function createStyle(cssContent, tag) {
 module.exports = createStyle;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2763,7 +2708,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2804,7 +2749,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2848,7 +2793,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2856,10 +2801,10 @@ module.exports = hmr;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var proxy = __webpack_require__(15);
+var proxy = __webpack_require__(14);
 var events = __webpack_require__(2);
-var updateBoundElements = __webpack_require__(30);
-var propsListener = __webpack_require__(31);
+var updateBoundElements = __webpack_require__(29);
+var propsListener = __webpack_require__(30);
 
 function create(instance) {
 
@@ -2895,7 +2840,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2954,7 +2899,7 @@ function updateBoundElements(instance, changes) {
 module.exports = updateBoundElements;
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2980,20 +2925,20 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(33);
+var element = __webpack_require__(32);
 
 module.exports = {
     updateElement: element.update
 };
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3001,7 +2946,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(34),
+var _require = __webpack_require__(33),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -3015,8 +2960,8 @@ var _require2 = __webpack_require__(0),
     ATTR = _require2.ATTR,
     DIR_IS = _require2.DIR_IS;
 
-var html = __webpack_require__(7);
-var composeStyleInner = __webpack_require__(11);
+var html = __webpack_require__(6);
+var composeStyleInner = __webpack_require__(10);
 
 var storeElementNode = Object.create(null);
 
@@ -3172,7 +3117,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3188,11 +3133,11 @@ var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
     DIR_IS = _require.DIR_IS;
 
-var castStringTo = __webpack_require__(13);
-var dashToCamel = __webpack_require__(14);
-var camelToDash = __webpack_require__(10);
-var objectPath = __webpack_require__(35);
-var delay = __webpack_require__(12);
+var castStringTo = __webpack_require__(12);
+var dashToCamel = __webpack_require__(13);
+var camelToDash = __webpack_require__(9);
+var objectPath = __webpack_require__(34);
+var delay = __webpack_require__(11);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -3473,7 +3418,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3498,7 +3443,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3527,7 +3472,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3550,7 +3495,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3568,7 +3513,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3601,7 +3546,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3614,7 +3559,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3627,7 +3572,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3647,7 +3592,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3693,13 +3638,13 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(17);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -3709,7 +3654,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3744,7 +3689,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3753,7 +3698,7 @@ module.exports = component;
 var _require = __webpack_require__(4),
     Component = _require.Component;
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(17);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);

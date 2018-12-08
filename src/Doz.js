@@ -1,4 +1,3 @@
-const extend = require('./utils/extend');
 const bind = require('./utils/bind');
 const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
@@ -33,13 +32,13 @@ class Doz {
             appNode.parentNode.removeChild(appNode);
         }
 
-        this.cfg = extend(cfg, {
+        this.cfg = Object.assign({}, {
             components: [],
             shared: {},
             propsListener: null,
             actions: {},
             autoDraw: true
-        });
+        }, cfg);
 
         Object.defineProperties(this, {
             _components: {
