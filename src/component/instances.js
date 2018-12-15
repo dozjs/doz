@@ -88,9 +88,8 @@ function get(cfg = {}) {
                 let newElement;
 
                 if (typeof cmp.cfg === 'function') {
-
                     // This implements single function component
-                    if (!/^class\s/.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!/^(class\s|function\s+_class)/.test(Function.prototype.toString.call(cmp.cfg))) {
                         const func = cmp.cfg;
                         cmp.cfg = class extends Component {};
                         cmp.cfg.prototype.template = func;

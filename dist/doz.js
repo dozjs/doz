@@ -1155,9 +1155,8 @@ function get() {
                 var newElement = void 0;
 
                 if (typeof cmp.cfg === 'function') {
-
                     // This implements single function component
-                    if (!/^class\s/.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!/^(class\s|function\s+_class)/.test(Function.prototype.toString.call(cmp.cfg))) {
                         var func = cmp.cfg;
                         cmp.cfg = function (_Component) {
                             _inherits(_class, _Component);
