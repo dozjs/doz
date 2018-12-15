@@ -1457,7 +1457,8 @@ Doz.define('a-component', class extends Doz.Component{
 
 **Since 1.11.0**
 
-SFC gives you the ability to define simple components that do not need configurations, such as default props, methods or events.
+SFC gives you the ability to define simple components that do not need
+configurations, such as default props, methods or events.
 Define a component with a single function:
 
 ```javascript
