@@ -42,6 +42,7 @@ Below some basic concepts:
 - [Mixins](#mixins)
 - [Plugins](#plugins)
 - [ES6 class](#es6-class)
+- [SFC: Single Function Component](#sfc-single-function-component)
 - [Component logic inside Doz constructor](#component-logic-inside-doz-constructor)
 - [Develop and production](#develop-and-production)
     - [Hot module replacement and state preservation](#hot-module-replacement-and-state-preservation)
@@ -1405,10 +1406,6 @@ If you prefer programming with ES6 class syntax:
 
 ```javascript
 Doz.define('a-component', class extends Doz.Component{
-    constructor(o) {
-        super(o);
-    }
-
     template(h){
         return h`<div>Hello ES6</div>`
     }
@@ -1453,6 +1450,32 @@ Doz.define('a-component', class extends Doz.Component{
 ```
 
 > To registering a global component now we use `define` an alias of `component` for don't confuse you with `Component` subclass
+
+---
+
+### SFC: Single Function Component
+
+**Since 1.11.0**
+
+SFC gives you the ability to define simple components that do not need configurations, such as default props, methods or events.
+Define a component with a single function:
+
+```javascript
+Doz.component('my-sfc', function(h) {
+    return h`<div>Hello ${this.props.name}</div>`
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <my-sfc name="Doz"/>
+        `
+    }
+});
+```
+
+---
 
 ### Component logic inside Doz constructor
 It's also possible creating an app with component logic inside Doz constructor like so:
