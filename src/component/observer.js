@@ -17,12 +17,25 @@ function create(instance) {
             updateBoundElements(instance, changes);
         },
         (value, oldValue, currentPath) => {
-            if (instance.propsComputed) {
-                if (typeof instance.propsComputed === 'object') {
-                    const propPath = instance.propsComputed[currentPath];
+            if (instance.propsConvert) {
+                if (typeof instance.propsConvert === 'object') {
+                    const propPath = instance.propsConvert[currentPath];
                     const func = instance[propPath] || propPath;
                     if (typeof func === 'function') {
                         return func.call(instance, value, oldValue)
+                    }
+                }
+            }
+            if (instance.propsComputed) {
+                if (typeof instance.propsComputed === 'object') {
+                    if (instance._computedCache.has(currentPath))
+                        return instance._computedCache.get(currentPath);
+                    const propPath = instance.propsComputed[currentPath];
+                    const func = instance[propPath] || propPath;
+                    if (typeof func === 'function') {
+                        const result = func.call(instance, value, oldValue);
+                        instance._computedCache.set(currentPath, result);
+                        return result;
                     }
                 }
             }

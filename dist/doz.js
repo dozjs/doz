@@ -934,6 +934,9 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _computedCache: {
+            value: new Map()
+        },
 
         //Public
         tag: {
@@ -2748,12 +2751,24 @@ function create(instance) {
         propsListener(instance, changes);
         updateBoundElements(instance, changes);
     }, function (value, oldValue, currentPath) {
-        if (instance.propsComputed) {
-            if (_typeof(instance.propsComputed) === 'object') {
-                var propPath = instance.propsComputed[currentPath];
+        if (instance.propsConvert) {
+            if (_typeof(instance.propsConvert) === 'object') {
+                var propPath = instance.propsConvert[currentPath];
                 var func = instance[propPath] || propPath;
                 if (typeof func === 'function') {
                     return func.call(instance, value, oldValue);
+                }
+            }
+        }
+        if (instance.propsComputed) {
+            if (_typeof(instance.propsComputed) === 'object') {
+                if (instance._computedCache.has(currentPath)) return instance._computedCache.get(currentPath);
+                var _propPath = instance.propsComputed[currentPath];
+                var _func = instance[_propPath] || _propPath;
+                if (typeof _func === 'function') {
+                    var result = _func.call(instance, value, oldValue);
+                    instance._computedCache.set(currentPath, result);
+                    return result;
                 }
             }
         }

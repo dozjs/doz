@@ -388,6 +388,9 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _computedCache: {
+            value: new Map()
+        },
 
         //Public
         tag: {
