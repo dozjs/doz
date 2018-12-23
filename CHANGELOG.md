@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
+- **Added** `propsConvert` api for props manipulation without cache
 - **Improved** performance
 
 ## [1.11.1] - 2018-12-15

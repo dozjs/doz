@@ -120,7 +120,14 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 1.8.0
 - **Type**: `object`
 - **Default**: undefined
-- **Description**: Defines listeners for computing operation over props.
+- **Description**: Defines listeners for computing operation (with cache) over props.
+
+### propsConvert
+
+- **Since**: 1.12.0
+- **Type**: `object`
+- **Default**: undefined
+- **Description**: Defines listeners for manipulation operation over props.
 
 
 ## Properties
