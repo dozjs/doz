@@ -199,22 +199,21 @@ This is useful for performing complex computational operations.
 The result will be saved in cache.
 
 ```javascript
-Doz.component('my-clock', {
+Doz.component('my-computed', {
     props: {
-        time: '--:--:--'
+        aNumber: 0
     },
     propsComputed: {
-        time: function(newValue, oldValue) {
-            return `Prepend this string before: ${newValue}`;
+        aNumber: function(v) {
+            return v * Math.random();
         }
     },
-    template(h) {
-        return h`
-            <h2>${this.props.title} <span>${this.props.time}</span></h2>
+    template() {
+        return `
+            <input type="number" value="0" min="0" d-ref="inputNumber"/>
+            <button onclick="this.props.aNumber = this.ref.inputNumber.value">Compute</button>
+            <h3>Result ${this.props.aNumber}</h3>
         `
-    },
-    onMount() {
-        setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
     }
 });
 
@@ -222,14 +221,14 @@ new Doz({
     root: '#app',
     template(h) {
         return h`
-            <h1>Welcome to my app:</h1>
-            <my-clock title="it's"></my-clock>
+            <h1>a number multiplied by a random number</h1>
+            <my-computed/>
         `
     }
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/qpw0m7s3/5/)
+[FIDDLE](https://jsfiddle.net/fabioricali/ak0nzfbc/)
 
 ---
 
@@ -244,7 +243,7 @@ Doz.component('my-clock', {
     props: {
         time: '--:--:--'
     },
-    propsComputed: {
+    propsConvert: {
         time: function(newValue, oldValue) {
             return `Prepend this string before: ${newValue}`;
         }
@@ -270,7 +269,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/qpw0m7s3/5/)
+[FIDDLE](https://jsfiddle.net/fabioricali/t3qapk7r/)
 
 ---
 
