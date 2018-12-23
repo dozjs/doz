@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.12.0  
+// [DOZ]  Build version: 1.12.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2251,7 +2251,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.12.0',
+        value: '1.12.1',
         enumerable: true
     }
 });
@@ -2760,14 +2760,24 @@ function create(instance) {
                 }
             }
         }
+
         if (instance.propsComputed) {
             if (_typeof(instance.propsComputed) === 'object') {
-                if (instance._computedCache.has(currentPath)) return instance._computedCache.get(currentPath);
+                var cached = instance._computedCache.get(currentPath);
+                if (cached === undefined) {
+                    cached = new Map();
+                    instance._computedCache.set(currentPath, cached);
+                } else {
+                    var cachedValue = cached.get(value);
+                    if (cachedValue !== undefined) {
+                        return cachedValue;
+                    }
+                }
                 var _propPath = instance.propsComputed[currentPath];
                 var _func = instance[_propPath] || _propPath;
                 if (typeof _func === 'function') {
                     var result = _func.call(instance, value, oldValue);
-                    instance._computedCache.set(currentPath, result);
+                    cached.set(value, result);
                     return result;
                 }
             }
