@@ -27,11 +27,14 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
+        IS_SFC: /^(class\s|function\s+_class)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
-        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig
+        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
+        REMOVE_NLS: /\n\s+/gm,
+        REPLACE_QUOT: /"/g
     },
     ATTR: {
         // Attributes for HTMLElement

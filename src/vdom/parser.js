@@ -1,6 +1,7 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const {REGEX, ATTR, TAG, DIR_IS} = require('../constants');
+const regExcludeSpecial = new RegExp(`<\/?${TAG.TEXT_NODE_PLACE}?>$`);
 
 const selfClosingElements = {
     meta: true,
@@ -34,7 +35,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(/\n\s+/gm, ' ');
+    return str.replace(REGEX.REMOVE_NLS, ' ');
 }
 
 class Element {
@@ -83,7 +84,7 @@ function compile(data) {
         }
 
         // exclude special text node
-        if (new RegExp(`<\/?${TAG.TEXT_NODE_PLACE}?>$`).test(match[0])) {
+        if (regExcludeSpecial.test(match[0])) {
             continue;
         }
 
@@ -167,7 +168,7 @@ function propsFixer(nName, aName, aValue, props, dIS) {
         delete props[aName];
     } else {
         if (REGEX.IS_STRING_QUOTED.test(aValue))
-            aValue = aValue.replace(/"/g, '&quot;');
+            aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
         props[
             REGEX.IS_CUSTOM_TAG.test(nName) || dIS
                 ? dashToCamel(aName)

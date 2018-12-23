@@ -110,11 +110,14 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
+        IS_SFC: /^(class\s|function\s+_class)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
-        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig
+        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
+        REMOVE_NLS: /\n\s+/gm,
+        REPLACE_QUOT: /"/g
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -312,6 +315,8 @@ var _require = __webpack_require__(0),
     TAG = _require.TAG,
     DIR_IS = _require.DIR_IS;
 
+var regExcludeSpecial = new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$');
+
 var selfClosingElements = {
     meta: true,
     img: true,
@@ -344,7 +349,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(/\n\s+/gm, ' ');
+    return str.replace(REGEX.REMOVE_NLS, ' ');
 }
 
 var Element = function () {
@@ -397,7 +402,7 @@ function compile(data) {
         }
 
         // exclude special text node
-        if (new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$').test(match[0])) {
+        if (regExcludeSpecial.test(match[0])) {
             continue;
         }
 
@@ -473,7 +478,7 @@ function propsFixer(nName, aName, aValue, props, dIS) {
         props[ATTR.LISTENER][isComponentListener[1]] = aValue;
         delete props[aName];
     } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(/"/g, '&quot;');
+        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
         props[REGEX.IS_CUSTOM_TAG.test(nName) || dIS ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
     }
 }
@@ -1063,7 +1068,8 @@ var _require = __webpack_require__(21),
 var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
     ATTR = _require2.ATTR,
-    DIR_IS = _require2.DIR_IS;
+    DIR_IS = _require2.DIR_IS,
+    REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(1);
 var hooks = __webpack_require__(2);
@@ -1156,7 +1162,7 @@ function get() {
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
-                    if (!/^(class\s|function\s+_class)/.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!REGEX.IS_SFC.test(Function.prototype.toString.call(cmp.cfg))) {
                         var func = cmp.cfg;
                         cmp.cfg = function (_Component) {
                             _inherits(_class, _Component);
@@ -3306,11 +3312,18 @@ function attach($target, props, cmp) {
         setRef($target, name, props[name], cmp);
     }
 
-    for (var _i13 in $target.dataset) {
-        if (Object.prototype.hasOwnProperty.call($target.dataset, _i13) && REGEX.IS_LISTENER.test(_i13)) {
-            addEventListener($target, _i13, $target.dataset[_i13], cmp);
-        }
+    var datasetArray = Object.keys($target.dataset);
+    for (var _i13 = 0; _i13 < datasetArray.length; _i13++) {
+        if (REGEX.IS_LISTENER.test(datasetArray[_i13])) addEventListener($target, _i13, $target.dataset[datasetArray[_i13]], cmp);
     }
+
+    // too slow
+    /*for (let i in $target.dataset) {
+        console.log(i)
+        if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
+            addEventListener($target, i, $target.dataset[i], cmp);
+        }
+    }*/
 
     if (typeof bindValue === 'undefined') return;
 

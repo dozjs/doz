@@ -212,11 +212,19 @@ function attach($target, props, cmp) {
         setRef($target, name, props[name], cmp);
     }
 
-    for (let i in $target.dataset) {
+    const datasetArray = Object.keys($target.dataset);
+    for (let i = 0; i < datasetArray.length; i++) {
+        if (REGEX.IS_LISTENER.test(datasetArray[i]))
+            addEventListener($target, i, $target.dataset[datasetArray[i]], cmp);
+    }
+
+    // too slow
+    /*for (let i in $target.dataset) {
+        console.log(i)
         if (Object.prototype.hasOwnProperty.call($target.dataset, i) && REGEX.IS_LISTENER.test(i)) {
             addEventListener($target, i, $target.dataset[i], cmp);
         }
-    }
+    }*/
 
     if (typeof bindValue === 'undefined')
         return;

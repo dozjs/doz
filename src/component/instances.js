@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {CMP_INSTANCE, ATTR, DIR_IS} = require('../constants');
+const {CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -89,7 +89,7 @@ function get(cfg = {}) {
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
-                    if (!/^(class\s|function\s+_class)/.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!REGEX.IS_SFC.test(Function.prototype.toString.call(cmp.cfg))) {
                         const func = cmp.cfg;
                         cmp.cfg = class extends Component {};
                         cmp.cfg.prototype.template = func;
