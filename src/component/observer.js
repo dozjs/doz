@@ -26,15 +26,24 @@ function create(instance) {
                     }
                 }
             }
+
             if (instance.propsComputed) {
                 if (typeof instance.propsComputed === 'object') {
-                    if (instance._computedCache.has(currentPath))
-                        return instance._computedCache.get(currentPath);
+                    let cached = instance._computedCache.get(currentPath);
+                    if (cached === undefined) {
+                        cached = new Map();
+                        instance._computedCache.set(currentPath, cached);
+                    } else {
+                        const cachedValue = cached.get(value);
+                        if (cachedValue !== undefined) {
+                            return cachedValue;
+                        }
+                    }
                     const propPath = instance.propsComputed[currentPath];
                     const func = instance[propPath] || propPath;
                     if (typeof func === 'function') {
                         const result = func.call(instance, value, oldValue);
-                        instance._computedCache.set(currentPath, result);
+                        cached.set(value, result);
                         return result;
                     }
                 }

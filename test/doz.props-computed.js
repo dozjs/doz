@@ -16,76 +16,58 @@ describe('Doz.props-computed', function () {
 
             const result = [];
 
-            Doz.component('salutation-card', {
+            Doz.component('my-computed', {
+                props: {
+                    aNumber: 0
+                },
+
                 propsListener: {
-                    myTitle: function(value) {
-                        result.push(value);
-                    },
-                    name: (value, oldValue) => {
-                        result.push(value);
+                    aNumber: function (v, old) {
+                        result.push(v);
                     }
                 },
+
                 propsComputed: {
-                    myTitle: function(value) {
-                        return value + ' suffix1';
-                    },
-                    name: (value) => {
-                        return value + ' suffix2';
+                    aNumber: function(v) {
+                        return v * Math.random();
                     }
                 },
 
                 template() {
                     return `
-                        <div>Hello ${this.props.myTitle} ${this.props.name}</div>
+                        <div>Number: ${this.props.aNumber}</div>
                     `
                 },
 
                 onMount() {
-                    this.props.name = 'a name';
-                    this.props.myTitle = 'a title';
+                    setTimeout(() => this.props.aNumber = 5, 100);
+                    setTimeout(() => this.props.aNumber = 7, 200);
+                    setTimeout(() => this.props.aNumber = 5, 300);
+                    setTimeout(() => this.props.aNumber = 7, 400);
+                    setTimeout(() => this.props.aNumber = 8, 500);
                 }
             });
 
             new Doz({
                 root: '#app',
 
-                propsListener: {
-                    desc: function(value){
-                        be.err.not.undefined(this.props);
-                        result.push(value);
-                    }
-                },
-
-                propsComputed: {
-                    desc: function(value){
-                        return value + ' suffix3';
-                    }
-                },
-
-                props: {
-                    desc: 'hello'
-                },
-
                 template(h) {
                     return h`
-                        <div>
-                            ${this.props.nameA}
-                            <salutation-card
-                                my-title="MR."
-                                name="Doz">
-                            </salutation-card>
-                        </div>
+                        <my-computed/>
                     `
-                },
-
-                onMount() {
-                    this.props.desc = 'a desc';
                 }
             });
 
             setTimeout(() => {
-                be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
-            }, 500);
+                console.log(result);
+                //done();
+                be.err.true(result[0] === result[2]);
+                be.err.true(result[1] === result[3]);
+                be.err.true(result[4] !== result[0]);
+                be.err.true(result[4] !== result[1]);
+                be.err.true(result[4] !== result[3]);
+                done();
+            }, 600);
 
         });
     });

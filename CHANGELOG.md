@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.12.1] - 2018-12-24
+- **Fixed** cache issue for `propsComputed`
+
 ## [1.12.0] - 2018-12-23
 - **Added** `propsConvert` api for props manipulation without cache
 - **Improved** performance
