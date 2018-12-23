@@ -117,7 +117,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 ### propsComputed
 
-- **Since**: 1.8.0
+- **Since**: 1.9.0
 - **Type**: `object`
 - **Default**: undefined
 - **Description**: Defines listeners for computing operation (with cache) over props.

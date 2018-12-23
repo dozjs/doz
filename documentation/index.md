@@ -15,6 +15,7 @@ Below some basic concepts:
     - [Props](#props)
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
+    - [Props convert](#props-convert)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -194,8 +195,49 @@ new Doz({
 
 **Since 1.9.0**
 
-If you need to manipulate or check a value of a determinate prop before the rendering.
-This is for you:
+This is useful for performing complex computational operations.
+The result will be saved in cache.
+
+```javascript
+Doz.component('my-clock', {
+    props: {
+        time: '--:--:--'
+    },
+    propsComputed: {
+        time: function(newValue, oldValue) {
+            return `Prepend this string before: ${newValue}`;
+        }
+    },
+    template(h) {
+        return h`
+            <h2>${this.props.title} <span>${this.props.time}</span></h2>
+        `
+    },
+    onMount() {
+        setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-clock title="it's"></my-clock>
+        `
+    }
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/qpw0m7s3/5/)
+
+---
+
+### Props convert
+
+**Since 1.12.0**
+
+It is similar to `propsComputed` with the difference that the result will not be saved in any cache.
 
 ```javascript
 Doz.component('my-clock', {
