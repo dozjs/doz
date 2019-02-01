@@ -8,6 +8,39 @@ function create(instance) {
     if (instance._props.__isProxy)
         proxy.remove(instance._props);
 
+    // This converts the initial values
+    if (typeof instance.propsConvert === 'object') {
+        Object.keys(instance.propsConvert).forEach(currentPath => {
+            let value = instance._rawProps[currentPath];
+            if (value === undefined) return;
+            const propPath = instance.propsConvert[currentPath];
+            const func = instance[propPath] || propPath;
+            if (typeof func === 'function') {
+                instance._rawProps[currentPath] = func.call(instance, value, null)
+            }
+
+        });
+    }
+
+    // This computes the initial values
+    if (typeof instance.propsComputed === 'object') {
+        Object.keys(instance.propsComputed).forEach(currentPath => {
+            let value = instance._rawProps[currentPath];
+            if (value === undefined) return;
+
+            const cached = new Map();
+            instance._computedCache.set(currentPath, cached);
+            const propPath = instance.propsComputed[currentPath];
+            const func = instance[propPath] || propPath;
+
+            if (typeof func === 'function') {
+                const result = func.call(instance, value, null);
+                cached.set(value, result);
+                instance._rawProps[currentPath] = result;
+            }
+        });
+    }
+
     instance._props = proxy.create(instance._rawProps, null,
         changes => {
             if (!instance._isRendered) return;

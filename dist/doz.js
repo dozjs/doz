@@ -2753,6 +2753,50 @@ function create(instance) {
 
     if (instance._props.__isProxy) proxy.remove(instance._props);
 
+    // This converts the initial values
+    if (_typeof(instance.propsConvert) === 'object') {
+        var _defined = function _defined(currentPath) {
+            var value = instance._rawProps[currentPath];
+            if (value === undefined) return;
+            var propPath = instance.propsConvert[currentPath];
+            var func = instance[propPath] || propPath;
+            if (typeof func === 'function') {
+                instance._rawProps[currentPath] = func.call(instance, value, null);
+            }
+        };
+
+        var _defined2 = Object.keys(instance.propsConvert);
+
+        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+            _defined(_defined2[_i2], _i2, _defined2);
+        }
+    }
+
+    // This computes the initial values
+    if (_typeof(instance.propsComputed) === 'object') {
+        var _defined3 = function _defined3(currentPath) {
+            var value = instance._rawProps[currentPath];
+            if (value === undefined) return;
+
+            var cached = new Map();
+            instance._computedCache.set(currentPath, cached);
+            var propPath = instance.propsComputed[currentPath];
+            var func = instance[propPath] || propPath;
+
+            if (typeof func === 'function') {
+                var result = func.call(instance, value, null);
+                cached.set(value, result);
+                instance._rawProps[currentPath] = result;
+            }
+        };
+
+        var _defined4 = Object.keys(instance.propsComputed);
+
+        for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+            _defined3(_defined4[_i4], _i4, _defined4);
+        }
+    }
+
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
         events.callUpdate(instance, changes);
