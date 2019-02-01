@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.12.3] - 2019-02-01
+- **Fixed** possible issues of `propsConvert` and `propsComputed`
+
 ## [1.12.2] - 2019-02-01
 - **Fixed** drawDynamics may not works
 - **Changed** remove new line space from attributes during the compiling

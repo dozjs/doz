@@ -42,8 +42,6 @@ const ObservableSlim = (function () {
     // to track that a given Proxy was modified from the 'set' handler
     let dupProxy = null;
 
-    let _manipulate = null;
-
     let _getProperty = function (obj, path) {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : undefined
@@ -248,6 +246,8 @@ const ObservableSlim = (function () {
                     // determine if we're adding something new or modifying some that already existed
                     let type = 'update';
                     if (typeOfTargetProp === 'undefined') type = 'add';
+
+                    let _manipulate = observable.observers[0]._manipulate;
 
                     if (typeof _manipulate === 'function') {
                         value = _manipulate(value, receiver[property], currentPath);
@@ -454,7 +454,7 @@ const ObservableSlim = (function () {
          */
         create: function (target, domDelay, observer, manipulate) {
 
-            _manipulate = manipulate;
+            observer._manipulate = manipulate;
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -501,6 +501,7 @@ const ObservableSlim = (function () {
                 }
             }
         },
+
 
         /**
          * Remove
