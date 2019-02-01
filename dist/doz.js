@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.12.2  
+// [DOZ]  Build version: 1.12.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1481,8 +1481,6 @@ var ObservableSlim = function () {
     // to track that a given Proxy was modified from the 'set' handler
     var dupProxy = null;
 
-    var _manipulate = null;
-
     var _getProperty = function _getProperty(obj, path) {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : undefined;
@@ -1688,6 +1686,8 @@ var ObservableSlim = function () {
                     var type = 'update';
                     if (typeOfTargetProp === 'undefined') type = 'add';
 
+                    var _manipulate = observable.observers[0]._manipulate;
+
                     if (typeof _manipulate === 'function') {
                         value = _manipulate(value, receiver[property], currentPath);
                     }
@@ -1889,7 +1889,7 @@ var ObservableSlim = function () {
          */
         create: function create(target, domDelay, observer, manipulate) {
 
-            _manipulate = manipulate;
+            observer._manipulate = manipulate;
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -2260,7 +2260,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.12.2',
+        value: '1.12.3',
         enumerable: true
     }
 });
