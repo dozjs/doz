@@ -33,7 +33,7 @@ module.exports = {
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
-        REMOVE_NLS: /\n\s+/gm,
+        MATCH_NLS: /\n\s+/gm,
         REPLACE_QUOT: /"/g
     },
     ATTR: {

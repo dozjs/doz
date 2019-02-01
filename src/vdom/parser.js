@@ -35,7 +35,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(REGEX.REMOVE_NLS, ' ');
+    return str.replace(REGEX.MATCH_NLS, ' ');
 }
 
 class Element {
@@ -92,7 +92,7 @@ function compile(data) {
             // not </ tags
             props = {};
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
+                props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
                 propsFixer(
                     match[0].substring(1, match[0].length-1),
                     attMatch[2],

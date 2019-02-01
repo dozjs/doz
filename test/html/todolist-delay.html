@@ -5,11 +5,10 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?5896545885924921584ti23"></script>
+    <script src="../../dist/doz.js?58965488524921850"></script>
     <style>
         body {
             font-family: sans-serif;
-            background: peachpuff;
         }
 
         .todo-input {
@@ -28,14 +27,14 @@
             padding: 10px;
             border-radius: 5px;
             border: 0;
-            background: coral;
-            color: #fff;
+            background: #c9c7ff;
+            color: #cf70ff;
         }
 
         .todo-item {
             padding: 10px;
             margin-bottom: 5px;
-            background: bisque;
+            background: #ffd9c2;
             border-radius: 5px;
         }
 
@@ -50,7 +49,7 @@
         }
 
         .todo-item:hover {
-            background: #feffb3;
+            background: #5063ff;
         }
 
         .todo-item.done {
@@ -149,9 +148,9 @@
         }
     };
 
-    Doz.define('doz-todo-item', class extends Doz.Component{
-        template(h) {
-            return h`
+    Doz.component('doz-todo-item', {
+        template() {
+            return `
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
@@ -166,66 +165,60 @@
                     </span>
                 </div>
             `;
-        }
+        },
         onDestroy() {
             console.log('DESTROY')
         }
     });
 
-    Doz.define('doz-todo-buttons', class extends Doz.Component {
-        template(h) {
-            return h`
+    Doz.component('doz-todo-buttons', {
+        template() {
+            return `
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
             `;
         }
     });
 
-    Doz.define('doz-todo', class extends Doz.Component {
-
-        constructor(obj) {
-            super(obj);
-
-            this.config = {
-                store: 'todo'
-            };
-
-            this.props = {
-                record: [],
-                todo: '',
-                total: 0,
-                totalDone: 0
-            };
-
-        }
-
-        template(h) {
-            return h`
+    Doz.component('doz-todo', {
+        store: 'todo',
+        template() {
+            return `
                 <div>
                     <div class="todo-input">
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     ${this.each(this.props.record, (item, i) =>
-                        h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        `<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>
                 </div>
             `;
-        }
+        },
+
+        props: {
+            record: [],
+            todo: '',
+            total: 0,
+            totalDone: 0
+        },
 
         onMount() {
-            this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
-                {title: "Buy milk", done: false},
-                {title: "Buy cigarettes", done: false}
-            ];
-        }
+            setTimeout(()=>{
+                let record = [];
+                for(let i = 0; i < 500; i++) {
+                    record.push({title: `Item ${i}`, done: false})
+                }
+                this.props.record = record;
+            }, 600);
+
+        },
 
         onUpdate() {
             this.action.updateTotal();
-            localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }
     });
 
@@ -233,13 +226,10 @@
         actions,
         root: document.getElementById('app'),
         template: `
-            <div>
-                <h1>TO-DO list</h1>
-                <doz-todo></doz-todo>
-            </div>
+            <h1>TO-DO list</h1>
+            <doz-todo></doz-todo>
         `
     });
-
 </script>
 </body>
 </html>

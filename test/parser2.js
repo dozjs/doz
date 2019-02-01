@@ -70,4 +70,19 @@ describe('parser2', function () {
         assert.strictEqual(root.props.disabled, '');
     });
 
+    it('should remove double spaces', function () {
+        const root = compile(`
+            <button class="myColor" disabled id="test" 
+            style="
+            min-width: 100px;
+            height: 20px;
+            ">
+                          click me!
+            </button>
+        `);
+
+        //printObj(root);
+        assert.strictEqual(root.props.style, ' min-width: 100px; height: 20px; ');
+    });
+
 });

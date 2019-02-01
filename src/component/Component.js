@@ -16,6 +16,7 @@ const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 const localMixin = require('./local-mixin');
 const {compile} = require('../vdom/parser');
+const delay = require('../utils/delay');
 
 class Component {
 
@@ -188,8 +189,6 @@ class Component {
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
-        drawDynamic(this);
-
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag
@@ -203,6 +202,11 @@ class Component {
         this._prev = next;
 
         hooks.callAfterRender(this);
+        if (initial) {
+            drawDynamic(this);
+        }else {
+            delay(() => drawDynamic(this));
+        }
     }
 
     mount(template, cfg = {}) {
