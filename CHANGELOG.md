@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.13.0] - 2019-02-02
+- **Added** `propsComputedOnFly`
+- **Added** `propsConvertOnFly`
+- **Improved** minor things
+
 ## [1.12.4] - 2019-02-01
 - **Fixed** apply `propsConvert` and `propsComputed` to initial props
 
