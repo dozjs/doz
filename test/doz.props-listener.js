@@ -22,13 +22,13 @@ describe('Doz.props-listener', function () {
                     name: 'nameHandler'
                 },
 
-                nameHandler(value, oldValue) {
-                    console.log('call nameHandler', value, oldValue);
+                nameHandler(value) {
+                    console.log('call nameHandler', value);
                     result.push(value);
                 },
 
-                myTitleHandler(value, oldValue) {
-                    console.log('call myTitleHandler', value, oldValue);
+                myTitleHandler(value) {
+                    console.log('call myTitleHandler', value);
                     result.push(value);
                 },
 
@@ -66,9 +66,9 @@ describe('Doz.props-listener', function () {
                     `
                 },
 
-                descHandler(value, oldValue) {
+                descHandler(value) {
                     be.err.not.undefined(this.props);
-                    console.log('call descHandler', value, oldValue);
+                    console.log('call descHandler', value);
                     result.push(value);
                 },
 
@@ -91,12 +91,12 @@ describe('Doz.props-listener', function () {
 
             Doz.component('salutation-card', {
                 propsListener: {
-                    myTitle: function(value, oldValue) {
-                        console.log('call myTitleHandler', value, oldValue);
+                    myTitle: function(value) {
+                        console.log('call myTitleHandler', value);
                         result.push(value);
                     },
-                    name: (value, oldValue) => {
-                        console.log('call nameHandler', value, oldValue);
+                    name: (value) => {
+                        console.log('call nameHandler', value);
                         result.push(value);
                     }
                 },
@@ -116,9 +116,9 @@ describe('Doz.props-listener', function () {
                 root: '#app',
 
                 propsListener: {
-                    desc: function(value, oldValue){
+                    desc: function(value){
                         be.err.not.undefined(this.props);
-                        console.log('call descHandler', value, oldValue);
+                        console.log('call descHandler', value);
                         result.push(value);
                     }
                 },

@@ -93,7 +93,7 @@ describe('observable-slim.js', _ => {
     it('Splice first item from an array.', () => {
         var firstChange = true;
         ObservableSlim.observe(p, function(changes) {
-            if (firstChange == true) {
+            if (firstChange === true) {
                 firstChange = false;
                 expect(changes[0].type).to.equal("delete");
                 expect(changes[0].previousValue).to.equal("hello world");
@@ -127,12 +127,12 @@ describe('observable-slim.js', _ => {
         var firstProxy = false;
         var secondProxy = false;
         var pp = ObservableSlim.create(test, false, function(changes) {
-            if (changes[0].currentPath == "dummy" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "dummy" && changes[0].newValue === "foo") {
                 firstProxy = true;
             }
         });
         var ppp = ObservableSlim.create(pp, false, function(changes) {
-            if (changes[0].currentPath == "dummy" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "dummy" && changes[0].newValue === "foo") {
                 secondProxy = true;
             }
         });
@@ -148,12 +148,12 @@ describe('observable-slim.js', _ => {
         var secondProxy = false;
         var testing = {"foo":{"bar":"bar"}};
         var pp = ObservableSlim.create(testing, false, function(changes) {
-            if (changes[0].currentPath == "foo.bar" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "foo.bar" && changes[0].newValue === "foo") {
                 firstProxy = true;
             }
         });
         var ppp = ObservableSlim.create(testing, false, function(changes) {
-            if (changes[0].currentPath == "foo.bar" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "foo.bar" && changes[0].newValue === "foo") {
                 secondProxy = true;
             }
         });
@@ -169,12 +169,12 @@ describe('observable-slim.js', _ => {
         var secondProxy = false;
         var testing = {"foo":{"bar":"bar"}};
         var pp = ObservableSlim.create(testing, false, function(changes) {
-            if (changes[0].currentPath == "foo.bar" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "foo.bar" && changes[0].newValue === "foo") {
                 firstProxy = true;
             }
         });
         var ppp = ObservableSlim.create(pp, false, function(changes) {
-            if (changes[0].currentPath == "foo.bar" && changes[0].newValue == "foo") {
+            if (changes[0].currentPath === "foo.bar" && changes[0].newValue === "foo") {
                 secondProxy = true;
             }
         });
@@ -194,5 +194,56 @@ describe('observable-slim.js', _ => {
         p.hello = "world";
         expect(p.hello).to.equal("world");
         expect(test.hello).to.equal("world");
+    });
+
+    it('Before change, try to add a new string property, but returning false.', () => {
+        let callbackTriggered = false;
+        ObservableSlim.observe(p, function (changes) {
+            callbackTriggered = true;
+        });
+
+        ObservableSlim.beforeChange(p, function (changes) {
+            return false;
+        });
+
+        p.hello = "world";
+        expect(p.hello).to.be.an('undefined');
+        expect(test.hello).to.be.an('undefined');
+        expect(callbackTriggered).to.equal(false);
+    });
+
+    it('Before change, try to modify string property value, but returning false.', () => {
+        let callbackTriggered = false;
+        ObservableSlim.observe(p, function (changes) {
+            callbackTriggered = true;
+        });
+
+        ObservableSlim.beforeChange(p, function (changes) {
+            return false;
+        });
+
+        test.hello = "world";
+        p.hello = "WORLD";
+        expect(p.hello).to.equal("world");
+        expect(test.hello).to.equal("world");
+        expect(callbackTriggered).to.equal(false);
+    });
+
+    it('Before change, try to delete a property, but returning false.', () => {
+        let callbackTriggered = false;
+        ObservableSlim.observe(p, function (changes) {
+            callbackTriggered = true;
+        });
+
+        ObservableSlim.beforeChange(p, function (changes) {
+            return false;
+        });
+
+        test.hello = "hello";
+        delete p.hello;
+
+        expect(p.hello).to.equal("hello");
+        expect(test.hello).to.equal("hello");
+        expect(callbackTriggered).to.equal(false);
     });
 });

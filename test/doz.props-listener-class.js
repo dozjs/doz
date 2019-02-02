@@ -29,13 +29,13 @@ describe('Doz.props-listener-class', function () {
                     }
                 }
 
-                nameHandler(value, oldValue) {
-                    console.log('call nameHandler', value, oldValue);
+                nameHandler(value) {
+                    console.log('call nameHandler', value);
                     result.push(value);
                 }
 
-                myTitleHandler(value, oldValue) {
-                    console.log('call myTitleHandler', value, oldValue);
+                myTitleHandler(value) {
+                    console.log('call myTitleHandler', value);
                     result.push(value);
                 }
 
@@ -73,8 +73,8 @@ describe('Doz.props-listener-class', function () {
                     `
                 },
 
-                descHandler(value, oldValue) {
-                    console.log('call descHandler', value, oldValue);
+                descHandler(value) {
+                    console.log('call descHandler', value);
                     result.push(value);
                 },
 

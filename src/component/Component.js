@@ -449,6 +449,16 @@ function defineProperties(obj, opt) {
             value: [],
             enumerable: true,
             writable: true
+        },
+        propsConvertOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
+        },
+        propsComputedOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
         }
     });
 }

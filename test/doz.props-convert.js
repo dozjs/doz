@@ -21,7 +21,7 @@ describe('Doz.props-convert', function () {
                     myTitle: function(value) {
                         result.push(value);
                     },
-                    name: (value, oldValue) => {
+                    name: (value) => {
                         result.push(value);
                     }
                 },
@@ -104,7 +104,7 @@ describe('Doz.props-convert', function () {
                         myTitle: function(value) {
                             result.push(value);
                         },
-                        name: (value, oldValue) => {
+                        name: (value) => {
                             result.push(value);
                         }
                     };

@@ -87,7 +87,7 @@ describe('Doz.props-computed', function () {
                     };
 
                     this.propsListener = {
-                        aNumber: function (v, old) {
+                        aNumber: function (v) {
                             result.push(v);
                         }
                     };

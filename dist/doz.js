@@ -1013,6 +1013,16 @@ function defineProperties(obj, opt) {
             value: [],
             enumerable: true,
             writable: true
+        },
+        propsConvertOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
+        },
+        propsComputedOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
         }
     });
 }
@@ -1592,7 +1602,14 @@ var ObservableSlim = function () {
 
                     return _create(targetProp, domDelay, observable, newPath);
                 } else {
-                    return observable.renderMode ? sanitize(targetProp) : targetProp;
+                    var value = observable.renderMode ? sanitize(targetProp) : targetProp;
+
+                    var manipulate = observable.manipulate;
+                    if (typeof manipulate === 'function') {
+                        value = manipulate(value, property, true);
+                    }
+
+                    return value;
                 }
             },
             deleteProperty: function deleteProperty(target, property) {
@@ -1686,10 +1703,9 @@ var ObservableSlim = function () {
                     var type = 'update';
                     if (typeOfTargetProp === 'undefined') type = 'add';
 
-                    var _manipulate = observable.observers[0]._manipulate;
-
-                    if (typeof _manipulate === 'function') {
-                        value = _manipulate(value, receiver[property], currentPath);
+                    var manipulate = observable.manipulate;
+                    if (typeof manipulate === 'function') {
+                        value = manipulate(value, currentPath, false);
                     }
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
@@ -1884,12 +1900,9 @@ var ObservableSlim = function () {
          * @param target {Object} required, plain JavaScript object that we want to observe for changes.
          * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
-         * @param manipulate {Function}
          * @returns {Object}
          */
-        create: function create(target, domDelay, observer, manipulate) {
-
-            observer._manipulate = manipulate;
+        create: function create(target, domDelay, observer) {
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -1974,13 +1987,34 @@ var ObservableSlim = function () {
         },
 
         /**
+         * manipulate
+         * @description This method allows manipulation data.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         * @param callback {Function} will be invoked before every change is made to the proxy, if it returns false no changes will be made.
+         */
+        manipulate: function manipulate(proxy, callback) {
+            if (typeof callback !== 'function') throw new Error('callback is required');
+
+            var i = observables.length;
+            var foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].manipulate = callback;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('proxy not found.');
+        },
+
+        /**
          * beforeChange
          * @description This method accepts a function will be invoked before changes.
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
          * @param callback {Function} will be invoked before every change is made to the proxy, if it returns false no changes will be made.
          */
         beforeChange: function beforeChange(proxy, callback) {
-            if (typeof callback !== 'function') throw new Error('Callback function is required');
+            if (typeof callback !== 'function') throw new Error('callback is required');
 
             var i = observables.length;
             var foundMatch = false;
@@ -1991,7 +2025,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -2009,7 +2043,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -2027,7 +2061,7 @@ var ObservableSlim = function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         }
     };
 }();
@@ -2753,68 +2787,26 @@ function create(instance) {
 
     if (instance._props.__isProxy) proxy.remove(instance._props);
 
-    // This converts the initial values
-    if (_typeof(instance.propsConvert) === 'object') {
-        var _defined = function _defined(currentPath) {
-            var value = instance._rawProps[currentPath];
-            if (value === undefined) return;
-            var propPath = instance.propsConvert[currentPath];
-            var func = instance[propPath] || propPath;
-            if (typeof func === 'function') {
-                instance._rawProps[currentPath] = func.call(instance, value, null);
-            }
-        };
-
-        var _defined2 = Object.keys(instance.propsConvert);
-
-        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-            _defined(_defined2[_i2], _i2, _defined2);
-        }
-    }
-
-    // This computes the initial values
-    if (_typeof(instance.propsComputed) === 'object') {
-        var _defined3 = function _defined3(currentPath) {
-            var value = instance._rawProps[currentPath];
-            if (value === undefined) return;
-
-            var cached = new Map();
-            instance._computedCache.set(currentPath, cached);
-            var propPath = instance.propsComputed[currentPath];
-            var func = instance[propPath] || propPath;
-
-            if (typeof func === 'function') {
-                var result = func.call(instance, value, null);
-                cached.set(value, result);
-                instance._rawProps[currentPath] = result;
-            }
-        };
-
-        var _defined4 = Object.keys(instance.propsComputed);
-
-        for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-            _defined3(_defined4[_i4], _i4, _defined4);
-        }
-    }
-
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
         events.callUpdate(instance, changes);
         instance.render();
         propsListener(instance, changes);
         updateBoundElements(instance, changes);
-    }, function (value, oldValue, currentPath) {
-        if (instance.propsConvert) {
+    });
+
+    proxy.manipulate(instance._props, function (value, currentPath, onFly) {
+        if (instance.propsConvert && instance.propsConvertOnFly === onFly) {
             if (_typeof(instance.propsConvert) === 'object') {
                 var propPath = instance.propsConvert[currentPath];
                 var func = instance[propPath] || propPath;
                 if (typeof func === 'function') {
-                    return func.call(instance, value, oldValue);
+                    return func.call(instance, value);
                 }
             }
         }
 
-        if (instance.propsComputed) {
+        if (instance.propsComputed && instance.propsComputedOnFly === onFly) {
             if (_typeof(instance.propsComputed) === 'object') {
                 var cached = instance._computedCache.get(currentPath);
                 if (cached === undefined) {
@@ -2829,12 +2821,13 @@ function create(instance) {
                 var _propPath = instance.propsComputed[currentPath];
                 var _func = instance[_propPath] || _propPath;
                 if (typeof _func === 'function') {
-                    var result = _func.call(instance, value, oldValue);
+                    var result = _func.call(instance, value);
                     cached.set(value, result);
                     return result;
                 }
             }
         }
+
         return value;
     });
 

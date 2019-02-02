@@ -152,7 +152,14 @@ const ObservableSlim = (function () {
 
                     return _create(targetProp, domDelay, observable, newPath);
                 } else {
-                    return observable.renderMode ? sanitize(targetProp) : targetProp;
+                    let value = observable.renderMode ? sanitize(targetProp) : targetProp;
+
+                    let manipulate = observable.manipulate;
+                    if (typeof manipulate === 'function') {
+                        value = manipulate(value, property, true);
+                    }
+
+                    return value;
                 }
             },
             deleteProperty: function (target, property) {
@@ -247,10 +254,9 @@ const ObservableSlim = (function () {
                     let type = 'update';
                     if (typeOfTargetProp === 'undefined') type = 'add';
 
-                    let _manipulate = observable.observers[0]._manipulate;
-
-                    if (typeof _manipulate === 'function') {
-                        value = _manipulate(value, receiver[property], currentPath);
+                    let manipulate = observable.manipulate;
+                    if (typeof manipulate === 'function') {
+                        value = manipulate(value, currentPath, false);
                     }
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
@@ -449,12 +455,9 @@ const ObservableSlim = (function () {
          * @param target {Object} required, plain JavaScript object that we want to observe for changes.
          * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
-         * @param manipulate {Function}
          * @returns {Object}
          */
-        create: function (target, domDelay, observer, manipulate) {
-
-            observer._manipulate = manipulate;
+        create: function (target, domDelay, observer) {
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -540,6 +543,28 @@ const ObservableSlim = (function () {
         },
 
         /**
+         * manipulate
+         * @description This method allows manipulation data.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         * @param callback {Function} will be invoked before every change is made to the proxy, if it returns false no changes will be made.
+         */
+        manipulate: function (proxy, callback) {
+            if (typeof callback !== 'function')
+                throw new Error('callback is required');
+
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].manipulate = callback;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('proxy not found.');
+        },
+
+        /**
          * beforeChange
          * @description This method accepts a function will be invoked before changes.
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
@@ -547,7 +572,7 @@ const ObservableSlim = (function () {
          */
         beforeChange: function (proxy, callback) {
             if (typeof callback !== 'function')
-                throw new Error('Callback function is required');
+                throw new Error('callback is required');
 
             let i = observables.length;
             let foundMatch = false;
@@ -558,7 +583,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -576,7 +601,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -594,7 +619,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('Matching proxy not found.');
+            if (foundMatch === false) throw new Error('proxy not found.');
         }
     };
 })();
