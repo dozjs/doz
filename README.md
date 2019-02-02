@@ -16,7 +16,7 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 - 🎼 Works with tagged template literals
 - 🔫 Fast performance
 - 💅 Scoped style
-- 🗜 Tiny size ±12KB (gzip)
+- 🗜 Tiny size ±13KB (gzip)
 - 📡 Uses ES6 proxy to observe changes
 - 🎳 Component based
 - 😁 Simple and familiar API

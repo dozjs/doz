@@ -122,12 +122,26 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: undefined
 - **Description**: Defines listeners for computing operation (with cache) over props.
 
+### propsComputedOnFly
+
+- **Since**: 1.13.0
+- **Type**: `boolean`
+- **Default**: false
+- **Description**: If true, the manipulation operation will be performed on the read data.
+
 ### propsConvert
 
 - **Since**: 1.12.0
 - **Type**: `object`
 - **Default**: undefined
 - **Description**: Defines listeners for manipulation operation over props.
+
+### propsConvertOnFly
+
+- **Since**: 1.13.0
+- **Type**: `boolean`
+- **Default**: false
+- **Description**: If true, the manipulation operation will be performed on the read data.
 
 
 ## Properties

@@ -244,7 +244,7 @@ Doz.component('my-clock', {
         time: '--:--:--'
     },
     propsConvert: {
-        time: function(newValue, oldValue) {
+        time: function(newValue) {
             return `Prepend this string before: ${newValue}`;
         }
     },
