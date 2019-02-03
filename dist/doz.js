@@ -1023,6 +1023,11 @@ function defineProperties(obj, opt) {
             value: false,
             enumerable: true,
             writable: true
+        },
+        delayUpdate: {
+            value: 0,
+            enumerable: true,
+            writable: true
         }
     });
 }
@@ -2789,10 +2794,20 @@ function create(instance) {
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
-        events.callUpdate(instance, changes);
-        instance.render();
-        propsListener(instance, changes);
-        updateBoundElements(instance, changes);
+
+        if (instance.delayUpdate) {
+            setTimeout(function () {
+                events.callUpdate(instance, changes);
+                instance.render();
+                propsListener(instance, changes);
+                updateBoundElements(instance, changes);
+            }, instance.delayUpdate);
+        } else {
+            events.callUpdate(instance, changes);
+            instance.render();
+            propsListener(instance, changes);
+            updateBoundElements(instance, changes);
+        }
     });
 
     proxy.manipulate(instance._props, function (value, currentPath, onFly) {
