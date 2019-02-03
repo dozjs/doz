@@ -459,6 +459,11 @@ function defineProperties(obj, opt) {
             value: false,
             enumerable: true,
             writable: true
+        },
+        delayUpdate: {
+            value: 0,
+            enumerable: true,
+            writable: true
         }
     });
 }

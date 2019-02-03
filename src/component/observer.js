@@ -11,10 +11,20 @@ function create(instance) {
     instance._props = proxy.create(instance._rawProps, null,
         changes => {
             if (!instance._isRendered) return;
-            events.callUpdate(instance, changes);
-            instance.render();
-            propsListener(instance, changes);
-            updateBoundElements(instance, changes);
+
+            if (instance.delayUpdate) {
+                setTimeout(() => {
+                    events.callUpdate(instance, changes);
+                    instance.render();
+                    propsListener(instance, changes);
+                    updateBoundElements(instance, changes);
+                }, instance.delayUpdate);
+            } else {
+                events.callUpdate(instance, changes);
+                instance.render();
+                propsListener(instance, changes);
+                updateBoundElements(instance, changes);
+            }
         });
 
     proxy.manipulate(instance._props, (value, currentPath, onFly) => {
