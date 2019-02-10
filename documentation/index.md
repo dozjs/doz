@@ -1490,6 +1490,16 @@ Doz.define('a-component', class extends Doz.Component{
 });
 ```
 
+All the properties that need to be defined in `config`
+
+- `mixin`
+- `propsListener`
+- `components`
+- `store`
+- `id`
+- `autoCreateChildren`
+- `updateChildrenProps`
+
 > To registering a global component now we use `define` an alias of `component` for don't confuse you with `Component` subclass
 
 ---
