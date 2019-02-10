@@ -95,9 +95,11 @@ class Component {
             localMixin(this);
         }
 
+        /*
         if (typeof obj.propsListener === 'object') {
             this.propsListener = obj.propsListener;
         }
+        */
 
         if (typeof obj.components === 'object') {
             this.components = obj.components;

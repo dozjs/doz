@@ -21,12 +21,19 @@ describe('Doz.props-listener-class', function () {
                 constructor(o) {
                     super(o);
 
+                    /*
                     this.config = {
                         propsListener: {
                             myTitle: 'myTitleHandler',
                             name: 'nameHandler'
                         }
-                    }
+                    };
+                    */
+
+                    this.propsListener = {
+                        myTitle: 'myTitleHandler',
+                            name: 'nameHandler'
+                    };
                 }
 
                 nameHandler(value) {

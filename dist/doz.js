@@ -853,9 +853,11 @@ var Component = function () {
                 localMixin(this);
             }
 
-            if (_typeof(obj.propsListener) === 'object') {
+            /*
+            if (typeof obj.propsListener === 'object') {
                 this.propsListener = obj.propsListener;
             }
+            */
 
             if (_typeof(obj.components) === 'object') {
                 this.components = obj.components;

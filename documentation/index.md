@@ -1493,7 +1493,6 @@ Doz.define('a-component', class extends Doz.Component{
 All the properties that need to be defined in `config`
 
 - `mixin`
-- `propsListener`
 - `components`
 - `store`
 - `id`
