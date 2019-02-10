@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.14.0] - 2019-02-10
+- **Added** `delayUpdate`
+
 ## [1.13.0] - 2019-02-02
 - **Added** `propsComputedOnFly`
 - **Added** `propsConvertOnFly`
