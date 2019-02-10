@@ -307,8 +307,6 @@ Doz.component('my-delay', {
     onUpdate() {
         const totalTime = Date.now() - this.startUpdate;
         console.log('onUpdate', totalTime);
-        if (totalTime >= this.delayUpdate)
-        done();
     }
 });
 
@@ -1542,7 +1540,7 @@ Doz.define('a-component', class extends Doz.Component{
 });
 ```
 
-All the properties that need to be defined in `config`
+All the properties that need to be defined in `config`:
 
 - `mixin`
 - `components`
