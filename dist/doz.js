@@ -2788,6 +2788,13 @@ var events = __webpack_require__(2);
 var updateBoundElements = __webpack_require__(27);
 var propsListener = __webpack_require__(28);
 
+function runUpdate(instance, changes) {
+    events.callUpdate(instance, changes);
+    instance.render();
+    propsListener(instance, changes);
+    updateBoundElements(instance, changes);
+}
+
 function create(instance) {
 
     if (instance._props.__isProxy) proxy.remove(instance._props);
@@ -2797,16 +2804,10 @@ function create(instance) {
 
         if (instance.delayUpdate) {
             setTimeout(function () {
-                events.callUpdate(instance, changes);
-                instance.render();
-                propsListener(instance, changes);
-                updateBoundElements(instance, changes);
+                runUpdate(instance, changes);
             }, instance.delayUpdate);
         } else {
-            events.callUpdate(instance, changes);
-            instance.render();
-            propsListener(instance, changes);
-            updateBoundElements(instance, changes);
+            runUpdate(instance, changes);
         }
     });
 

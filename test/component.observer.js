@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var ObservableSlim = require("../src/utils/proxy");
+var ObservableSlim = require("../src/proxy");
 
 describe('observable-slim.js', _ => {
 

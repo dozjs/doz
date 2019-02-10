@@ -1,7 +1,14 @@
-const proxy = require('../utils/proxy');
+const proxy = require('../proxy');
 const events = require('./hooks');
 const updateBoundElements = require('./update-bound-element');
 const propsListener = require('./props-listener');
+
+function runUpdate(instance, changes) {
+    events.callUpdate(instance, changes);
+    instance.render();
+    propsListener(instance, changes);
+    updateBoundElements(instance, changes);
+}
 
 function create(instance) {
 
@@ -14,16 +21,10 @@ function create(instance) {
 
             if (instance.delayUpdate) {
                 setTimeout(() => {
-                    events.callUpdate(instance, changes);
-                    instance.render();
-                    propsListener(instance, changes);
-                    updateBoundElements(instance, changes);
+                    runUpdate(instance, changes);
                 }, instance.delayUpdate);
             } else {
-                events.callUpdate(instance, changes);
-                instance.render();
-                propsListener(instance, changes);
-                updateBoundElements(instance, changes);
+                runUpdate(instance, changes);
             }
         });
 
