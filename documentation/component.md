@@ -143,6 +143,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: false
 - **Description**: If true, the manipulation operation will be performed on the read data.
 
+### delayUpdate
+
+- **Since**: 1.14.0
+- **Type**: `number`
+- **Default**: 0
+- **Description**: A delay in MS for props update. The `onBeforeUpdate` event will be called without delay.
+
 
 ## Properties
 

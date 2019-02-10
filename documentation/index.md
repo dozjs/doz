@@ -16,6 +16,7 @@ Below some basic concepts:
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
+    - [Delay props update](#delay-props-update)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -270,6 +271,57 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/t3qapk7r/)
+
+---
+
+### Delay props update
+
+**Since 1.14.0**
+
+If you need to delay the update of the props you can use the delayUpdate property, this is useful in case of animations.
+The `onBeforeUpdate` event will be called without delay.
+
+```javascript
+Doz.component('my-delay', {
+    delayUpdate: 1000, //ms
+
+    props: {
+        aNumber: 0
+    },
+
+    template() {
+        return `
+            <div>Number: ${this.props.aNumber}</div>
+        `
+    },
+
+    onMount() {
+        this.props.aNumber = 5;
+    },
+
+    onBeforeUpdate() {
+        console.log('onBeforeUpdate');
+        this.startUpdate = Date.now();
+    },
+
+    onUpdate() {
+        const totalTime = Date.now() - this.startUpdate;
+        console.log('onUpdate', totalTime);
+        if (totalTime >= this.delayUpdate)
+        done();
+    }
+});
+
+new Doz({
+    root: '#app',
+
+    template(h) {
+        return h`
+            <my-delay/>
+        `
+    }
+});
+```
 
 ---
 

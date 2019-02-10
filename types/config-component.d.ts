@@ -36,9 +36,29 @@ export default interface ConfigComponent {
     store?: string
 
     /**
-     * An object for detect props changes
+     * An object for detect props changes.
      */
     propsListener?: object
+
+    /**
+     * An object that defines listeners for computing operation over props.
+     */
+    propsConvert?: object
+
+    /**
+     * An object that defines listeners for computing operation (with cache) over props.
+     */
+    propsComputed?: object
+
+    /**
+     * If true, the manipulation operation will be performed on the read data. Default: false.
+     */
+    propsComputedOnFly?: boolean
+
+    /**
+     * A delay in MS for props update. The `onBeforeUpdate` event will be called without delay. Default: 0.
+     */
+    delayUpdate?: number
 
     /**
      * This object allow to sharing things between components.
