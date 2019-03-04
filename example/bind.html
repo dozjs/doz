@@ -38,6 +38,11 @@
         },
         setNew() {
             this.props.message = 'hello'
+        },
+        propsListenerAsync: {
+            message(v, o) {
+                console.log(v, o)
+            }
         }
     });
 

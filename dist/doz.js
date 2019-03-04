@@ -3116,10 +3116,16 @@ function propsListener(instance, changes) {
         var _item = changes[_i];
         var _propPath = instance.propsListenerAsync[_item.currentPath];
         if (_item.type === 'update' && _propPath) {
-            var _func = instance[_propPath] || _propPath;
-            if (typeof _func === 'function') {
-                delay(_func.call(instance, _item.newValue, _item.previousValue));
-            }
+            (function () {
+                var func = instance[_propPath] || _propPath;
+                if (typeof func === 'function') {
+                    (function (item) {
+                        delay(function () {
+                            return func.call(instance, item.newValue, item.previousValue);
+                        });
+                    })(_item);
+                }
+            })();
         }
     }
 }

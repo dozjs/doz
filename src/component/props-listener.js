@@ -21,7 +21,9 @@ function propsListener(instance, changes) {
             if (item.type === 'update' && propPath) {
                 const func = instance[propPath] || propPath;
                 if (typeof func === 'function') {
-                    delay(func.call(instance, item.newValue, item.previousValue));
+                    (function(item) {
+                        delay(() => func.call(instance, item.newValue, item.previousValue));
+                    })(item);
                 }
             }
         }
