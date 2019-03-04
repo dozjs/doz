@@ -346,6 +346,47 @@ function defineProperties(obj, opt) {
         _callback: {
             value: opt.dProps['callback']
         },
+        /*
+        __onBeforeCreate: {
+            value: opt.dProps['onBeforeCreate']
+        },
+        __onCreate: {
+            value: opt.dProps['onCreate']
+        },
+        __onConfigCreate: {
+            value: opt.dProps['onConfigCreate']
+        },
+        __onBeforeMount: {
+            value: opt.dProps['onBeforeMount']
+        },
+        __onMount: {
+            value: opt.dProps['onMount']
+        },
+        __onMountAsync: {
+            value: opt.dProps['onMountAsync']
+        },
+        __onBeforeUpdate: {
+            value: opt.dProps['onBeforeUpdate']
+        },
+        __onUpdate: {
+            value: opt.dProps['onUpdate']
+        },
+        __onAfterRender: {
+            value: opt.dProps['onAfterRender']
+        },
+        __onBeforeUnmount: {
+            value: opt.dProps['onBeforeUnmount']
+        },
+        __onUnmount: {
+            value: opt.dProps['onUnmount']
+        },
+        __onBeforeDestroy: {
+            value: opt.dProps['onBeforeDestroy']
+        },
+        __onDestroy: {
+            value: opt.dProps['onDestroy']
+        },
+        */
         _isRendered: {
             value: false,
             writable: true
