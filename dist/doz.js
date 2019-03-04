@@ -209,7 +209,20 @@ module.exports = {
 "use strict";
 
 
-var delay = __webpack_require__(3);
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var delay = __webpack_require__(2);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -352,19 +365,6 @@ module.exports = {
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy
 };
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
 
 /***/ }),
 /* 4 */
@@ -580,7 +580,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(26);
-var hooks = __webpack_require__(2);
+var hooks = __webpack_require__(3);
 var update = __webpack_require__(29).updateElement;
 var store = __webpack_require__(33);
 var ids = __webpack_require__(34);
@@ -599,7 +599,7 @@ var localMixin = __webpack_require__(42);
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
 
-var delay = __webpack_require__(3);
+var delay = __webpack_require__(2);
 
 var Component = function () {
     function Component(opt) {
@@ -1213,7 +1213,7 @@ var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(1);
-var hooks = __webpack_require__(2);
+var hooks = __webpack_require__(3);
 
 var _require3 = __webpack_require__(4),
     serializeProps = _require3.serializeProps;
@@ -2467,6 +2467,7 @@ var Doz = function () {
             components: [],
             shared: {},
             propsListener: null,
+            propsListenerAsync: null,
             actions: {},
             autoDraw: true
         }, cfg);
@@ -2955,7 +2956,7 @@ module.exports = hmr;
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var proxy = __webpack_require__(11);
-var events = __webpack_require__(2);
+var events = __webpack_require__(3);
 var updateBoundElements = __webpack_require__(27);
 var propsListener = __webpack_require__(28);
 
@@ -3096,16 +3097,28 @@ module.exports = updateBoundElements;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-function propsListener(instance, changes) {
-    if (!instance.propsListener || _typeof(instance.propsListener) !== 'object') return;
+var delay = __webpack_require__(2);
 
-    for (var i = 0; i < changes.length; i++) {
+function propsListener(instance, changes) {
+
+    if (_typeof(instance.propsListener) === 'object') for (var i = 0; i < changes.length; i++) {
         var item = changes[i];
         var propPath = instance.propsListener[item.currentPath];
         if (item.type === 'update' && propPath) {
             var func = instance[propPath] || propPath;
             if (typeof func === 'function') {
                 func.call(instance, item.newValue, item.previousValue);
+            }
+        }
+    }
+
+    if (_typeof(instance.propsListenerAsync) === 'object') for (var _i = 0; _i < changes.length; _i++) {
+        var _item = changes[_i];
+        var _propPath = instance.propsListenerAsync[_item.currentPath];
+        if (_item.type === 'update' && _propPath) {
+            var _func = instance[_propPath] || _propPath;
+            if (typeof _func === 'function') {
+                delay(_func.call(instance, _item.newValue, _item.previousValue));
             }
         }
     }
@@ -3326,7 +3339,7 @@ var castStringTo = __webpack_require__(9);
 var dashToCamel = __webpack_require__(10);
 var camelToDash = __webpack_require__(12);
 var objectPath = __webpack_require__(32);
-var delay = __webpack_require__(3);
+var delay = __webpack_require__(2);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
