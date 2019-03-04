@@ -36,6 +36,7 @@ class Doz {
             components: [],
             shared: {},
             propsListener: null,
+            propsListenerAsync: null,
             actions: {},
             autoDraw: true
         }, cfg);
