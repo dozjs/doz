@@ -3333,7 +3333,7 @@ function setBind($target, name, value, cmp) {
                             _value[_i8] = _defined7(_defined6[_i8], _i8, _defined6);
                         }
 
-                        cmp.props[value] = _value;
+                        cmp.props[value] = castStringTo(_value);
                     }
                 } else {
                     _value = this.value;
@@ -3360,7 +3360,7 @@ function setBind($target, name, value, cmp) {
                             _value[_i10] = _defined9(_defined8[_i10], _i10, _defined8);
                         }
                     }
-                    cmp.props[value] = _value;
+                    cmp.props[value] = castStringTo(_value);
                 }
             });
         };

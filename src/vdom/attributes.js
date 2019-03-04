@@ -168,14 +168,14 @@ function setBind($target, name, value, cmp) {
                     else {
                         const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
                         _value = [...inputs].map(input => input.value);
-                        cmp.props[value] = _value;
+                        cmp.props[value] = castStringTo(_value);
                     }
                 } else {
                     _value = this.value;
                     if (this.multiple) {
                         _value = [...this.options].filter(option => option.selected).map(option => option.value);
                     }
-                    cmp.props[value] = _value;
+                    cmp.props[value] = castStringTo(_value);
                 }
             });
         });
