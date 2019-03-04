@@ -46,6 +46,19 @@ module.exports = {
         STORE: 'd:store',
         LISTENER: 'd:on',
         ID: 'd:id',
+        ON_BEFORE_CREATE: 'd:onbeforecreate',
+        ON_CREATE: 'd:oncreate',
+        ON_CONFIG_CREATE: 'd:onconfigcreate',
+        ON_BEFORE_MOUNT: 'd:onbeforemount',
+        ON_MOUNT: 'd:onmount',
+        ON_MOUNT_ASYNC: 'd:onmountasync',
+        ON_BEFORE_UPDATE: 'd:onbeforeupdate',
+        ON_UPDATE: 'd:onupdate',
+        ON_AFTER_RENDER: 'd:onafterrender',
+        ON_BEFORE_UNMOUNT: 'd:onbeforeunmount',
+        ON_UNMOUNT: 'd:onunmount',
+        ON_BEFORE_DESTROY: 'd:onbeforedestroy',
+        ON_DESTROY: 'd:ondestroy',
         FORCE_UPDATE: 'forceupdate'
     }
 };
