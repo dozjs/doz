@@ -240,6 +240,7 @@ function callCreate(context) {
     if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
         context.parent[context.__onCreate].call(context.parent, context);
     }
+    context.app.emit('componentCreate', context);
 }
 
 function callConfigCreate(context) {
@@ -249,6 +250,7 @@ function callConfigCreate(context) {
     if (context.parent && typeof context.parent[context.__onConfigCreate] === 'function') {
         context.parent[context.__onConfigCreate].call(context.parent, context);
     }
+    context.app.emit('componentConfigCreate', context);
 }
 
 function callBeforeMount(context) {
@@ -267,6 +269,7 @@ function callMount(context) {
     if (context.parent && typeof context.parent[context.__onMount] === 'function') {
         context.parent[context.__onMount].call(context.parent, context);
     }
+    context.app.emit('componentMount', context);
 }
 
 function callMountAsync(context) {
@@ -280,6 +283,7 @@ function callMountAsync(context) {
             context.parent[context.__onMountAsync].call(context.parent, context);
         });
     }
+    context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
@@ -298,6 +302,7 @@ function callUpdate(context, changes) {
     if (context.parent && typeof context.parent[context.__onUpdate] === 'function') {
         context.parent[context.__onUpdate].call(context.parent, context, changes);
     }
+    context.app.emit('componentUpdate', context, changes);
 }
 
 function callAfterRender(context, changes) {
@@ -325,6 +330,7 @@ function callUnmount(context) {
     if (context.parent && typeof context.parent[context.__onUnmount] === 'function') {
         context.parent[context.__onUnmount].call(context.parent, context);
     }
+    context.app.emit('componentUnmount', context);
 }
 
 function callBeforeDestroy(context) {
@@ -337,6 +343,7 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
+    context.app.emit('componentDestroy', context);
     if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
