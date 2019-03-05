@@ -136,7 +136,6 @@ describe('Doz.lifecycle', function () {
                     <hello-world></hello-world>
                 `
             });
-
         });
 
     });
