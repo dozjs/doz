@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-convert-init', function () {
+describe('Doz.props-init-check', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -13,8 +13,6 @@ describe('Doz.props-convert-init', function () {
         it('should be ok with object definition', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
-
-            const result = [];
 
             new Doz({
                 root: '#app',
@@ -38,11 +36,8 @@ describe('Doz.props-convert-init', function () {
                 }
             });
 
-
             setTimeout(() => {
-                console.log(document.body.innerHTML);
-                done();
-                //be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div> hello suffix3 </div></dz-app></div>')
             }, 500);
 
         });
