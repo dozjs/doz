@@ -51,17 +51,25 @@ describe('Doz.props-init-check', function () {
                 constructor(o) {
                     super(o);
 
+                    /*
                     this.propsInitCheck = {
                         desc: function(value){
                             return value + ' suffix3';
                         }
                     };
+                    */
 
-                    /*
                     this.props = {
                         desc: 'hello'
                     };
-                    */
+
+                    this.config = {
+                        propsInitCheck: {
+                            desc: function(value){
+                                return value + ' suffix3';
+                            }
+                        }
+                    };
                 }
 
                 template(h) {
@@ -76,10 +84,6 @@ describe('Doz.props-init-check', function () {
 
             new Doz({
                 root: '#app',
-
-                props: {
-                    desc: 'hello'
-                },
 
                 template(h) {
                     return h`

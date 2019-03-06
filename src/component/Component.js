@@ -124,7 +124,13 @@ class Component {
             this.updateChildrenProps = obj.updateChildrenProps;
         }
 
+        if (typeof obj.propsInitCheck === 'object') {
+            this.propsInitCheck = obj.propsInitCheck;
+        }
+
         this._configured = true;
+
+        console.log(this.props, this.propsInitCheck)
 
         hooks.callConfigCreate(this);
     }
