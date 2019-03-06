@@ -12,8 +12,26 @@ function runUpdate(instance, changes) {
 
 function create(instance) {
 
-    if (instance._props.__isProxy)
+    if (instance._props.__isProxy) {
         proxy.remove(instance._props);
+    }
+
+    if (!instance.__initChecked && instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
+        instance.__initChecked = true;
+        (function iterate(rawProps) {
+            let keys = Object.keys(rawProps);
+            for (let i = 0, l = keys.length; i < l; i++) {
+                let property = keys[i];
+                if (rawProps[property] instanceof Object && rawProps[property] !== null) {
+                    iterate(rawProps[property])
+                } else {
+                    if (typeof instance.propsInitCheck[property] === 'function') {
+                        rawProps[property] = instance.propsInitCheck[property].call(instance, rawProps[property]);
+                    }
+                }
+            }
+        })(instance._rawProps);
+    }
 
     instance._props = proxy.create(instance._rawProps, null,
         changes => {
