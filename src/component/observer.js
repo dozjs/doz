@@ -16,8 +16,7 @@ function create(instance) {
         proxy.remove(instance._props);
     }
 
-
-    console.log(instance._rawProps, instance.__initChecked, instance.propsInitCheck);
+    //console.log('instance.propsInitCheck', instance.propsInitCheck, instance._rawProps);
 
     if (!instance.__initChecked && instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
         instance.__initChecked = true;

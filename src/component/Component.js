@@ -71,9 +71,11 @@ class Component {
     set props(props) {
         if (typeof props === 'function')
             props = props();
-        this._rawProps = Object.assign({}, props, this._opt.props);
-        observer.create(this);
-        store.sync(this);
+        if (this._opt) {
+            this._rawProps = Object.assign({}, props, this._opt.props);
+            observer.create(this);
+            store.sync(this);
+        }
     }
 
     get props() {
@@ -124,13 +126,7 @@ class Component {
             this.updateChildrenProps = obj.updateChildrenProps;
         }
 
-        if (typeof obj.propsInitCheck === 'object') {
-            this.propsInitCheck = obj.propsInitCheck;
-        }
-
         this._configured = true;
-
-        console.log(this.props, this.propsInitCheck)
 
         hooks.callConfigCreate(this);
     }

@@ -18,7 +18,7 @@ describe('Doz.props-init-check', function () {
                 root: '#app',
 
                 propsInitCheck: {
-                    desc: function(value){
+                    desc: function (value) {
                         return value + ' suffix3';
                     }
                 },
@@ -46,32 +46,7 @@ describe('Doz.props-init-check', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
-            Doz.define('cmp-x', class extends Doz.Component {
-
-                constructor(o) {
-                    super(o);
-
-                    /*
-                    this.propsInitCheck = {
-                        desc: function(value){
-                            return value + ' suffix3';
-                        }
-                    };
-                    */
-
-                    this.props = {
-                        desc: 'hello'
-                    };
-
-                    this.config = {
-                        propsInitCheck: {
-                            desc: function(value){
-                                return value + ' suffix3';
-                            }
-                        }
-                    };
-                }
-
+            class MyCmp extends Doz.Component {
                 template(h) {
                     return h`
                         <div>
@@ -79,8 +54,19 @@ describe('Doz.props-init-check', function () {
                         </div>
                     `
                 }
+            }
 
-            });
+            MyCmp.prototype.props = {
+                desc: 'hello'
+            };
+
+            MyCmp.prototype.propsInitCheck = {
+                desc(value) {
+                    return value + ' suffix3';
+                }
+            };
+
+            Doz.define('cmp-x', MyCmp);
 
             new Doz({
                 root: '#app',
