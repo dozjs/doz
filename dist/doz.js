@@ -2976,7 +2976,26 @@ function runUpdate(instance, changes) {
 
 function create(instance) {
 
-    if (instance._props.__isProxy) proxy.remove(instance._props);
+    if (instance._props.__isProxy) {
+        proxy.remove(instance._props);
+    }
+
+    if (!instance.__initChecked && instance.propsInitCheck && _typeof(instance.propsInitCheck) === 'object') {
+        instance.__initChecked = true;
+        (function iterate(rawProps) {
+            var keys = Object.keys(rawProps);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var property = keys[i];
+                if (rawProps[property] instanceof Object && rawProps[property] !== null) {
+                    iterate(rawProps[property]);
+                } else {
+                    if (typeof instance.propsInitCheck[property] === 'function') {
+                        rawProps[property] = instance.propsInitCheck[property].call(instance, rawProps[property]);
+                    }
+                }
+            }
+        })(instance._rawProps);
+    }
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
         if (!instance._isRendered) return;
