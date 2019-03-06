@@ -379,7 +379,7 @@ Doz.component('my-component', {
     },
     template(h) {
         return h`
-            <h1>${this.props.title}</h2>
+            <h1>${this.props.title}</h1>
         `
     },
     yourMethod() {
