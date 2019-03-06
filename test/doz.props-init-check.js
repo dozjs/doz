@@ -42,5 +42,57 @@ describe('Doz.props-init-check', function () {
 
         });
 
+        it('should be ok with class definition', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.define('cmp-x', class extends Doz.Component {
+
+                constructor(o) {
+                    super(o);
+
+                    this.propsInitCheck = {
+                        desc: function(value){
+                            return value + ' suffix3';
+                        }
+                    };
+
+                    /*
+                    this.props = {
+                        desc: 'hello'
+                    };
+                    */
+                }
+
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.desc}
+                        </div>
+                    `
+                }
+
+            });
+
+            new Doz({
+                root: '#app',
+
+                props: {
+                    desc: 'hello'
+                },
+
+                template(h) {
+                    return h`
+                        <cmp-x desc="hello"/>
+                    `
+                }
+            });
+
+            setTimeout(() => {
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div> hello suffix3 </div></cmp-x></dz-app></div>')
+            }, 500);
+
+        });
+
     });
 });
