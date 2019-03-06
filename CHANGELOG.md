@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `propsListenerAsync`
+- **Added** `propsInitCheck`
+- **Added** directive instance hooks
+    - `d:oncreate`
+    - `d:onconfigcreate`
+    - `d:onmount`
+    - `d:onmountasync`
+    - `d:onupdate`
+    - `d:onunmount`
+    - `d:ondestroy`
+- **Added** new hooks of app
+    - `componentCreate`
+    - `componentConfigCreate`
+    - `componentMount`
+    - `componentMountAsync`
+    - `componentUpdate`
+    - `componentUnmount`
+    - `componentDestroy`
+- **Fixed** auto-cast when bind an input
+
 ## [1.14.0] - 2019-02-10
 - **Added** `delayUpdate`
 
