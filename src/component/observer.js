@@ -30,7 +30,7 @@ function create(instance, initial = false) {
         });
 
     proxy.manipulate(instance._props, (value, currentPath, onFly) => {
-        if (!instance._isRendered) return;
+        //if (!instance._isRendered) return;
         if (instance.propsConvert && instance.propsConvertOnFly === onFly) {
             if (typeof instance.propsConvert === 'object') {
                 const propPath = instance.propsConvert[currentPath];
