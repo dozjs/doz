@@ -15,6 +15,7 @@ describe('Doz.app.hooks', function () {
 
             const shouldBe = {
                 create: 4,
+                propsInit: 4,
                 mount: 4,
                 mountAsync: 4,
                 update: 1,
@@ -24,6 +25,7 @@ describe('Doz.app.hooks', function () {
 
             const result = {
                 create: 0,
+                propsInit: 0,
                 mount: 0,
                 mountAsync: 0,
                 update: 0,
@@ -79,6 +81,10 @@ describe('Doz.app.hooks', function () {
                     console.log('componentCreate');
                     result.create++;
                 })
+                .on('componentPropsInit', component => {
+                    console.log('componentPropsInit');
+                    result.propsInit++;
+                })
                 .on('componentMount', component => {
                     console.log('componentMount');
                     result.mount++;
@@ -105,6 +111,7 @@ describe('Doz.app.hooks', function () {
             app.draw();
 
             setTimeout(function () {
+                console.log(result)
                 be.err(done).equal(result, shouldBe);
             }, 3500);
         });

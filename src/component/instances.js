@@ -127,6 +127,8 @@ function get(cfg = {}) {
 
                 propsInitCheck(newElement);
 
+                newElement.app.emit('componentPropsInit', newElement);
+
                 if (hooks.callBeforeMount(newElement) !== false) {
                     newElement._isRendered = true;
                     newElement.render(true);
