@@ -17,7 +17,7 @@ describe('Doz.class.observer.create', function () {
             new Doz({
                 root: '#app',
 
-                propsInitCheck: {
+                propsConvert: {
                     desc: function (value) {
                         return value + ' suffix3';
                     }
@@ -46,7 +46,7 @@ describe('Doz.class.observer.create', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
-            class MyCmp extends Doz.Component {
+            Doz.define('cmp-x', class extends Doz.Component {
 
                 constructor(o) {
                     super(o);
@@ -55,8 +55,13 @@ describe('Doz.class.observer.create', function () {
                         desc: 'hello',
                         title: 'a title',
                         another: 'way'
-                    }
+                    };
 
+                    this.propsConvert = {
+                        desc(value) {
+                            return value + ' suffix3';
+                        }
+                    };
                 }
 
                 template(h) {
@@ -66,22 +71,7 @@ describe('Doz.class.observer.create', function () {
                         </div>
                     `
                 }
-            }
-
-            /*
-            MyCmp.prototype.props = {
-                desc: 'hello',
-                title: 'a title'
-            };
-            */
-
-            MyCmp.prototype.propsInitCheck = {
-                desc(value) {
-                    return value + ' suffix3';
-                }
-            };
-
-            Doz.define('cmp-x', MyCmp);
+            });
 
             new Doz({
                 root: '#app',

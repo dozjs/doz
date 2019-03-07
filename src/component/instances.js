@@ -7,7 +7,7 @@ const {serializeProps} = require('../vdom/parser');
 const {extract} = require('./d-props');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
-const propsInitCheck = require('./props-init-check');
+const propsInit = require('./props-init');
 
 function get(cfg = {}) {
 
@@ -125,7 +125,7 @@ function get(cfg = {}) {
                     hmr(newElement, newElement.module);
                 }
 
-                propsInitCheck(newElement);
+                propsInit(newElement);
 
                 newElement.app.emit('componentPropsInit', newElement);
 
