@@ -10,16 +10,16 @@ function runUpdate(instance, changes) {
     updateBoundElements(instance, changes);
 }
 
-function create(instance) {
+function create(instance, initial = false) {
 
-    if (instance._props.__isProxy) {
+    if (instance._props && instance._props.__isProxy) {
         proxy.remove(instance._props);
     }
 
-    //console.log('instance.propsInitCheck', instance.propsInitCheck, instance._rawProps);
+    //console.log(instance.tag, instance._rawProps, initial);
 
-    if (!instance.__initChecked && instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
-        instance.__initChecked = true;
+    if (/*!instance.__initChecked &&*/ instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
+        //instance.__initChecked = true;
         (function iterate(rawProps) {
             let keys = Object.keys(rawProps);
             for (let i = 0, l = keys.length; i < l; i++) {

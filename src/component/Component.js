@@ -55,7 +55,7 @@ class Component {
             return;
 
         // Create observer to props
-        observer.create(this);
+        observer.create(this, true);
         // Create shared store
         store.create(this);
         // Create ID
@@ -69,13 +69,13 @@ class Component {
     }
 
     set props(props) {
+        if (!this._isSubclass) return;
         if (typeof props === 'function')
             props = props();
-        if (this._opt) {
-            this._rawProps = Object.assign({}, props, this._opt.props);
-            observer.create(this);
-            store.sync(this);
-        }
+
+        this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
+        observer.create(this);
+        store.sync(this);
     }
 
     get props() {
@@ -96,12 +96,6 @@ class Component {
             this.mixin = obj.mixin;
             localMixin(this);
         }
-
-        /*
-        if (typeof obj.propsListener === 'object') {
-            this.propsListener = obj.propsListener;
-        }
-        */
 
         if (typeof obj.components === 'object') {
             this.components = obj.components;
@@ -348,47 +342,6 @@ function defineProperties(obj, opt) {
         _callback: {
             value: opt.dProps['callback']
         },
-        /*
-        __onBeforeCreate: {
-            value: opt.dProps['onBeforeCreate']
-        },
-        __onCreate: {
-            value: opt.dProps['onCreate']
-        },
-        __onConfigCreate: {
-            value: opt.dProps['onConfigCreate']
-        },
-        __onBeforeMount: {
-            value: opt.dProps['onBeforeMount']
-        },
-        __onMount: {
-            value: opt.dProps['onMount']
-        },
-        __onMountAsync: {
-            value: opt.dProps['onMountAsync']
-        },
-        __onBeforeUpdate: {
-            value: opt.dProps['onBeforeUpdate']
-        },
-        __onUpdate: {
-            value: opt.dProps['onUpdate']
-        },
-        __onAfterRender: {
-            value: opt.dProps['onAfterRender']
-        },
-        __onBeforeUnmount: {
-            value: opt.dProps['onBeforeUnmount']
-        },
-        __onUnmount: {
-            value: opt.dProps['onUnmount']
-        },
-        __onBeforeDestroy: {
-            value: opt.dProps['onBeforeDestroy']
-        },
-        __onDestroy: {
-            value: opt.dProps['onDestroy']
-        },
-        */
         _isRendered: {
             value: false,
             writable: true
