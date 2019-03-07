@@ -644,7 +644,7 @@ var Component = function () {
         if (beforeCreate === false) return;
 
         // Create observer to props
-        observer.create(this);
+        observer.create(this, true);
         // Create shared store
         store.create(this);
         // Create ID
@@ -896,8 +896,10 @@ var Component = function () {
     }, {
         key: 'props',
         set: function set(props) {
+            if (!this._isSubclass) return;
             if (typeof props === 'function') props = props();
-            this._rawProps = Object.assign({}, props, this._opt.props);
+
+            this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
             observer.create(this);
             store.sync(this);
         },
@@ -917,12 +919,6 @@ var Component = function () {
                 this.mixin = obj.mixin;
                 localMixin(this);
             }
-
-            /*
-            if (typeof obj.propsListener === 'object') {
-                this.propsListener = obj.propsListener;
-            }
-            */
 
             if (_typeof(obj.components) === 'object') {
                 this.components = obj.components;
@@ -975,47 +971,6 @@ function defineProperties(obj, opt) {
         _callback: {
             value: opt.dProps['callback']
         },
-        /*
-        __onBeforeCreate: {
-            value: opt.dProps['onBeforeCreate']
-        },
-        __onCreate: {
-            value: opt.dProps['onCreate']
-        },
-        __onConfigCreate: {
-            value: opt.dProps['onConfigCreate']
-        },
-        __onBeforeMount: {
-            value: opt.dProps['onBeforeMount']
-        },
-        __onMount: {
-            value: opt.dProps['onMount']
-        },
-        __onMountAsync: {
-            value: opt.dProps['onMountAsync']
-        },
-        __onBeforeUpdate: {
-            value: opt.dProps['onBeforeUpdate']
-        },
-        __onUpdate: {
-            value: opt.dProps['onUpdate']
-        },
-        __onAfterRender: {
-            value: opt.dProps['onAfterRender']
-        },
-        __onBeforeUnmount: {
-            value: opt.dProps['onBeforeUnmount']
-        },
-        __onUnmount: {
-            value: opt.dProps['onUnmount']
-        },
-        __onBeforeDestroy: {
-            value: opt.dProps['onBeforeDestroy']
-        },
-        __onDestroy: {
-            value: opt.dProps['onDestroy']
-        },
-        */
         _isRendered: {
             value: false,
             writable: true
@@ -2975,13 +2930,17 @@ function runUpdate(instance, changes) {
 }
 
 function create(instance) {
+    var initial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    if (instance._props.__isProxy) {
+
+    if (instance._props && instance._props.__isProxy) {
         proxy.remove(instance._props);
     }
 
-    if (!instance.__initChecked && instance.propsInitCheck && _typeof(instance.propsInitCheck) === 'object') {
-        instance.__initChecked = true;
+    //console.log(instance.tag, instance._rawProps, initial);
+
+    if ( /*!instance.__initChecked &&*/instance.propsInitCheck && _typeof(instance.propsInitCheck) === 'object') {
+        //instance.__initChecked = true;
         (function iterate(rawProps) {
             var keys = Object.keys(rawProps);
             for (var i = 0, l = keys.length; i < l; i++) {
