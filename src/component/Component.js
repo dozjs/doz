@@ -54,16 +54,6 @@ class Component {
         if (beforeCreate === false)
             return;
 
-        /*
-        if (this.tag === 'cmp-x') {
-            console.log('opt', opt)
-            console.log('opt.dProps', opt.dProps)
-            console.log('this._props', this._props)
-            console.log('this.props', this.props)
-            console.log('this._rawProps', this._rawProps)
-        }
-        */
-
         // Create observer to props
         observer.create(this, true);
         // Create shared store

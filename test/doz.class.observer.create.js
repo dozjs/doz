@@ -51,36 +51,12 @@ describe('Doz.class.observer.create', function () {
                 constructor(o) {
                     super(o);
 
-
                     this.props = {
                         desc: 'hello',
                         title: 'a title',
                         another: 'way'
                     }
 
-
-                }
-
-                onBeforeMount() {
-                    const instance = this;
-                    if (instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
-                        //instance.__initChecked = true;
-                        (function iterate(rawProps) {
-                            let keys = Object.keys(rawProps);
-                            for (let i = 0, l = keys.length; i < l; i++) {
-                                let property = keys[i];
-                                if (rawProps[property] instanceof Object && rawProps[property] !== null) {
-                                    iterate(rawProps[property])
-                                } else {
-                                    if (typeof instance.propsInitCheck[property] === 'function') {
-                                        rawProps[property] = instance.propsInitCheck[property].call(instance, rawProps[property]);
-                                    }
-                                }
-                            }
-                        })(instance._rawProps);
-                    }
-
-                    console.log('onBeforeMount', this.props, this._rawProps)
                 }
 
                 template(h) {
@@ -112,7 +88,7 @@ describe('Doz.class.observer.create', function () {
 
                 template(h) {
                     return h`
-                        <cmp-x desc="hello2"/>
+                        <cmp-x desc="hello"/>
                     `
                 },
 

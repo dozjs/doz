@@ -7,6 +7,7 @@ const {serializeProps} = require('../vdom/parser');
 const {extract} = require('./d-props');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
+const propsInitCheck = require('./props-init-check');
 
 function get(cfg = {}) {
 
@@ -123,6 +124,8 @@ function get(cfg = {}) {
                 if (typeof newElement.module === 'object') {
                     hmr(newElement, newElement.module);
                 }
+
+                propsInitCheck(newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
                     newElement._isRendered = true;
