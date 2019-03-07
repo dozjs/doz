@@ -69,7 +69,7 @@ class Component {
     }
 
     set props(props) {
-        if (!this._isSubclass) return;
+        //if (!this._isSubclass) return;
         if (typeof props === 'function')
             props = props();
 

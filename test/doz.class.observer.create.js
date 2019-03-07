@@ -51,10 +51,12 @@ describe('Doz.class.observer.create', function () {
                 constructor(o) {
                     super(o);
 
+
                     this.props = {
                         desc: 'hello',
                         title: 'a title'
                     }
+
 
                 }
 
@@ -87,7 +89,7 @@ describe('Doz.class.observer.create', function () {
 
                 template(h) {
                     return h`
-                        <cmp-x desc="hello"/>
+                        <cmp-x desc="hello2"/>
                     `
                 },
 

@@ -16,24 +16,27 @@ function create(instance, initial = false) {
         proxy.remove(instance._props);
     }
 
-    //console.log(instance.tag, instance._rawProps, initial);
+    if (instance.tag === 'cmp-x')
+        console.log(instance.tag, instance._rawProps, initial);
 
-    if (/*!instance.__initChecked &&*/ instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
-        //instance.__initChecked = true;
-        (function iterate(rawProps) {
-            let keys = Object.keys(rawProps);
-            for (let i = 0, l = keys.length; i < l; i++) {
-                let property = keys[i];
-                if (rawProps[property] instanceof Object && rawProps[property] !== null) {
-                    iterate(rawProps[property])
-                } else {
-                    if (typeof instance.propsInitCheck[property] === 'function') {
-                        rawProps[property] = instance.propsInitCheck[property].call(instance, rawProps[property]);
+    /*
+        if (instance.propsInitCheck && typeof instance.propsInitCheck === 'object') {
+            //instance.__initChecked = true;
+            (function iterate(rawProps) {
+                let keys = Object.keys(rawProps);
+                for (let i = 0, l = keys.length; i < l; i++) {
+                    let property = keys[i];
+                    if (rawProps[property] instanceof Object && rawProps[property] !== null) {
+                        iterate(rawProps[property])
+                    } else {
+                        if (typeof instance.propsInitCheck[property] === 'function') {
+                            rawProps[property] = instance.propsInitCheck[property].call(instance, rawProps[property]);
+                        }
                     }
                 }
-            }
-        })(instance._rawProps);
-    }
+            })(instance._rawProps);
+        }
+    */
 
     instance._props = proxy.create(instance._rawProps, null,
         changes => {
