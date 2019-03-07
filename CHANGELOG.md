@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 - **Added** `propsListenerAsync`
-- **Added** `propsInitCheck`
 - **Added** directive instance hooks
     - `d:oncreate`
     - `d:onconfigcreate`
@@ -23,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `componentUpdate`
     - `componentUnmount`
     - `componentDestroy`
+- **Changed** now propsConvert and propsComputed are called on beforeMount event   
 - **Fixed** auto-cast when bind an input
 
 ## [1.14.0] - 2019-02-10
