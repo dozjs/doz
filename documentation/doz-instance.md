@@ -122,3 +122,53 @@ new Doz({
 
 - **Since**: 1.6.0
 - **Description**: Triggered when all initial component are mounted on the DOM.
+
+#### "componentCreate" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is created.
+
+#### "componentConfigCreate" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is created.
+
+#### "componentMount" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is mounted on DOM.
+
+#### "componentMountAsync" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is mounted on DOM. Async version.
+
+#### "componentUpdate" (component, changes)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+    - `object` changes An object with all props changed
+- **Description**: Triggered when a component is updated.
+
+#### "componentUnmount" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is unmounted from the DOM.
+
+#### "componentDestroy" (component)
+
+- **Since**: 1.15.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when a component is destroyed.

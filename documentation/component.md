@@ -115,6 +115,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: undefined
 - **Description**: Defines listeners to detect props changes.
 
+### propsListenerAsync
+
+- **Since**: 1.15.0
+- **Type**: `object`
+- **Default**: undefined
+- **Description**: Defines listeners to detect props changes. Async version.
+
 ### propsComputed
 
 - **Since**: 1.9.0

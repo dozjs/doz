@@ -41,6 +41,11 @@ export default interface ConfigComponent {
     propsListener?: object
 
     /**
+     * An object for detect props changes. Async version.
+     */
+    propsListenerAsync?: object
+
+    /**
      * An object that defines listeners for computing operation over props.
      */
     propsConvert?: object

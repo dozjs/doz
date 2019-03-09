@@ -35,6 +35,7 @@ Below some basic concepts:
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
+            - [Hooks directives](#hooks-directives)
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
@@ -1123,6 +1124,58 @@ new Doz({
 
 ---
 
+### Hooks directives
+
+**Since 1.15.0**
+
+A listener can be associated with these directives:
+
+- `d:oncreate`
+- `d:onconfigcreate`
+- `d:onmount`
+- `d:onmountasync`
+- `d:onupdate`
+- `d:onunmount`
+- `d:ondestroy`
+
+```javascript
+Doz.component('my-label', {
+    template(h) {
+        return h`
+            <div>${this.props.title}</div>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <my-label
+                title="Mr. Robyn"
+                d:oncreate="myLabelOnCreate"
+                d:onmount="myLabelOnMount"
+                d:onupdate="myLabelOnUpdate"
+            />
+        `
+    },
+    
+    myLabelOnCreate(cmp) {
+        console.log(cmp.tag, 'is created')
+    },
+    
+    myLabelOnMount(cmp) {
+        console.log(cmp.tag, 'is mounted')
+    },
+    
+    myLabelOnUpdate(cmp, changes) {
+        console.log(cmp.tag, 'is updated with this changes', changes)
+    }
+});
+```
+
+---
+
 ### Sharing things
 
 **Since 1.8.0**
@@ -1145,7 +1198,7 @@ new Doz({
     },
     template(h) {
         return h`
-            <my-button></my-button>
+            <my-button/>
         `
     }
 });
