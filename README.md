@@ -8,7 +8,10 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 <a href="https://travis-ci.org/dozjs/doz" target="_blank"><img src="https://travis-ci.org/dozjs/doz.svg?branch=master" title="Build Status"/></a>
 <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" title="License: MIT"/></a>
 <br/><br/>
-<a href="https://github.com/dozjs/doz/blob/master/documentation/index.md">Documentation</a> | <a href="https://github.com/dozjs/doz/blob/master/documentation/api.md">API</a> | <a href="https://dozjs.github.io/doz/example/">Demo</a>
+<a href="https://github.com/dozjs/doz/blob/master/documentation/index.md">Documentation</a> 
+| <a href="https://github.com/dozjs/doz/blob/master/documentation/api.md">API</a> 
+| <a href="https://dozjs.github.io/doz/example/">Demo</a> 
+| <a href="https://github.com/dozjs/doz/tree/master/example">Browse example code</a>
 <br/><br/>
 </div>
 
@@ -22,7 +25,7 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 - 😁 Simple and familiar API
 - 😱‍ No extra syntax like JSX
 - 💣 No confusion with props and state
-- ⛏ Extensible
+- ⛏ Extensible through: plugins, mixin, components
 
 ## Another framework?
 In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this".
