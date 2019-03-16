@@ -658,6 +658,13 @@ var Component = function () {
     }
 
     _createClass(Component, [{
+        key: 'loadProps',
+        value: function loadProps(props) {
+            this._rawProps = Object.assign({}, props);
+            observer.create(this);
+            store.sync(this);
+        }
+    }, {
         key: 'getHTMLElement',
         value: function getHTMLElement() {
             return this._parentElement;
@@ -2984,17 +2991,18 @@ var manipulate = __webpack_require__(12);
 
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
-    instance.render();
     propsListener(instance, changes);
+    instance.render();
     updateBoundElements(instance, changes);
 }
 
 function create(instance) {
-    var initial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+    var recreate = false;
 
     if (instance._props && instance._props.__isProxy) {
         proxy.remove(instance._props);
+        recreate = true;
     }
 
     instance._props = proxy.create(instance._rawProps, null, function (changes) {
@@ -3017,6 +3025,10 @@ function create(instance) {
         var res = events.callBeforeUpdate(instance, changes);
         if (res === false) return false;
     });
+
+    if (recreate && instance._isRendered) {
+        instance.render();
+    }
 }
 
 module.exports = {
