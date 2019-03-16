@@ -31,9 +31,9 @@ describe('Doz.class.observer.recreate', function () {
 
                 onMount() {
                     setTimeout(()=> {
-                        this.props = {
+                        this.loadProps({
                             desc: 'ciao'
-                        }
+                        });
                     }, 100);
                 }
             });
@@ -66,15 +66,15 @@ describe('Doz.class.observer.recreate', function () {
                         </div>
                     `
                 }
-                /*
+
                 onMount() {
                     setTimeout(()=> {
-                        this.props = {
+                        this.loadProps({
                             desc: 'ciao'
-                        };
+                        });
                     }, 100);
                 }
-                */
+
             });
 
             new Doz({
@@ -82,7 +82,7 @@ describe('Doz.class.observer.recreate', function () {
 
                 template(h) {
                     return h`
-                        <cmp-x desc="helloooo"/>
+                        <cmp-x desc="hello"/>
                     `
                 }
 

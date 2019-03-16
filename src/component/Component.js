@@ -81,6 +81,12 @@ class Component {
         return this._props;
     }
 
+    loadProps(props) {
+        this._rawProps = Object.assign({}, props);
+        observer.create(this);
+        store.sync(this);
+    }
+
     set config(obj) {
         if (!this._isSubclass)
             throw new Error('Config is allowed only for classes');
