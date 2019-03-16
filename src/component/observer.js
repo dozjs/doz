@@ -44,7 +44,6 @@ function create(instance) {
     });
 
     if (recreate && instance._isRendered) {
-        console.log('recreate');
         instance.render();
     }
 }

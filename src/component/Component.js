@@ -72,9 +72,7 @@ class Component {
         if (typeof props === 'function')
             props = props();
 
-        console.log(props, this._opt ? this._opt.props : {})
-
-        this._rawProps = Object.assign({}, this._opt ? this._opt.props : {}, props);
+        this._rawProps = Object.assign({}, props,this._opt ? this._opt.props : {});
         observer.create(this);
         store.sync(this);
     }

@@ -66,17 +66,15 @@ describe('Doz.class.observer.recreate', function () {
                         </div>
                     `
                 }
-
+                /*
                 onMount() {
                     setTimeout(()=> {
-                        //console.log(this.props);
                         this.props = {
                             desc: 'ciao'
                         };
-                        //console.log(this.props);
-                        //console.log(this.template(Doz.h))
-                    }, 200);
+                    }, 100);
                 }
+                */
             });
 
             new Doz({
@@ -84,14 +82,13 @@ describe('Doz.class.observer.recreate', function () {
 
                 template(h) {
                     return h`
-                        <cmp-x desc="helloo"/>
+                        <cmp-x desc="helloooo"/>
                     `
                 }
 
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div> ciao </div></cmp-x></dz-app></div>')
             }, 500);
 
