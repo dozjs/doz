@@ -105,6 +105,12 @@ export class Component {
     toStyle(obj: object): string
 
     /**
+     * This method recreates the props object.
+     * @param {object} obj
+     */
+    loadProps(obj: object): void
+
+    /**
      * Get store by name.
      * @param {string} name
      * @returns {object}
