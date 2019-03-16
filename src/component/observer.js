@@ -6,15 +6,18 @@ const manipulate = require('./manipulate');
 
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
-    instance.render();
     propsListener(instance, changes);
+    instance.render();
     updateBoundElements(instance, changes);
 }
 
-function create(instance, initial = false) {
+function create(instance) {
+
+    let recreate = false;
 
     if (instance._props && instance._props.__isProxy) {
         proxy.remove(instance._props);
+        recreate = true;
     }
 
     instance._props = proxy.create(instance._rawProps, null,
@@ -39,6 +42,11 @@ function create(instance, initial = false) {
         if (res === false)
             return false;
     });
+
+    if (recreate && instance._isRendered) {
+        console.log('recreate');
+        instance.render();
+    }
 }
 
 module.exports = {
