@@ -283,6 +283,14 @@ instance will be created. See [how define a component](https://github.com/dozjs/
     - `string` store
 - **Description**: Get store by name.
 
+### component.loadProps( props )
+
+- **Since**: 1.16.0
+- **Type**: `function`
+- **Arguments**:
+    - `object` props
+- **Description**: This method recreates the props object.
+
 ### component.mount( template )
 
 - **Since**: 0.0.19
@@ -379,6 +387,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method is called after that component instance is destroyed.
+
+### onLoadProps
+
+- **Since**: 1.16.0
+- **Type**: `function`
+- **Description**: This method is called after that `loadProps` is invoked.
 
 ### onMount
 

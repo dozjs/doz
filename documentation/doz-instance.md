@@ -137,6 +137,13 @@ new Doz({
     - `Component` component Component instance
 - **Description**: Triggered when a component is created.
 
+#### "componentLoadProps" (component)
+
+- **Since**: 1.16.0
+- **Arguments**:
+    - `Component` component Component instance
+- **Description**: Triggered when `loadProps` of a component is invoked.
+
 #### "componentMount" (component)
 
 - **Since**: 1.15.0

@@ -17,6 +17,7 @@ Below some basic concepts:
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
     - [Delay props update](#delay-props-update)
+    - [Load props](#load-props)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -313,12 +314,52 @@ Doz.component('my-delay', {
 
 new Doz({
     root: '#app',
-
     template(h) {
         return h`
             <my-delay/>
         `
     }
+});
+```
+
+---
+
+### Load props
+
+**Since 1.16.0**
+
+If you need to load the props a runtime, you can use `loadProps` method. 
+
+```javascript
+Doz.component('a-rnd', {
+    template(h){
+        return h`
+            <div>
+                <input type="text" d-bind="num"/>
+                <p>Value: ${this.props.num}</p>
+                <button onclick="this.setNew()">Load props</button>
+            </div>
+        `
+    },
+    props: {
+        num: 0
+    },
+    setNew() {
+        this.loadProps({
+           num: Math.random()
+        });
+    },
+    onLoadProps() {
+        console.log('props loaded');
+    }
+});
+
+new Doz({
+    root: '#app',
+    template: `
+        <h3>Input type text</h3>
+        <a-rnd/>
+    `
 });
 ```
 
@@ -1137,6 +1178,7 @@ A listener can be associated with these directives:
 - `d:onupdate`
 - `d:onunmount`
 - `d:ondestroy`
+- `d:onloadprops` (since 1.16.0)
 
 ```javascript
 Doz.component('my-label', {
