@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 - **Added** `loadProps` method
-
+- **Added** new hook `onLoadProps`
+- **Added** directive instance hook `d:onloadprops`
+- **Added** app hook `componentLoadProps`
+    
 ## [1.15.0] - 2019-03-09
 - **Added** `propsListenerAsync`
 - **Added** directive instance hooks
