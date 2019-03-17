@@ -21,6 +21,7 @@
         "url": "git+https://github.com/dozjs/doz.git"
     },
     "keywords": [
+        "front-end",
         "html",
         "dom",
         "javascript",
