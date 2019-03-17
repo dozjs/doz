@@ -23,7 +23,7 @@
 
 <script>
 
-    Doz.component('doz-text', {
+    Doz.component('a-rnd', {
         template(h){
             return h`
                 <div>
@@ -48,6 +48,9 @@
             this.loadProps({
                num: Math.random()
             });
+        },
+        onLoadProps() {
+            console.log('props loaded');
         }
     });
 
@@ -55,9 +58,16 @@
         root: document.getElementById('app'),
         template: `
             <h3>Input type text</h3>
-            <doz-text/>
-
-        `
+            <a-rnd d:onloadprops="onRNDPropsLoad"/>
+        `,
+        onRNDPropsLoad(cmp) {
+            console.log('onRNDPropsLoad', cmp.tag)
+        },
+        onCreate() {
+            this.app.on('componentLoadProps', cmp => {
+                console.log('componentLoadProps', cmp.tag)
+            });
+        }
     });
 
 </script>

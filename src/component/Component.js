@@ -84,11 +84,15 @@ class Component {
     }
 
     loadProps(props) {
+        if (typeof props !== 'object')
+            throw new TypeError('Props must be an object');
+
         this._rawProps = Object.assign({}, props);
         propsInit(this);
         updateBoundElementsByPropsIteration(this);
         observer.create(this);
         store.sync(this);
+        hooks.callLoadProps(this);
     }
 
     set config(obj) {

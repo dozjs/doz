@@ -133,6 +133,16 @@ function callDestroy(context) {
     }
 }
 
+function callLoadProps(context) {
+    if(typeof context.onLoadProps === 'function'){
+        context.onLoadProps.call(context);
+    }
+    if(context.parent && typeof context.parent[context.__onLoadProps] === 'function'){
+        context.parent[context.__onLoadProps].call(context.parent, context);
+    }
+    context.app.emit('componentLoadProps', context);
+}
+
 module.exports = {
     callBeforeCreate,
     callCreate,
@@ -146,5 +156,6 @@ module.exports = {
     callBeforeUnmount,
     callUnmount,
     callBeforeDestroy,
-    callDestroy
+    callDestroy,
+    callLoadProps
 };

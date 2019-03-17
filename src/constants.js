@@ -59,6 +59,27 @@ module.exports = {
         ON_UNMOUNT: 'd:onunmount',
         ON_BEFORE_DESTROY: 'd:onbeforedestroy',
         ON_DESTROY: 'd:ondestroy',
+        ON_LOAD_PROPS: 'd:onloadprops',
         FORCE_UPDATE: 'forceupdate'
+    },
+    DPROPS: {
+        STORE: 'store',
+        ALIAS: 'alias',
+        CALLBACK: 'callback',
+        ID: 'id',
+        ON_BEFORE_CREATE: '__onBeforeCreate',
+        ON_CREATE: '__onCreate',
+        ON_CONFIG_CREATE: '__onConfigCreate',
+        ON_BEFORE_MOUNT: '__onBeforeMount',
+        ON_MOUNT: '__onMount',
+        ON_MOUNT_ASYNC: '__onMountAsync',
+        ON_BEFORE_UPDATE: '__onBeforeUpdate',
+        ON_UPDATE: '__onUpdate',
+        ON_AFTER_RENDER: '__onAfterRender',
+        ON_BEFORE_UNMOUNT: '__onBeforeUnmount',
+        ON_UNMOUNT: '__onUnmount',
+        ON_BEFORE_DESTROY: '__onBeforeDestroy',
+        ON_DESTROY: '__onDestroy',
+        ON_LOAD_PROPS: '__onLoadProps',
     }
 };
