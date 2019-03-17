@@ -19,7 +19,6 @@ A JavaScript framework for building UI, almost like writing in VanillaJS. For mo
 - 🎼 Works with tagged template literals
 - 🔫 Fast performance
 - 💅 Scoped style
-- 🗜 Tiny size ±13KB (gzip)
 - 📡 Uses ES6 proxy to observe changes
 - 🎳 Component based
 - 😁 Simple and familiar API
@@ -32,7 +31,11 @@ In the web there are many frameworks that do all the same things. But a lot of t
 
 ## Installation
 ```
-$ npm install --save doz
+$ npm install -g doz-cli
+
+$ doz app my-app
+$ cd my-app
+$ npm run start
 ```
 
 ## Example
@@ -92,14 +95,6 @@ new Doz({
 - 🤳🏼 [doz-snap](https://github.com/dozjs/doz-snap) transform app to static HTML
 - 👩🏼‍🚀 [doz-router](https://github.com/dozjs-cmp/doz-router) a complete component for routing
 - ✍🏼 [doz-metatag](https://github.com/dozjs/doz-metatag) a plugin for managing basic OG meta tag in your HTML document
-
-## Try [doz-cli](https://github.com/dozjs/doz-cli)
-```
-$ npm install -g doz-cli
-$ doz app my-app
-$ cd my-app
-$ npm run start
-```
 
 #### CDN unpkg
 ```html
