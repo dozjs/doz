@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - model</title>
+    <title>Title</title>
+    <script src="../../dist/doz.js?589654958473562"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('doz-text', {
+        template(h){
+            return h`
+                <div>
+                    <input type="text" d-bind="num" placeholder="${this.props.placeholder}"/>
+                    <p>Value: ${this.props.num}</p>
+                    <button onclick="this.setNew()">Load props</button>
+                </div>
+            `
+        },
+        props: {
+            num: 'random number'
+        },
+        propsConvert: {
+            num(v) {
+                if (typeof v === 'number') {
+                    return v * 1000;
+                }
+                return v;
+            }
+        },
+        setNew() {
+            this.loadProps({
+               num: Math.random()
+            });
+        }
+    });
+
+    new Doz({
+        root: document.getElementById('app'),
+        template: `
+            <h3>Input type text</h3>
+            <doz-text/>
+
+        `
+    });
+
+</script>
+</body>
+</html>

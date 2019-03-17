@@ -18,6 +18,7 @@ const localMixin = require('./local-mixin');
 const {compile} = require('../vdom/parser');
 const delay = require('../utils/delay');
 const propsInit = require('./props-init');
+const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 
 class Component {
 
@@ -85,6 +86,7 @@ class Component {
     loadProps(props) {
         this._rawProps = Object.assign({}, props);
         propsInit(this);
+        updateBoundElementsByPropsIteration(this);
         observer.create(this);
         store.sync(this);
     }
