@@ -82,7 +82,7 @@ new Doz({
 
     template(h) {
         return h`
-            <button-counter title="Click me!"></button-counter>
+            <button-counter title="Click me!"/>
         `
     }
 
