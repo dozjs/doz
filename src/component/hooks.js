@@ -123,6 +123,8 @@ function callDestroy(context) {
     context.app.emit('componentDestroy', context);
     if(context.store && context.app._stores[context.store])
         delete context.app._stores[context.store];
+    if(context.id && context.app._ids[context.id])
+        delete context.app._ids[context.id];
     if(typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function'){
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);

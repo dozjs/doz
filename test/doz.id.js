@@ -54,6 +54,38 @@ describe('Doz.id', function () {
 
         });
 
+        it('should be remove global id after component destroy', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.component('salutation-card', {
+                template() {
+                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                },
+
+                onMount() {
+                    this.destroy();
+                }
+            });
+
+            const app = new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        d:id="salutation"
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                `
+            });
+
+            setTimeout(()=>{
+                be.err(done).undefined(app.getComponentById('salutation'));
+            },100);
+
+
+        });
+
     });
 
     describe('(pattern class) create app with component with id defined', function () {
