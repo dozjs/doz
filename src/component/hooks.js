@@ -1,4 +1,5 @@
 const delay = require('../utils/delay');
+const proxy = require('../proxy');
 
 function callBeforeCreate(context) {
     if(typeof context.onBeforeCreate === 'function'){
@@ -120,6 +121,8 @@ function callBeforeDestroy(context) {
 
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
+    if(context.store && context.app._stores[context.store])
+        delete context.app._stores[context.store];
     if(typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function'){
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
@@ -131,6 +134,7 @@ function callDestroy(context) {
         context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
     }
+
 }
 
 function callLoadProps(context) {

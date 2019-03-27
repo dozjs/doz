@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.16.1] - 2019-03-27
+- **Fixed** the defined store is not deleted after destroying the component
+
 ## [1.16.0] - 2019-03-17
 - **Added** `loadProps` method
 - **Added** new hook `onLoadProps`

@@ -49,17 +49,48 @@ describe('Doz.store', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(app);
                 be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
-            },100);
+            }, 100);
 
 
         });
+
+    });
+
+    it('store should be destroyed after component destroy', function (done) {
+
+        document.body.innerHTML = `<div id="app"></div>`;
+
+        Doz.component('salutation-card', {
+            store: 'salutation',
+            template() {
+                return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+            },
+
+            onMount() {
+                this.destroy();
+            }
+        });
+
+        const app = new Doz({
+            root: '#app',
+            template: `
+                    <salutation-card
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                `
+        });
+
+        setTimeout(() => {
+            be.err(done).undefined(app.getStore('salutation'));
+        }, 100);
 
     });
 
@@ -105,14 +136,14 @@ describe('Doz.store', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(app);
                 be.err.true(/nested/g.test(html));
                 be.err.true(/bye/g.test(html));
                 be.err(done).true(/I'M CALLER/g.test(html));
-            },100);
+            }, 100);
         });
     });
 
@@ -166,14 +197,14 @@ describe('Doz.store', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(app);
                 be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
-            },100);
+            }, 100);
 
         });
 
@@ -223,12 +254,12 @@ describe('Doz.store', function () {
                 `
             });
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 //console.log(app);
                 be.err(done).true(/Hi by repeater Teddy</g.test(html));
-            },100);
+            }, 100);
 
         });
 
