@@ -1496,6 +1496,23 @@ Doz.component('a-component', {
 });
 ```
 
+Mix multiple object:
+
+```javascript
+Doz.mixin([
+    {
+        method1() {},
+        method2() {}
+    },
+    {
+        method3() {},
+        method4() {}
+    }
+]);
+
+```
+
+
 #### Local mixin
 The functions are available only for a component.
 
