@@ -37,6 +37,8 @@
             return `
                 <button forceupdate onclick="this.drawOther()">Mount second</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+                <button forceupdate onclick="this.drawOther2()">Mount second 2</i></button>
+                <button forceupdate onclick="this.removeOther2()">Unmount second 2</i></button>
             `;
         },
         drawOther() {
@@ -49,25 +51,25 @@
                             qui va una scritta
                         </div>
                         <div style="padding: 20px; background: #5063ff">
-                        <thirty-component/>
+                            <thirty-component/>
                         </div>
                     </div>
                 `);
 
                 this.other.onBeforeMount = () => {
-                    //console.log('main component before mount');
+                    console.log('main component before mount');
                 };
 
                 this.other.onMount = () => {
-                    //console.log('main component mount');
+                    console.log('main component mount');
                 };
 
                 this.other.onBeforeUnmount = () => {
-                    //console.log('main component before unmount');
+                    console.log('main component before unmount');
                 };
 
                 this.other.onUnmount = () => {
-                    //console.log('main component unmount');
+                    console.log('main component unmount');
                 };
             } else {
                 this.other.mount();
@@ -77,6 +79,36 @@
         removeOther() {
             if (this.other) {
                 this.other.unmount();
+            }
+        },
+        drawOther2() {
+            if (!this.other2) {
+
+                this.other2 = this.mount(`<div>other</div>`);
+
+                this.other2.onBeforeMount = () => {
+                    console.log('main component before mount');
+                };
+
+                this.other2.onMount = () => {
+                    console.log('main component mount');
+                };
+
+                this.other2.onBeforeUnmount = () => {
+                    console.log('main component before unmount');
+                };
+
+                this.other2.onUnmount = () => {
+                    console.log('main component unmount');
+                };
+            } else {
+                this.other2.mount();
+            }
+
+        },
+        removeOther2() {
+            if (this.other2) {
+                this.other2.unmount();
             }
         }
     });
@@ -92,16 +124,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            //console.log('create', this.tag);
+            console.log('create', this.tag);
         },
         onMount() {
-            //console.log('mount', this.tag);
+            console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            //console.log('before unmount', this.tag);
+            console.log('before unmount', this.tag);
         },
         onUnmount() {
-            //console.log('unmount', this.tag);
+            console.log('unmount', this.tag);
         }
     });
 
@@ -116,16 +148,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            //console.log('create', this.tag);
+            console.log('create', this.tag);
         },
         onMount() {
-            //console.log('mount', this.tag);
+            console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            //console.log('before unmount', this.tag);
+            console.log('before unmount', this.tag);
         },
         onUnmount() {
-            //console.log('unmount', this.tag);
+            console.log('unmount', this.tag);
         }
     });
 

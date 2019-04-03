@@ -226,11 +226,11 @@ class Component {
             if (hooks.callBeforeMount(this) === false)
                 return this;
 
-            console.log(this._unmountedParentNode.innerHTML);
+            this._unmountedPlaceholder.parentNode.replaceChild(this._unmountedParentNode, this._unmountedPlaceholder);
 
-            this._unmountedParentNode.appendChild(this._rootElement.parentNode);
             this._unmounted = false;
             this._unmountedParentNode = null;
+            this._unmountedPlaceholder = null;
 
             hooks.callMount(this);
 
@@ -240,7 +240,6 @@ class Component {
 
             return this;
         } else if (template) {
-            //this._mountedCompiled = compile(template);
             if (this._rootElement.nodeType !== 1) {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
@@ -257,6 +256,8 @@ class Component {
 
             this._unmounted = false;
             this._unmountedParentNode = null;
+            this._unmountedPlaceholder = null;
+
             return this.app.mount(template, root, this);
         }
     }
@@ -270,10 +271,11 @@ class Component {
         if (hooks.callBeforeUnmount(this) === false)
             return false;
 
-        this._unmountedParentNode = this._rootElement.parentNode.parentNode;
+        this._unmountedParentNode = this._rootElement.parentNode;
+        this._unmountedPlaceholder = document.createComment(Date.now().toString());
 
         if (!onlyInstance) {
-            this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+            this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
         } else
             this._rootElement.parentNode.innerHTML = '';
 

@@ -1444,11 +1444,11 @@ var Component = function () {
             if (this._unmounted) {
                 if (hooks.callBeforeMount(this) === false) return this;
 
-                console.log(this._unmountedParentNode.innerHTML);
+                this._unmountedPlaceholder.parentNode.replaceChild(this._unmountedParentNode, this._unmountedPlaceholder);
 
-                this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                 this._unmounted = false;
                 this._unmountedParentNode = null;
+                this._unmountedPlaceholder = null;
 
                 hooks.callMount(this);
 
@@ -1464,7 +1464,6 @@ var Component = function () {
 
                 return this;
             } else if (template) {
-                //this._mountedCompiled = compile(template);
                 if (this._rootElement.nodeType !== 1) {
                     var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                     this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
@@ -1478,6 +1477,8 @@ var Component = function () {
 
                 this._unmounted = false;
                 this._unmountedParentNode = null;
+                this._unmountedPlaceholder = null;
+
                 return this.app.mount(template, root, this);
             }
         }
@@ -1497,10 +1498,11 @@ var Component = function () {
 
             if (hooks.callBeforeUnmount(this) === false) return false;
 
-            this._unmountedParentNode = this._rootElement.parentNode.parentNode;
+            this._unmountedParentNode = this._rootElement.parentNode;
+            this._unmountedPlaceholder = document.createComment(Date.now().toString());
 
             if (!onlyInstance) {
-                this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+                this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
             } else this._rootElement.parentNode.innerHTML = '';
 
             this._unmounted = !byDestroy;
