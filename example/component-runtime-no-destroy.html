@@ -25,6 +25,12 @@
 
 <script>
 
+    Doz.component('label-x', {
+       template() {
+           return '<span>qui va una scritta</span>';
+       }
+    });
+
     Doz.component('fist-component', {
         $allowMount: true,
         template() {
@@ -38,25 +44,30 @@
 
                 this.other = this.mount(`
                     <div>
-                        <second-component></second-component>
-                        <thirty-component></thirty-component>
+                        <second-component/>
+                        <div>
+                            qui va una scritta
+                        </div>
+                        <div style="padding: 20px; background: #5063ff">
+                        <thirty-component/>
+                        </div>
                     </div>
                 `);
 
                 this.other.onBeforeMount = () => {
-                    console.log('main component before mount');
+                    //console.log('main component before mount');
                 };
 
                 this.other.onMount = () => {
-                    console.log('main component mount');
+                    //console.log('main component mount');
                 };
 
                 this.other.onBeforeUnmount = () => {
-                    console.log('main component before unmount');
+                    //console.log('main component before unmount');
                 };
 
                 this.other.onUnmount = () => {
-                    console.log('main component unmount');
+                    //console.log('main component unmount');
                 };
             } else {
                 this.other.mount();
@@ -81,16 +92,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            console.log('create', this.tag);
+            //console.log('create', this.tag);
         },
         onMount() {
-            console.log('mount', this.tag);
+            //console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            console.log('before unmount', this.tag);
+            //console.log('before unmount', this.tag);
         },
         onUnmount() {
-            console.log('unmount', this.tag);
+            //console.log('unmount', this.tag);
         }
     });
 
@@ -105,16 +116,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            console.log('create', this.tag);
+            //console.log('create', this.tag);
         },
         onMount() {
-            console.log('mount', this.tag);
+            //console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            console.log('before unmount', this.tag);
+            //console.log('before unmount', this.tag);
         },
         onUnmount() {
-            console.log('unmount', this.tag);
+            //console.log('unmount', this.tag);
         }
     });
 

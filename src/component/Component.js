@@ -226,6 +226,8 @@ class Component {
             if (hooks.callBeforeMount(this) === false)
                 return this;
 
+            console.log(this._unmountedParentNode.innerHTML);
+
             this._unmountedParentNode.appendChild(this._rootElement.parentNode);
             this._unmounted = false;
             this._unmountedParentNode = null;
@@ -238,6 +240,7 @@ class Component {
 
             return this;
         } else if (template) {
+            //this._mountedCompiled = compile(template);
             if (this._rootElement.nodeType !== 1) {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);

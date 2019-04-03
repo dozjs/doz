@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.16.1  
+// [DOZ]  Build version: 1.16.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -367,6 +367,7 @@ function callBeforeDestroy(context) {
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
+    if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
     if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
@@ -1443,6 +1444,8 @@ var Component = function () {
             if (this._unmounted) {
                 if (hooks.callBeforeMount(this) === false) return this;
 
+                console.log(this._unmountedParentNode.innerHTML);
+
                 this._unmountedParentNode.appendChild(this._rootElement.parentNode);
                 this._unmounted = false;
                 this._unmountedParentNode = null;
@@ -1461,6 +1464,7 @@ var Component = function () {
 
                 return this;
             } else if (template) {
+                //this._mountedCompiled = compile(template);
                 if (this._rootElement.nodeType !== 1) {
                     var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                     this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
@@ -2582,7 +2586,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.16.1',
+        value: '1.16.2',
         enumerable: true
     }
 });
