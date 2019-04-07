@@ -2,61 +2,61 @@ const delay = require('../utils/delay');
 const proxy = require('../proxy');
 
 function callBeforeCreate(context) {
-    if(typeof context.onBeforeCreate === 'function'){
+    if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onBeforeCreate] === 'function'){
+    if (context.parent && typeof context.parent[context.__onBeforeCreate] === 'function') {
         return context.parent[context.__onBeforeCreate].call(context.parent, context);
     }
 }
 
 function callCreate(context) {
-    if(typeof context.onCreate === 'function'){
+    if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onCreate] === 'function'){
+    if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
         context.parent[context.__onCreate].call(context.parent, context);
     }
     context.app.emit('componentCreate', context);
 }
 
 function callConfigCreate(context) {
-    if(typeof context.onConfigCreate === 'function'){
+    if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onConfigCreate] === 'function'){
+    if (context.parent && typeof context.parent[context.__onConfigCreate] === 'function') {
         context.parent[context.__onConfigCreate].call(context.parent, context);
     }
     context.app.emit('componentConfigCreate', context);
 }
 
 function callBeforeMount(context) {
-    if(typeof context.onBeforeMount === 'function'){
+    if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onBeforeMount] === 'function'){
+    if (context.parent && typeof context.parent[context.__onBeforeMount] === 'function') {
         return context.parent[context.__onBeforeMount].call(context.parent, context);
     }
 }
 
 function callMount(context) {
-    if(typeof context.onMount === 'function'){
+    if (typeof context.onMount === 'function') {
         context.onMount.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onMount] === 'function'){
+    if (context.parent && typeof context.parent[context.__onMount] === 'function') {
         context.parent[context.__onMount].call(context.parent, context);
     }
     context.app.emit('componentMount', context);
 }
 
 function callMountAsync(context) {
-    if(typeof context.onMountAsync === 'function'){
-        delay(()=>{
+    if (typeof context.onMountAsync === 'function') {
+        delay(() => {
             context.onMountAsync.call(context);
         });
     }
-    if(context.parent && typeof context.parent[context.__onMountAsync] === 'function'){
-        delay(()=>{
+    if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
+        delay(() => {
             context.parent[context.__onMountAsync].call(context.parent, context);
         });
     }
@@ -64,75 +64,79 @@ function callMountAsync(context) {
 }
 
 function callBeforeUpdate(context, changes) {
-    if(typeof context.onBeforeUpdate === 'function'){
+    if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
     }
-    if(context.parent && typeof context.parent[context.__onBeforeUpdate] === 'function'){
+    if (context.parent && typeof context.parent[context.__onBeforeUpdate] === 'function') {
         return context.parent[context.__onBeforeUpdate].call(context.parent, context, changes);
     }
 }
 
 function callUpdate(context, changes) {
-    if(typeof context.onUpdate === 'function'){
+    if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
     }
-    if(context.parent && typeof context.parent[context.__onUpdate] === 'function'){
+    if (context.parent && typeof context.parent[context.__onUpdate] === 'function') {
         context.parent[context.__onUpdate].call(context.parent, context, changes);
     }
     context.app.emit('componentUpdate', context, changes);
 }
 
 function callAfterRender(context, changes) {
-    if(typeof context.onAfterRender === 'function'){
+    if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
     }
-    if(context.parent && typeof context.parent[context.__onAfterRender] === 'function'){
+    if (context.parent && typeof context.parent[context.__onAfterRender] === 'function') {
         return context.parent[context.__onAfterRender].call(context.parent, context, changes);
     }
 }
 
 function callBeforeUnmount(context) {
-    if(typeof context.onBeforeUnmount === 'function'){
+    if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onBeforeUnmount] === 'function'){
+    if (context.parent && typeof context.parent[context.__onBeforeUnmount] === 'function') {
         return context.parent[context.__onBeforeUnmount].call(context.parent, context);
     }
 }
 
 function callUnmount(context) {
-    if(typeof context.onUnmount === 'function'){
+    if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onUnmount] === 'function'){
+    if (context.parent && typeof context.parent[context.__onUnmount] === 'function') {
         context.parent[context.__onUnmount].call(context.parent, context);
     }
     context.app.emit('componentUnmount', context);
 }
 
 function callBeforeDestroy(context) {
-    if(typeof context.onBeforeDestroy === 'function'){
+    if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onBeforeDestroy] === 'function'){
+    if (context.parent && typeof context.parent[context.__onBeforeDestroy] === 'function') {
         return context.parent[context.__onBeforeDestroy].call(context.parent, context);
     }
 }
 
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
-    if(context.store && context.app._stores[context.store])
+    if (context.store && context.app._stores[context.store])
         delete context.app._stores[context.store];
-    if(context.id && context.app._ids[context.id])
+
+    if (context._unmountedPlaceholder)
+        context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
+
+    if (context.id && context.app._ids[context.id])
         delete context.app._ids[context.id];
-    if(typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function'){
+    if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
-    } else if(typeof context.onDestroy === 'function'){
+    } else if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
         context = null;
-    }else if(context.parent && typeof context.parent[context.__onDestroy] === 'function'){
+    } else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
     }
@@ -140,10 +144,10 @@ function callDestroy(context) {
 }
 
 function callLoadProps(context) {
-    if(typeof context.onLoadProps === 'function'){
+    if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
     }
-    if(context.parent && typeof context.parent[context.__onLoadProps] === 'function'){
+    if (context.parent && typeof context.parent[context.__onLoadProps] === 'function') {
         context.parent[context.__onLoadProps].call(context.parent, context);
     }
     context.app.emit('componentLoadProps', context);
