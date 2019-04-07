@@ -53,6 +53,7 @@ Below some basic concepts:
 - [Write app or component](#develop-and-production)
 - [IE11 support](#ie11-support)
 - [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
+- [Component structure](https://github.com/dozjs/doz/blob/master/documentation/component-structure.md)
 
 ## Installation
 ```
