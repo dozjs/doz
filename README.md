@@ -36,7 +36,7 @@ $ npm install -g doz-cli
 
 $ doz app my-app
 $ cd my-app
-$ npm run start
+$ npm start
 ```
 
 ## Example
