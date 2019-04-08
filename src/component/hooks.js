@@ -1,5 +1,4 @@
 const delay = require('../utils/delay');
-const proxy = require('../proxy');
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -124,7 +123,7 @@ function callDestroy(context) {
     if (context.store && context.app._stores[context.store])
         delete context.app._stores[context.store];
 
-    if (context._unmountedPlaceholder)
+    if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
     if (context.id && context.app._ids[context.id])
