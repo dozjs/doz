@@ -785,6 +785,7 @@ var Component = function () {
 
             this.beginSafeRender();
             var template = this.template(h);
+            console.log(template);
             this.endSafeRender();
             var next = compile(template);
             this.app.emit('draw', next, this._prev, this);
@@ -1383,6 +1384,7 @@ function get() {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
+                    console.log(newElement._rootElement, child.firstChild);
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
                     hooks.callMount(newElement);
