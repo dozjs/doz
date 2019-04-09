@@ -77,7 +77,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     } else if (isChanged(newNode, oldNode)) {
         const oldElement = $parent.childNodes[index];
         // Reuse text node
-        if (typeof newNode === 'string' && typeof oldNode === 'string') {
+        if (typeof newNode === 'string' && typeof oldNode === 'string' && oldElement) {
             oldElement.textContent = canDecode(newNode);
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
@@ -87,6 +87,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             }
             return oldElement;
         }
+
+        if (!oldElement) return;
 
         const newElement = create(newNode, cmp, initial);
 
@@ -100,6 +102,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             newElement,
             oldElement
         );
+
         return newElement;
     } else if (newNode.type) {
 

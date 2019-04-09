@@ -785,7 +785,6 @@ var Component = function () {
 
             this.beginSafeRender();
             var template = this.template(h);
-            console.log(template);
             this.endSafeRender();
             var next = compile(template);
             this.app.emit('draw', next, this._prev, this);
@@ -1384,7 +1383,6 @@ function get() {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    console.log(newElement._rootElement, child.firstChild);
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
                     hooks.callMount(newElement);
@@ -3364,7 +3362,7 @@ function update($parent, newNode, oldNode) {
     } else if (isChanged(newNode, oldNode)) {
         var oldElement = $parent.childNodes[index];
         // Reuse text node
-        if (typeof newNode === 'string' && typeof oldNode === 'string') {
+        if (typeof newNode === 'string' && typeof oldNode === 'string' && oldElement) {
             oldElement.textContent = canDecode(newNode);
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
@@ -3375,6 +3373,8 @@ function update($parent, newNode, oldNode) {
             return oldElement;
         }
 
+        if (!oldElement) return;
+
         var newElement = create(newNode, cmp, initial);
 
         //Re-assign CMP INSTANCE to new element
@@ -3384,6 +3384,7 @@ function update($parent, newNode, oldNode) {
         }
 
         $parent.replaceChild(newElement, oldElement);
+
         return newElement;
     } else if (newNode.type) {
 
@@ -3477,6 +3478,9 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
+
+    if ($target.nodeType !== 1) return;
+
     if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
         name = camelToDash(name);
     }

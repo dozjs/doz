@@ -195,7 +195,6 @@ class Component {
     render(initial) {
         this.beginSafeRender();
         const template = this.template(h);
-        console.log(template)
         this.endSafeRender();
         let next = compile(template);
         this.app.emit('draw', next, this._prev, this);

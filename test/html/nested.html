@@ -38,7 +38,7 @@
         template(h) {
             return h`
                 <x-cmp>
-                    <a href="#">${this.props.linkName}</a>
+                    <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
             `;

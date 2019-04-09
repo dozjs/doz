@@ -139,7 +139,6 @@ function get(cfg = {}) {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    console.log(newElement._rootElement, child.firstChild);
                     child.insertBefore(newElement._rootElement, child.firstChild);
 
                     hooks.callMount(newElement);

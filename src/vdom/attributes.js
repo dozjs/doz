@@ -22,6 +22,9 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
+
+    if($target.nodeType !== 1) return;
+
     if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
         name = camelToDash(name);
     }
