@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.16.6] - 2019-04-09
+- **Fixed** error when the virtual-dom does not match
+
 ## [1.16.5] - 2019-04-08
 - **Fixed** possible null error when a component is destroyed
 
