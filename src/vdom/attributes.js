@@ -48,7 +48,6 @@ function removeAttribute($target, name, value) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if($target.nodeType !== 1) return;
     if (newVal === '') {
         removeAttribute($target, name, oldVal, cmp);
         updateChildren(cmp, name, newVal, $target);
@@ -72,6 +71,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
     Object.keys(props).forEach(name => {
+        if(!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp);
         if (newProps[name] !== oldProps[name]) {
             let obj = {};
@@ -91,7 +91,6 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
-    if (!$target) return;
     $target.setAttribute(name, value);
     $target[name] = value;
 }

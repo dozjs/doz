@@ -40,12 +40,14 @@
         props: {
             button1: false,
             button2: false,
+            button3: false,
         },
         template(h) {
             return h`
                 <div>
-                    <button type="button" ${this.props.button1 ? 'data-m="o"' : 'disabled'}>button 1 - ${this.props.button1}</button>
-                    <button type="button" ${this.props.button2 ? 'data-m="o"' : 'disabled'}>button 2 - ${this.props.button2}</button>
+                    <button type="button" ${this.props.button1 ? 'disabled="false"' : 'disabled="true"'}>button 1 - ${this.props.button1}</button>
+                    <button type="button" ${this.props.button2 ? 'disabled="false"' : 'disabled="true"'}>button 2 - ${this.props.button2}</button>
+                    <button type="button" ${this.props.button3 ? 'disabled="false"' : 'disabled="true"'}>button 3 - ${this.props.button3}</button>
                 </div>
             `
         }
