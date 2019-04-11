@@ -882,6 +882,8 @@ new Doz({
 
 [FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/8/)
 
+---
+
 ### Empty attributes in HTML element
 In HTML there are some attributes such as "disabled" that can be defined 
 without specifying any value. In Doz this is not possible, 
