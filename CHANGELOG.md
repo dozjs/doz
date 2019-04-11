@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.16.7] - 2019-04-11
+## [1.16.8] - 2019-04-11
 - **Fixed** error when the virtual-dom does not match (removeAttribute)
 
 ## [1.16.6] - 2019-04-09

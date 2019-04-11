@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.16.7  
+// [DOZ]  Build version: 1.16.8  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2590,7 +2590,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.16.7',
+        value: '1.16.8',
         enumerable: true
     }
 });
@@ -3478,9 +3478,6 @@ function canBind($target) {
 }
 
 function setAttribute($target, name, value, cmp) {
-
-    if ($target.nodeType !== 1) return;
-
     if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
         name = camelToDash(name);
     }
@@ -3496,15 +3493,13 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, value) {
-
-    if ($target.nodeType !== 1) return;
-
     if (isCustomAttribute(name) || !$target) {} else {
         $target.removeAttribute(name);
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
+    if ($target.nodeType !== 1) return;
     if (newVal === '') {
         removeAttribute($target, name, oldVal, cmp);
         updateChildren(cmp, name, newVal, $target);
