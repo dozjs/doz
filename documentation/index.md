@@ -27,6 +27,7 @@ Below some basic concepts:
     - [Lifecycle Hooks](#lifecycle-hooks)
     - [Local component](#local-component)
     - [Mount](#mount)
+    - [Empty attributes in HTML element](#empty-attribute-in-html-element)
     - [Directives](#directives)
         - [HTML element](#html-element)
             - [d-bind](#d-bind)
@@ -880,6 +881,27 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/8/)
+
+### Empty attributes in HTML element
+In HTML there are some attributes such as "disabled" that can be defined 
+without specifying any value. In Doz this is not possible, 
+so for example `disabled` must be defined `disabled="true"`.
+
+```javascript
+Doz.component('my-button', {
+    props: {
+        buttonDisabled: true
+    },
+    template(h) {
+        return h`
+            <div>
+                <button onclick="this.props.buttonDisabled = false">Enable button below</button>
+                <button disabled="${this.props.buttonDisabled}">This button is disabled</button>
+            </div>
+        `
+    }
+});
+```
 
 ### Directives
 The directives are special attributes that are specified inside component tag.
