@@ -3488,6 +3488,7 @@ function setAttribute($target, name, value, cmp) {
             $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {}
     } else {
+        if (value === undefined) value = '';
         $target.setAttribute(name, value);
     }
 }

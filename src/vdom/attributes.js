@@ -35,6 +35,7 @@ function setAttribute($target, name, value, cmp) {
 
         }
     } else {
+        if (value === undefined) value = '';
         $target.setAttribute(name, value);
     }
 }
