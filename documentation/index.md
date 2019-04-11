@@ -27,7 +27,7 @@ Below some basic concepts:
     - [Lifecycle Hooks](#lifecycle-hooks)
     - [Local component](#local-component)
     - [Mount](#mount)
-    - [Empty attributes in HTML element](#empty-attribute-in-html-element)
+    - [Empty attributes in HTML element](#empty-attributes-in-html-element)
     - [Directives](#directives)
         - [HTML element](#html-element)
             - [d-bind](#d-bind)
