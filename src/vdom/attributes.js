@@ -43,6 +43,9 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, value) {
+
+    if($target.nodeType !== 1) return;
+
     if (isCustomAttribute(name) || !$target) {
     } else {
         $target.removeAttribute(name);
