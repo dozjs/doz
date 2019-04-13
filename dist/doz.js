@@ -477,7 +477,6 @@ var Element = function () {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        this.isSlotted = props[ATTR.SLOT] !== undefined;
         this.slotName = props[ATTR.SLOT];
     }
 
@@ -3363,18 +3362,10 @@ function update($parent, newNode, oldNode) {
 
     if (!$parent) return;
 
-    if ($parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
+    // Props check for slots
+    if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            /*
-            console.log(
-                'isSlotted', newNode.isSlotted,
-                'slotName', newNode.slotName,
-                '$parent', $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName]
-            );
-            */
-
             update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName], newNode, oldNode, index, cmp, initial);
-            //console.log($parent);
             return;
         }
     }
@@ -4065,65 +4056,63 @@ function slot(cmp) {
 
     var nodeList = cmpHTML.children;
 
-    if (nodeList.length > 1) {
-        // Remove from DOM
-        var rootNode = cmpHTML.removeChild(nodeList[0]);
-        var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
-        var dSlotsByNames = {};
+    if (nodeList.length <= 1) return;
 
-        var _defined = function _defined(slot) {
-            if (slot.hasAttribute('name')) dSlotsByNames[slot.getAttribute('name')] = slot;
-        };
+    var rootNode = nodeList[0];
+    var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
 
-        for (var _i2 = 0; _i2 <= dSlots.length - 1; _i2++) {
-            _defined(dSlots[_i2], _i2, dSlots);
-        }
+    if (!dSlots.length) return;
 
-        if (dSlots.length) {
-            var _slot = dSlots[0];
-            while (cmpHTML.hasChildNodes()) {
-                // By default get always the first
-                var node = cmpHTML.childNodes[0];
-                if (node.nodeType === 1) {
-                    var attrSlotName = node.getAttribute(ATTR.SLOT);
-                    // If the node has the name attribute,
-                    // try to search inside db and assign it as destination slot
-                    if (attrSlotName) {
-                        if (dSlotsByNames[attrSlotName]) {
-                            _slot = dSlotsByNames[attrSlotName];
-                        }
-                        node.removeAttribute(ATTR.SLOT);
+    // Remove from DOM
+    cmpHTML.removeChild(rootNode);
+
+    var dSlotsByNames = {};
+
+    var _defined = function _defined(slot) {
+        if (slot.hasAttribute('name')) dSlotsByNames[slot.getAttribute('name')] = slot;
+    };
+
+    for (var _i2 = 0; _i2 <= dSlots.length - 1; _i2++) {
+        _defined(dSlots[_i2], _i2, dSlots);
+    }
+
+    if (dSlots.length) {
+        var _slot = dSlots[0];
+        while (cmpHTML.hasChildNodes()) {
+            // By default get always the first
+            var node = cmpHTML.childNodes[0];
+            if (node.nodeType === 1) {
+                var attrSlotName = node.getAttribute(ATTR.SLOT);
+                // If the node has the name attribute,
+                // try to search inside db and assign it as destination slot
+                if (attrSlotName) {
+                    if (dSlotsByNames[attrSlotName]) {
+                        _slot = dSlotsByNames[attrSlotName];
                     }
+                    node.removeAttribute(ATTR.SLOT);
                 }
-
-                /*
-                if (!slot.firstChild) {
-                    const slotRoot = document.createElement(TAG.ROOT);
-                    slot.appendChild(slotRoot);
-                }
-                */
-
-                /*
-                cmp._slotRef.push({
-                    slot,
-                    node
-                });
-                */
-
-                // Destination node, firstChild is dz-root
-                _slot.appendChild(node);
             }
-
-            if (!Object.keys(dSlotsByNames).length) {
-                console.log(_slot);
-                dSlotsByNames[''] = _slot;
+            /*
+            if (!slot.firstChild) {
+                const slotRoot = document.createElement(TAG.ROOT);
+                slot.appendChild(slotRoot);
             }
+            */
 
-            cmp._slotRef = dSlotsByNames;
-
-            // Re-append to the DOM
-            cmpHTML.appendChild(rootNode);
+            // Destination node, firstChild is dz-root
+            //slot.firstChild.appendChild(node);
+            _slot.appendChild(node);
         }
+
+        if (!Object.keys(dSlotsByNames).length) {
+            //console.log(slot)
+            dSlotsByNames[''] = _slot;
+        }
+
+        cmp._slotRef = dSlotsByNames;
+
+        // Re-append to the DOM
+        cmpHTML.appendChild(rootNode);
     }
 }
 
