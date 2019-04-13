@@ -96,7 +96,7 @@ module.exports = {
         MOUNT: 'dz-mount',
         SUFFIX_ROOT: '-root',
         TEXT_NODE_PLACE: 'dz-text-node',
-        SLOT: 'd-slot'
+        SLOT: 'slot'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -121,7 +121,7 @@ module.exports = {
         REPLACE_QUOT: /"/g
     },
     ATTR: {
-        SLOT: 'd-slot',
+        SLOT: 'slot',
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
@@ -3362,6 +3362,8 @@ function update($parent, newNode, oldNode) {
 
     if (!$parent) return;
 
+    //console.log($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length);
+
     // Props check for slots
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
@@ -4085,12 +4087,10 @@ function slot(cmp) {
                 var attrSlotName = node.getAttribute(ATTR.SLOT);
                 // If the node has the name attribute,
                 // try to search inside db and assign it as destination slot
-                if (attrSlotName) {
-                    if (dSlotsByNames[attrSlotName]) {
-                        _slot = dSlotsByNames[attrSlotName];
-                    }
-                    node.removeAttribute(ATTR.SLOT);
+                if (dSlotsByNames[attrSlotName]) {
+                    _slot = dSlotsByNames[attrSlotName];
                 }
+                node.removeAttribute(ATTR.SLOT);
             }
             /*
             if (!slot.firstChild) {

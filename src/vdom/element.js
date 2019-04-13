@@ -66,8 +66,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!$parent) return;
 
+    //console.log($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length);
+
     // Props check for slots
-    if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
+    if ($parent.children
+        && $parent.children[0]
+        && $parent.children[0][CMP_INSTANCE]
+        && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
         if (newNode && typeof newNode === 'object') {
             update(
                 $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName],
@@ -94,7 +99,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string' && oldElement) {
             oldElement.textContent = canDecode(newNode);
-            if($parent.nodeName === 'SCRIPT') {
+            if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
                     document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);

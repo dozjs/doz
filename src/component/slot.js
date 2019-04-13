@@ -32,12 +32,10 @@ function slot(cmp) {
                 let attrSlotName = node.getAttribute(ATTR.SLOT);
                 // If the node has the name attribute,
                 // try to search inside db and assign it as destination slot
-                if (attrSlotName) {
-                    if (dSlotsByNames[attrSlotName]) {
-                        slot = dSlotsByNames[attrSlotName];
-                    }
-                    node.removeAttribute(ATTR.SLOT);
+                if (dSlotsByNames[attrSlotName]) {
+                    slot = dSlotsByNames[attrSlotName];
                 }
+                node.removeAttribute(ATTR.SLOT);
             }
             /*
             if (!slot.firstChild) {

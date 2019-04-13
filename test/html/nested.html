@@ -25,7 +25,7 @@
             return h`
                 <div style="background: red; padding: 20px;">
                     hello
-                    <d-slot/>
+                    <slot/>
                     <button onclick="this.info()">Info</button>
                 </div>
             `
@@ -65,8 +65,10 @@
         template(h) {
             return h`
                 <x-cmp>
-                    <a d-slot href="#" title="${this.props.linkName}">${this.props.linkName}</a>
-                    <x-cmp-2 d-slot label="${this.props.label}"/>
+                    <div slot>
+                        <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
+                        <x-cmp-2 label="${this.props.label}"/>
+                    </div>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
                 <button onclick="this.props.label = 'timestamp: ' + Date.now()">change label</button>
