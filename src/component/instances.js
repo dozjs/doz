@@ -8,6 +8,7 @@ const {extract} = require('./d-props');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
+const slot = require('./slot');
 
 function get(cfg = {}) {
 
@@ -140,6 +141,9 @@ function get(cfg = {}) {
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
+
+                    // slot logic
+                    slot(newElement);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);

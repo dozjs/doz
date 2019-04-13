@@ -66,6 +66,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!$parent) return;
 
+    //if ($parent.children[0] && $parent.children[0][CMP_INSTANCE] && $parent.children[0][CMP_INSTANCE]._slotRef.length)
+        //console.dir($parent.children[0][CMP_INSTANCE]);
+
     if (!oldNode) {
         const rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);

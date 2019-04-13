@@ -95,7 +95,8 @@ module.exports = {
         EMPTY: 'dz-empty',
         MOUNT: 'dz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'dz-text-node'
+        TEXT_NODE_PLACE: 'dz-text-node',
+        SLOT: 'd-slot'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -120,6 +121,7 @@ module.exports = {
         REPLACE_QUOT: /"/g
     },
     ATTR: {
+        SLOT: 'd-slot',
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
@@ -1079,6 +1081,10 @@ function defineProperties(obj, opt) {
         _computedCache: {
             value: new Map()
         },
+        _slotRef: {
+            value: [],
+            writable: true
+        },
 
         //Public
         tag: {
@@ -1246,6 +1252,7 @@ var _require5 = __webpack_require__(5),
     Component = _require5.Component;
 
 var propsInit = __webpack_require__(18);
+var slot = __webpack_require__(45);
 
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1384,6 +1391,9 @@ function get() {
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
                     child.insertBefore(newElement._rootElement, child.firstChild);
+
+                    // slot logic
+                    slot(newElement);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
@@ -2545,12 +2555,12 @@ var collection = __webpack_require__(1);
 var _require = __webpack_require__(19),
     use = _require.use;
 
-var component = __webpack_require__(45);
+var component = __webpack_require__(46);
 
 var _require2 = __webpack_require__(5),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(46);
+var mixin = __webpack_require__(47);
 var h = __webpack_require__(16);
 
 var _require3 = __webpack_require__(4),
@@ -3351,6 +3361,9 @@ function update($parent, newNode, oldNode) {
 
     if (!$parent) return;
 
+    //if ($parent.children[0] && $parent.children[0][CMP_INSTANCE] && $parent.children[0][CMP_INSTANCE]._slotRef.length)
+    //console.dir($parent.children[0][CMP_INSTANCE]);
+
     if (!oldNode) {
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
@@ -4027,6 +4040,70 @@ module.exports = localMixin;
 "use strict";
 
 
+var _require = __webpack_require__(0),
+    ATTR = _require.ATTR,
+    TAG = _require.TAG;
+
+function slot(cmp) {
+
+    var cmpHTML = cmp.getHTMLElement();
+
+    var nodeList = cmpHTML.children;
+
+    if (nodeList.length > 1) {
+        // Remove from DOM
+        var rootNode = cmpHTML.removeChild(nodeList[0]);
+        var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
+        var dSlotsByNames = {};
+
+        var _defined = function _defined(slot) {
+            if (slot.hasAttribute('name')) dSlotsByNames[slot.getAttribute('name')] = slot;
+        };
+
+        for (var _i2 = 0; _i2 <= dSlots.length - 1; _i2++) {
+            _defined(dSlots[_i2], _i2, dSlots);
+        }
+
+        if (dSlots.length) {
+            while (cmpHTML.hasChildNodes()) {
+                // By default get always the first
+                var _slot = dSlots[0];
+                var node = cmpHTML.childNodes[0];
+                if (node.nodeType === 1) {
+                    var attrSlotName = node.getAttribute(ATTR.SLOT);
+                    // If the node has the name attribute,
+                    // try to search inside db and assign it as destination slot
+
+                    if (attrSlotName) {
+                        if (dSlotsByNames[attrSlotName]) {
+                            _slot = dSlotsByNames[attrSlotName];
+                        }
+                        node.removeAttribute(ATTR.SLOT);
+                    }
+                }
+                cmp._slotRef.push({
+                    slot: _slot,
+                    node: node
+                });
+                // Destination node
+                _slot.appendChild(node);
+            }
+
+            // Re-append to the DOM
+            cmpHTML.appendChild(rootNode);
+        }
+    }
+}
+
+module.exports = slot;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _require = __webpack_require__(1),
     registerComponent = _require.registerComponent;
 
@@ -4056,7 +4133,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

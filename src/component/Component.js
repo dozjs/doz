@@ -411,6 +411,10 @@ function defineProperties(obj, opt) {
         _computedCache: {
             value: new Map()
         },
+        _slotRef: {
+            value: [],
+            writable: true
+        },
 
         //Public
         tag: {

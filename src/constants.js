@@ -12,7 +12,8 @@ module.exports = {
         EMPTY: 'dz-empty',
         MOUNT: 'dz-mount',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'dz-text-node'
+        TEXT_NODE_PLACE: 'dz-text-node',
+        SLOT: 'd-slot'
     },
     REGEX: {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
@@ -37,6 +38,7 @@ module.exports = {
         REPLACE_QUOT: /"/g
     },
     ATTR: {
+        SLOT: 'd-slot',
         // Attributes for HTMLElement
         BIND: 'd-bind',
         REF: 'd-ref',
