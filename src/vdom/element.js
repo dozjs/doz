@@ -66,8 +66,29 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!$parent) return;
 
-    //if ($parent.children[0] && $parent.children[0][CMP_INSTANCE] && $parent.children[0][CMP_INSTANCE]._slotRef.length)
-        //console.dir($parent.children[0][CMP_INSTANCE]);
+    if ($parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
+        if (newNode && typeof newNode === 'object') {
+            /*
+            console.log(
+                'isSlotted', newNode.isSlotted,
+                'slotName', newNode.slotName,
+                '$parent', $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName]
+            );
+            */
+
+            update(
+                $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName],
+                newNode,
+                oldNode,
+                index,
+                cmp,
+                initial
+            );
+            //console.log($parent);
+            return;
+
+        }
+    }
 
     if (!oldNode) {
         const rootElement = create(newNode, cmp, initial);

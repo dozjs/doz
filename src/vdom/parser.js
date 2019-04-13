@@ -45,6 +45,8 @@ class Element {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSlotted = props[ATTR.SLOT] !== undefined;
+        this.slotName = props[ATTR.SLOT];
     }
 
     appendChild(node) {
