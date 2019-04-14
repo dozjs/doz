@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5896ff594888"></script>
+    <script src="../../dist/doz.js?589fr6ff594888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -21,14 +21,24 @@
 <script>
 
     Doz.component('x-cmp', {
+        props: {
+            time: '--'
+        },
         template(h) {
             return h`
                 <div style="background: red; padding: 20px;">
-                    hello
+                    hello ${this.props.time}
                     <slot/>
                     <button onclick="this.info()">Info</button>
                 </div>
             `
+        },
+
+        onMount() {
+            //return;
+            setInterval(() => {
+                this.props.time = new Date().toLocaleTimeString()
+            }, 1000);
         },
 
         info() {
@@ -41,10 +51,16 @@
             count: 0,
             label: 'the label'
         },
+        propsListener: {
+            count(v) {
+                console.log(v);
+            }
+        },
         template(h) {
             return h`
                 <div style="background: greenyellow; padding: 20px;">
                     ${this.props.label}
+                    <slot/>
                     <button onclick="this.props.count++">Count</button> world and count ${this.props.count}
                     <button onclick="this.mountDivHello()">Mount div hello</button>
                     <button onclick="this.unmount()">Unmount</button>
@@ -67,7 +83,9 @@
                 <x-cmp>
                     <div slot>
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
-                        <x-cmp-2 label="${this.props.label}"/>
+                        <x-cmp-2 label="${this.props.label}">
+                            <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
+                        </x-cmp-2>
                     </div>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>

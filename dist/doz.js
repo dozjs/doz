@@ -3364,11 +3364,16 @@ function update($parent, newNode, oldNode) {
 
     //console.log($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length);
 
+    //console.log('$parent', $parent);
+    //console.log('newNode', newNode);
+    //console.log('oldNode', oldNode);
+
     // Props check for slots
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
+            //console.log('aaaaaaaaaaa')
             update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName], newNode, oldNode, index, cmp, initial);
-            return;
+            // return;
         }
     }
 
@@ -3442,7 +3447,7 @@ function update($parent, newNode, oldNode) {
         }
 
         clearDead();
-    }
+    } else {}
 }
 
 function clearDead() {
