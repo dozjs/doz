@@ -22,7 +22,7 @@
 
     Doz.component('x-cmp', {
         props: {
-            time: '--'
+            time: '--:--:--'
         },
         template(h) {
             return h`
@@ -60,7 +60,7 @@
             return h`
                 <div style="background: greenyellow; padding: 20px;">
                     ${this.props.label}
-                    <slot/>
+                    <slot name="b"/>
                     <button onclick="this.props.count++">Count</button> world and count ${this.props.count}
                     <button onclick="this.mountDivHello()">Mount div hello</button>
                     <button onclick="this.unmount()">Unmount</button>
@@ -84,7 +84,7 @@
                     <div slot>
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
-                            <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
+                            <div slot="b" style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
                         </x-cmp-2>
                     </div>
                 </x-cmp>
