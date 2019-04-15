@@ -29,7 +29,7 @@
                 <div style="background: red; padding: 20px;">
                     hello ${this.props.time}
                     <slot/>
-                    <button onclick="this.info()">Info</button>
+                    <button onclick="console.log(this)">Info x-cmp</button>
                 </div>
             `
         },
@@ -39,10 +39,6 @@
             setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString()
             }, 1000);
-        },
-
-        info() {
-            console.log(this)
         }
     });
 
@@ -60,10 +56,11 @@
             return h`
                 <div style="background: greenyellow; padding: 20px;">
                     ${this.props.label}
-                    <slot name="b"/>
+                    <slot/>
                     <button onclick="this.props.count++">Count</button> world and count ${this.props.count}
                     <button onclick="this.mountDivHello()">Mount div hello</button>
                     <button onclick="this.unmount()">Unmount</button>
+                    <button onclick="console.log(this)">Info x-cmp-2</button>
                 </div>
             `
         },
@@ -84,7 +81,7 @@
                     <div slot>
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
-                            <div slot="b" style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
+                            <div slot style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
                         </x-cmp-2>
                     </div>
                 </x-cmp>
