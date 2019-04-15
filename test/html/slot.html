@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589fr6ff5948888"></script>
+    <script src="../../dist/doz.js?589fr60ff5948888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -69,11 +69,29 @@
         }
     });
 
+    Doz.component('x-cmp-3', {
+        template(h) {
+            return h`
+                <div style="padding: 10px; background: burlywood"> ${this.props.name}
+                    <div style="padding: 10px; background: lightseagreen">
+                        <slot/>
+                    </div>
+                </div>
+            `
+        }
+    });
+
     new Doz({
         root: '#app',
         props: {
             linkName: 'A link',
-            label: 'test'
+            label: 'test',
+            records: ['hello', 'world']
+        },
+        propsListener: {
+            linkName(v) {
+                console.log(v);
+            }
         },
         template(h) {
             return h`
@@ -82,13 +100,19 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
+                            ${this.each(this.props.records, i => h`<x-cmp-3 name="${i}">${i} <button onclick="console.log($this)">A button</button></x-cmp-3>`)}
                         </x-cmp-2>
                     </div>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
                 <button onclick="this.props.label = 'timestamp: ' + Date.now()">change label</button>
+                <button onclick="this.addRecords()">push records</button>
             `;
         },
+        addRecords() {
+            this.props.records.push('timestamp: ' + Date.now());
+            //console.log(this.template(Doz.h))
+        }
         /*onCreate() {
             this.app.on('draw', (next, old, cmp) => {
                 console.log(next, old);

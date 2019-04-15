@@ -1172,6 +1172,8 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
+        console.log(item.node.innerHTML);
+
         if (item.node.innerHTML === '') {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
@@ -4056,7 +4058,7 @@ function slot(cmp) {
 
     var nodeList = cmpHTML.children;
 
-    if (nodeList.length <= 1) return;
+    //if (nodeList.length <= 1) return;
 
     var rootNode = nodeList[0];
     var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
@@ -4069,6 +4071,7 @@ function slot(cmp) {
     var dSlotsByNames = {};
 
     var _defined = function _defined(slot) {
+        slot.innerHTML = '';
         if (slot.hasAttribute('name')) dSlotsByNames[slot.getAttribute('name')] = slot;
     };
 
@@ -4090,20 +4093,11 @@ function slot(cmp) {
                 }
                 node.removeAttribute(ATTR.SLOT);
             }
-            /*
-            if (!slot.firstChild) {
-                const slotRoot = document.createElement(TAG.ROOT);
-                slot.appendChild(slotRoot);
-            }
-            */
 
-            // Destination node, firstChild is dz-root
-            //slot.firstChild.appendChild(node);
             _slot.appendChild(node);
         }
 
         if (!Object.keys(dSlotsByNames).length) {
-            //console.log(slot)
             dSlotsByNames[''] = _slot;
         }
 

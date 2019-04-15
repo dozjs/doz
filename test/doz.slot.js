@@ -49,7 +49,7 @@ describe('Doz.slot', function () {
                 template(h) {
                     return h`
                         <x-cmp-1>
-                            <div slot>
+                            <div>
                                 <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                                 <x-cmp-2 label="${this.props.label}"/>
                             </div>

@@ -501,6 +501,8 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
+        console.log(item.node.innerHTML)
+
         if (item.node.innerHTML === '') {
             const dynamicInstance = require('./instances').get({
                 root,

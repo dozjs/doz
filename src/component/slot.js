@@ -6,7 +6,7 @@ function slot(cmp) {
 
     const nodeList = cmpHTML.children;
 
-    if (nodeList.length <= 1) return;
+    //if (nodeList.length <= 1) return;
 
     const rootNode = nodeList[0];
     const dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
@@ -19,6 +19,7 @@ function slot(cmp) {
     const dSlotsByNames = {};
 
     dSlots.forEach(slot => {
+        slot.innerHTML = '';
         if (slot.hasAttribute('name'))
             dSlotsByNames[slot.getAttribute('name')] = slot;
     });
@@ -37,21 +38,11 @@ function slot(cmp) {
                 }
                 node.removeAttribute(ATTR.SLOT);
             }
-            /*
-            if (!slot.firstChild) {
-                const slotRoot = document.createElement(TAG.ROOT);
-                slot.appendChild(slotRoot);
-            }
-            */
 
-            // Destination node, firstChild is dz-root
-            //slot.firstChild.appendChild(node);
             slot.appendChild(node);
         }
 
-
         if (!Object.keys(dSlotsByNames).length) {
-            //console.log(slot)
             dSlotsByNames[''] = slot;
         }
 
