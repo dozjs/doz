@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589fr60ff5948888"></script>
+    <script src="../../dist/doz.js?589fr60ff59348888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -35,7 +35,7 @@
         },
 
         onMount() {
-            //return;
+            return;
             setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString()
             }, 1000);
@@ -93,6 +93,7 @@
                 console.log(v);
             }
         },
+        //${this.each(this.props.records, i => h`<x-cmp-3 name="${i}">${i} <button onclick="console.log($this)">A button</button></x-cmp-3>`)}
         template(h) {
             return h`
                 <x-cmp>
@@ -100,7 +101,7 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
-                            ${this.each(this.props.records, i => h`<x-cmp-3 name="${i}">${i} <button onclick="console.log($this)">A button</button></x-cmp-3>`)}
+                            ${this.each(this.props.records, i => h`<x-cmp-3 name="${i}">${i}</x-cmp-3>`)}
                         </x-cmp-2>
                     </div>
                 </x-cmp>

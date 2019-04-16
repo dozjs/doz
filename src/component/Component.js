@@ -196,6 +196,7 @@ class Component {
         this.beginSafeRender();
         const template = this.template(h);
         this.endSafeRender();
+        //console.log(template)
         let next = compile(template);
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
@@ -493,6 +494,8 @@ function drawDynamic(instance) {
 
     let index = instance._processing.length - 1;
 
+    //console.log(instance._processing)
+
     while (index >= 0) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
@@ -501,9 +504,10 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        console.log(item.node.innerHTML)
+        //console.dir(item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '') {
+        //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,

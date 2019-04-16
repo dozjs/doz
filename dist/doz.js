@@ -789,6 +789,7 @@ var Component = function () {
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
+            //console.log(template)
             var next = compile(template);
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
@@ -1164,6 +1165,8 @@ function drawDynamic(instance) {
 
     var index = instance._processing.length - 1;
 
+    //console.log(instance._processing)
+
     while (index >= 0) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
@@ -1172,9 +1175,10 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        console.log(item.node.innerHTML);
+        //console.dir(item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '') {
+            //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
                 template: item.node.outerHTML,
@@ -3350,6 +3354,7 @@ function create(node, cmp, initial) {
     }
 
     if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
+
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -3368,6 +3373,7 @@ function update($parent, newNode, oldNode) {
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
+            console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index);
             update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial);
         }
     }
@@ -4058,7 +4064,7 @@ function slot(cmp) {
 
     var nodeList = cmpHTML.children;
 
-    //if (nodeList.length <= 1) return;
+    if (!nodeList.length) return;
 
     var rootNode = nodeList[0];
     var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
