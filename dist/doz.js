@@ -749,7 +749,7 @@ var Component = function () {
                 if (safe) this.beginSafeRender();
                 res = obj.map(func).map(function (stringEl) {
                     if (typeof stringEl === 'string') {
-                        return ' ' + stringEl.trim();
+                        return stringEl.trim();
                     }
                 }).join('');
                 if (safe) this.endSafeRender();
@@ -3400,8 +3400,7 @@ function update($parent, newNode, oldNode) {
         if (slotted) {
             console.log('STEP', 5, $parent.childNodes[index], index, newNode);
         }
-        var oldElement = $parent.childNodes[index];
-        if (!oldElement) return;
+        var oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
 
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {

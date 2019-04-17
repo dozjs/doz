@@ -164,7 +164,7 @@ class Component {
             if (safe) this.beginSafeRender();
             res = obj.map(func).map(stringEl => {
                 if (typeof stringEl === 'string') {
-                    return ' '+(stringEl.trim())
+                    return stringEl.trim()
                 }
             }).join('');
             if (safe) this.endSafeRender();

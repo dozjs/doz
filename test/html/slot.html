@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589ifr60f0f596v348u888"></script>
+    <script src="../../dist/doz.js?589ifr60f0f596ov348u888"></script>
+    <-script src="https://unpkg.com/doz/dist/doz.min.js"></script->
     <style>
         body {
             font-family: sans-serif;
@@ -93,6 +94,13 @@
                 console.log(v);
             }
         },
+        /*
+                            ${this.each(this.props.records, i => `
+                                <x-cmp-3 name="${i}">
+                                    ${i}
+                                </x-cmp-3>
+                            `)}
+        */
         //${this.each(this.props.records, i => h`<x-cmp-3 name="${i}">${i} <button onclick="console.log($this)">A button</button></x-cmp-3>`)}
         template(h) {
             return h`
@@ -101,10 +109,15 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
-                            ${this.each(this.props.records, i => '<x-cmp-3 name="'+i+'">'+i+'</x-cmp-3>')}
+                            ${this.each(this.props.records, i => `
+                                <x-cmp-3 name="${i}">
+                                    ${i}
+                                </x-cmp-3>
+                            `)}
                         </x-cmp-2>
                     </div>
                 </x-cmp>
+
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
                 <button onclick="this.props.label = 'timestamp: ' + Date.now()">change label</button>
                 <button onclick="this.addRecords()">push records</button>

@@ -91,8 +91,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
         }
     }
 
-
-
     if (!oldNode) {
         if (slotted) {console.log('STEP', 3)}
         const rootElement = create(newNode, cmp, initial);
@@ -105,8 +103,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
         }
     } else if (isChanged(newNode, oldNode)) {
         if (slotted) {console.log('STEP', 5, $parent.childNodes[index], index, newNode)}
-        const oldElement = $parent.childNodes[index];
-        if (!oldElement) return;
+        const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
 
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
