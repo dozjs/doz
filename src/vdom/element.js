@@ -57,7 +57,6 @@ function create(node, cmp, initial) {
         if ((node.type.indexOf('-') !== -1
             || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
             && !initial) {
-
             cmp._processing.push({node: $el, action: 'create'});
         }
 
@@ -65,7 +64,6 @@ function create(node, cmp, initial) {
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
-
     //if (slotted) {console.log('STEP', 1)}
 
     if (!$parent) return;
@@ -74,13 +72,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
     if ($parent.children
         && $parent.children[0]
         && $parent.children[0][CMP_INSTANCE]
-        && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
-
+        && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length
+        && index
+    ) {
 
         if (newNode && typeof newNode === 'object') {
-            if (slotted) {console.log('STEP', 2)}
+            console.log('STEP', 2, index)
             //console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
-            update(
+            return update(
                 $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''],
                 newNode,
                 oldNode,
@@ -89,10 +88,10 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
                 initial,
                 true
             );
-
         }
-
     }
+
+
 
     if (!oldNode) {
         if (slotted) {console.log('STEP', 3)}

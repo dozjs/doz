@@ -1175,24 +1175,25 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        //console.dir(item.node.firstChild[CMP_INSTANCE]);
+        //console.log('item.node.innerHTML', item.node.innerHTML === '');
+        //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
-        //if (item.node.innerHTML === '') {
-        //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
-        var dynamicInstance = __webpack_require__(6).get({
-            root: root,
-            template: item.node.outerHTML,
-            app: instance.app,
-            parent: instance
-        });
+        if (item.node.innerHTML === '' || item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
+            //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
+            var dynamicInstance = __webpack_require__(6).get({
+                root: root,
+                template: item.node.outerHTML,
+                app: instance.app,
+                parent: instance
+            });
 
-        if (dynamicInstance) {
-            instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-            instance._processing.splice(index, 1);
+            if (dynamicInstance) {
+                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
+                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                instance._processing.splice(index, 1);
+            }
         }
-        //}
         index -= 1;
     }
 }
@@ -3355,7 +3356,6 @@ function create(node, cmp, initial) {
     }
 
     if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -3368,20 +3368,17 @@ function update($parent, newNode, oldNode) {
     var initial = arguments[5];
     var slotted = arguments[6];
 
-
     //if (slotted) {console.log('STEP', 1)}
 
     if (!$parent) return;
 
     // Props check for slots
-    if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length) {
+    if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length && index) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            if (slotted) {
-                console.log('STEP', 2);
-            }
+            console.log('STEP', 2, index);
             //console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
-            update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
+            return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
         }
     }
 

@@ -504,9 +504,10 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        //console.dir(item.node.firstChild[CMP_INSTANCE]);
+        //console.log('item.node.innerHTML', item.node.innerHTML === '');
+        //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
-        //if (item.node.innerHTML === '') {
+        if (item.node.innerHTML === '' || (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE])) {
         //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
@@ -521,7 +522,7 @@ function drawDynamic(instance) {
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
             }
-        //}
+        }
         index -= 1;
     }
 }
