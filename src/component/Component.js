@@ -164,7 +164,7 @@ class Component {
             if (safe) this.beginSafeRender();
             res = obj.map(func).map(stringEl => {
                 if (typeof stringEl === 'string') {
-                    return stringEl.trim()
+                    return ' '+(stringEl.trim())
                 }
             }).join('');
             if (safe) this.endSafeRender();
@@ -506,7 +506,7 @@ function drawDynamic(instance) {
 
         //console.dir(item.node.firstChild[CMP_INSTANCE]);
 
-        if (item.node.innerHTML === '') {
+        //if (item.node.innerHTML === '') {
         //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
@@ -521,7 +521,7 @@ function drawDynamic(instance) {
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
             }
-        }
+        //}
         index -= 1;
     }
 }
