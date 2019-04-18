@@ -112,11 +112,13 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
+                            <div>
                             ${this.each(this.props.records, (i, y) => `
                                 <x-cmp-3 name="${i}">
                                     ${i} <button forceupdate onclick="this.removeRecord(${y})">&times;</button>
                                 </x-cmp-3>
                             `)}
+                            </div>
                         </x-cmp-2>
                     </div>
                 </x-cmp>

@@ -3387,33 +3387,35 @@ function update($parent, newNode, oldNode) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        if ($parent.childNodes[index]) {
-            deadChildren.push($parent.childNodes[index]);
+        var oldElement = $parent.childNodes[index];
+        if (oldElement) {
+            deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        var oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
+        console.log($parent);
+        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
 
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
-            oldElement.textContent = canDecode(newNode);
+            _oldElement.textContent = canDecode(newNode);
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(_oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
-            return oldElement;
+            return _oldElement;
         }
 
         var newElement = create(newNode, cmp, initial);
 
         //Re-assign CMP INSTANCE to new element
-        if (oldElement[CMP_INSTANCE]) {
-            newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
+        if (_oldElement[CMP_INSTANCE]) {
+            newElement[CMP_INSTANCE] = _oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
-        $parent.replaceChild(newElement, oldElement);
+        $parent.replaceChild(newElement, _oldElement);
 
         return newElement;
     } else if (newNode.type) {

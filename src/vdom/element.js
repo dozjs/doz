@@ -96,10 +96,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        if ($parent.childNodes[index]) {
-            deadChildren.push($parent.childNodes[index]);
+        const oldElement = $parent.childNodes[index];
+        if (oldElement) {
+            deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
+        console.log($parent)
         const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
 
         // Reuse text node
