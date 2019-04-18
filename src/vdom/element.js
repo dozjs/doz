@@ -79,6 +79,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         if (newNode && typeof newNode === 'object') {
             //if (slotted) console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
+            console.log('aaaaaaaaa', $parent.children[0][CMP_INSTANCE].tag, newNode)
             return update(
                 $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''],
                 newNode,
@@ -101,10 +102,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        //console.log($parent)
+        //if(slotted) return;
+        console.log('slotted', slotted)
+
         //if ($parent.children[0][CMP_INSTANCE])
         //console.log('isChanged', $parent = $parent.children[0][CMP_INSTANCE].getHTMLElement());
-        const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(' '));
+        const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
         //console.log(oldNode)
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
@@ -135,6 +138,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         return newElement;
     } else if (newNode.type) {
+        //if(slotted) return;
         let updated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,

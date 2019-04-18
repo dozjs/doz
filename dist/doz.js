@@ -3381,6 +3381,7 @@ function update($parent, newNode, oldNode) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
             //if (slotted) console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
+            console.log('aaaaaaaaa', $parent.children[0][CMP_INSTANCE].tag, newNode);
             return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
         }
     }
@@ -3395,10 +3396,12 @@ function update($parent, newNode, oldNode) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        //console.log($parent)
+        //if(slotted) return;
+        console.log('slotted', slotted);
+
         //if ($parent.children[0][CMP_INSTANCE])
         //console.log('isChanged', $parent = $parent.children[0][CMP_INSTANCE].getHTMLElement());
-        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(' '));
+        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
         //console.log(oldNode)
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
@@ -3426,6 +3429,7 @@ function update($parent, newNode, oldNode) {
 
         return newElement;
     } else if (newNode.type) {
+        //if(slotted) return;
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {
@@ -4076,7 +4080,7 @@ function slot(cmp) {
 
     var nodeList = cmpHTML.children;
 
-    if (!nodeList.length) return;
+    //if (nodeList.length <= 1) return;
 
     var rootNode = nodeList[0];
     var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
