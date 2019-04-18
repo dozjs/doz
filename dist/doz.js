@@ -794,6 +794,9 @@ var Component = function () {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
+            //console.log('next', next);
+            //console.log('this._prev', this._prev);
+
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
             //Remove attributes from component tag
@@ -3377,7 +3380,7 @@ function update($parent, newNode, oldNode) {
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length && index) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            //console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
+            //if (slotted) console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
             return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
         }
     }
@@ -3392,9 +3395,11 @@ function update($parent, newNode, oldNode) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log($parent);
-        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
-
+        //console.log($parent)
+        //if ($parent.children[0][CMP_INSTANCE])
+        //console.log('isChanged', $parent = $parent.children[0][CMP_INSTANCE].getHTMLElement());
+        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(' '));
+        //console.log(oldNode)
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             _oldElement.textContent = canDecode(newNode);
@@ -3404,10 +3409,12 @@ function update($parent, newNode, oldNode) {
                     document.getElementById($parent.dataset.id).textContent = composeStyleInner(_oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
+            //console.log('aaaaa')
             return _oldElement;
         }
 
         var newElement = create(newNode, cmp, initial);
+        //return console.log('newElement', newElement);
 
         //Re-assign CMP INSTANCE to new element
         if (_oldElement[CMP_INSTANCE]) {
@@ -3448,6 +3455,7 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
+            //console.log('for');
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 

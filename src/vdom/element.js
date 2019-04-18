@@ -78,7 +78,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
     ) {
 
         if (newNode && typeof newNode === 'object') {
-            //console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
+            //if (slotted) console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
             return update(
                 $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''],
                 newNode,
@@ -101,9 +101,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log($parent)
-        const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
-
+        //console.log($parent)
+        //if ($parent.children[0][CMP_INSTANCE])
+        //console.log('isChanged', $parent = $parent.children[0][CMP_INSTANCE].getHTMLElement());
+        const oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(' '));
+        //console.log(oldNode)
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             oldElement.textContent = canDecode(newNode);
@@ -113,10 +115,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
                     document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
+            //console.log('aaaaa')
             return oldElement;
         }
 
         const newElement = create(newNode, cmp, initial);
+        //return console.log('newElement', newElement);
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
@@ -155,6 +159,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
         const oldLength = oldNode.children.length;
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
+            //console.log('for');
             update(
                 $parent.childNodes[index],
                 newNode.children[i],
