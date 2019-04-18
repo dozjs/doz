@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589ifr60f0f596ov348u888"></script>
+    <script src="../../dist/doz.js?589ifcrn60f0f596ov34n8u888"></script>
     <-script src="https://unpkg.com/doz/dist/doz.min.js"></script->
     <style>
         body {
@@ -94,6 +94,9 @@
                 console.log(v);
             }
         },
+        onUpdate(changes) {
+            console.log(changes)
+        },
         /*
                             ${this.each(this.props.records, i => `
                                 <x-cmp-3 name="${i}">
@@ -109,9 +112,9 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
-                            ${this.each(this.props.records, i => `
+                            ${this.each(this.props.records, (i, y) => `
                                 <x-cmp-3 name="${i}">
-                                    ${i}
+                                    ${i} <button forceupdate onclick="this.removeRecord(${y})">&times;</button>
                                 </x-cmp-3>
                             `)}
                         </x-cmp-2>
@@ -122,6 +125,10 @@
                 <button onclick="this.props.label = 'timestamp: ' + Date.now()">change label</button>
                 <button onclick="this.addRecords()">push records</button>
             `;
+        },
+        removeRecord(i) {
+            this.props.records.splice(i, 1);
+            console.log(this.template(Doz.h));
         },
         addRecords() {
             this.props.records.push('timestamp: ' + Date.now());

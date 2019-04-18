@@ -3368,7 +3368,8 @@ function update($parent, newNode, oldNode) {
     var initial = arguments[5];
     var slotted = arguments[6];
 
-    //if (slotted) {console.log('STEP', 1)}
+
+    //console.log($parent);
 
     if (!$parent) return;
 
@@ -3376,37 +3377,24 @@ function update($parent, newNode, oldNode) {
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length && index) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            console.log('STEP', 2, index);
             //console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
             return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
         }
     }
 
     if (!oldNode) {
-        if (slotted) {
-            console.log('STEP', 3);
-        }
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
         if ($parent.childNodes[index]) {
-            if (slotted) {
-                console.log('STEP', 4);
-            }
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
-        if (slotted) {
-            console.log('STEP', 5, $parent.childNodes[index], index, newNode);
-        }
         var oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
 
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
-            if (slotted) {
-                console.log('STEP', 6);
-            }
             oldElement.textContent = canDecode(newNode);
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
@@ -3421,9 +3409,6 @@ function update($parent, newNode, oldNode) {
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
-            if (slotted) {
-                console.log('STEP', 7);
-            }
             newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
@@ -3432,17 +3417,11 @@ function update($parent, newNode, oldNode) {
 
         return newElement;
     } else if (newNode.type) {
-        //if (slotted) {console.log('STEP', 8, newNode.type)}
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {
-            //if (slotted) {console.log('STEP', 9)}
             var dynInstance = $parent.childNodes[index][INSTANCE];
             if (dynInstance && updated.length) {
-                if (slotted) {
-                    console.log('STEP', 10);
-                }
-
                 var _defined4 = function _defined4(props) {
                     var _defined5 = function _defined5(name) {
                         dynInstance.props[name] = props[name];
@@ -3467,17 +3446,10 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            if (slotted) {
-                console.log('STEP', 11);
-            }
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
         clearDead();
-    } else {
-        if (slotted) {
-            console.log('STEP', 12);
-        }
     }
 }
 
