@@ -3372,7 +3372,7 @@ function update($parent, newNode, oldNode) {
     var slotted = arguments[6];
 
 
-    //console.log($parent);
+    //console.log('NEW', newNode, 'OLD', oldNode);
 
     if (!$parent) return;
 
@@ -3385,35 +3385,20 @@ function update($parent, newNode, oldNode) {
     }
 
     if (!oldNode) {
+        console.log('!oldNode');
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
+        console.log('!newNode');
         var oldElement = $parent.childNodes[index];
         if (oldElement) {
             deadChildren.push(oldElement);
         }
-        /* } else if (slotted) {
-             console.log(slotted, isChanged(newNode, oldNode))
-               const oldElement = $parent.childNodes[index];
-             const newElement = create(newNode, cmp, initial);
-               console.log(oldElement);
-               //Re-assign CMP INSTANCE to new element
-             if (oldElement[CMP_INSTANCE]) {
-                 console.log('Re-assign CMP INSTANCE to new element')
-                 newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
-                 newElement[CMP_INSTANCE]._rootElement = newElement;
-             }
-               $parent.replaceChild(
-                 newElement,
-                 oldElement
-             );
-               //console.log($parent, isChanged(newNode, oldNode), $parent.childNodes[index])
-             //const newElement = create(newNode, cmp, initial);
-             return newElement;*/
     } else if (isChanged(newNode, oldNode)) {
-        console.log('isChanged');
+        console.log('isChanged(newNode, oldNode)');
         var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
+        _oldElement = _oldElement.parentNode;
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             _oldElement.textContent = canDecode(newNode);
@@ -3439,6 +3424,7 @@ function update($parent, newNode, oldNode) {
 
         return newElement;
     } else if (newNode.type) {
+        console.log('newNode.type');
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {
