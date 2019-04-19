@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589ifcrjn60f0f596ov34n8u888"></script>
+    <script src="../../dist/doz.js?589ifcrj5n60f0f596ov34n8u888"></script>
     <!--script src="https://unpkg.com/doz/dist/doz.min.js"></script-->
     <style>
         body {
@@ -112,7 +112,7 @@
                         <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
                         <x-cmp-2 label="${this.props.label}">
                             <div style="background: #5063ff">Inner CMP2 label: ${this.props.label}</div>
-                            ${this.each(this.props.records, (i, y) => `
+                            ${this.each(this.props.records, (i, y) => h`
                                 <x-cmp-3 name="${i}">
                                     ${i} <button forceupdate onclick="this.removeRecord(${y})">&times;</button>
                                 </x-cmp-3>

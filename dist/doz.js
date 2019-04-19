@@ -3380,8 +3380,6 @@ function update($parent, newNode, oldNode) {
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length && index) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            //if (slotted) console.log(cmp.tag, $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], index, initial)
-            console.log('aaaaaaaaa', $parent.children[0][CMP_INSTANCE].tag, newNode);
             return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
         }
     }
@@ -3395,14 +3393,27 @@ function update($parent, newNode, oldNode) {
         if (oldElement) {
             deadChildren.push(oldElement);
         }
+        /* } else if (slotted) {
+             console.log(slotted, isChanged(newNode, oldNode))
+               const oldElement = $parent.childNodes[index];
+             const newElement = create(newNode, cmp, initial);
+               console.log(oldElement);
+               //Re-assign CMP INSTANCE to new element
+             if (oldElement[CMP_INSTANCE]) {
+                 console.log('Re-assign CMP INSTANCE to new element')
+                 newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
+                 newElement[CMP_INSTANCE]._rootElement = newElement;
+             }
+               $parent.replaceChild(
+                 newElement,
+                 oldElement
+             );
+               //console.log($parent, isChanged(newNode, oldNode), $parent.childNodes[index])
+             //const newElement = create(newNode, cmp, initial);
+             return newElement;*/
     } else if (isChanged(newNode, oldNode)) {
-        //if(slotted) return;
-        console.log('slotted', slotted);
-
-        //if ($parent.children[0][CMP_INSTANCE])
-        //console.log('isChanged', $parent = $parent.children[0][CMP_INSTANCE].getHTMLElement());
+        console.log('isChanged');
         var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
-        //console.log(oldNode)
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             _oldElement.textContent = canDecode(newNode);
@@ -3412,15 +3423,14 @@ function update($parent, newNode, oldNode) {
                     document.getElementById($parent.dataset.id).textContent = composeStyleInner(_oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
                 }
             }
-            //console.log('aaaaa')
             return _oldElement;
         }
 
         var newElement = create(newNode, cmp, initial);
-        //return console.log('newElement', newElement);
 
         //Re-assign CMP INSTANCE to new element
         if (_oldElement[CMP_INSTANCE]) {
+            console.log('Re-assign CMP INSTANCE to new element');
             newElement[CMP_INSTANCE] = _oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
@@ -3429,7 +3439,6 @@ function update($parent, newNode, oldNode) {
 
         return newElement;
     } else if (newNode.type) {
-        //if(slotted) return;
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {
@@ -3459,7 +3468,6 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            //console.log('for');
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
@@ -4080,7 +4088,7 @@ function slot(cmp) {
 
     var nodeList = cmpHTML.children;
 
-    //if (nodeList.length <= 1) return;
+    if (!nodeList.length) return;
 
     var rootNode = nodeList[0];
     var dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));

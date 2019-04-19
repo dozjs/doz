@@ -6,7 +6,7 @@ function slot(cmp) {
 
     const nodeList = cmpHTML.children;
 
-    //if (nodeList.length <= 1) return;
+    if (!nodeList.length) return;
 
     const rootNode = nodeList[0];
     const dSlots = Array.from(rootNode.getElementsByTagName(TAG.SLOT));
