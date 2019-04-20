@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom update</title>
-    <script src="../../dist/doz.js?589002654888"></script>
+    <script src="../../dist/doz.js?589002312740654888"></script>
     <style>
         body {
             font-family: sans-serif;
         }
+
         button {
             padding: 20px;
             font-size: 20px;
@@ -36,7 +37,7 @@
     });
 
     Doz.component('button-group', {
-        store: 'buttonGroup',
+        //store: 'buttonGroup',
         props: {
             button1: false,
             button2: false,
@@ -46,25 +47,32 @@
             return h`
                 <div>
                     <button type="button" ${this.props.button1 ? 'disabled="false"' : 'disabled="true"'}>button 1 - ${this.props.button1}</button>
-                    <slot/>
+                    <p>hello</p>
                 </div>
             `
+        },
+        onUnmount() {
+            console.log('destroy')
         }
     });
 
     new Doz({
         root: '#app',
         props: {
-            time: Date.now()
+            time: Date.now(),
+            even: false
         },
         template(h) {
             return h`
-                <x-cmp/>
-                <button-group slot>${this.props.time}</button-group>
+                <x-cmp/>${this.props.even ? 'aaaaaa' : ''} ${this.props.time}
+                <button-group d:store="buttonGroup"></button-group>
             `;
         },
         onMount() {
-            setTimeout(() => this.props.time = Date.now(), 2000)
+            setInterval(() => {
+                this.props.time = Date.now();
+                this.props.even = !this.props.even;
+            }, 1000)
         }
     });
 

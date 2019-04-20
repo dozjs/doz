@@ -78,8 +78,10 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
     ) {
 
         if (newNode && typeof newNode === 'object') {
+            let slot = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
+            //console.log(slot);
             return update(
-                $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''],
+                slot,
                 newNode,
                 oldNode,
                 index,
@@ -102,11 +104,47 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log('isChanged(newNode, oldNode)');
-        let oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
+
+        /*
+        console.log('--------->')
+        console.log($parent.children)
+        console.log($parent.children[0])
+        console.log($parent.children[0][CMP_INSTANCE])
+        console.log(Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length)
+        console.log(index)
+        console.log('<---------')
+        */
+
+        //console.log($parent.parentNode)
+/*
+        if ($parent.children
+            && $parent.children[0]
+            && $parent.children[0][CMP_INSTANCE]
+            && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length
+        //&& index
+        ) {
+            console.log('parent', 'slotted')
+            $parent = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
+
+        }*/
+        //console.log($parent.childNodes[index].innerHTML, newNode, oldNode);
+        //console.log(newNode, oldNode);
+        //console.log(slotted, $parent.childNodes[index], index, $parent.childNodes);
+        //console.log('isChanged(newNode, oldNode)', $parent.childNodes[index].innerHTML, newNode);
+
+        //console.log($parent, slotted, $parent.nodeName)
+
+        // if($parent.nodeName !== 'SLOT' && $parent.getElementsByTagName('slot').length) {
+        //console.log($parent.getElementsByTagName('slot'));
+        //$parent = $parent.getElementsByTagName('slot')[0]
+        //}
+
+        let oldElement = $parent.childNodes[index];// || $parent.appendChild(document.createTextNode(''));
+
         //oldElement = oldElement.parentNode;
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
+            //console.log('oldElement.textContent', oldElement.textContent, newNode, oldNode)
             oldElement.textContent = canDecode(newNode);
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
@@ -119,12 +157,16 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         const newElement = create(newNode, cmp, initial);
 
+        //console.log(newElement.innerHTML)
+
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
             console.log('Re-assign CMP INSTANCE to new element')
             newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
+
+        console.log($parent.innerHTML)
 
         $parent.replaceChild(
             newElement,
@@ -133,7 +175,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         return newElement;
     } else if (newNode.type) {
-        console.log('newNode.type')
         let updated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -164,7 +205,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
                 oldNode.children[i],
                 i,
                 cmp,
-                initial
+                initial,
+                slotted
             );
         }
 

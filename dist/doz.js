@@ -1182,6 +1182,7 @@ function drawDynamic(instance) {
         //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '' || item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
+            //console.log('drwadynamic')
             //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
@@ -3380,7 +3381,9 @@ function update($parent, newNode, oldNode) {
     if ($parent.children && $parent.children[0] && $parent.children[0][CMP_INSTANCE] && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length && index) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
-            return update($parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''], newNode, oldNode, index, cmp, initial, true);
+            var slot = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
+            //console.log(slot);
+            return update(slot, newNode, oldNode, index, cmp, initial, true);
         }
     }
 
@@ -3396,11 +3399,47 @@ function update($parent, newNode, oldNode) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-        console.log('isChanged(newNode, oldNode)');
-        var _oldElement = $parent.childNodes[index] || $parent.appendChild(document.createTextNode(''));
-        _oldElement = _oldElement.parentNode;
+
+        /*
+        console.log('--------->')
+        console.log($parent.children)
+        console.log($parent.children[0])
+        console.log($parent.children[0][CMP_INSTANCE])
+        console.log(Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length)
+        console.log(index)
+        console.log('<---------')
+        */
+
+        //console.log($parent.parentNode)
+        /*
+                if ($parent.children
+                    && $parent.children[0]
+                    && $parent.children[0][CMP_INSTANCE]
+                    && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length
+                //&& index
+                ) {
+                    console.log('parent', 'slotted')
+                    $parent = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
+        
+                }*/
+        //console.log($parent.childNodes[index].innerHTML, newNode, oldNode);
+        //console.log(newNode, oldNode);
+        //console.log(slotted, $parent.childNodes[index], index, $parent.childNodes);
+        //console.log('isChanged(newNode, oldNode)', $parent.childNodes[index].innerHTML, newNode);
+
+        //console.log($parent, slotted, $parent.nodeName)
+
+        // if($parent.nodeName !== 'SLOT' && $parent.getElementsByTagName('slot').length) {
+        //console.log($parent.getElementsByTagName('slot'));
+        //$parent = $parent.getElementsByTagName('slot')[0]
+        //}
+
+        var _oldElement = $parent.childNodes[index]; // || $parent.appendChild(document.createTextNode(''));
+
+        //oldElement = oldElement.parentNode;
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
+            //console.log('oldElement.textContent', oldElement.textContent, newNode, oldNode)
             _oldElement.textContent = canDecode(newNode);
             if ($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
@@ -3413,6 +3452,8 @@ function update($parent, newNode, oldNode) {
 
         var newElement = create(newNode, cmp, initial);
 
+        //console.log(newElement.innerHTML)
+
         //Re-assign CMP INSTANCE to new element
         if (_oldElement[CMP_INSTANCE]) {
             console.log('Re-assign CMP INSTANCE to new element');
@@ -3420,11 +3461,12 @@ function update($parent, newNode, oldNode) {
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
+        console.log($parent.innerHTML);
+
         $parent.replaceChild(newElement, _oldElement);
 
         return newElement;
     } else if (newNode.type) {
-        console.log('newNode.type');
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if ($parent.childNodes[index]) {
@@ -3454,7 +3496,7 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial, slotted);
         }
 
         clearDead();

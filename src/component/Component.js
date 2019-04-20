@@ -511,6 +511,7 @@ function drawDynamic(instance) {
         //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '' || (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE])) {
+            //console.log('drwadynamic')
         //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
