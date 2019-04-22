@@ -57,6 +57,7 @@ function create(node, cmp, initial) {
         if ((node.type.indexOf('-') !== -1
             || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
             && !initial) {
+            //console.dir($el)
             cmp._processing.push({node: $el, action: 'create'});
         }
 
@@ -157,7 +158,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         const newElement = create(newNode, cmp, initial);
 
-        //console.log(newElement.innerHTML)
+        //console.log(newElement)
 
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
@@ -166,7 +167,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
-        console.log($parent.innerHTML)
+        //
+        //
+        console.log('REPLACE', oldElement.innerHTML)
 
         $parent.replaceChild(
             newElement,

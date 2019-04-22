@@ -1168,13 +1168,14 @@ function drawDynamic(instance) {
 
     var index = instance._processing.length - 1;
 
-    //console.log(instance._processing)
+    console.log(instance._processing);
 
     while (index >= 0) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
         if (item.node[INSTANCE]) {
+            console.log('ddddddddd');
             item.node[INSTANCE].destroy(true);
         }
 
@@ -1182,7 +1183,7 @@ function drawDynamic(instance) {
         //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '' || item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
-            //console.log('drwadynamic')
+            console.log('drwadynamic');
             //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
@@ -1204,11 +1205,11 @@ function drawDynamic(instance) {
 
 function clearDynamic(instance) {
     var index = instance._dynamicChildren.length - 1;
-
     while (index >= 0) {
         var item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
+            console.log('DESTROY INSTANCE');
             item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
@@ -3360,6 +3361,7 @@ function create(node, cmp, initial) {
     }
 
     if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
+        //console.dir($el)
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -3452,7 +3454,7 @@ function update($parent, newNode, oldNode) {
 
         var newElement = create(newNode, cmp, initial);
 
-        //console.log(newElement.innerHTML)
+        //console.log(newElement)
 
         //Re-assign CMP INSTANCE to new element
         if (_oldElement[CMP_INSTANCE]) {
@@ -3461,7 +3463,9 @@ function update($parent, newNode, oldNode) {
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
-        console.log($parent.innerHTML);
+        //
+        //
+        console.log('REPLACE', _oldElement.innerHTML);
 
         $parent.replaceChild(newElement, _oldElement);
 
