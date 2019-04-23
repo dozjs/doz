@@ -38,7 +38,8 @@ class Doz {
             propsListener: null,
             propsListenerAsync: null,
             actions: {},
-            autoDraw: true
+            autoDraw: true,
+            enableExternalTemplate: false
         }, cfg);
 
         Object.defineProperties(this, {
@@ -109,7 +110,7 @@ class Doz {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    const contentStr = eval('`' + toLiteralString(template) + '`');
+                    const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     const autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {

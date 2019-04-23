@@ -308,7 +308,7 @@ class Component {
     }
 
     _initTemplate(opt) {
-        if (typeof opt.cmp.cfg.template === 'string') {
+        if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
             let contentTpl = opt.cmp.cfg.template;
             if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
                 opt.cmp.cfg.template = function () {
