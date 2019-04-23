@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.16.9  
+// [DOZ]  Build version: 1.17.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -783,6 +783,7 @@ var Component = function () {
         value: function render(initial) {
             var _this = this;
 
+            if (this._renderPause) return;
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
@@ -810,6 +811,19 @@ var Component = function () {
                     return drawDynamic(_this);
                 });
             }
+        }
+    }, {
+        key: 'renderPause',
+        value: function renderPause() {
+            this._renderPause = true;
+        }
+    }, {
+        key: 'renderResume',
+        value: function renderResume() {
+            var callRender = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+            this._renderPause = false;
+            if (callRender) this.render();
         }
     }, {
         key: 'mount',
@@ -925,7 +939,7 @@ var Component = function () {
     }, {
         key: '_initTemplate',
         value: function _initTemplate(opt) {
-            if (typeof opt.cmp.cfg.template === 'string') {
+            if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
                 var contentTpl = opt.cmp.cfg.template;
                 if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
                     opt.cmp.cfg.template = function () {
@@ -1004,6 +1018,11 @@ var Component = function () {
 
             hooks.callConfigCreate(this);
         }
+    }, {
+        key: 'isRenderPause',
+        get: function get() {
+            return this._renderPause;
+        }
     }]);
 
     return Component;
@@ -1078,6 +1097,10 @@ function defineProperties(obj, opt) {
         },
         _computedCache: {
             value: new Map()
+        },
+        _renderPause: {
+            value: false,
+            writable: true
         },
 
         //Public
@@ -2590,7 +2613,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.16.9',
+        value: '1.17.0',
         enumerable: true
     }
 });
@@ -2659,7 +2682,8 @@ var Doz = function () {
             propsListener: null,
             propsListenerAsync: null,
             actions: {},
-            autoDraw: true
+            autoDraw: true,
+            enableExternalTemplate: false
         }, cfg);
 
         Object.defineProperties(this, {
@@ -2738,7 +2762,7 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    var contentStr = eval('`' + toLiteralString(template) + '`');
+                    var contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     var autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
