@@ -193,6 +193,7 @@ class Component {
     }
 
     render(initial) {
+        if (this._renderPause) return;
         this.beginSafeRender();
         const template = this.template(h);
         this.endSafeRender();
@@ -218,6 +219,20 @@ class Component {
         }else {
             delay(() => drawDynamic(this));
         }
+    }
+
+    renderPause() {
+        this._renderPause = true;
+    }
+
+    renderResume(callRender = true) {
+        this._renderPause = false;
+        if (callRender)
+            this.render();
+    }
+
+    get isRenderPause() {
+        return this._renderPause;
     }
 
     mount(template, cfg = {}) {
@@ -410,6 +425,10 @@ function defineProperties(obj, opt) {
         },
         _computedCache: {
             value: new Map()
+        },
+        _renderPause: {
+            value: false,
+            writable: true
         },
 
         //Public

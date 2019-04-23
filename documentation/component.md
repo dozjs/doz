@@ -214,6 +214,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `object`
 - **Description**: An object that contains all things shared between components.
 
+### isRenderPause
+
+- **Since**: 1.17.0
+- **Type**: `boolean`
+- **Description**: Check if render is in pause.
+
 
 ## Methods
 
@@ -324,6 +330,19 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 0.0.19
 - **Type**: `function`
 - **Description**: This method unmount a component from DOM. More info on [unmount](https://github.com/dozjs/doz/blob/master/documentation/index.md#unmount).
+
+### component.renderPause()
+
+- **Since**: 1.17.0
+- **Type**: `function`
+- **Description**: After calling this method, the component will be not updated if props change.
+
+### component.resumePause()
+
+- **Since**: 1.17.0
+- **Type**: `function`
+- **Description**: This method disable renderPause status and call render.
+
 
 
 ## Lifecycle Hooks

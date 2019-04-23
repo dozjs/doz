@@ -137,6 +137,21 @@ export class Component {
     render():void
 
     /**
+     * After calling this method, the component will be not updated if props change
+     */
+    renderPause():void
+
+    /**
+     * This method disable renderPause status and call render
+     */
+    renderResume():void
+
+    /**
+     * Check if render is in pause
+     */
+    isRenderPause: boolean;
+
+    /**
      * This method can mount a new component as child.
      * @param {string} template
      * @returns {Component}
