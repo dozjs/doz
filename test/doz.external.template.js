@@ -26,6 +26,7 @@ describe('Doz.external.template', function () {
 
             const view = new Doz({
                 root: '#app',
+                enableExternalTemplate: true,
                 props: {
                     game: 'Mario Bros'
                 },
