@@ -193,16 +193,13 @@ class Component {
     }
 
     render(initial) {
+        if (this._renderPause) return;
         this.beginSafeRender();
         const template = this.template(h);
         this.endSafeRender();
-        //console.log(template)
         let next = compile(template);
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
-
-        //console.log('next', next);
-        //console.log('this._prev', this._prev);
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
@@ -222,6 +219,20 @@ class Component {
         }else {
             delay(() => drawDynamic(this));
         }
+    }
+
+    renderPause() {
+        this._renderPause = true;
+    }
+
+    renderResume(callRender = true) {
+        this._renderPause = false;
+        if (callRender)
+            this.render();
+    }
+
+    get isRenderPause() {
+        return this._renderPause;
     }
 
     mount(template, cfg = {}) {
@@ -415,6 +426,10 @@ function defineProperties(obj, opt) {
         _computedCache: {
             value: new Map()
         },
+        _renderPause: {
+            value: false,
+            writable: true
+        },
         _slotRef: {
             value: [],
             writable: true
@@ -497,14 +512,11 @@ function drawDynamic(instance) {
 
     let index = instance._processing.length - 1;
 
-    console.log(instance._processing)
-
     while (index >= 0) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
         if (item.node[INSTANCE]) {
-            console.log('ddddddddd')
             item.node[INSTANCE].destroy(true);
         }
 
@@ -512,7 +524,7 @@ function drawDynamic(instance) {
         //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
 
         if (item.node.innerHTML === '' || (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE])) {
-            console.log('drwadynamic')
+            console.log('drwadynamic');
         //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
@@ -534,11 +546,11 @@ function drawDynamic(instance) {
 
 function clearDynamic(instance) {
     let index = instance._dynamicChildren.length - 1;
+
     while (index >= 0) {
         let item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            console.log('DESTROY INSTANCE')
             item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.17.0] - 2019-04-23
+- **Added** `renderPause` method to component
+- **Added** `renderResume` method to component
+- **Added** `isRenderPause` property to component
+- **Improved** IE11 support
+
 ## [1.16.9] - 2019-04-11
 - **Fixed** possible issues during attributes changes
 
