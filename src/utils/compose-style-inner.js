@@ -27,7 +27,8 @@ function composeStyleInner(cssContent, tag, tagByData) {
             const sameTag = new RegExp(`^${tag.replace(/[[\]]/g, '\\$&')}(\\s+)?{`);
 
             for (let i = 0; i < part.length; i++) {
-                if (sameTag.test(part[i].trim())) continue;
+                part[i] = part[i].trim();
+                if (sameTag.test(part[i])) continue;
 
                 if (/^:global/.test(part[i]))
                     part[i] = part[i].replace(':global', '');
