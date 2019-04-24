@@ -44,6 +44,44 @@ describe('Doz.global.mixin', function () {
             });
         });
 
+        it('should be ok, method applied to main component', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.mixin({
+               myMethod() {
+                   be.err.equal(this.props.title, 'MR.');
+                   return true;
+               }
+            });
+
+            Doz.component('salutation-card', {
+                template() {
+                    return `
+                        <div>Hello ${this.props.title} ${this.props.name}</div>
+                    `
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                props: {
+                    title: 'MR.'
+                },
+                template(h)  {
+                    return h`
+                        <salutation-card
+                            title="${this.props.title}"
+                            name="Doz">
+                        </salutation-card>
+                    `
+                },
+                onCreate() {
+                    be.err(done).true(this.myMethod());
+                }
+            });
+        });
+
         it('should be ok with local mixin', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
