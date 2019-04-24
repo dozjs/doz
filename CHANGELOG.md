@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.17.1] - 2019-04-24
+- **Fixed** multiple :global style in same line
+
 ## [1.17.0] - 2019-04-23
 - **Added** `renderPause` method to component
 - **Added** `renderResume` method to component
