@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.17.0  
+// [DOZ]  Build version: 1.17.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1524,7 +1524,8 @@ function composeStyleInner(cssContent, tag, tagByData) {
         var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
 
         for (var i = 0; i < part.length; i++) {
-            if (sameTag.test(part[i].trim())) continue;
+            part[i] = part[i].trim();
+            if (sameTag.test(part[i])) continue;
 
             if (/^:global/.test(part[i])) part[i] = part[i].replace(':global', '');else part[i] = tag + ' ' + part[i];
         }
@@ -2613,7 +2614,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.17.0',
+        value: '1.17.1',
         enumerable: true
     }
 });
