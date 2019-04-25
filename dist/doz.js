@@ -366,7 +366,6 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
-    console.log('destroyyyyyyyyy', context.tag);
     context.app.emit('componentDestroy', context);
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
     if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
