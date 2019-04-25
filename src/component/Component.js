@@ -291,7 +291,7 @@ class Component {
 
         if (!onlyInstance) {
             this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-        } else
+        } else if (this._rootElement.parentNode)
             this._rootElement.parentNode.innerHTML = '';
 
         this._unmounted = !byDestroy;
@@ -307,7 +307,6 @@ class Component {
     }
 
     destroy(onlyInstance) {
-
         if (this.unmount(onlyInstance, true) === false)
             return;
 
@@ -520,11 +519,8 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        //console.log('item.node.innerHTML', item.node.innerHTML === '');
-        //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
-
         if (item.node.innerHTML === '' || (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE])) {
-            console.log('drwadynamic');
+            //console.log('drawDynamic', Date.now());
         //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             const dynamicInstance = require('./instances').get({
                 root,
@@ -546,7 +542,6 @@ function drawDynamic(instance) {
 
 function clearDynamic(instance) {
     let index = instance._dynamicChildren.length - 1;
-
     while (index >= 0) {
         let item = instance._dynamicChildren[index];
 

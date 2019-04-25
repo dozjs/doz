@@ -20,7 +20,6 @@ function canDecode(str) {
 }
 
 function create(node, cmp, initial) {
-    //console.log('node', node);
     if (typeof node === 'undefined') return;
 
     let nodeStored;
@@ -57,7 +56,6 @@ function create(node, cmp, initial) {
         if ((node.type.indexOf('-') !== -1
             || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
             && !initial) {
-            //console.dir($el)
             cmp._processing.push({node: $el, action: 'create'});
         }
 
@@ -65,9 +63,6 @@ function create(node, cmp, initial) {
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
-
-    //console.log('NEW', newNode, 'OLD', oldNode);
-
     if (!$parent) return;
 
     // Props check for slots
@@ -80,7 +75,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         if (newNode && typeof newNode === 'object') {
             let slot = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
-            //console.log(slot);
             return update(
                 slot,
                 newNode,
@@ -94,55 +88,17 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
     }
 
     if (!oldNode) {
-        console.log('!oldNode')
         const rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('!newNode')
         const oldElement = $parent.childNodes[index];
         if (oldElement) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-
-        /*
-        console.log('--------->')
-        console.log($parent.children)
-        console.log($parent.children[0])
-        console.log($parent.children[0][CMP_INSTANCE])
-        console.log(Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length)
-        console.log(index)
-        console.log('<---------')
-        */
-
-        //console.log($parent.parentNode)
-/*
-        if ($parent.children
-            && $parent.children[0]
-            && $parent.children[0][CMP_INSTANCE]
-            && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length
-        //&& index
-        ) {
-            console.log('parent', 'slotted')
-            $parent = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
-
-        }*/
-        //console.log($parent.childNodes[index].innerHTML, newNode, oldNode);
-        //console.log(newNode, oldNode);
-        //console.log(slotted, $parent.childNodes[index], index, $parent.childNodes);
-        //console.log('isChanged(newNode, oldNode)', $parent.childNodes[index].innerHTML, newNode);
-
-        //console.log($parent, slotted, $parent.nodeName)
-
-        // if($parent.nodeName !== 'SLOT' && $parent.getElementsByTagName('slot').length) {
-        //console.log($parent.getElementsByTagName('slot'));
-        //$parent = $parent.getElementsByTagName('slot')[0]
-        //}
-
         let oldElement = $parent.childNodes[index];// || $parent.appendChild(document.createTextNode(''));
 
-        //oldElement = oldElement.parentNode;
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             //console.log('oldElement.textContent', oldElement.textContent, newNode, oldNode)
@@ -158,24 +114,21 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, slotted) {
 
         const newElement = create(newNode, cmp, initial);
 
-        //console.log(newElement)
-
         //Re-assign CMP INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
-            console.log('Re-assign CMP INSTANCE to new element')
             newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
-        //
-        //
-        console.log('REPLACE', oldElement.innerHTML)
+
 
         $parent.replaceChild(
             newElement,
             oldElement
         );
-
+        if (newElement.nodeName !== oldElement.nodeName && oldElement.firstChild && oldElement.firstChild[CMP_INSTANCE]) {
+            oldElement.firstChild[CMP_INSTANCE].destroy(true);
+        }
         return newElement;
     } else if (newNode.type) {
         let updated = updateAttributes(

@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.16.9  
+// [DOZ]  Build version: 1.17.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -366,12 +366,13 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
+    console.log('destroyyyyyyyyy', context.tag);
     context.app.emit('componentDestroy', context);
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
+    if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode) context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
     if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
@@ -786,16 +787,13 @@ var Component = function () {
         value: function render(initial) {
             var _this = this;
 
+            if (this._renderPause) return;
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
-            //console.log(template)
             var next = compile(template);
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
-
-            //console.log('next', next);
-            //console.log('this._prev', this._prev);
 
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
@@ -817,6 +815,19 @@ var Component = function () {
                     return drawDynamic(_this);
                 });
             }
+        }
+    }, {
+        key: 'renderPause',
+        value: function renderPause() {
+            this._renderPause = true;
+        }
+    }, {
+        key: 'renderResume',
+        value: function renderResume() {
+            var callRender = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+            this._renderPause = false;
+            if (callRender) this.render();
         }
     }, {
         key: 'mount',
@@ -888,7 +899,7 @@ var Component = function () {
 
             if (!onlyInstance) {
                 this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-            } else this._rootElement.parentNode.innerHTML = '';
+            } else if (this._rootElement.parentNode) this._rootElement.parentNode.innerHTML = '';
 
             this._unmounted = !byDestroy;
 
@@ -932,7 +943,7 @@ var Component = function () {
     }, {
         key: '_initTemplate',
         value: function _initTemplate(opt) {
-            if (typeof opt.cmp.cfg.template === 'string') {
+            if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
                 var contentTpl = opt.cmp.cfg.template;
                 if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
                     opt.cmp.cfg.template = function () {
@@ -1011,6 +1022,11 @@ var Component = function () {
 
             hooks.callConfigCreate(this);
         }
+    }, {
+        key: 'isRenderPause',
+        get: function get() {
+            return this._renderPause;
+        }
     }]);
 
     return Component;
@@ -1085,6 +1101,10 @@ function defineProperties(obj, opt) {
         },
         _computedCache: {
             value: new Map()
+        },
+        _renderPause: {
+            value: false,
+            writable: true
         },
         _slotRef: {
             value: [],
@@ -1168,22 +1188,16 @@ function drawDynamic(instance) {
 
     var index = instance._processing.length - 1;
 
-    console.log(instance._processing);
-
     while (index >= 0) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
         if (item.node[INSTANCE]) {
-            console.log('ddddddddd');
             item.node[INSTANCE].destroy(true);
         }
 
-        //console.log('item.node.innerHTML', item.node.innerHTML === '');
-        //console.log('item.node.firstChild', item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]);
-
         if (item.node.innerHTML === '' || item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
-            console.log('drwadynamic');
+            //console.log('drawDynamic', Date.now());
             //if (item.node.firstChild && !item.node.firstChild[CMP_INSTANCE]) {
             var dynamicInstance = __webpack_require__(6).get({
                 root: root,
@@ -1209,7 +1223,6 @@ function clearDynamic(instance) {
         var item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            console.log('DESTROY INSTANCE');
             item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
@@ -1524,7 +1537,8 @@ function composeStyleInner(cssContent, tag, tagByData) {
         var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
 
         for (var i = 0; i < part.length; i++) {
-            if (sameTag.test(part[i].trim())) continue;
+            part[i] = part[i].trim();
+            if (sameTag.test(part[i])) continue;
 
             if (/^:global/.test(part[i])) part[i] = part[i].replace(':global', '');else part[i] = tag + ' ' + part[i];
         }
@@ -2613,7 +2627,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.16.9',
+        value: '1.17.1',
         enumerable: true
     }
 });
@@ -2682,7 +2696,8 @@ var Doz = function () {
             propsListener: null,
             propsListenerAsync: null,
             actions: {},
-            autoDraw: true
+            autoDraw: true,
+            enableExternalTemplate: false
         }, cfg);
 
         Object.defineProperties(this, {
@@ -2761,7 +2776,7 @@ var Doz = function () {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
 
-                    var contentStr = eval('`' + toLiteralString(template) + '`');
+                    var contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     var autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
@@ -3317,7 +3332,6 @@ function canDecode(str) {
 }
 
 function create(node, cmp, initial) {
-    //console.log('node', node);
     if (typeof node === 'undefined') return;
 
     var nodeStored = void 0;
@@ -3361,7 +3375,6 @@ function create(node, cmp, initial) {
     }
 
     if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-        //console.dir($el)
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -3374,9 +3387,6 @@ function update($parent, newNode, oldNode) {
     var initial = arguments[5];
     var slotted = arguments[6];
 
-
-    //console.log('NEW', newNode, 'OLD', oldNode);
-
     if (!$parent) return;
 
     // Props check for slots
@@ -3384,61 +3394,22 @@ function update($parent, newNode, oldNode) {
 
         if (newNode && (typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object') {
             var slot = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
-            //console.log(slot);
             return update(slot, newNode, oldNode, index, cmp, initial, true);
         }
     }
 
     if (!oldNode) {
-        console.log('!oldNode');
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        console.log('!newNode');
         var oldElement = $parent.childNodes[index];
         if (oldElement) {
             deadChildren.push(oldElement);
         }
     } else if (isChanged(newNode, oldNode)) {
-
-        /*
-        console.log('--------->')
-        console.log($parent.children)
-        console.log($parent.children[0])
-        console.log($parent.children[0][CMP_INSTANCE])
-        console.log(Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length)
-        console.log(index)
-        console.log('<---------')
-        */
-
-        //console.log($parent.parentNode)
-        /*
-                if ($parent.children
-                    && $parent.children[0]
-                    && $parent.children[0][CMP_INSTANCE]
-                    && Object.keys($parent.children[0][CMP_INSTANCE]._slotRef).length
-                //&& index
-                ) {
-                    console.log('parent', 'slotted')
-                    $parent = $parent.children[0][CMP_INSTANCE]._slotRef[newNode.slotName || ''];
-        
-                }*/
-        //console.log($parent.childNodes[index].innerHTML, newNode, oldNode);
-        //console.log(newNode, oldNode);
-        //console.log(slotted, $parent.childNodes[index], index, $parent.childNodes);
-        //console.log('isChanged(newNode, oldNode)', $parent.childNodes[index].innerHTML, newNode);
-
-        //console.log($parent, slotted, $parent.nodeName)
-
-        // if($parent.nodeName !== 'SLOT' && $parent.getElementsByTagName('slot').length) {
-        //console.log($parent.getElementsByTagName('slot'));
-        //$parent = $parent.getElementsByTagName('slot')[0]
-        //}
-
         var _oldElement = $parent.childNodes[index]; // || $parent.appendChild(document.createTextNode(''));
 
-        //oldElement = oldElement.parentNode;
         // Reuse text node
         if (typeof newNode === 'string' && typeof oldNode === 'string') {
             //console.log('oldElement.textContent', oldElement.textContent, newNode, oldNode)
@@ -3454,21 +3425,16 @@ function update($parent, newNode, oldNode) {
 
         var newElement = create(newNode, cmp, initial);
 
-        //console.log(newElement)
-
         //Re-assign CMP INSTANCE to new element
         if (_oldElement[CMP_INSTANCE]) {
-            console.log('Re-assign CMP INSTANCE to new element');
             newElement[CMP_INSTANCE] = _oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
         }
 
-        //
-        //
-        console.log('REPLACE', _oldElement.innerHTML);
-
         $parent.replaceChild(newElement, _oldElement);
-
+        if (newElement.nodeName !== _oldElement.nodeName && _oldElement.firstChild && _oldElement.firstChild[CMP_INSTANCE]) {
+            _oldElement.firstChild[CMP_INSTANCE].destroy(true);
+        }
         return newElement;
     } else if (newNode.type) {
         var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
