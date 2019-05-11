@@ -2,6 +2,7 @@ const {compile} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
 const be = require('bejs');
+const DOM = require('../src/component/DOM');
 
 describe('parser', function () {
 
@@ -12,6 +13,7 @@ describe('parser', function () {
     describe('create', function () {
         it('should be return nodes', function () {
             document.body.innerHTML = `<div id="app"></div>`;
+            const fakeCmp = new DOM();
             const appRoot = document.getElementById('app');
             const initial = compile(`
                 <div>hello
@@ -19,11 +21,11 @@ describe('parser', function () {
                 </div>
                 `);
 
-            updateElement(appRoot, initial);
+            updateElement(appRoot, initial, null, 0, fakeCmp);
             console.log(document.body.innerHTML);
             const next = compile(`<div>hello<button disabled>rere</button></div>`);
             //next.children[1].children[0] = 'clicca';
-            updateElement(appRoot, next, initial);
+            updateElement(appRoot, next, initial, 0, fakeCmp);
             console.log(document.body.innerHTML);
         });
         it('should be return nodes without indent', function () {

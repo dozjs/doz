@@ -19,10 +19,13 @@ const {compile} = require('../vdom/parser');
 const delay = require('../utils/delay');
 const propsInit = require('./props-init');
 const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
+const DOM = require('./DOM');
 
-class Component {
+class Component extends DOM {
 
     constructor(opt) {
+
+        super();
 
         Object.defineProperties(this, {
             _isSubclass: {

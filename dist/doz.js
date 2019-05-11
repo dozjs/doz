@@ -243,6 +243,50 @@ module.exports = delay;
 "use strict";
 
 
+/*
+// Add tag prefix to animation name inside keyframe
+(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)
+
+// Add tag prefix to animation
+((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
+ */
+
+function composeStyleInner(cssContent, tag, tagByData) {
+    if (typeof cssContent !== 'string') return;
+
+    tag = tagByData || tag;
+
+    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {').replace(/:root/g, '').replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, '$1 ' + tag + '-$2').replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, '$1 ' + tag + '-$2').replace(/[^\s].*{/gm, function (match) {
+
+        if (/^(@|(from|to|\d+%)[^-_])/.test(match)) return match;
+
+        var part = match.split(',');
+        var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
+
+        for (var i = 0; i < part.length; i++) {
+            part[i] = part[i].trim();
+            if (sameTag.test(part[i])) continue;
+
+            if (/^:global/.test(part[i])) part[i] = part[i].replace(':global', '');else part[i] = tag + ' ' + part[i];
+        }
+        match = part.join(',');
+        return match;
+    });
+
+    cssContent = cssContent.replace(/\s{2,}/g, ' ').replace(/{ /g, '{').replace(/ }/g, '}').replace(/\n/g, '').trim();
+
+    return cssContent;
+}
+
+module.exports = composeStyleInner;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var delay = __webpack_require__(2);
 
 function callBeforeCreate(context) {
@@ -411,7 +455,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -605,7 +649,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -617,6 +661,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
     CMP_INSTANCE = _require.CMP_INSTANCE,
@@ -624,7 +672,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(29);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(4);
 var update = __webpack_require__(31).updateElement;
 var store = __webpack_require__(35);
 var ids = __webpack_require__(36);
@@ -640,7 +688,7 @@ var h = __webpack_require__(16);
 var loadLocal = __webpack_require__(43);
 var localMixin = __webpack_require__(44);
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(5),
     compile = _require2.compile;
 
 var delay = __webpack_require__(2);
@@ -649,13 +697,19 @@ var propsInit = __webpack_require__(18);
 var _require3 = __webpack_require__(12),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var Component = function () {
+var DOM = __webpack_require__(45);
+
+var Component = function (_DOM) {
+    _inherits(Component, _DOM);
+
     function Component(opt) {
         _classCallCheck(this, Component);
 
-        Object.defineProperties(this, {
+        var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+
+        Object.defineProperties(_this, {
             _isSubclass: {
-                value: this.__proto__.constructor !== Component
+                value: _this.__proto__.constructor !== Component
             },
             _rawProps: {
                 value: {},
@@ -668,34 +722,35 @@ var Component = function () {
             cfg: {}
         };
 
-        this._initRawProps(opt);
+        _this._initRawProps(opt);
 
-        defineProperties(this, opt);
+        defineProperties(_this, opt);
 
         // Assign cfg to instance
-        extendInstance(this, opt.cmp.cfg, opt.dProps);
+        extendInstance(_this, opt.cmp.cfg, opt.dProps);
 
         // Create mixin
-        localMixin(this);
+        localMixin(_this);
 
         // Load local components
-        loadLocal(this);
+        loadLocal(_this);
 
-        var beforeCreate = hooks.callBeforeCreate(this);
-        if (beforeCreate === false) return;
+        var beforeCreate = hooks.callBeforeCreate(_this);
+        if (beforeCreate === false) return _possibleConstructorReturn(_this);
 
         // Create observer to props
-        observer.create(this, true);
+        observer.create(_this, true);
         // Create shared store
-        store.create(this);
+        store.create(_this);
         // Create ID
-        ids.create(this);
+        ids.create(_this);
         // Add callback to ready queue
-        queueReady.add(this);
+        queueReady.add(_this);
         // Add callback app draw
-        queueDraw.add(this);
+        queueDraw.add(_this);
         // Call create
-        hooks.callCreate(this);
+        hooks.callCreate(_this);
+        return _this;
     }
 
     _createClass(Component, [{
@@ -781,7 +836,7 @@ var Component = function () {
     }, {
         key: 'render',
         value: function render(initial) {
-            var _this = this;
+            var _this2 = this;
 
             if (this._renderPause) return;
             this.beginSafeRender();
@@ -808,7 +863,7 @@ var Component = function () {
                 drawDynamic(this);
             } else {
                 delay(function () {
-                    return drawDynamic(_this);
+                    return drawDynamic(_this2);
                 });
             }
         }
@@ -828,7 +883,7 @@ var Component = function () {
     }, {
         key: 'mount',
         value: function mount(template) {
-            var _this2 = this;
+            var _this3 = this;
 
             var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -845,7 +900,7 @@ var Component = function () {
                 hooks.callMount(this);
 
                 var _defined = function _defined(child) {
-                    _this2.children[child].mount();
+                    _this3.children[child].mount();
                 };
 
                 var _defined2 = Object.keys(this.children);
@@ -879,7 +934,7 @@ var Component = function () {
         value: function unmount() {
             var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-            var _this3 = this;
+            var _this4 = this;
 
             var byDestroy = arguments[1];
             var silently = arguments[2];
@@ -902,7 +957,7 @@ var Component = function () {
             if (!silently) hooks.callUnmount(this);
 
             var _defined3 = function _defined3(child) {
-                _this3.children[child].unmount(onlyInstance, byDestroy, silently);
+                _this4.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
             var _defined4 = Object.keys(this.children);
@@ -916,7 +971,7 @@ var Component = function () {
     }, {
         key: 'destroy',
         value: function destroy(onlyInstance) {
-            var _this4 = this;
+            var _this5 = this;
 
             if (this.unmount(onlyInstance, true) === false) return;
 
@@ -925,7 +980,7 @@ var Component = function () {
             }
 
             var _defined5 = function _defined5(child) {
-                _this4.children[child].destroy();
+                _this5.children[child].destroy();
             };
 
             var _defined6 = Object.keys(this.children);
@@ -1026,7 +1081,7 @@ var Component = function () {
     }]);
 
     return Component;
-}();
+}(DOM);
 
 function defineProperties(obj, opt) {
 
@@ -1189,7 +1244,7 @@ function drawDynamic(instance) {
         }
 
         if (item.node.innerHTML === '') {
-            var dynamicInstance = __webpack_require__(6).get({
+            var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
                 app: instance.app,
@@ -1229,7 +1284,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1243,7 +1298,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var html = __webpack_require__(7);
+var html = __webpack_require__(8);
 
 var _require = __webpack_require__(24),
     scopedInner = _require.scopedInner;
@@ -1255,9 +1310,9 @@ var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(1);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(4);
 
-var _require3 = __webpack_require__(4),
+var _require3 = __webpack_require__(5),
     serializeProps = _require3.serializeProps;
 
 var _require4 = __webpack_require__(27),
@@ -1265,7 +1320,7 @@ var _require4 = __webpack_require__(27),
 
 var hmr = __webpack_require__(28);
 
-var _require5 = __webpack_require__(5),
+var _require5 = __webpack_require__(6),
     Component = _require5.Component;
 
 var propsInit = __webpack_require__(18);
@@ -1452,7 +1507,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1495,50 +1550,6 @@ var html = {
 };
 
 module.exports = html;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/*
-// Add tag prefix to animation name inside keyframe
-(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)
-
-// Add tag prefix to animation
-((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
- */
-
-function composeStyleInner(cssContent, tag, tagByData) {
-    if (typeof cssContent !== 'string') return;
-
-    tag = tagByData || tag;
-
-    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {').replace(/:root/g, '').replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, '$1 ' + tag + '-$2').replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, '$1 ' + tag + '-$2').replace(/[^\s].*{/gm, function (match) {
-
-        if (/^(@|(from|to|\d+%)[^-_])/.test(match)) return match;
-
-        var part = match.split(',');
-        var sameTag = new RegExp('^' + tag.replace(/[[\]]/g, '\\$&') + '(\\s+)?{');
-
-        for (var i = 0; i < part.length; i++) {
-            part[i] = part[i].trim();
-            if (sameTag.test(part[i])) continue;
-
-            if (/^:global/.test(part[i])) part[i] = part[i].replace(':global', '');else part[i] = tag + ' ' + part[i];
-        }
-        match = part.join(',');
-        return match;
-    });
-
-    cssContent = cssContent.replace(/\s{2,}/g, ' ').replace(/{ /g, '{').replace(/ }/g, '}').replace(/\n/g, '').trim();
-
-    return cssContent;
-}
-
-module.exports = composeStyleInner;
 
 /***/ }),
 /* 9 */
@@ -2569,15 +2580,15 @@ var collection = __webpack_require__(1);
 var _require = __webpack_require__(19),
     use = _require.use;
 
-var component = __webpack_require__(45);
+var component = __webpack_require__(47);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(46);
+var mixin = __webpack_require__(48);
 var h = __webpack_require__(16);
 
-var _require3 = __webpack_require__(4),
+var _require3 = __webpack_require__(5),
     compile = _require3.compile;
 
 Object.defineProperties(Doz, {
@@ -2635,7 +2646,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(23);
-var instances = __webpack_require__(6);
+var instances = __webpack_require__(7);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
@@ -2955,7 +2966,7 @@ module.exports = bind;
 "use strict";
 
 
-var composeStyleInner = __webpack_require__(8);
+var composeStyleInner = __webpack_require__(3);
 var createStyle = __webpack_require__(25);
 
 function scopedInner(cssContent, tag, tagByData) {
@@ -3170,7 +3181,7 @@ module.exports = hmr;
 
 
 var proxy = __webpack_require__(11);
-var events = __webpack_require__(3);
+var events = __webpack_require__(4);
 
 var _require = __webpack_require__(12),
     updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
@@ -3294,28 +3305,16 @@ var _require = __webpack_require__(33),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
-var deadChildren = [];
-
 var _require2 = __webpack_require__(0),
-    INSTANCE = _require2.INSTANCE,
     TAG = _require2.TAG,
-    NS = _require2.NS,
-    CMP_INSTANCE = _require2.CMP_INSTANCE,
-    ATTR = _require2.ATTR,
-    DIR_IS = _require2.DIR_IS;
+    NS = _require2.NS;
 
-var html = __webpack_require__(7);
-var composeStyleInner = __webpack_require__(8);
+var canDecode = __webpack_require__(46);
 
 var storeElementNode = Object.create(null);
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
-}
-
-function canDecode(str) {
-    return (/&\w+;/.test(str) ? html.decode(str) : str
-    );
 }
 
 function create(node, cmp, initial) {
@@ -3361,9 +3360,7 @@ function create(node, cmp, initial) {
         $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
     }
 
-    if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-        cmp._processing.push({ node: $el, action: 'create' });
-    }
+    cmp.nodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -3377,66 +3374,35 @@ function update($parent, newNode, oldNode) {
     if (!$parent) return;
 
     if (!oldNode) {
+        // create node
         var rootElement = create(newNode, cmp, initial);
         $parent.appendChild(rootElement);
         return rootElement;
     } else if (!newNode) {
-        if ($parent.childNodes[index]) {
-            deadChildren.push($parent.childNodes[index]);
-        }
+        // remove node
+        cmp.nodeRemove($parent, index);
     } else if (isChanged(newNode, oldNode)) {
-        var oldElement = $parent.childNodes[index];
-        // Reuse text node
-        if (typeof newNode === 'string' && typeof oldNode === 'string' && oldElement) {
-            oldElement.textContent = canDecode(newNode);
-            if ($parent.nodeName === 'SCRIPT') {
-                // it could be heavy
-                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
-                }
-            }
-            return oldElement;
-        }
+        // node changes
 
+        var oldElement = $parent.childNodes[index];
         if (!oldElement) return;
+
+        var canReuseElement = cmp.beforeNodeChange($parent, newNode, oldNode, oldElement);
+        if (canReuseElement) return canReuseElement;
 
         var newElement = create(newNode, cmp, initial);
 
-        //Re-assign CMP INSTANCE to new element
-        if (oldElement[CMP_INSTANCE]) {
-            newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
-            newElement[CMP_INSTANCE]._rootElement = newElement;
-        }
-
         $parent.replaceChild(newElement, oldElement);
+
+        cmp.nodeChange(newElement, oldElement);
 
         return newElement;
     } else if (newNode.type) {
+        // walk node
 
-        var updated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
+        var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
-        if ($parent.childNodes[index]) {
-            var dynInstance = $parent.childNodes[index][INSTANCE];
-            if (dynInstance && updated.length) {
-                var _defined4 = function _defined4(props) {
-                    var _defined5 = function _defined5(name) {
-                        dynInstance.props[name] = props[name];
-                    };
-
-                    var _defined6 = Object.keys(props);
-
-                    for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                        _defined5(_defined6[_i8], _i8, _defined6);
-                    }
-                };
-
-                for (var _i6 = 0; _i6 <= updated.length - 1; _i6++) {
-                    _defined4(updated[_i6], _i6, updated);
-                }
-
-                return;
-            }
-        }
+        if (cmp.beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
@@ -3445,16 +3411,7 @@ function update($parent, newNode, oldNode) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
-        clearDead();
-    }
-}
-
-function clearDead() {
-    var dl = deadChildren.length;
-
-    while (dl--) {
-        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-        deadChildren.splice(dl, 1);
+        cmp.nodeWalk();
     }
 }
 
@@ -4052,6 +4009,149 @@ module.exports = localMixin;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var canDecode = __webpack_require__(46);
+var composeStyleInner = __webpack_require__(3);
+
+var _require = __webpack_require__(0),
+    INSTANCE = _require.INSTANCE,
+    TAG = _require.TAG,
+    NS = _require.NS,
+    CMP_INSTANCE = _require.CMP_INSTANCE,
+    ATTR = _require.ATTR,
+    DIR_IS = _require.DIR_IS;
+
+var DOM = function () {
+    function DOM() {
+        _classCallCheck(this, DOM);
+
+        this._deadChildren = [];
+    }
+
+    _createClass(DOM, [{
+        key: '_clearDead',
+        value: function _clearDead() {
+            var dl = this._deadChildren.length;
+
+            while (dl--) {
+                this._deadChildren[dl].parentNode.removeChild(this._deadChildren[dl]);
+                this._deadChildren.splice(dl, 1);
+            }
+        }
+    }, {
+        key: 'beforeNodeElementCreate',
+        value: function beforeNodeElementCreate() {}
+    }, {
+        key: 'nodeElementCreate',
+        value: function nodeElementCreate(el, node, initial) {
+            if (typeof el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof el.hasAttribute === 'function' && el.hasAttribute(ATTR.IS)) && !initial) {
+                this._processing.push({ node: el, action: 'create' });
+            }
+        }
+    }, {
+        key: 'beforeNodeCreate',
+        value: function beforeNodeCreate() {}
+    }, {
+        key: 'nodeCreate',
+        value: function nodeCreate() {}
+    }, {
+        key: 'beforeNodeRemove',
+        value: function beforeNodeRemove() {}
+    }, {
+        key: 'nodeRemove',
+        value: function nodeRemove(parent, index) {
+            if (parent.childNodes[index]) {
+                this._deadChildren.push(parent.childNodes[index]);
+            }
+        }
+    }, {
+        key: 'beforeNodeChange',
+        value: function beforeNodeChange(parent, newNode, oldNode, oldElement) {
+            if (typeof newNode === 'string' && typeof oldNode === 'string' && oldElement) {
+                oldElement.textContent = canDecode(newNode);
+                if (parent.nodeName === 'SCRIPT') {
+                    // it could be heavy
+                    if (parent.type === 'text/style' && parent.dataset.id && parent.dataset.owner) {
+                        document.getElementById(parent.dataset.id).textContent = composeStyleInner(oldElement.textContent, parent.dataset.owner, parent.dataset.ownerByData);
+                    }
+                }
+                return oldElement;
+            }
+        }
+    }, {
+        key: 'nodeChange',
+        value: function nodeChange(newElement, oldElement) {
+            //Re-assign CMP INSTANCE to new element
+            if (oldElement[CMP_INSTANCE]) {
+                newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
+                newElement[CMP_INSTANCE]._rootElement = newElement;
+            }
+        }
+    }, {
+        key: 'beforeNodeWalk',
+        value: function beforeNodeWalk(parent, index, attributesUpdated) {
+            if (parent.childNodes[index]) {
+                var dynInstance = parent.childNodes[index][INSTANCE];
+                // Can update props of dynamic instances?
+                if (dynInstance && attributesUpdated.length) {
+                    var _defined = function _defined(props) {
+                        var _defined2 = function _defined2(name) {
+                            dynInstance.props[name] = props[name];
+                        };
+
+                        var _defined3 = Object.keys(props);
+
+                        for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+                            _defined2(_defined3[_i4], _i4, _defined3);
+                        }
+                    };
+
+                    for (var _i2 = 0; _i2 <= attributesUpdated.length - 1; _i2++) {
+                        _defined(attributesUpdated[_i2], _i2, attributesUpdated);
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }, {
+        key: 'nodeWalk',
+        value: function nodeWalk() {
+            this._clearDead();
+        }
+    }]);
+
+    return DOM;
+}();
+
+module.exports = DOM;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function canDecode(str) {
+    return (/&\w+;/.test(str) ? html.decode(str) : str
+    );
+}
+
+module.exports = canDecode;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _require = __webpack_require__(1),
     registerComponent = _require.registerComponent;
 
@@ -4081,13 +4181,13 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(5),
+var _require = __webpack_require__(6),
     Component = _require.Component;
 
 var mixin = __webpack_require__(17);
