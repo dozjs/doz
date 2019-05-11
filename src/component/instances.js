@@ -9,6 +9,40 @@ const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
 
+function getComponentName(child) {
+    let cmpName;
+    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+        cmpName = child.getAttribute(ATTR.IS).toLowerCase();
+        child.removeAttribute(ATTR.IS);
+        child.dataset.is = cmpName;
+        child[DIR_IS] = true;
+    } else
+        cmpName = child.nodeName.toLowerCase();
+
+    return cmpName;
+}
+
+function transformChildStyle(child, parent) {
+    if (child.nodeName !== 'STYLE')
+        return;
+
+    const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    let tagByData;
+    if (dataSetId)
+        tagByData = `[data-is="${dataSetId}"]`;
+    scopedInner(child.textContent, parent.cmp.tag, tagByData);
+    const emptyStyle = document.createElement('script');
+    emptyStyle.type = 'text/style';
+    emptyStyle.textContent = ' ';
+    emptyStyle.dataset.id = parent.cmp.tag + '--style';
+    emptyStyle.dataset.owner = parent.cmp.tag;
+    if (tagByData)
+        emptyStyle.dataset.ownerByData = tagByData;
+    child.parentNode.replaceChild(emptyStyle, child);
+    child = emptyStyle.nextSibling;
+    return child;
+}
+
 function get(cfg = {}) {
 
     if (!cfg.root) return;
@@ -27,31 +61,14 @@ function get(cfg = {}) {
     function walk(child, parent = {}) {
         while (child) {
 
-            if (child.nodeName === 'STYLE') {
-                const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
-                let tagByData;
-                if (dataSetId)
-                    tagByData = `[data-is="${dataSetId}"]`;
-                scopedInner(child.textContent, parent.cmp.tag, tagByData);
-                const emptyStyle = document.createElement('script');
-                emptyStyle.type = 'text/style';
-                emptyStyle.textContent = ' ';
-                emptyStyle.dataset.id = parent.cmp.tag + '--style';
-                emptyStyle.dataset.owner = parent.cmp.tag;
-                if (tagByData)
-                    emptyStyle.dataset.ownerByData = tagByData;
-                child.parentNode.replaceChild(emptyStyle, child);
-                child = emptyStyle.nextSibling;
+            let isChildStyle = transformChildStyle(child, parent);
+
+            if (isChildStyle) {
+                child = isChildStyle;
                 continue;
             }
 
-            if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
-                cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-                child.removeAttribute(ATTR.IS);
-                child.dataset.is = cmpName;
-                child[DIR_IS] = true;
-            } else
-                cmpName = child.nodeName.toLowerCase();
+            cmpName = getComponentName(child);
 
             let localComponents = {};
 
@@ -92,7 +109,8 @@ function get(cfg = {}) {
                     // This implements single function component
                     if (!REGEX.IS_SFC.test(Function.prototype.toString.call(cmp.cfg))) {
                         const func = cmp.cfg;
-                        cmp.cfg = class extends Component {};
+                        cmp.cfg = class extends Component {
+                        };
                         cmp.cfg.prototype.template = func;
                     }
 

@@ -83,7 +83,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (newNode.type) {
         // walk node
-
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -110,8 +109,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         cmp.$nodeWalk();
     }
 }
-
-
 
 module.exports = {
     create,

@@ -1325,6 +1325,36 @@ var _require5 = __webpack_require__(6),
 
 var propsInit = __webpack_require__(19);
 
+function getComponentName(child) {
+    var cmpName = void 0;
+    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+        cmpName = child.getAttribute(ATTR.IS).toLowerCase();
+        child.removeAttribute(ATTR.IS);
+        child.dataset.is = cmpName;
+        child[DIR_IS] = true;
+    } else cmpName = child.nodeName.toLowerCase();
+
+    return cmpName;
+}
+
+function transformChildStyle(child, parent) {
+    if (child.nodeName !== 'STYLE') return;
+
+    var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    var tagByData = void 0;
+    if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
+    scopedInner(child.textContent, parent.cmp.tag, tagByData);
+    var emptyStyle = document.createElement('script');
+    emptyStyle.type = 'text/style';
+    emptyStyle.textContent = ' ';
+    emptyStyle.dataset.id = parent.cmp.tag + '--style';
+    emptyStyle.dataset.owner = parent.cmp.tag;
+    if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
+    child.parentNode.replaceChild(emptyStyle, child);
+    child = emptyStyle.nextSibling;
+    return child;
+}
+
 function get() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -1345,28 +1375,14 @@ function get() {
 
         while (child) {
 
-            if (child.nodeName === 'STYLE') {
-                var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
-                var tagByData = void 0;
-                if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
-                scopedInner(child.textContent, parent.cmp.tag, tagByData);
-                var emptyStyle = document.createElement('script');
-                emptyStyle.type = 'text/style';
-                emptyStyle.textContent = ' ';
-                emptyStyle.dataset.id = parent.cmp.tag + '--style';
-                emptyStyle.dataset.owner = parent.cmp.tag;
-                if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
-                child.parentNode.replaceChild(emptyStyle, child);
-                child = emptyStyle.nextSibling;
+            var isChildStyle = transformChildStyle(child, parent);
+
+            if (isChildStyle) {
+                child = isChildStyle;
                 continue;
             }
 
-            if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
-                cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-                child.removeAttribute(ATTR.IS);
-                child.dataset.is = cmpName;
-                child[DIR_IS] = true;
-            } else cmpName = child.nodeName.toLowerCase();
+            cmpName = getComponentName(child);
 
             var localComponents = {};
 
@@ -3412,7 +3428,6 @@ function update($parent, newNode, oldNode) {
         return $newElement;
     } else if (newNode.type) {
         // walk node
-
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if (cmp.$beforeNodeWalk($parent, index, attributesUpdated)) return;
