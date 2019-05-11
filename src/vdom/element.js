@@ -45,7 +45,7 @@ function create(node, cmp, initial) {
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
 
-    cmp.nodeElementCreate($el, node, initial);
+    cmp.$nodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -56,31 +56,31 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!oldNode) {
         // create node
-        const rootElement = create(newNode, cmp, initial);
-        $parent.appendChild(rootElement);
-        return rootElement;
+        return $parent.appendChild(create(newNode, cmp, initial));
+
     } else if (!newNode) {
         // remove node
-        cmp.nodeRemove($parent, index);
+        cmp.$nodeRemove($parent, index);
+
     } else if (isChanged(newNode, oldNode)) {
         // node changes
+        const $oldElement = $parent.childNodes[index];
+        if (!$oldElement) return;
 
-        const oldElement = $parent.childNodes[index];
-        if (!oldElement) return;
-
-        const canReuseElement = cmp.beforeNodeChange($parent, newNode, oldNode, oldElement);
+        const canReuseElement = cmp.$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
-        const newElement = create(newNode, cmp, initial);
+        const $newElement = create(newNode, cmp, initial);
 
         $parent.replaceChild(
-            newElement,
-            oldElement
+            $newElement,
+            $oldElement
         );
 
-        cmp.nodeChange(newElement, oldElement);
+        cmp.$nodeChange($newElement, $oldElement);
 
-        return newElement;
+        return $newElement;
+
     } else if (newNode.type) {
         // walk node
 
@@ -91,7 +91,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        if(cmp.beforeNodeWalk($parent, index, attributesUpdated)) return;
+        if(cmp.$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
@@ -107,7 +107,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             );
         }
 
-        cmp.nodeWalk();
+        cmp.$nodeWalk();
     }
 }
 
