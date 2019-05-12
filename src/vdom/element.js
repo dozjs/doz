@@ -45,7 +45,7 @@ function create(node, cmp, initial) {
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
 
-    cmp.$$nodeElementCreate($el, node, initial);
+    cmp.$$afterNodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -60,7 +60,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (!newNode) {
         // remove node
-        cmp.$$nodeRemove($parent, index);
+        cmp.$$afterNodeRemove($parent, index);
 
     } else if (isChanged(newNode, oldNode)) {
         // node changes
@@ -77,7 +77,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             $oldElement
         );
 
-        cmp.$$nodeChange($newElement, $oldElement);
+        cmp.$$afterNodeChange($newElement, $oldElement);
 
         return $newElement;
 
@@ -106,7 +106,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             );
         }
 
-        cmp.$$nodeWalk();
+        cmp.$$afterNodeWalk();
     }
 }
 

@@ -12,7 +12,7 @@ class DOMManipulation {
         this._deadChildren = [];
     }
 
-    $$nodeElementCreate($el, node, initial) {
+    $$afterNodeElementCreate($el, node, initial) {
         if (typeof $el.hasAttribute === 'function')
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
@@ -21,7 +21,7 @@ class DOMManipulation {
             }
     }
 
-    $$nodeRemove($parent, index) {
+    $$afterNodeRemove($parent, index) {
         if ($parent.childNodes[index]) {
             this._deadChildren.push($parent.childNodes[index]);
         }
@@ -42,7 +42,7 @@ class DOMManipulation {
     };
 
     // noinspection JSMethodCanBeStatic
-    $$nodeChange($newElement, $oldElement) {
+    $$afterNodeChange($newElement, $oldElement) {
         //Re-assign CMP INSTANCE to new element
         if ($oldElement[CMP_INSTANCE]) {
             $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
@@ -69,7 +69,7 @@ class DOMManipulation {
         return false;
     }
 
-    $$nodeWalk() {
+    $$afterNodeWalk() {
         this._clearDead();
     }
 
@@ -82,7 +82,7 @@ class DOMManipulation {
         return [name, value];
     }
 
-    $$attributeCreate($target, name, value) {
+    $$afterAttributeCreate($target, name, value) {
         let bindValue;
         if (this._setBind($target, name, value)) {
             bindValue = this.props[value];
@@ -93,7 +93,7 @@ class DOMManipulation {
     }
 
     // noinspection JSMethodCanBeStatic
-    $$attributesCreate($target, bindValue) {
+    $$afterAttributesCreate($target, bindValue) {
         if (typeof bindValue === 'undefined')
             return;
 
@@ -121,7 +121,7 @@ class DOMManipulation {
         });
     }
 
-    $$attributeUpdate($target, name, value) {
+    $$afterAttributeUpdate($target, name, value) {
         if (this.updateChildrenProps && $target) {
             name = dashToCamel(name);
             const firstChild = $target.firstChild;

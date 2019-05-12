@@ -1365,24 +1365,25 @@ function get() {
 
     cfg.root.appendChild(cfg.template);
 
-    var component = null;
+    var componentInstance = null;
     var parentElement = void 0;
     var cmpName = void 0;
+    var isChildStyle = void 0;
     var trash = [];
 
-    function walk(child) {
+    function walk($child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        while (child) {
+        while ($child) {
 
-            var isChildStyle = transformChildStyle(child, parent);
+            isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {
-                child = isChildStyle;
+                $child = isChildStyle;
                 continue;
             }
 
-            cmpName = getComponentName(child);
+            cmpName = getComponentName($child);
 
             var localComponents = {};
 
@@ -1395,23 +1396,23 @@ function get() {
             if (cmp) {
 
                 if (parent.cmp) {
-                    var rawChild = child.outerHTML;
+                    var rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
                 }
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    child = child.nextSibling;
+                    $child = $child.nextSibling;
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                    trash.push(child);
-                    child = child.nextSibling;
+                    trash.push($child);
+                    $child = $child.nextSibling;
                     continue;
                 }
 
-                var props = serializeProps(child);
+                var props = serializeProps($child);
                 var dProps = extract(props);
 
                 var newElement = void 0;
@@ -1436,7 +1437,7 @@ function get() {
 
                     newElement = new cmp.cfg({
                         tag: cmpName,
-                        root: child,
+                        root: $child,
                         app: cfg.app,
                         props: props,
                         dProps: dProps,
@@ -1446,7 +1447,7 @@ function get() {
                     newElement = new Component({
                         tag: cmpName,
                         cmp: cmp,
-                        root: child,
+                        root: $child,
                         app: cfg.app,
                         props: props,
                         dProps: dProps,
@@ -1455,7 +1456,7 @@ function get() {
                 }
 
                 if (!newElement) {
-                    child = child.nextSibling;
+                    $child = $child.nextSibling;
                     continue;
                 }
 
@@ -1471,13 +1472,13 @@ function get() {
                     newElement._isRendered = true;
                     newElement.render(true);
 
-                    if (!component) {
-                        component = newElement;
+                    if (!componentInstance) {
+                        componentInstance = newElement;
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    child.insertBefore(newElement._rootElement, child.firstChild);
+                    $child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
@@ -1493,29 +1494,29 @@ function get() {
                 cfg.autoCmp = null;
             }
 
-            if (child.hasChildNodes()) {
-                walk(child.firstChild, { cmp: parentElement });
+            if ($child.hasChildNodes()) {
+                walk($child.firstChild, { cmp: parentElement });
             }
 
             if (!cmp) {
                 parentElement = parent.cmp;
             }
 
-            child = child.nextSibling;
+            $child = $child.nextSibling;
         }
     }
 
     walk(cfg.template);
 
-    var _defined = function _defined(child) {
-        return child.remove();
+    var _defined = function _defined($child) {
+        return $child.remove();
     };
 
     for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
         _defined(trash[_i2], _i2, trash);
     }
 
-    return component;
+    return componentInstance;
 }
 
 module.exports = {
@@ -3392,7 +3393,7 @@ function create(node, cmp, initial) {
         $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
     }
 
-    cmp.$$nodeElementCreate($el, node, initial);
+    cmp.$$afterNodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -3410,7 +3411,7 @@ function update($parent, newNode, oldNode) {
         return $parent.appendChild(create(newNode, cmp, initial));
     } else if (!newNode) {
         // remove node
-        cmp.$$nodeRemove($parent, index);
+        cmp.$$afterNodeRemove($parent, index);
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         var $oldElement = $parent.childNodes[index];
@@ -3423,7 +3424,7 @@ function update($parent, newNode, oldNode) {
 
         $parent.replaceChild($newElement, $oldElement);
 
-        cmp.$$nodeChange($newElement, $oldElement);
+        cmp.$$afterNodeChange($newElement, $oldElement);
 
         return $newElement;
     } else if (newNode.type) {
@@ -3439,7 +3440,7 @@ function update($parent, newNode, oldNode) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
-        cmp.$$nodeWalk();
+        cmp.$$afterNodeWalk();
     }
 }
 
@@ -3504,10 +3505,10 @@ function removeAttribute($target, name, cmp) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal === '') {
         removeAttribute($target, name, cmp);
-        cmp.$$attributeUpdate($target, name, newVal);
+        cmp.$$afterAttributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
-        cmp.$$attributeUpdate($target, name, newVal);
+        cmp.$$afterAttributeUpdate($target, name, newVal);
     }
 }
 
@@ -3615,7 +3616,7 @@ function attach($target, props, cmp) {
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
 
-        var canBindValue = cmp.$$attributeCreate($target, name, props[name]);
+        var canBindValue = cmp.$$afterAttributeCreate($target, name, props[name]);
         if (canBindValue) bindValue = canBindValue;
     }
 
@@ -3624,7 +3625,7 @@ function attach($target, props, cmp) {
         if (REGEX.IS_LISTENER.test(datasetArray[_i5])) addEventListener($target, _i5, $target.dataset[datasetArray[_i5]], cmp);
     }
 
-    cmp.$$attributesCreate($target, bindValue);
+    cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
@@ -3942,15 +3943,15 @@ var DOMManipulation = function () {
     }
 
     _createClass(DOMManipulation, [{
-        key: '$$nodeElementCreate',
-        value: function $$nodeElementCreate($el, node, initial) {
+        key: '$$afterNodeElementCreate',
+        value: function $$afterNodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
                 this._processing.push({ node: $el, action: 'create' });
             }
         }
     }, {
-        key: '$$nodeRemove',
-        value: function $$nodeRemove($parent, index) {
+        key: '$$afterNodeRemove',
+        value: function $$afterNodeRemove($parent, index) {
             if ($parent.childNodes[index]) {
                 this._deadChildren.push($parent.childNodes[index]);
             }
@@ -3973,11 +3974,11 @@ var DOMManipulation = function () {
             }
         }
     }, {
-        key: '$$nodeChange',
+        key: '$$afterNodeChange',
 
 
         // noinspection JSMethodCanBeStatic
-        value: function $$nodeChange($newElement, $oldElement) {
+        value: function $$afterNodeChange($newElement, $oldElement) {
             //Re-assign CMP INSTANCE to new element
             if ($oldElement[CMP_INSTANCE]) {
                 $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
@@ -4017,8 +4018,8 @@ var DOMManipulation = function () {
             return false;
         }
     }, {
-        key: '$$nodeWalk',
-        value: function $$nodeWalk() {
+        key: '$$afterNodeWalk',
+        value: function $$afterNodeWalk() {
             this._clearDead();
         }
 
@@ -4034,8 +4035,8 @@ var DOMManipulation = function () {
             return [name, value];
         }
     }, {
-        key: '$$attributeCreate',
-        value: function $$attributeCreate($target, name, value) {
+        key: '$$afterAttributeCreate',
+        value: function $$afterAttributeCreate($target, name, value) {
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
                 bindValue = this.props[value];
@@ -4047,8 +4048,8 @@ var DOMManipulation = function () {
         // noinspection JSMethodCanBeStatic
 
     }, {
-        key: '$$attributesCreate',
-        value: function $$attributesCreate($target, bindValue) {
+        key: '$$afterAttributesCreate',
+        value: function $$afterAttributesCreate($target, bindValue) {
             if (typeof bindValue === 'undefined') return;
 
             delay(function () {
@@ -4074,8 +4075,8 @@ var DOMManipulation = function () {
             });
         }
     }, {
-        key: '$$attributeUpdate',
-        value: function $$attributeUpdate($target, name, value) {
+        key: '$$afterAttributeUpdate',
+        value: function $$afterAttributeUpdate($target, name, value) {
             if (this.updateChildrenProps && $target) {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;

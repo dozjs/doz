@@ -53,22 +53,23 @@ function get(cfg = {}) {
 
     cfg.root.appendChild(cfg.template);
 
-    let component = null;
+    let componentInstance = null;
     let parentElement;
     let cmpName;
+    let isChildStyle;
     const trash = [];
 
-    function walk(child, parent = {}) {
-        while (child) {
+    function walk($child, parent = {}) {
+        while ($child) {
 
-            let isChildStyle = transformChildStyle(child, parent);
+            isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {
-                child = isChildStyle;
+                $child = isChildStyle;
                 continue;
             }
 
-            cmpName = getComponentName(child);
+            cmpName = getComponentName($child);
 
             let localComponents = {};
 
@@ -84,23 +85,23 @@ function get(cfg = {}) {
             if (cmp) {
 
                 if (parent.cmp) {
-                    const rawChild = child.outerHTML;
+                    const rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
                 }
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    child = child.nextSibling;
+                    $child = $child.nextSibling;
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                    trash.push(child);
-                    child = child.nextSibling;
+                    trash.push($child);
+                    $child = $child.nextSibling;
                     continue;
                 }
 
-                const props = serializeProps(child);
+                const props = serializeProps($child);
                 const dProps = extract(props);
 
                 let newElement;
@@ -116,7 +117,7 @@ function get(cfg = {}) {
 
                     newElement = new cmp.cfg({
                         tag: cmpName,
-                        root: child,
+                        root: $child,
                         app: cfg.app,
                         props,
                         dProps,
@@ -126,7 +127,7 @@ function get(cfg = {}) {
                     newElement = new Component({
                         tag: cmpName,
                         cmp,
-                        root: child,
+                        root: $child,
                         app: cfg.app,
                         props,
                         dProps,
@@ -135,7 +136,7 @@ function get(cfg = {}) {
                 }
 
                 if (!newElement) {
-                    child = child.nextSibling;
+                    $child = $child.nextSibling;
                     continue;
                 }
 
@@ -151,13 +152,13 @@ function get(cfg = {}) {
                     newElement._isRendered = true;
                     newElement.render(true);
 
-                    if (!component) {
-                        component = newElement;
+                    if (!componentInstance) {
+                        componentInstance = newElement;
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    child.insertBefore(newElement._rootElement, child.firstChild);
+                    $child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
@@ -173,23 +174,23 @@ function get(cfg = {}) {
                 cfg.autoCmp = null;
             }
 
-            if (child.hasChildNodes()) {
-                walk(child.firstChild, {cmp: parentElement})
+            if ($child.hasChildNodes()) {
+                walk($child.firstChild, {cmp: parentElement})
             }
 
             if (!cmp) {
                 parentElement = parent.cmp;
             }
 
-            child = child.nextSibling;
+            $child = $child.nextSibling;
         }
     }
 
     walk(cfg.template);
 
-    trash.forEach(child => child.remove());
+    trash.forEach($child => $child.remove());
 
-    return component;
+    return componentInstance;
 }
 
 module.exports = {

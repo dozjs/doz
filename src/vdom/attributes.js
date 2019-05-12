@@ -38,10 +38,10 @@ function removeAttribute($target, name, cmp) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal === '') {
         removeAttribute($target, name, cmp);
-        cmp.$$attributeUpdate($target, name, newVal);
+        cmp.$$afterAttributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
-        cmp.$$attributeUpdate($target, name, newVal);
+        cmp.$$afterAttributeUpdate($target, name, newVal);
     }
 }
 
@@ -141,7 +141,7 @@ function attach($target, props, cmp) {
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
 
-        let canBindValue = cmp.$$attributeCreate($target, name, props[name]);
+        let canBindValue = cmp.$$afterAttributeCreate($target, name, props[name]);
         if (canBindValue) bindValue = canBindValue;
     }
 
@@ -151,7 +151,7 @@ function attach($target, props, cmp) {
             addEventListener($target, i, $target.dataset[datasetArray[i]], cmp);
     }
 
-    cmp.$$attributesCreate($target, bindValue);
+    cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
