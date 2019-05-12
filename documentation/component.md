@@ -52,7 +52,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 0.0.19
 - **Type**: `string`
 - **Default**: ''
-- **Description**: A name that identify the children component. More info on [directives](https://github.com/dozjs/doz/blob/master/documentation/index.md#directives).
+- **Description**: A name that identify the child component. More info on [directives](https://github.com/dozjs/doz/blob/master/documentation/index.md#directives).
 
 ### autoCreateChildren
 
@@ -60,6 +60,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `boolean`
 - **Default**: true
 - **Description**: If true, create the child components.
+
+### children
+- **Since**: 1.0.0
+- **Type**: `object`
+- **Default**: {}
+- **Description**: An object that contains all children components.
 
 ### components
 
