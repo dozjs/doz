@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.18.0] - 2019-05-12
+- **Improved** virtual-dom logic now is better organized with new class named DOMManipulation
+- **Changes** minor refactoring of some stuff
+
 ## [1.17.1] - 2019-04-24
 - **Fixed** multiple :global style in same line
 
