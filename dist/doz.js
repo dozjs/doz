@@ -697,10 +697,10 @@ var propsInit = __webpack_require__(19);
 var _require3 = __webpack_require__(12),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var DOM = __webpack_require__(46);
+var DOMManipulation = __webpack_require__(46);
 
-var Component = function (_DOM) {
-    _inherits(Component, _DOM);
+var Component = function (_DOMManipulation) {
+    _inherits(Component, _DOMManipulation);
 
     function Component(opt) {
         _classCallCheck(this, Component);
@@ -1081,7 +1081,7 @@ var Component = function (_DOM) {
     }]);
 
     return Component;
-}(DOM);
+}(DOMManipulation);
 
 function defineProperties(obj, opt) {
 
@@ -1243,7 +1243,7 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        if (item.node.innerHTML === '') {
+        if (!item.node.childNodes.length) {
             var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
@@ -2444,7 +2444,7 @@ var _require = __webpack_require__(0),
     TAG = _require.TAG;
 
 var tag = TAG.TEXT_NODE_PLACE;
-var LESS = '<';
+var LESSER = '<';
 var GREATER = '>';
 
 var regOpen = new RegExp('<' + tag + '>(\\s+)?<', 'gi');
@@ -2466,7 +2466,7 @@ module.exports = function (strings) {
 
     for (var i = 0; i < value.length; ++i) {
         var _defined = function _defined(char) {
-            if (char === LESS) allowTag = false;
+            if (char === LESSER) allowTag = false;
             if (char === GREATER) allowTag = true;
         };
 
@@ -2481,7 +2481,7 @@ module.exports = function (strings) {
         if (allowTag) result += '<' + tag + '>' + value[i] + '</' + tag + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
-    result = result.replace(regOpen, LESS).replace(regClose, GREATER);
+    result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
 
     return result;
 };
@@ -3392,7 +3392,7 @@ function create(node, cmp, initial) {
         $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
     }
 
-    cmp.$nodeElementCreate($el, node, initial);
+    cmp.$$nodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -3410,27 +3410,27 @@ function update($parent, newNode, oldNode) {
         return $parent.appendChild(create(newNode, cmp, initial));
     } else if (!newNode) {
         // remove node
-        cmp.$nodeRemove($parent, index);
+        cmp.$$nodeRemove($parent, index);
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         var $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
 
-        var canReuseElement = cmp.$beforeNodeChange($parent, $oldElement, newNode, oldNode);
+        var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
         var $newElement = create(newNode, cmp, initial);
 
         $parent.replaceChild($newElement, $oldElement);
 
-        cmp.$nodeChange($newElement, $oldElement);
+        cmp.$$nodeChange($newElement, $oldElement);
 
         return $newElement;
     } else if (newNode.type) {
         // walk node
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
-        if (cmp.$beforeNodeWalk($parent, index, attributesUpdated)) return;
+        if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
@@ -3439,7 +3439,7 @@ function update($parent, newNode, oldNode) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
-        cmp.$nodeWalk();
+        cmp.$$nodeWalk();
     }
 }
 
@@ -3475,12 +3475,12 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    var _cmp$$beforeAttribute = cmp.$beforeAttributeSet($target, name, value);
+    var _cmp$$$beforeAttribut = cmp.$$beforeAttributeSet($target, name, value);
 
-    var _cmp$$beforeAttribute2 = _slicedToArray(_cmp$$beforeAttribute, 2);
+    var _cmp$$$beforeAttribut2 = _slicedToArray(_cmp$$$beforeAttribut, 2);
 
-    name = _cmp$$beforeAttribute2[0];
-    value = _cmp$$beforeAttribute2[1];
+    name = _cmp$$$beforeAttribut2[0];
+    value = _cmp$$$beforeAttribut2[1];
 
 
     if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name)) {} else if (typeof value === 'boolean') {
@@ -3504,10 +3504,10 @@ function removeAttribute($target, name, cmp) {
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal === '') {
         removeAttribute($target, name, cmp);
-        cmp.$attributeUpdate($target, name, newVal);
+        cmp.$$attributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
-        cmp.$attributeUpdate($target, name, newVal);
+        cmp.$$attributeUpdate($target, name, newVal);
     }
 }
 
@@ -3615,7 +3615,7 @@ function attach($target, props, cmp) {
         setAttribute($target, name, props[name], cmp);
         addEventListener($target, name, props[name], cmp);
 
-        var canBindValue = cmp.$attributeCreate($target, name, props[name]);
+        var canBindValue = cmp.$$attributeCreate($target, name, props[name]);
         if (canBindValue) bindValue = canBindValue;
     }
 
@@ -3624,7 +3624,7 @@ function attach($target, props, cmp) {
         if (REGEX.IS_LISTENER.test(datasetArray[_i5])) addEventListener($target, _i5, $target.dataset[datasetArray[_i5]], cmp);
     }
 
-    cmp.$attributesCreate($target, bindValue);
+    cmp.$$attributesCreate($target, bindValue);
 }
 
 module.exports = {
@@ -3934,30 +3934,33 @@ var _require = __webpack_require__(0),
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
 
-var DOM = function () {
-    function DOM() {
-        _classCallCheck(this, DOM);
+var DOMManipulation = function () {
+    function DOMManipulation() {
+        _classCallCheck(this, DOMManipulation);
 
         this._deadChildren = [];
     }
 
-    _createClass(DOM, [{
-        key: '$nodeElementCreate',
-        value: function $nodeElementCreate($el, node, initial) {
+    _createClass(DOMManipulation, [{
+        key: '$$nodeElementCreate',
+        value: function $$nodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
                 this._processing.push({ node: $el, action: 'create' });
             }
         }
     }, {
-        key: '$nodeRemove',
-        value: function $nodeRemove(parent, index) {
-            if (parent.childNodes[index]) {
-                this._deadChildren.push(parent.childNodes[index]);
+        key: '$$nodeRemove',
+        value: function $$nodeRemove($parent, index) {
+            if ($parent.childNodes[index]) {
+                this._deadChildren.push($parent.childNodes[index]);
             }
         }
+
+        // noinspection JSMethodCanBeStatic
+
     }, {
-        key: '$beforeNodeChange',
-        value: function $beforeNodeChange($parent, $oldElement, newNode, oldNode) {
+        key: '$$beforeNodeChange',
+        value: function $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
             if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
                 $oldElement.textContent = canDecode(newNode);
                 if ($parent.nodeName === 'SCRIPT') {
@@ -3970,8 +3973,11 @@ var DOM = function () {
             }
         }
     }, {
-        key: '$nodeChange',
-        value: function $nodeChange($newElement, $oldElement) {
+        key: '$$nodeChange',
+
+
+        // noinspection JSMethodCanBeStatic
+        value: function $$nodeChange($newElement, $oldElement) {
             //Re-assign CMP INSTANCE to new element
             if ($oldElement[CMP_INSTANCE]) {
                 $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
@@ -3979,8 +3985,11 @@ var DOM = function () {
             }
         }
     }, {
-        key: '$beforeNodeWalk',
-        value: function $beforeNodeWalk($parent, index, attributesUpdated) {
+        key: '$$beforeNodeWalk',
+
+
+        // noinspection JSMethodCanBeStatic
+        value: function $$beforeNodeWalk($parent, index, attributesUpdated) {
             if ($parent.childNodes[index]) {
                 var dynInstance = $parent.childNodes[index][INSTANCE];
                 // Can update props of dynamic instances?
@@ -4008,13 +4017,16 @@ var DOM = function () {
             return false;
         }
     }, {
-        key: '$nodeWalk',
-        value: function $nodeWalk() {
+        key: '$$nodeWalk',
+        value: function $$nodeWalk() {
             this._clearDead();
         }
+
+        // noinspection JSMethodCanBeStatic
+
     }, {
-        key: '$beforeAttributeSet',
-        value: function $beforeAttributeSet($target, name, value) {
+        key: '$$beforeAttributeSet',
+        value: function $$beforeAttributeSet($target, name, value) {
             if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
                 name = camelToDash(name);
             }
@@ -4022,8 +4034,8 @@ var DOM = function () {
             return [name, value];
         }
     }, {
-        key: '$attributeCreate',
-        value: function $attributeCreate($target, name, value) {
+        key: '$$attributeCreate',
+        value: function $$attributeCreate($target, name, value) {
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
                 bindValue = this.props[value];
@@ -4031,9 +4043,12 @@ var DOM = function () {
             if (this.props) this._setRef($target, name, this.props[name]);
             return bindValue;
         }
+
+        // noinspection JSMethodCanBeStatic
+
     }, {
-        key: '$attributesCreate',
-        value: function $attributesCreate($target, bindValue) {
+        key: '$$attributesCreate',
+        value: function $$attributesCreate($target, bindValue) {
             if (typeof bindValue === 'undefined') return;
 
             delay(function () {
@@ -4059,8 +4074,8 @@ var DOM = function () {
             });
         }
     }, {
-        key: '$attributeUpdate',
-        value: function $attributeUpdate($target, name, value) {
+        key: '$$attributeUpdate',
+        value: function $$attributeUpdate($target, name, value) {
             if (this.updateChildrenProps && $target) {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;
@@ -4175,10 +4190,10 @@ var DOM = function () {
         }
     }]);
 
-    return DOM;
+    return DOMManipulation;
 }();
 
-module.exports = DOM;
+module.exports = DOMManipulation;
 
 /***/ }),
 /* 47 */

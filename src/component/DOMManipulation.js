@@ -6,13 +6,13 @@ const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
 const {INSTANCE, CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 
-class DOM {
+class DOMManipulation {
 
     constructor() {
         this._deadChildren = [];
     }
 
-    $nodeElementCreate($el, node, initial) {
+    $$nodeElementCreate($el, node, initial) {
         if (typeof $el.hasAttribute === 'function')
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
@@ -21,13 +21,14 @@ class DOM {
             }
     }
 
-    $nodeRemove(parent, index) {
-        if (parent.childNodes[index]) {
-            this._deadChildren.push(parent.childNodes[index]);
+    $$nodeRemove($parent, index) {
+        if ($parent.childNodes[index]) {
+            this._deadChildren.push($parent.childNodes[index]);
         }
     }
 
-    $beforeNodeChange($parent, $oldElement, newNode, oldNode) {
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
             $oldElement.textContent = canDecode(newNode);
             if($parent.nodeName === 'SCRIPT') {
@@ -40,7 +41,8 @@ class DOM {
         }
     };
 
-    $nodeChange($newElement, $oldElement) {
+    // noinspection JSMethodCanBeStatic
+    $$nodeChange($newElement, $oldElement) {
         //Re-assign CMP INSTANCE to new element
         if ($oldElement[CMP_INSTANCE]) {
             $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
@@ -48,7 +50,8 @@ class DOM {
         }
     };
 
-    $beforeNodeWalk($parent, index, attributesUpdated) {
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeWalk($parent, index, attributesUpdated) {
         if ($parent.childNodes[index]) {
             const dynInstance = $parent.childNodes[index][INSTANCE];
             // Can update props of dynamic instances?
@@ -66,11 +69,12 @@ class DOM {
         return false;
     }
 
-    $nodeWalk() {
+    $$nodeWalk() {
         this._clearDead();
     }
 
-    $beforeAttributeSet($target, name, value) {
+    // noinspection JSMethodCanBeStatic
+    $$beforeAttributeSet($target, name, value) {
         if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
             name = camelToDash(name);
         }
@@ -78,7 +82,7 @@ class DOM {
         return [name, value];
     }
 
-    $attributeCreate($target, name, value) {
+    $$attributeCreate($target, name, value) {
         let bindValue;
         if (this._setBind($target, name, value)) {
             bindValue = this.props[value];
@@ -88,7 +92,8 @@ class DOM {
         return bindValue;
     }
 
-    $attributesCreate($target, bindValue) {
+    // noinspection JSMethodCanBeStatic
+    $$attributesCreate($target, bindValue) {
         if (typeof bindValue === 'undefined')
             return;
 
@@ -116,7 +121,7 @@ class DOM {
         });
     }
 
-    $attributeUpdate($target, name, value) {
+    $$attributeUpdate($target, name, value) {
         if (this.updateChildrenProps && $target) {
             name = dashToCamel(name);
             const firstChild = $target.firstChild;
@@ -192,4 +197,4 @@ class DOM {
 
 }
 
-module.exports = DOM;
+module.exports = DOMManipulation;

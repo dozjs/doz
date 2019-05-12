@@ -45,7 +45,7 @@ function create(node, cmp, initial) {
         .map(item => create(item, cmp, initial))
         .forEach($el.appendChild.bind($el));
 
-    cmp.$nodeElementCreate($el, node, initial);
+    cmp.$$nodeElementCreate($el, node, initial);
 
     return $el;
 }
@@ -60,14 +60,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (!newNode) {
         // remove node
-        cmp.$nodeRemove($parent, index);
+        cmp.$$nodeRemove($parent, index);
 
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
 
-        const canReuseElement = cmp.$beforeNodeChange($parent, $oldElement, newNode, oldNode);
+        const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
         const $newElement = create(newNode, cmp, initial);
@@ -77,7 +77,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             $oldElement
         );
 
-        cmp.$nodeChange($newElement, $oldElement);
+        cmp.$$nodeChange($newElement, $oldElement);
 
         return $newElement;
 
@@ -90,7 +90,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        if(cmp.$beforeNodeWalk($parent, index, attributesUpdated)) return;
+        if(cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
@@ -106,7 +106,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             );
         }
 
-        cmp.$nodeWalk();
+        cmp.$$nodeWalk();
     }
 }
 

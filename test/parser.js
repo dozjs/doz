@@ -2,7 +2,7 @@ const {compile} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
 const be = require('bejs');
-const DOM = require('../src/component/DOM');
+const DOM = require('../src/component/DOMManipulation');
 
 describe('parser', function () {
 

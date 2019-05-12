@@ -1,6 +1,6 @@
 const {TAG} = require('../constants');
 const tag = TAG.TEXT_NODE_PLACE;
-const LESS = '<';
+const LESSER = '<';
 const GREATER = '>';
 
 const regOpen = new RegExp(`<${tag}>(\\s+)?<`, 'gi');
@@ -18,7 +18,7 @@ module.exports = function (strings, ...value) {
 
     for (let i = 0; i < value.length; ++i) {
         [...strings[i]].forEach(char => {
-            if (char === LESS)
+            if (char === LESSER)
                 allowTag = false;
             if (char === GREATER)
                 allowTag = true;
@@ -34,7 +34,7 @@ module.exports = function (strings, ...value) {
     }
 
     result = result
-        .replace(regOpen, LESS)
+        .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
     return result;

@@ -19,9 +19,9 @@ const {compile} = require('../vdom/parser');
 const delay = require('../utils/delay');
 const propsInit = require('./props-init');
 const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
-const DOM = require('./DOM');
+const DOMManipulation = require('./DOMManipulation');
 
-class Component extends DOM {
+class Component extends DOMManipulation {
 
     constructor(opt) {
 
@@ -519,7 +519,7 @@ function drawDynamic(instance) {
             item.node[INSTANCE].destroy(true);
         }
 
-        if (item.node.innerHTML === '') {
+        if (!item.node.childNodes.length) {
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
