@@ -55,6 +55,11 @@ export class Component {
     ref: string;
 
     /**
+     * An object that contains all children components.
+     */
+    children: object;
+
+    /**
      * If you use ES6 pattern, you must add all component options inside this object. This options is available only if extend Component.
      */
     config: ConfigComponent;
