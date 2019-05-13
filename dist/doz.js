@@ -3411,7 +3411,7 @@ function update($parent, newNode, oldNode) {
         return $parent.appendChild(create(newNode, cmp, initial));
     } else if (!newNode) {
         // remove node
-        cmp.$$afterNodeRemove($parent, index);
+        cmp.$$nodeRemove($parent, index);
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         var $oldElement = $parent.childNodes[index];
@@ -3950,7 +3950,7 @@ var DOMManipulation = function () {
             }
         }
     }, {
-        key: '$$afterNodeRemove',
+        key: '$$nodeRemove',
         value: function $$afterNodeRemove($parent, index) {
             if ($parent.childNodes[index]) {
                 this._deadChildren.push($parent.childNodes[index]);

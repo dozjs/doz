@@ -3,6 +3,7 @@ const {TAG, NS} = require('../constants');
 const canDecode = require('../utils/can-decode');
 
 const storeElementNode = Object.create(null);
+const deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
@@ -60,7 +61,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (!newNode) {
         // remove node
-        cmp.$$afterNodeRemove($parent, index);
+        if ($parent.childNodes[index]) {
+            deadChildren.push($parent.childNodes[index]);
+        }
 
     } else if (isChanged(newNode, oldNode)) {
         // node changes
@@ -106,7 +109,18 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             );
         }
 
+        clearDead();
+
         cmp.$$afterNodeWalk();
+    }
+}
+
+function clearDead() {
+    let dl = deadChildren.length;
+
+    while (dl--) {
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        deadChildren.splice(dl, 1);
     }
 }
 

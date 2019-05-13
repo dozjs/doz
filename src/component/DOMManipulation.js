@@ -21,12 +21,6 @@ class DOMManipulation {
             }
     }
 
-    $$afterNodeRemove($parent, index) {
-        if ($parent.childNodes[index]) {
-            this._deadChildren.push($parent.childNodes[index]);
-        }
-    }
-
     // noinspection JSMethodCanBeStatic
     $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
@@ -70,7 +64,7 @@ class DOMManipulation {
     }
 
     $$afterNodeWalk() {
-        this._clearDead();
+
     }
 
     // noinspection JSMethodCanBeStatic
@@ -82,13 +76,13 @@ class DOMManipulation {
         return [name, value];
     }
 
-    $$afterAttributeCreate($target, name, value) {
+    $$afterAttributeCreate($target, name, value, nodeProps) {
         let bindValue;
         if (this._setBind($target, name, value)) {
-            bindValue = this.props[value];
+            bindValue = nodeProps[value];
         }
-        if (this.props)
-            this._setRef($target, name, this.props[name]);
+        if (nodeProps)
+            this._setRef($target, name, nodeProps[name]);
         return bindValue;
     }
 
@@ -171,15 +165,6 @@ class DOMManipulation {
             }
 
             return true;
-        }
-    }
-
-    _clearDead() {
-        let dl = this._deadChildren.length;
-
-        while (dl--) {
-            this._deadChildren[dl].parentNode.removeChild(this._deadChildren[dl]);
-            this._deadChildren.splice(dl, 1);
         }
     }
 

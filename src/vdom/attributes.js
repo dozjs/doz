@@ -129,19 +129,18 @@ function addEventListener($target, name, value, cmp) {
     }
 }
 
-function attach($target, props, cmp) {
+function attach($target, nodeProps, cmp) {
 
     let bindValue;
     let name;
 
-    const propsKeys = Object.keys(props);
+    const propsKeys = Object.keys(nodeProps);
 
     for(let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, props[name], cmp);
-        addEventListener($target, name, props[name], cmp);
-
-        let canBindValue = cmp.$$afterAttributeCreate($target, name, props[name]);
+        setAttribute($target, name, nodeProps[name], cmp);
+        addEventListener($target, name, nodeProps[name], cmp);
+        let canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
         if (canBindValue) bindValue = canBindValue;
     }
 
