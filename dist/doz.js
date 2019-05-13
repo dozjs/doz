@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.18.0  
+// [DOZ]  Build version: 1.18.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2658,7 +2658,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.18.0',
+        value: '1.18.1',
         enumerable: true
     }
 });
@@ -3345,6 +3345,7 @@ var _require2 = __webpack_require__(0),
 var canDecode = __webpack_require__(14);
 
 var storeElementNode = Object.create(null);
+var deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -3411,7 +3412,9 @@ function update($parent, newNode, oldNode) {
         return $parent.appendChild(create(newNode, cmp, initial));
     } else if (!newNode) {
         // remove node
-        cmp.$$nodeRemove($parent, index);
+        if ($parent.childNodes[index]) {
+            deadChildren.push($parent.childNodes[index]);
+        }
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         var $oldElement = $parent.childNodes[index];
@@ -3440,7 +3443,18 @@ function update($parent, newNode, oldNode) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
+        clearDead();
+
         cmp.$$afterNodeWalk();
+    }
+}
+
+function clearDead() {
+    var dl = deadChildren.length;
+
+    while (dl--) {
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        deadChildren.splice(dl, 1);
     }
 }
 
@@ -3604,19 +3618,18 @@ function addEventListener($target, name, value, cmp) {
     }
 }
 
-function attach($target, props, cmp) {
+function attach($target, nodeProps, cmp) {
 
     var bindValue = void 0;
     var name = void 0;
 
-    var propsKeys = Object.keys(props);
+    var propsKeys = Object.keys(nodeProps);
 
     for (var i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, props[name], cmp);
-        addEventListener($target, name, props[name], cmp);
-
-        var canBindValue = cmp.$$afterAttributeCreate($target, name, props[name]);
+        setAttribute($target, name, nodeProps[name], cmp);
+        addEventListener($target, name, nodeProps[name], cmp);
+        var canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
         if (canBindValue) bindValue = canBindValue;
     }
 
@@ -3949,13 +3962,6 @@ var DOMManipulation = function () {
                 this._processing.push({ node: $el, action: 'create' });
             }
         }
-    }, {
-        key: '$$nodeRemove',
-        value: function $$afterNodeRemove($parent, index) {
-            if ($parent.childNodes[index]) {
-                this._deadChildren.push($parent.childNodes[index]);
-            }
-        }
 
         // noinspection JSMethodCanBeStatic
 
@@ -4019,9 +4025,7 @@ var DOMManipulation = function () {
         }
     }, {
         key: '$$afterNodeWalk',
-        value: function $$afterNodeWalk() {
-            this._clearDead();
-        }
+        value: function $$afterNodeWalk() {}
 
         // noinspection JSMethodCanBeStatic
 
@@ -4036,12 +4040,12 @@ var DOMManipulation = function () {
         }
     }, {
         key: '$$afterAttributeCreate',
-        value: function $$afterAttributeCreate($target, name, value) {
+        value: function $$afterAttributeCreate($target, name, value, nodeProps) {
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
-                bindValue = this.props[value];
+                bindValue = nodeProps[value];
             }
-            if (this.props) this._setRef($target, name, this.props[name]);
+            if (nodeProps) this._setRef($target, name, nodeProps[name]);
             return bindValue;
         }
 
@@ -4162,16 +4166,6 @@ var DOMManipulation = function () {
                 }
 
                 return true;
-            }
-        }
-    }, {
-        key: '_clearDead',
-        value: function _clearDead() {
-            var dl = this._deadChildren.length;
-
-            while (dl--) {
-                this._deadChildren[dl].parentNode.removeChild(this._deadChildren[dl]);
-                this._deadChildren.splice(dl, 1);
             }
         }
     }], [{
