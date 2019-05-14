@@ -145,6 +145,7 @@ function get(cfg = {}) {
                 }
 
                 propsInit(newElement);
+                Object.defineProperty(newElement, 'uniqueId', {value: cfg.app.generateUniqueId(newElement)});
 
                 newElement.app.emit('componentPropsInit', newElement);
 

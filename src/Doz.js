@@ -43,6 +43,14 @@ class Doz {
         }, cfg);
 
         Object.defineProperties(this, {
+            _lastUniqueId: {
+                value: 0,
+                writable: true
+            },
+            _componentsByUniqueId: {
+                value: {},
+                writable: true
+            },
             _components: {
                 value: {},
                 writable: true
@@ -228,6 +236,12 @@ class Doz {
         }
 
         return this;
+    }
+
+    generateUniqueId(component) {
+        let uniqueId = this._lastUniqueId++;
+        this._componentsByUniqueId[uniqueId] = component;
+        return uniqueId;
     }
 }
 
