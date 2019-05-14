@@ -1167,6 +1167,10 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
+        uniqueId: {
+            value: opt.app.generateUniqueId(obj),
+            enumerable: true
+        },
         parent: {
             value: opt.parentCmp,
             enumerable: true,
@@ -1465,7 +1469,6 @@ function get() {
                 }
 
                 propsInit(newElement);
-
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -2732,6 +2735,14 @@ var Doz = function () {
         }, cfg);
 
         Object.defineProperties(this, {
+            _lastUniqueId: {
+                value: 0,
+                writable: true
+            },
+            _componentsByUniqueId: {
+                value: {},
+                writable: true
+            },
             _components: {
                 value: {},
                 writable: true
@@ -2952,6 +2963,13 @@ var Doz = function () {
             }
 
             return this;
+        }
+    }, {
+        key: 'generateUniqueId',
+        value: function generateUniqueId(component) {
+            var uniqueId = this._lastUniqueId++;
+            this._componentsByUniqueId[uniqueId] = component;
+            return uniqueId;
         }
     }]);
 
