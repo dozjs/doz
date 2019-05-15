@@ -365,6 +365,9 @@ function callBeforeDestroy(context) {
 
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
+
+    //delete context.app._componentsByInternalId[context.internalId];
+
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode) context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
@@ -1167,8 +1170,8 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        uniqueId: {
-            value: opt.app.generateUniqueId(obj),
+        internalId: {
+            value: opt.app.generateInternalId(obj),
             enumerable: true
         },
         parent: {
@@ -2735,11 +2738,11 @@ var Doz = function () {
         }, cfg);
 
         Object.defineProperties(this, {
-            _lastUniqueId: {
+            _lastInternalId: {
                 value: 0,
                 writable: true
             },
-            _componentsByUniqueId: {
+            _componentsByInternalId: {
                 value: {},
                 writable: true
             },
@@ -2965,11 +2968,11 @@ var Doz = function () {
             return this;
         }
     }, {
-        key: 'generateUniqueId',
-        value: function generateUniqueId(component) {
-            var uniqueId = this._lastUniqueId++;
-            this._componentsByUniqueId[uniqueId] = component;
-            return uniqueId;
+        key: 'generateInternalId',
+        value: function generateInternalId(component) {
+            var internalId = this._lastInternalId++;
+            this._componentsByInternalId[internalId] = component;
+            return internalId;
         }
     }]);
 

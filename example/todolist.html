@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?5896m5458859p7110ty5642492415t843335"></script>
+    <script src="../dist/doz.js?5896m5458859p7110ty5642492415t5843335"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -169,6 +169,9 @@
                     </span>
                 </div>
             `;
+        },
+        onUnmount() {
+            console.log('UNMOUNT')
         },
         onDestroy() {
             console.log('DESTROY')

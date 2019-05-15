@@ -443,8 +443,8 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        uniqueId: {
-            value: opt.app.generateUniqueId(obj),
+        internalId: {
+            value: opt.app.generateInternalId(obj),
             enumerable: true
         },
         parent: {
