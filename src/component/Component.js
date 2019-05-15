@@ -294,7 +294,7 @@ class Component extends DOMManipulation {
 
         if (!onlyInstance) {
             this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-        } else
+        } else if (this._rootElement.parentNode)
             this._rootElement.parentNode.innerHTML = '';
 
         this._unmounted = !byDestroy;

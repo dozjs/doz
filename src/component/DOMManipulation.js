@@ -37,6 +37,11 @@ class DOMManipulation {
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
+        // Destroy component
+        /*if($oldElement && $oldElement.firstChild && $oldElement.firstChild[CMP_INSTANCE]) {
+            $oldElement.firstChild[CMP_INSTANCE].destroy(true);
+        }*/
+
         //Re-assign CMP INSTANCE to new element
         if ($oldElement[CMP_INSTANCE]) {
             $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];

@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?5896m5458859p7110ty5642492415t5843335"></script>
+    <script src="../dist/doz.js?5896m5458859p7110ty54642492415t4e5843335"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -84,7 +84,7 @@
         },
 
         add() {
-            console.log('add');
+            //console.log('add');
             const store = this.getStore('todo');
             if (store.todo) {
                 store.record.push({
@@ -151,7 +151,7 @@
 
     Doz.component('doz-todo-item', {
         onMount() {
-            console.log('parent', this)
+            //console.log('parent', this)
         },
         template(h) {
             return h`
@@ -171,10 +171,10 @@
             `;
         },
         onUnmount() {
-            console.log('UNMOUNT')
+            console.log('UNMOUNT', this.tag, this.props.title)
         },
         onDestroy() {
-            console.log('DESTROY')
+            console.log('DESTROY');
         }
     });
 
@@ -214,7 +214,7 @@
         },
 
         onMount() {
-            console.log('mount')
+            //console.log('mount')
             this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
                 {title: "Buy milk", done: false},
                 {title: "Buy cigarettes", done: false}
@@ -222,7 +222,7 @@
         },
 
         onUpdate() {
-            console.log('update')
+            //console.log('update')
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }

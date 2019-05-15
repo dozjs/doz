@@ -121,7 +121,7 @@ function callBeforeDestroy(context) {
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
 
-    //delete context.app._componentsByInternalId[context.internalId];
+    delete context.app._componentsByInternalId[context.internalId];
 
     if (context.store && context.app._stores[context.store])
         delete context.app._stores[context.store];
