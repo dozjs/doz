@@ -3440,7 +3440,7 @@ function update($parent, newNode, oldNode) {
         // node changes
         var $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-
+        console.log('$oldElement', $oldElement.innerHTML);
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 

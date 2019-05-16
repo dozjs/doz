@@ -69,7 +69,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-
+        console.log('$oldElement', $oldElement.innerHTML);
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -79,6 +79,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             $newElement,
             $oldElement
         );
+
+
 
         cmp.$$afterNodeChange($newElement, $oldElement);
 
