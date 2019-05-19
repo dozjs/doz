@@ -478,6 +478,7 @@ var Element = function () {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.childrenHasKey = false;
     }
 
     _createClass(Element, [{
@@ -538,7 +539,7 @@ function compile(data) {
                     currentParent = last(stack);
                 }
             }
-
+            if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
             stack.push(currentParent);
         }
@@ -802,7 +803,7 @@ var Component = function (_DOMManipulation) {
             var res = void 0;
             if (Array.isArray(obj)) {
                 if (safe) this.beginSafeRender();
-                res = obj.map(func).map(function (stringEl) {
+                res = obj.map(func).map(function (stringEl, i) {
                     if (typeof stringEl === 'string') {
                         return stringEl.trim();
                     }
@@ -811,6 +812,9 @@ var Component = function (_DOMManipulation) {
             }
             return res;
         }
+
+        // noinspection JSMethodCanBeStatic
+
     }, {
         key: 'toStyle',
         value: function toStyle(obj) {
@@ -831,6 +835,9 @@ var Component = function (_DOMManipulation) {
         value: function getCmp(id) {
             return this.app.getComponentById(id);
         }
+
+        // noinspection JSMethodCanBeStatic
+
     }, {
         key: 'template',
         value: function template() {
@@ -851,8 +858,11 @@ var Component = function (_DOMManipulation) {
 
             var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+            //if (this._prev)
+            //console.log(next.children, this._prev.children)
+
             //Remove attributes from component tag
-            removeAllAttributes(this._cfgRoot, ['data-is']);
+            removeAllAttributes(this._cfgRoot, ['data-is', 'data-id', 'data-key']);
 
             if (!this._rootElement && rootElement) {
                 this._rootElement = rootElement;
@@ -1378,6 +1388,8 @@ function get() {
     var isChildStyle = void 0;
     var trash = [];
 
+    console.log(cfg.template);
+
     function walk($child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1472,6 +1484,7 @@ function get() {
                 }
 
                 propsInit(newElement);
+                $child.dataset.id = newElement.internalId;
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -3364,6 +3377,7 @@ var _require2 = __webpack_require__(0),
     NS = _require2.NS;
 
 var canDecode = __webpack_require__(14);
+var diffKey = __webpack_require__(49);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -3440,7 +3454,7 @@ function update($parent, newNode, oldNode) {
         // node changes
         var $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-        console.log('$oldElement', $oldElement.innerHTML);
+        //console.log('$oldElement', $oldElement.innerHTML);
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -3453,6 +3467,22 @@ function update($parent, newNode, oldNode) {
         return $newElement;
     } else if (newNode.type) {
         // walk node
+
+        if (newNode && oldNode && oldNode.childrenHasKey) {
+            //
+            //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
+            var diffIndex = diffKey(newNode.children, oldNode.children);
+            //console.log('diffIndex', diffIndex);
+
+            var _defined4 = function _defined4(i) {
+                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy(true);
+            };
+
+            for (var _i6 = 0; _i6 <= diffIndex.length - 1; _i6++) {
+                _defined4(diffIndex[_i6], _i6, diffIndex);
+            }
+        }
+
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
@@ -3971,9 +4001,9 @@ var _require = __webpack_require__(0),
 
 var DOMManipulation = function () {
     function DOMManipulation() {
-        _classCallCheck(this, DOMManipulation);
+        //this._deadChildren = [];
 
-        this._deadChildren = [];
+        _classCallCheck(this, DOMManipulation);
     }
 
     _createClass(DOMManipulation, [{
@@ -4268,6 +4298,66 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function (newChildren, oldChildren) {
+    if (newChildren.length === oldChildren.length) return [];
+
+    var oldArray = [];
+    var newArray = [];
+    var diffIndex = [];
+
+    var _defined = function _defined(item) {
+        if (item.props && item.props['data-key'] !== undefined)
+            //if (!oldArray.includes(item.props['data-key']))
+            oldArray.push(item.props['data-key']);else oldArray.push(null);
+    };
+
+    for (var _i2 = 0; _i2 <= oldChildren.length - 1; _i2++) {
+        _defined(oldChildren[_i2], _i2, oldChildren);
+    }
+
+    var _defined2 = function _defined2(item) {
+        if (item.props && item.props['data-key'] !== undefined)
+            //if (!newArray.includes(item.props['data-key']))
+            newArray.push(item.props['data-key']);else newArray.push(null);
+    };
+
+    for (var _i4 = 0; _i4 <= newChildren.length - 1; _i4++) {
+        _defined2(newChildren[_i4], _i4, newChildren);
+    }
+
+    var _defined3 = function _defined3(x, i) {
+        if (!newArray.includes(x)) {
+            if (oldChildren[i].props && oldChildren[i].props['data-key'] === undefined) return;
+            diffIndex.push(i);
+        }
+    };
+
+    for (var _i6 = 0; _i6 <= oldArray.length - 1; _i6++) {
+        _defined3(oldArray[_i6], _i6, oldArray);
+    }
+
+    //console.log(newArray, oldArray)
+
+    if (!diffIndex.length) {
+        for (var i = 0; i < oldChildren.length; i++) {
+            if (i + 1 >= oldChildren.length) break;
+            if (oldChildren[i].props && oldChildren[i + 1].props && oldChildren[i].props['data-key'] === oldChildren[i + 1].props['data-key']) {
+                diffIndex.push(i);
+                break;
+            }
+        }
+    }
+
+    return diffIndex;
+};
 
 /***/ })
 /******/ ]);

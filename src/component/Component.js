@@ -165,7 +165,7 @@ class Component extends DOMManipulation {
         let res;
         if (Array.isArray(obj)) {
             if (safe) this.beginSafeRender();
-            res = obj.map(func).map(stringEl => {
+            res = obj.map(func).map((stringEl, i) => {
                 if (typeof stringEl === 'string') {
                     return stringEl.trim()
                 }
@@ -175,6 +175,7 @@ class Component extends DOMManipulation {
         return res;
     }
 
+    // noinspection JSMethodCanBeStatic
     toStyle(obj) {
         return toInlineStyle(obj)
     }
@@ -191,6 +192,7 @@ class Component extends DOMManipulation {
         return this.app.getComponentById(id);
     }
 
+    // noinspection JSMethodCanBeStatic
     template() {
         return '';
     }
@@ -206,8 +208,11 @@ class Component extends DOMManipulation {
 
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+        //if (this._prev)
+        //console.log(next.children, this._prev.children)
+
         //Remove attributes from component tag
-        removeAllAttributes(this._cfgRoot, ['data-is']);
+        removeAllAttributes(this._cfgRoot, ['data-is', 'data-id', 'data-key']);
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;

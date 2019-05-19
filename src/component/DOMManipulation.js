@@ -9,7 +9,7 @@ const {INSTANCE, CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 class DOMManipulation {
 
     constructor() {
-        this._deadChildren = [];
+        //this._deadChildren = [];
     }
 
     $$afterNodeElementCreate($el, node, initial) {

@@ -1,6 +1,7 @@
 const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS} = require('../constants');
 const canDecode = require('../utils/can-decode');
+const diffKey = require('./diff-key');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -69,7 +70,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-        console.log('$oldElement', $oldElement.innerHTML);
+        //console.log('$oldElement', $oldElement.innerHTML);
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -80,14 +81,24 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             $oldElement
         );
 
-
-
         cmp.$$afterNodeChange($newElement, $oldElement);
 
         return $newElement;
 
     } else if (newNode.type) {
         // walk node
+
+        if (newNode && oldNode && oldNode.childrenHasKey) {
+            //
+            //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
+            const diffIndex = diffKey(newNode.children, oldNode.children);
+            //console.log('diffIndex', diffIndex);
+            diffIndex.forEach(i => {
+                //todo sistemare destroy
+                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy(true);
+            })
+        }
+
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -95,7 +106,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        if(cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
+        if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
