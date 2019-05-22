@@ -110,7 +110,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_SFC: /^(class\s|function\s+_class)/,
+        IS_CLASS: /^(class\s|function\s+_class)/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
@@ -1438,7 +1438,7 @@ function get() {
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
-                    if (!REGEX.IS_SFC.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
                         var func = cmp.cfg;
                         cmp.cfg = function (_Component) {
                             _inherits(_class, _Component);

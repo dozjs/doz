@@ -27,7 +27,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_SFC: /^(class\s|function\s+_class)/,
+        IS_CLASS: /^(class\s|function\s+_class)|(throw new TypeError\("Cannot call a class)/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
