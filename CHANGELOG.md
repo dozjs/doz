@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.18.2] - 2019-05-22
+- **Fixed** possible error "Cannot call a class as a function" when using a component built with class pattern or single function
+
 ## [1.18.1] - 2019-05-13
 - **Fixed** undefined `ref`
 
