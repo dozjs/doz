@@ -82,9 +82,11 @@ class DOMManipulation {
     }
 
     $$afterAttributeCreate($target, name, value, nodeProps) {
+        //console.log(nodeProps)
         let bindValue;
         if (this._setBind($target, name, value)) {
-            bindValue = nodeProps[value];
+            //bindValue = nodeProps[value];
+            bindValue = this.props[value];
         }
         if (nodeProps)
             this._setRef($target, name, nodeProps[name]);
