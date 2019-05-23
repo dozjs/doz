@@ -56,6 +56,21 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!$parent) return;
 
+    if (newNode && oldNode && oldNode.childrenHasKey) {
+        //
+        //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
+        const diffIndex = diffKey(newNode.children, oldNode.children);
+        console.log('diffIndex', diffIndex);
+        diffIndex.forEach(i => {
+            //todo sistemare destroy
+            //oldNode.children.splice(i, 1);
+            $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy();
+        });
+
+        if (diffIndex.length)
+        return ;
+    }
+
     if (!oldNode) {
         // create node
         return $parent.appendChild(create(newNode, cmp, initial));
@@ -88,16 +103,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     } else if (newNode.type) {
         // walk node
 
-        if (newNode && oldNode && oldNode.childrenHasKey) {
-            //
-            //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
-            const diffIndex = diffKey(newNode.children, oldNode.children);
-            //console.log('diffIndex', diffIndex);
-            diffIndex.forEach(i => {
-                //todo sistemare destroy
-                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy(true);
-            })
-        }
 
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
@@ -121,6 +126,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
                 initial
             );
         }
+
 
         clearDead();
 
