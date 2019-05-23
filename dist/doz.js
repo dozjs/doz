@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.18.1  
+// [DOZ]  Build version: 1.18.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -110,7 +110,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_CLASS: /^(class\s|function\s+_class)/,
+        IS_CLASS: /^(class\s|function\s+_class)|(throw new TypeError\("Cannot call a class)/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
@@ -2664,7 +2664,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.18.1',
+        value: '1.18.2',
         enumerable: true
     }
 });
@@ -4067,9 +4067,11 @@ var DOMManipulation = function () {
     }, {
         key: '$$afterAttributeCreate',
         value: function $$afterAttributeCreate($target, name, value, nodeProps) {
+            //console.log(nodeProps)
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
-                bindValue = nodeProps[value];
+                //bindValue = nodeProps[value];
+                bindValue = this.props[value];
             }
             if (nodeProps) this._setRef($target, name, nodeProps[name]);
             return bindValue;
