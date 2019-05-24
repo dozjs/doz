@@ -89,14 +89,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // walk node
 
         if (newNode && oldNode && oldNode.childrenHasKey) {
-            //
-            //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
             const diffIndex = diffKey(newNode.children, oldNode.children);
-            //console.log('diffIndex', diffIndex);
             diffIndex.forEach(i => {
-                //todo sistemare destroy
-                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy(true);
-            })
+                if (!$parent.childNodes[index].childNodes[i] || !$parent.childNodes[index].childNodes[i].firstChild) return;
+                oldNode.children.splice(i, 1);
+                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy();
+            });
         }
 
         let attributesUpdated = updateAttributes(
@@ -132,7 +130,12 @@ function clearDead() {
     let dl = deadChildren.length;
 
     while (dl--) {
-        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        if (deadChildren[dl].firstChild && deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__) {
+            deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__.destroy();
+        } else {
+            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        }
+
         deadChildren.splice(dl, 1);
     }
 }

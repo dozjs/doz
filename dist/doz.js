@@ -678,19 +678,19 @@ var _require = __webpack_require__(0),
 var observer = __webpack_require__(30);
 var hooks = __webpack_require__(3);
 var update = __webpack_require__(32).updateElement;
-var store = __webpack_require__(36);
-var ids = __webpack_require__(37);
+var store = __webpack_require__(37);
+var ids = __webpack_require__(38);
 var proxy = __webpack_require__(11);
-var toInlineStyle = __webpack_require__(38);
-var queueReady = __webpack_require__(39);
-var queueDraw = __webpack_require__(40);
-var extendInstance = __webpack_require__(41);
-var cloneObject = __webpack_require__(42);
+var toInlineStyle = __webpack_require__(39);
+var queueReady = __webpack_require__(40);
+var queueDraw = __webpack_require__(41);
+var extendInstance = __webpack_require__(42);
+var cloneObject = __webpack_require__(43);
 var toLiteralString = __webpack_require__(16);
-var removeAllAttributes = __webpack_require__(43);
+var removeAllAttributes = __webpack_require__(44);
 var h = __webpack_require__(17);
-var loadLocal = __webpack_require__(44);
-var localMixin = __webpack_require__(45);
+var loadLocal = __webpack_require__(45);
+var localMixin = __webpack_require__(46);
 
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
@@ -701,7 +701,7 @@ var propsInit = __webpack_require__(19);
 var _require3 = __webpack_require__(12),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var DOMManipulation = __webpack_require__(46);
+var DOMManipulation = __webpack_require__(47);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -1257,7 +1257,7 @@ function drawDynamic(instance) {
         var root = item.node.parentNode;
 
         if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
+            if (item[INSTANCE].props.dataKey === undefined) item.node[INSTANCE].destroy(true);
         }
 
         if (!item.node.childNodes.length) {
@@ -1286,7 +1286,7 @@ function clearDynamic(instance) {
         var item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
+            if (item[INSTANCE].props.dataKey === undefined) item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
@@ -1736,6 +1736,8 @@ var ObservableSlim = function () {
                     calls = 0;
                 }, 10);
             }
+
+            //domDelay = true;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -2632,12 +2634,12 @@ var collection = __webpack_require__(1);
 var _require = __webpack_require__(20),
     use = _require.use;
 
-var component = __webpack_require__(47);
+var component = __webpack_require__(48);
 
 var _require2 = __webpack_require__(6),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(48);
+var mixin = __webpack_require__(49);
 var h = __webpack_require__(17);
 
 var _require3 = __webpack_require__(4),
@@ -3377,7 +3379,7 @@ var _require2 = __webpack_require__(0),
     NS = _require2.NS;
 
 var canDecode = __webpack_require__(14);
-var diffKey = __webpack_require__(49);
+var diffKey = __webpack_require__(36);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -3469,13 +3471,12 @@ function update($parent, newNode, oldNode) {
         // walk node
 
         if (newNode && oldNode && oldNode.childrenHasKey) {
-            //
-            //console.log('---->', newNode ? newNode.children : null, oldNode ? oldNode.children : null, index)
             var diffIndex = diffKey(newNode.children, oldNode.children);
-            //console.log('diffIndex', diffIndex);
 
             var _defined4 = function _defined4(i) {
-                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy(true);
+                if (!$parent.childNodes[index].childNodes[i] || !$parent.childNodes[index].childNodes[i].firstChild) return;
+                oldNode.children.splice(i, 1);
+                $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy();
             };
 
             for (var _i6 = 0; _i6 <= diffIndex.length - 1; _i6++) {
@@ -3504,7 +3505,12 @@ function clearDead() {
     var dl = deadChildren.length;
 
     while (dl--) {
-        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        if (deadChildren[dl].firstChild && deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__) {
+            deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__.destroy();
+        } else {
+            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        }
+
         deadChildren.splice(dl, 1);
     }
 }
@@ -3729,6 +3735,66 @@ module.exports.getLast = getLast;
 "use strict";
 
 
+module.exports = function (newChildren, oldChildren) {
+    if (newChildren.length === oldChildren.length) return [];
+
+    var oldArray = [];
+    var newArray = [];
+    var diffIndex = [];
+
+    var _defined = function _defined(item) {
+        if (item.props && item.props['data-key'] !== undefined)
+            //if (!oldArray.includes(item.props['data-key']))
+            oldArray.push(item.props['data-key']);else oldArray.push(null);
+    };
+
+    for (var _i2 = 0; _i2 <= oldChildren.length - 1; _i2++) {
+        _defined(oldChildren[_i2], _i2, oldChildren);
+    }
+
+    var _defined2 = function _defined2(item) {
+        if (item.props && item.props['data-key'] !== undefined)
+            //if (!newArray.includes(item.props['data-key']))
+            newArray.push(item.props['data-key']);else newArray.push(null);
+    };
+
+    for (var _i4 = 0; _i4 <= newChildren.length - 1; _i4++) {
+        _defined2(newChildren[_i4], _i4, newChildren);
+    }
+
+    var _defined3 = function _defined3(x, i) {
+        if (!newArray.includes(x)) {
+            if (oldChildren[i].props && oldChildren[i].props['data-key'] === undefined) return;
+            diffIndex.push(i);
+        }
+    };
+
+    for (var _i6 = 0; _i6 <= oldArray.length - 1; _i6++) {
+        _defined3(oldArray[_i6], _i6, oldArray);
+    }
+
+    //console.log(newArray, oldArray)
+
+    if (!diffIndex.length) {
+        for (var i = 0; i < oldChildren.length; i++) {
+            if (i + 1 >= oldChildren.length) break;
+            if (oldChildren[i].props && oldChildren[i + 1].props && oldChildren[i].props['data-key'] === oldChildren[i + 1].props['data-key']) {
+                diffIndex.push(i);
+                break;
+            }
+        }
+    }
+
+    return diffIndex;
+};
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function create(instance) {
     var storeName = instance.store;
     if (typeof storeName === 'string') {
@@ -3752,7 +3818,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3775,7 +3841,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3812,7 +3878,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3830,7 +3896,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3863,7 +3929,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3876,7 +3942,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3889,7 +3955,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3909,7 +3975,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3955,7 +4021,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3971,7 +4037,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4247,7 +4313,7 @@ var DOMManipulation = function () {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4282,7 +4348,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4298,66 +4364,6 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function (newChildren, oldChildren) {
-    if (newChildren.length === oldChildren.length) return [];
-
-    var oldArray = [];
-    var newArray = [];
-    var diffIndex = [];
-
-    var _defined = function _defined(item) {
-        if (item.props && item.props['data-key'] !== undefined)
-            //if (!oldArray.includes(item.props['data-key']))
-            oldArray.push(item.props['data-key']);else oldArray.push(null);
-    };
-
-    for (var _i2 = 0; _i2 <= oldChildren.length - 1; _i2++) {
-        _defined(oldChildren[_i2], _i2, oldChildren);
-    }
-
-    var _defined2 = function _defined2(item) {
-        if (item.props && item.props['data-key'] !== undefined)
-            //if (!newArray.includes(item.props['data-key']))
-            newArray.push(item.props['data-key']);else newArray.push(null);
-    };
-
-    for (var _i4 = 0; _i4 <= newChildren.length - 1; _i4++) {
-        _defined2(newChildren[_i4], _i4, newChildren);
-    }
-
-    var _defined3 = function _defined3(x, i) {
-        if (!newArray.includes(x)) {
-            if (oldChildren[i].props && oldChildren[i].props['data-key'] === undefined) return;
-            diffIndex.push(i);
-        }
-    };
-
-    for (var _i6 = 0; _i6 <= oldArray.length - 1; _i6++) {
-        _defined3(oldArray[_i6], _i6, oldArray);
-    }
-
-    //console.log(newArray, oldArray)
-
-    if (!diffIndex.length) {
-        for (var i = 0; i < oldChildren.length; i++) {
-            if (i + 1 >= oldChildren.length) break;
-            if (oldChildren[i].props && oldChildren[i + 1].props && oldChildren[i].props['data-key'] === oldChildren[i + 1].props['data-key']) {
-                diffIndex.push(i);
-                break;
-            }
-        }
-    }
-
-    return diffIndex;
-};
 
 /***/ })
 /******/ ]);

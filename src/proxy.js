@@ -86,6 +86,8 @@ const ObservableSlim = (function () {
                 }, 10);
             }
 
+            //domDelay = true;
+
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {

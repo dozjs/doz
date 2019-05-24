@@ -525,7 +525,8 @@ function drawDynamic(instance) {
         let root = item.node.parentNode;
 
         if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
+            if(item[INSTANCE].props.dataKey === undefined)
+                item.node[INSTANCE].destroy(true);
         }
 
         if (!item.node.childNodes.length) {
@@ -554,7 +555,8 @@ function clearDynamic(instance) {
         let item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
+            if(item[INSTANCE].props.dataKey === undefined)
+                item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
