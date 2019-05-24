@@ -110,7 +110,7 @@ function get(cfg = {}) {
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
-                    if (!REGEX.IS_SFC.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
                         const func = cmp.cfg;
                         cmp.cfg = class extends Component {
                         };
