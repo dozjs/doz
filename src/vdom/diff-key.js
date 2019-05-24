@@ -1,4 +1,7 @@
+const patch = require('fast-array-diff/dist/diff/patch');
+
 module.exports = function (newChildren, oldChildren) {
+
     if (newChildren.length === oldChildren.length) return [];
 
     let oldArray = [];
