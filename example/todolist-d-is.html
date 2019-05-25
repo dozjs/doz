@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?58962545885859284oi092158"></script>
+    <script src="../dist/doz.js?5896254588585g9284oi092158"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -157,7 +157,7 @@
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                        <strong>${this.props.id} - ${this.props.title}</strong>
+                        <strong>${this.props.title}</strong>
                         <input
                             onblur="this.action.hideInput(${this.props.id})"
                             onkeypress="this.action.inputEnterPress(${this.props.id})"

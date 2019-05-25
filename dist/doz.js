@@ -174,6 +174,19 @@ module.exports = {
 "use strict";
 
 
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var data = __webpack_require__(27);
 
 /**
@@ -224,26 +237,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -695,7 +695,7 @@ var localMixin = __webpack_require__(48);
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 var propsInit = __webpack_require__(19);
 
 var _require3 = __webpack_require__(12),
@@ -848,6 +848,8 @@ var Component = function (_DOMManipulation) {
         value: function render(initial) {
             var _this2 = this;
 
+            var changes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
             if (this._renderPause) return;
             this.beginSafeRender();
             var template = this.template(h);
@@ -856,20 +858,48 @@ var Component = function (_DOMManipulation) {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
-            var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+            var candidateIndexToRemove = void 0;
+            var thereIsDelete = false;
 
-            //if (this._prev)
-            //console.log(next.children, this._prev.children)
+            var _defined = function _defined(change, i) {
+                console.log(change, i);
+                if (Array.isArray(change.target)) {
+                    if ((change.type === 'update' || change.type === 'delete') && candidateIndexToRemove === undefined) {
+                        candidateIndexToRemove = {
+                            path: change.currentPath,
+                            index: change.property
+                        };
+                    }
+                    if (change.type === 'delete') thereIsDelete = true;
+                }
+            };
 
-            //Remove attributes from component tag
-            removeAllAttributes(this._cfgRoot, ['data-is', 'data-id', 'data-key']);
-
-            if (!this._rootElement && rootElement) {
-                this._rootElement = rootElement;
-                this._parentElement = rootElement.parentNode;
+            for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+                _defined(changes[_i2], _i2, changes);
             }
 
-            this._prev = next;
+            if (!thereIsDelete) candidateIndexToRemove = undefined;
+
+            if (candidateIndexToRemove !== undefined) {
+
+                this._childrenOfArray[this._childrenOfArrayPrefix.includes(candidateIndexToRemove.path) ? candidateIndexToRemove.path + candidateIndexToRemove.index : candidateIndexToRemove.index].destroy();
+            } else {
+
+                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+
+                //if (this._prev)
+                //console.log(next.children, this._prev.children)
+
+                //Remove attributes from component tag
+                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'data-prefix']);
+
+                if (!this._rootElement && rootElement) {
+                    this._rootElement = rootElement;
+                    this._parentElement = rootElement.parentNode;
+                }
+
+                this._prev = next;
+            }
 
             hooks.callAfterRender(this);
             if (initial) {
@@ -912,14 +942,14 @@ var Component = function (_DOMManipulation) {
 
                 hooks.callMount(this);
 
-                var _defined = function _defined(child) {
+                var _defined2 = function _defined2(child) {
                     _this3.children[child].mount();
                 };
 
-                var _defined2 = Object.keys(this.children);
+                var _defined3 = Object.keys(this.children);
 
-                for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-                    _defined(_defined2[_i2], _i2, _defined2);
+                for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+                    _defined2(_defined3[_i4], _i4, _defined3);
                 }
 
                 return this;
@@ -963,20 +993,23 @@ var Component = function (_DOMManipulation) {
 
             if (!onlyInstance) {
                 this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-            } else if (this._rootElement.parentNode) this._rootElement.parentNode.innerHTML = '';
+            } else if (this._rootElement.parentNode) {
+                //this._rootElement.parentNode.innerHTML = '';
+                this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+            }
 
             this._unmounted = !byDestroy;
 
             if (!silently) hooks.callUnmount(this);
 
-            var _defined3 = function _defined3(child) {
+            var _defined4 = function _defined4(child) {
                 _this4.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
-            var _defined4 = Object.keys(this.children);
+            var _defined5 = Object.keys(this.children);
 
-            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-                _defined3(_defined4[_i4], _i4, _defined4);
+            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+                _defined4(_defined5[_i6], _i6, _defined5);
             }
 
             return this;
@@ -992,14 +1025,14 @@ var Component = function (_DOMManipulation) {
                 return;
             }
 
-            var _defined5 = function _defined5(child) {
+            var _defined6 = function _defined6(child) {
                 _this5.children[child].destroy();
             };
 
-            var _defined6 = Object.keys(this.children);
+            var _defined7 = Object.keys(this.children);
 
-            for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
-                _defined5(_defined6[_i6], _i6, _defined6);
+            for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
+                _defined6(_defined7[_i8], _i8, _defined7);
             }
 
             hooks.callDestroy(this);
@@ -1170,6 +1203,14 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
+        _childrenOfArray: {
+            value: {},
+            enumerable: true
+        },
+        _childrenOfArrayPrefix: {
+            value: [],
+            enumerable: true
+        },
 
         //Public
         tag: {
@@ -1248,7 +1289,7 @@ function defineProperties(obj, opt) {
 }
 
 function drawDynamic(instance) {
-    clearDynamic(instance);
+    //clearDynamic(instance);
 
     var index = instance._processing.length - 1;
 
@@ -1256,11 +1297,21 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        if (item.node[INSTANCE]) {
-            if (item[INSTANCE].props.dataKey === undefined) item.node[INSTANCE].destroy(true);
-        }
+        /*if (item.node[INSTANCE]) {
+            if(item[INSTANCE].props.dataKey === undefined)
+                item.node[INSTANCE].destroy(true);
+        }*/
+
+        console.log('drawDynamic', item.node);
 
         if (!item.node.childNodes.length) {
+
+            if (item.node.dataset.prefix) {
+                if (!instance._childrenOfArrayPrefix.includes(item.node.dataset.prefix)) {
+                    instance._childrenOfArrayPrefix.push(item.node.dataset.prefix);
+                }
+            }
+
             var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
@@ -1273,6 +1324,11 @@ function drawDynamic(instance) {
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
+                var n = Object.keys(instance.children).length;
+                var n2 = Object.keys(instance._childrenOfArray).length;
+                instance.children[n++] = dynamicInstance;
+                instance._childrenOfArray[item.node.dataset.prefix ? item.node.dataset.prefix + n2++ : n2++] = dynamicInstance;
+                console.log(instance._childrenOfArray);
             }
         }
         index -= 1;
@@ -1296,7 +1352,7 @@ function clearDynamic(instance) {
 module.exports = {
     Component: Component,
     defineProperties: defineProperties,
-    clearDynamic: clearDynamic,
+    //clearDynamic,
     drawDynamic: drawDynamic
 };
 
@@ -1326,7 +1382,7 @@ var _require2 = __webpack_require__(0),
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
-var collection = __webpack_require__(1);
+var collection = __webpack_require__(2);
 var hooks = __webpack_require__(3);
 
 var _require3 = __webpack_require__(4),
@@ -1388,7 +1444,7 @@ function get() {
     var isChildStyle = void 0;
     var trash = [];
 
-    console.log(cfg.template);
+    //console.log(cfg.template);
 
     function walk($child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1484,7 +1540,7 @@ function get() {
                 }
 
                 propsInit(newElement);
-                $child.dataset.id = newElement.internalId;
+                $child.dataset.uid = newElement.internalId;
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -1669,6 +1725,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
+var delay = __webpack_require__(1);
+
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
 }
@@ -1732,24 +1790,24 @@ var ObservableSlim = function () {
             // reset calls number after 10ms
             if (autoDomDelay) {
                 domDelay = ++calls > 1;
-                setTimeout(function () {
+                delay(function () {
                     calls = 0;
-                }, 10);
+                });
             }
 
-            //domDelay = true;
+            domDelay = true;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
-                setTimeout(function () {
+                delay(function () {
                     if (numChanges === changes.length) {
                         // invoke any functions that are observing changes
                         for (var i = 0; i < observable.observers.length; i++) {
                             observable.observers[i](changes);
                         }changes = [];
                     }
-                }, 10);
+                });
             } else {
                 // invoke any functions that are observing changes
                 for (var i = 0; i < observable.observers.length; i++) {
@@ -2579,7 +2637,7 @@ module.exports = propsInit;
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerPlugin = _require.registerPlugin,
     data = _require.data;
 
@@ -2629,7 +2687,7 @@ module.exports = __webpack_require__(22);
 
 
 var Doz = __webpack_require__(23);
-var collection = __webpack_require__(1);
+var collection = __webpack_require__(2);
 
 var _require = __webpack_require__(20),
     use = _require.use;
@@ -3261,7 +3319,7 @@ var manipulate = __webpack_require__(13);
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
-    instance.render();
+    instance.render(undefined, changes);
     updateBoundElementsByChanges(instance, changes);
 }
 
@@ -3313,7 +3371,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function propsListener(instance, changes) {
 
@@ -3379,7 +3437,7 @@ var _require2 = __webpack_require__(0),
     NS = _require2.NS;
 
 var canDecode = __webpack_require__(14);
-var diffKey = __webpack_require__(52);
+//const diffKey = require('./patch');
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -3443,42 +3501,7 @@ function update($parent, newNode, oldNode) {
 
 
     if (!$parent) return;
-    if (newNode && oldNode && oldNode.childrenHasKey) {
-        var diffIndex = diffKey(newNode.children, oldNode.children);
-        /*diffIndex.forEach(i => {
-            if (!$parent.childNodes[index].childNodes[i] || !$parent.childNodes[index].childNodes[i].firstChild) return;
-            oldNode.children.splice(i, 1);
-            $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-        });*/
-        console.log(diffIndex);
 
-        var _defined4 = function _defined4(diff) {
-            console.log(diff);
-            if (diff.type === 'remove') {
-                var newPos = diff.newPos;
-
-                var _defined5 = function _defined5(item) {
-                    console.log(item);
-                    if (!$parent.childNodes[index].childNodes[newPos] || !$parent.childNodes[index].childNodes[newPos].firstChild) return;
-                    oldNode.children.splice(newPos, 1);
-                    console.log('aaaaaaa');
-                    $parent.childNodes[index].childNodes[newPos].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-                };
-
-                var _defined6 = diff.items;
-
-                for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                    _defined5(_defined6[_i8], _i8, _defined6);
-                }
-            }
-        };
-
-        for (var _i6 = 0; _i6 <= diffIndex.length - 1; _i6++) {
-            _defined4(diffIndex[_i6], _i6, diffIndex);
-        }
-
-        if (diffIndex.length) return;
-    }
     if (!oldNode) {
         // create node
         return $parent.appendChild(create(newNode, cmp, initial));
@@ -3491,7 +3514,6 @@ function update($parent, newNode, oldNode) {
         // node changes
         var $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-        //console.log('$oldElement', $oldElement.innerHTML);
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -3504,7 +3526,6 @@ function update($parent, newNode, oldNode) {
         return $newElement;
     } else if (newNode.type) {
         // walk node
-
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
@@ -3527,12 +3548,7 @@ function clearDead() {
     var dl = deadChildren.length;
 
     while (dl--) {
-        if (deadChildren[dl].firstChild && deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__) {
-            deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-        } else {
-            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-        }
-
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
         deadChildren.splice(dl, 1);
     }
 }
@@ -3752,311 +3768,8 @@ module.exports.getLast = getLast;
 
 /***/ }),
 /* 36 */,
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var lcs_1 = __webpack_require__(38);
-function getPatch(a, b, compareFunc) {
-    if (compareFunc === void 0) {
-        compareFunc = function compareFunc(ia, ib) {
-            return ia === ib;
-        };
-    }
-    var patch = [];
-    var lastAdd = null;
-    var lastRemove = null;
-    function pushChange(type, oldArr, oldStart, oldEnd, newArr, newStart, newEnd) {
-        if (type === "same") {
-            if (lastRemove) {
-                patch.push(lastRemove);
-            }
-            if (lastAdd) {
-                patch.push(lastAdd);
-            }
-            lastRemove = null;
-            lastAdd = null;
-        } else if (type === "remove") {
-            if (!lastRemove) {
-                lastRemove = {
-                    type: "remove",
-                    oldPos: oldStart,
-                    newPos: newStart,
-                    items: []
-                };
-            }
-            for (var i = oldStart; i < oldEnd; ++i) {
-                lastRemove.items.push(oldArr[i]);
-            }
-            if (lastAdd) {
-                lastAdd.oldPos += oldEnd - oldStart;
-                if (lastRemove.oldPos === oldStart) {
-                    lastRemove.newPos -= oldEnd - oldStart;
-                }
-            }
-        } else if (type === "add") {
-            if (!lastAdd) {
-                lastAdd = {
-                    type: "add",
-                    oldPos: oldStart,
-                    newPos: newStart,
-                    items: []
-                };
-            }
-            for (var i = newStart; i < newEnd; ++i) {
-                lastAdd.items.push(newArr[i]);
-            }
-        }
-    }
-    lcs_1.default(a, b, compareFunc, pushChange);
-    pushChange("same", [], 0, 0, [], 0, 0);
-    return patch;
-}
-exports.getPatch = getPatch;
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* tslint:disable: no-bitwise */
-
-
-function lcs(a, b, compareFunc) {
-    var M = a.length,
-        N = b.length;
-    var MAX = M + N;
-    var v = { 1: 0 };
-    for (var d = 0; d <= MAX; ++d) {
-        for (var k = -d; k <= d; k += 2) {
-            var x = void 0;
-            if (k === -d || k !== d && v[k - 1] + 1 < v[k + 1]) {
-                x = v[k + 1];
-            } else {
-                x = v[k - 1] + 1;
-            }
-            var y = x - k;
-            while (x < M && y < N && compareFunc(a[x], b[y])) {
-                x++;
-                y++;
-            }
-            if (x === M && y === N) {
-                return d;
-            }
-            v[k] = x;
-        }
-    }
-    /* istanbul ignore next */
-    return -1; // never reach
-}
-var Direct;
-(function (Direct) {
-    Direct[Direct["none"] = 0] = "none";
-    Direct[Direct["horizontal"] = 1] = "horizontal";
-    Direct[Direct["vertical"] = 2] = "vertical";
-    Direct[Direct["diagonal"] = 4] = "diagonal";
-    Direct[Direct["all"] = 7] = "all";
-})(Direct || (Direct = {}));
-function getSolution(a, aStart, aEnd, b, bStart, bEnd, d, startDirect, endDirect, compareFunc, elementsChanged) {
-    if (d === 0) {
-        elementsChanged("same", a, aStart, aEnd, b, bStart, bEnd);
-        return;
-    } else if (d === aEnd - aStart + (bEnd - bStart)) {
-        var removeFirst = (startDirect & Direct.horizontal ? 1 : 0) + (endDirect & Direct.vertical ? 1 : 0);
-        var addFirst = (startDirect & Direct.vertical ? 1 : 0) + (endDirect & Direct.horizontal ? 1 : 0);
-        if (removeFirst >= addFirst) {
-            aStart !== aEnd && elementsChanged("remove", a, aStart, aEnd, b, bStart, bStart);
-            bStart !== bEnd && elementsChanged("add", a, aEnd, aEnd, b, bStart, bEnd);
-        } else {
-            bStart !== bEnd && elementsChanged("add", a, aStart, aStart, b, bStart, bEnd);
-            aStart !== aEnd && elementsChanged("remove", a, aStart, aEnd, b, bEnd, bEnd);
-        }
-        return;
-    }
-    var M = aEnd - aStart,
-        N = bEnd - bStart,
-        HALF = Math.floor(N / 2);
-    var now = {};
-    for (var k = -d - 1; k <= d + 1; ++k) {
-        now[k] = { d: Infinity, segments: 0, direct: Direct.none };
-    }
-    var preview = (_a = {}, _a[-d - 1] = { d: Infinity, segments: 0, direct: Direct.none }, _a[d + 1] = { d: Infinity, segments: 0, direct: Direct.none }, _a);
-    for (var y = 0; y <= HALF; ++y) {
-        _b = [preview, now], now = _b[0], preview = _b[1];
-        var _loop_1 = function _loop_1(k) {
-            var x = y + k;
-            if (y === 0 && x === 0) {
-                now[k] = {
-                    d: 0,
-                    segments: 0,
-                    direct: startDirect
-                };
-                return "continue";
-            }
-            var currentPoints = [{
-                direct: Direct.horizontal,
-                d: now[k - 1].d + 1,
-                segments: now[k - 1].segments + (now[k - 1].direct & Direct.horizontal ? 0 : 1)
-            }, {
-                direct: Direct.vertical,
-                d: preview[k + 1].d + 1,
-                segments: preview[k + 1].segments + (preview[k + 1].direct & Direct.vertical ? 0 : 1)
-            }];
-            if (x > 0 && x <= M && y > 0 && y <= N && compareFunc(a[aStart + x - 1], b[bStart + y - 1])) {
-                currentPoints.push({
-                    direct: Direct.diagonal,
-                    d: preview[k].d,
-                    segments: preview[k].segments + (preview[k].direct & Direct.diagonal ? 0 : 1)
-                });
-            }
-
-            var _defined = function _defined(best, info) {
-                if (best.d > info.d) {
-                    return info;
-                } else if (best.d === info.d && best.segments > info.segments) {
-                    return info;
-                }
-                return best;
-            };
-
-            var _acc = currentPoints[0];
-
-            for (var _i4 = 1; _i4 <= currentPoints.length - 1; _i4++) {
-                _acc = _defined(_acc, currentPoints[_i4], _i4, currentPoints);
-            }
-
-            var bestValue = _acc;
-
-            var _defined2 = function _defined2(info) {
-                if (bestValue.d === info.d && bestValue.segments === info.segments) {
-                    bestValue.direct |= info.direct;
-                }
-            };
-
-            for (var _i3 = 0; _i3 <= currentPoints.length - 1; _i3++) {
-                _defined2(currentPoints[_i3], _i3, currentPoints);
-            }
-
-            now[k] = bestValue;
-        };
-        for (var k = -d; k <= d; ++k) {
-            _loop_1(k);
-        }
-    }
-    var now2 = {};
-    for (var k = -d - 1; k <= d + 1; ++k) {
-        now2[k] = { d: Infinity, segments: 0, direct: Direct.none };
-    }
-    var preview2 = (_c = {}, _c[-d - 1] = { d: Infinity, segments: 0, direct: Direct.none }, _c[d + 1] = { d: Infinity, segments: 0, direct: Direct.none }, _c);
-    for (var y = N; y >= HALF; --y) {
-        _d = [preview2, now2], now2 = _d[0], preview2 = _d[1];
-        var _loop_2 = function _loop_2(k) {
-            var x = y + k;
-            if (y === N && x === M) {
-                now2[k] = {
-                    d: 0,
-                    segments: 0,
-                    direct: endDirect
-                };
-                return "continue";
-            }
-            var currentPoints = [{
-                direct: Direct.horizontal,
-                d: now2[k + 1].d + 1,
-                segments: now2[k + 1].segments + (now2[k + 1].direct & Direct.horizontal ? 0 : 1)
-            }, {
-                direct: Direct.vertical,
-                d: preview2[k - 1].d + 1,
-                segments: preview2[k - 1].segments + (preview2[k - 1].direct & Direct.vertical ? 0 : 1)
-            }];
-            if (x >= 0 && x < M && y >= 0 && y < N && compareFunc(a[aStart + x], b[bStart + y])) {
-                currentPoints.push({
-                    direct: Direct.diagonal,
-                    d: preview2[k].d,
-                    segments: preview2[k].segments + (preview2[k].direct & Direct.diagonal ? 0 : 1)
-                });
-            }
-
-            var _defined3 = function _defined3(best, info) {
-                if (best.d > info.d) {
-                    return info;
-                } else if (best.d === info.d && best.segments > info.segments) {
-                    return info;
-                }
-                return best;
-            };
-
-            var _acc2 = currentPoints[0];
-
-            for (var _i8 = 1; _i8 <= currentPoints.length - 1; _i8++) {
-                _acc2 = _defined3(_acc2, currentPoints[_i8], _i8, currentPoints);
-            }
-
-            var bestValue = _acc2;
-
-            var _defined4 = function _defined4(info) {
-                if (bestValue.d === info.d && bestValue.segments === info.segments) {
-                    bestValue.direct |= info.direct;
-                }
-            };
-
-            for (var _i7 = 0; _i7 <= currentPoints.length - 1; _i7++) {
-                _defined4(currentPoints[_i7], _i7, currentPoints);
-            }
-
-            now2[k] = bestValue;
-        };
-        for (var k = d; k >= -d; --k) {
-            _loop_2(k);
-        }
-    }
-    var best = {
-        k: -1,
-        d: Infinity,
-        segments: 0,
-        direct: Direct.none
-    };
-    for (var k = -d; k <= d; ++k) {
-        var dSum = now[k].d + now2[k].d;
-        if (dSum < best.d) {
-            best.k = k;
-            best.d = dSum;
-            best.segments = now[k].segments + now2[k].segments + (now[k].segments & now2[k].segments ? 0 : 1);
-            best.direct = now2[k].direct;
-        } else if (dSum === best.d) {
-            var segments = now[k].segments + now2[k].segments + (now[k].segments & now2[k].segments ? 0 : 1);
-            if (segments < best.segments) {
-                best.k = k;
-                best.d = dSum;
-                best.segments = segments;
-                best.direct = now2[k].direct;
-            } else if (segments === best.segments && !(best.direct & Direct.diagonal) && now2[k].direct & Direct.diagonal) {
-                best.k = k;
-                best.d = dSum;
-                best.segments = segments;
-                best.direct = now2[k].direct;
-            }
-        }
-    }
-    if (HALF + best.k === 0 && HALF === 0) {
-        HALF++;
-        now[best.k].direct = now2[best.k].direct;
-        now2[best.k].direct = preview2[best.k].direct;
-    }
-    getSolution(a, aStart, aStart + HALF + best.k, b, bStart, bStart + HALF, now[best.k].d, startDirect, now2[best.k].direct, compareFunc, elementsChanged);
-    getSolution(a, aStart + HALF + best.k, aEnd, b, bStart + HALF, bEnd, now2[best.k].d, now[best.k].direct, endDirect, compareFunc, elementsChanged);
-    var _a, _b, _c, _d;
-}
-function bestSubSequence(a, b, compareFunc, elementsChanged) {
-    var d = lcs(a, b, compareFunc);
-    getSolution(a, 0, a.length, b, 0, b.length, d, Direct.diagonal, Direct.all, compareFunc, elementsChanged);
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = bestSubSequence;
-
-/***/ }),
+/* 37 */,
+/* 38 */,
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4324,7 +4037,7 @@ var composeStyleInner = __webpack_require__(9);
 var camelToDash = __webpack_require__(15);
 var dashToCamel = __webpack_require__(10);
 var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
@@ -4374,9 +4087,9 @@ var DOMManipulation = function () {
             /*if($oldElement && $oldElement.firstChild && $oldElement.firstChild[CMP_INSTANCE]) {
                 $oldElement.firstChild[CMP_INSTANCE].destroy(true);
             }*/
-
             //Re-assign CMP INSTANCE to new element
             if ($oldElement[CMP_INSTANCE]) {
+                console.log('sostituisco');
                 $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
                 $newElement[CMP_INSTANCE]._rootElement = $newElement;
             }
@@ -4589,7 +4302,7 @@ module.exports = DOMManipulation;
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),
@@ -4634,45 +4347,6 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var diff = __webpack_require__(37);
-
-module.exports = function (newChildren, oldChildren) {
-
-    //if (newChildren.length === oldChildren.length) return [];
-
-    var oldArray = [];
-    var newArray = [];
-
-    var _defined = function _defined(item) {
-        if (item.props && item.props['data-key'] !== undefined)
-            //if (!oldArray.includes(item.props['data-key']))
-            oldArray.push(item.props['data-key']);else oldArray.push(null);
-    };
-
-    for (var _i2 = 0; _i2 <= oldChildren.length - 1; _i2++) {
-        _defined(oldChildren[_i2], _i2, oldChildren);
-    }
-
-    var _defined2 = function _defined2(item) {
-        if (item.props && item.props['data-key'] !== undefined)
-            //if (!newArray.includes(item.props['data-key']))
-            newArray.push(item.props['data-key']);else newArray.push(null);
-    };
-
-    for (var _i4 = 0; _i4 <= newChildren.length - 1; _i4++) {
-        _defined2(newChildren[_i4], _i4, newChildren);
-    }
-
-    return diff.getPatch(oldArray, newArray);
-};
 
 /***/ })
 /******/ ]);

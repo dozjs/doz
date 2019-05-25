@@ -1,7 +1,7 @@
 const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS} = require('../constants');
 const canDecode = require('../utils/can-decode');
-const diffKey = require('./patch');
+//const diffKey = require('./patch');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -55,29 +55,7 @@ function create(node, cmp, initial) {
 function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!$parent) return;
-    if (newNode && oldNode && oldNode.childrenHasKey) {
-        const diffIndex = diffKey(newNode.children, oldNode.children);
-        /*diffIndex.forEach(i => {
-            if (!$parent.childNodes[index].childNodes[i] || !$parent.childNodes[index].childNodes[i].firstChild) return;
-            oldNode.children.splice(i, 1);
-            $parent.childNodes[index].childNodes[i].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-        });*/
-        console.log(diffIndex)
-        diffIndex.forEach(diff => {
-            console.log(diff)
-            if (diff.type === 'remove') {
-                let newPos = diff.newPos;
-                diff.items.forEach(item => {
-                    console.log(item)
-                    if (!$parent.childNodes[index].childNodes[newPos] || !$parent.childNodes[index].childNodes[newPos].firstChild) return;
-                    oldNode.children.splice(newPos, 1);
-                    console.log('aaaaaaa')
-                    $parent.childNodes[index].childNodes[newPos].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-                })
-            }
-        });
-        if (diffIndex.length) return
-    }
+
     if (!oldNode) {
         // create node
         return $parent.appendChild(create(newNode, cmp, initial));
@@ -92,7 +70,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-        //console.log('$oldElement', $oldElement.innerHTML);
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -109,8 +86,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (newNode.type) {
         // walk node
-
-
 
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
@@ -145,12 +120,7 @@ function clearDead() {
     let dl = deadChildren.length;
 
     while (dl--) {
-        if (deadChildren[dl].firstChild && deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__) {
-            deadChildren[dl].firstChild.__DOZ_CMP_INSTANCE__.destroy();
-        } else {
-            deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-        }
-
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
         deadChildren.splice(dl, 1);
     }
 }

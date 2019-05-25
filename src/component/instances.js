@@ -59,7 +59,7 @@ function get(cfg = {}) {
     let isChildStyle;
     const trash = [];
 
-    console.log(cfg.template);
+    //console.log(cfg.template);
 
     function walk($child, parent = {}) {
         while ($child) {
@@ -147,7 +147,7 @@ function get(cfg = {}) {
                 }
 
                 propsInit(newElement);
-                $child.dataset.id = newElement.internalId;
+                $child.dataset.uid = newElement.internalId;
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {

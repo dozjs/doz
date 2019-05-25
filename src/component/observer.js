@@ -7,7 +7,7 @@ const manipulate = require('./manipulate');
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
-    instance.render();
+    instance.render(undefined, changes);
     updateBoundElementsByChanges(instance, changes);
 }
 

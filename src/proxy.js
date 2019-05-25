@@ -12,6 +12,8 @@
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
+const delay = require('./utils/delay');
+
 function sanitize(str) {
     return typeof str === 'string'
         ? str
@@ -81,23 +83,23 @@ const ObservableSlim = (function () {
             // reset calls number after 10ms
             if (autoDomDelay) {
                 domDelay = ++calls > 1;
-                setTimeout(function () {
+                delay(function () {
                     calls = 0;
-                }, 10);
+                });
             }
 
-            //domDelay = true;
+            domDelay = true;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
             if (domDelay === true) {
-                setTimeout(function () {
+                delay(function () {
                     if (numChanges === changes.length) {
                         // invoke any functions that are observing changes
                         for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                         changes = [];
                     }
-                }, 10);
+                });
             } else {
                 // invoke any functions that are observing changes
                 for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);

@@ -77,7 +77,7 @@ class Component extends DOMManipulation {
         if (typeof props === 'function')
             props = props();
 
-        this._rawProps = Object.assign({}, props,this._opt ? this._opt.props : {});
+        this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
         store.sync(this);
     }
@@ -197,7 +197,7 @@ class Component extends DOMManipulation {
         return '';
     }
 
-    render(initial) {
+    render(initial, changes = []) {
         if (this._renderPause) return;
         this.beginSafeRender();
         const template = this.template(h);
@@ -206,25 +206,54 @@ class Component extends DOMManipulation {
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
-        const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+        let candidateIndexToRemove;
+        let thereIsDelete = false;
+        changes.forEach((change, i) => {
+            console.log(change, i);
+            if (Array.isArray(change.target)) {
+                if ((change.type === 'update' || change.type === 'delete') && candidateIndexToRemove === undefined) {
+                    candidateIndexToRemove = {
+                        path: change.currentPath,
+                        index: change.property
+                    };
+                }
+                if (change.type === 'delete')
+                    thereIsDelete = true;
+            }
+        });
 
-        //if (this._prev)
-        //console.log(next.children, this._prev.children)
+        if (!thereIsDelete)
+            candidateIndexToRemove = undefined;
 
-        //Remove attributes from component tag
-        removeAllAttributes(this._cfgRoot, ['data-is', 'data-id', 'data-key']);
+        if (candidateIndexToRemove !== undefined) {
 
-        if (!this._rootElement && rootElement) {
-            this._rootElement = rootElement;
-            this._parentElement = rootElement.parentNode;
+            this._childrenOfArray[
+                this._childrenOfArrayPrefix.includes(candidateIndexToRemove.path)
+                    ? candidateIndexToRemove.path + candidateIndexToRemove.index
+                    : candidateIndexToRemove.index
+                ].destroy();
+        } else {
+
+            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+
+            //if (this._prev)
+            //console.log(next.children, this._prev.children)
+
+            //Remove attributes from component tag
+            removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'data-prefix']);
+
+            if (!this._rootElement && rootElement) {
+                this._rootElement = rootElement;
+                this._parentElement = rootElement.parentNode;
+            }
+
+            this._prev = next;
         }
-
-        this._prev = next;
 
         hooks.callAfterRender(this);
         if (initial) {
             drawDynamic(this);
-        }else {
+        } else {
             delay(() => drawDynamic(this));
         }
     }
@@ -299,8 +328,10 @@ class Component extends DOMManipulation {
 
         if (!onlyInstance) {
             this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-        } else if (this._rootElement.parentNode)
-            this._rootElement.parentNode.innerHTML = '';
+        } else if (this._rootElement.parentNode) {
+            //this._rootElement.parentNode.innerHTML = '';
+            this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+        }
 
         this._unmounted = !byDestroy;
 
@@ -438,6 +469,14 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
+        _childrenOfArray: {
+            value: {},
+            enumerable: true
+        },
+        _childrenOfArrayPrefix: {
+            value: [],
+            enumerable: true
+        },
 
         //Public
         tag: {
@@ -516,7 +555,7 @@ function defineProperties(obj, opt) {
 }
 
 function drawDynamic(instance) {
-    clearDynamic(instance);
+    //clearDynamic(instance);
 
     let index = instance._processing.length - 1;
 
@@ -524,12 +563,21 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        if (item.node[INSTANCE]) {
+        /*if (item.node[INSTANCE]) {
             if(item[INSTANCE].props.dataKey === undefined)
                 item.node[INSTANCE].destroy(true);
-        }
+        }*/
+
+        console.log('drawDynamic', item.node)
 
         if (!item.node.childNodes.length) {
+
+            if (item.node.dataset.prefix) {
+                if (!instance._childrenOfArrayPrefix.includes(item.node.dataset.prefix)) {
+                    instance._childrenOfArrayPrefix.push(item.node.dataset.prefix);
+                }
+            }
+
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
@@ -542,6 +590,12 @@ function drawDynamic(instance) {
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
+                let n = Object.keys(instance.children).length;
+                let n2 = Object.keys(instance._childrenOfArray).length;
+                instance.children[n++] = dynamicInstance;
+                // NON VA BENE, DEV'ESSERE UN OGGETTO COME CHIAVE IL PATH DELL'OGGETTO MODIFICATO TIPO record E COME VALORE UN ARRAY CON TUTTI I SUOI FIGLI
+                instance._childrenOfArray[item.node.dataset.prefix ? item.node.dataset.prefix + (n2++) : n2++] = dynamicInstance;
+                console.log(instance._childrenOfArray)
             }
         }
         index -= 1;
@@ -555,7 +609,7 @@ function clearDynamic(instance) {
         let item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            if(item[INSTANCE].props.dataKey === undefined)
+            if (item[INSTANCE].props.dataKey === undefined)
                 item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
@@ -566,6 +620,6 @@ function clearDynamic(instance) {
 module.exports = {
     Component,
     defineProperties,
-    clearDynamic,
+    //clearDynamic,
     drawDynamic
 };
