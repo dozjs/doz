@@ -678,19 +678,19 @@ var _require = __webpack_require__(0),
 var observer = __webpack_require__(30);
 var hooks = __webpack_require__(3);
 var update = __webpack_require__(32).updateElement;
-var store = __webpack_require__(39);
-var ids = __webpack_require__(40);
+var store = __webpack_require__(36);
+var ids = __webpack_require__(37);
 var proxy = __webpack_require__(11);
-var toInlineStyle = __webpack_require__(41);
-var queueReady = __webpack_require__(42);
-var queueDraw = __webpack_require__(43);
-var extendInstance = __webpack_require__(44);
-var cloneObject = __webpack_require__(45);
+var toInlineStyle = __webpack_require__(38);
+var queueReady = __webpack_require__(39);
+var queueDraw = __webpack_require__(40);
+var extendInstance = __webpack_require__(41);
+var cloneObject = __webpack_require__(42);
 var toLiteralString = __webpack_require__(16);
-var removeAllAttributes = __webpack_require__(46);
+var removeAllAttributes = __webpack_require__(43);
 var h = __webpack_require__(17);
-var loadLocal = __webpack_require__(47);
-var localMixin = __webpack_require__(48);
+var loadLocal = __webpack_require__(44);
+var localMixin = __webpack_require__(45);
 
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
@@ -701,7 +701,7 @@ var propsInit = __webpack_require__(19);
 var _require3 = __webpack_require__(12),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var DOMManipulation = __webpack_require__(49);
+var DOMManipulation = __webpack_require__(46);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -858,17 +858,16 @@ var Component = function (_DOMManipulation) {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
-            var candidateIndexToRemove = void 0;
+            var candidateKeyToRemove = void 0;
             var thereIsDelete = false;
 
             var _defined = function _defined(change, i) {
-                console.log(change, i);
+                //console.log(change, i);
                 if (Array.isArray(change.target)) {
-                    if ((change.type === 'update' || change.type === 'delete') && candidateIndexToRemove === undefined) {
-                        candidateIndexToRemove = {
-                            path: change.currentPath,
-                            index: change.property
-                        };
+                    if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+                        if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
+                            candidateKeyToRemove = change.previousValue.key;
+                        }
                     }
                     if (change.type === 'delete') thereIsDelete = true;
                 }
@@ -878,17 +877,18 @@ var Component = function (_DOMManipulation) {
                 _defined(changes[_i2], _i2, changes);
             }
 
-            if (!thereIsDelete) candidateIndexToRemove = undefined;
+            //console.log('candidateKeyToRemove', candidateKeyToRemove);
 
-            if (candidateIndexToRemove !== undefined) {
+            if (!thereIsDelete) candidateKeyToRemove = undefined;
 
-                this._childrenOfArray[this._childrenOfArrayPrefix.includes(candidateIndexToRemove.path) ? candidateIndexToRemove.path + candidateIndexToRemove.index : candidateIndexToRemove.index].destroy();
+            if (candidateKeyToRemove !== undefined && this._nodesOfArray[candidateKeyToRemove] !== undefined) {
+                if (this._nodesOfArray[candidateKeyToRemove][INSTANCE]) {
+                    this._nodesOfArray[candidateKeyToRemove][INSTANCE].destroy();
+                } else {
+                    this._nodesOfArray[candidateKeyToRemove].parentNode.removeChild(this._nodesOfArray[candidateKeyToRemove]);
+                }
             } else {
-
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
-
-                //if (this._prev)
-                //console.log(next.children, this._prev.children)
 
                 //Remove attributes from component tag
                 removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'data-prefix']);
@@ -897,10 +897,11 @@ var Component = function (_DOMManipulation) {
                     this._rootElement = rootElement;
                     this._parentElement = rootElement.parentNode;
                 }
-
-                this._prev = next;
             }
 
+            this._parentElement.dataset.uid = this.internalId + '-' + Math.random();
+
+            this._prev = next;
             hooks.callAfterRender(this);
             if (initial) {
                 drawDynamic(this);
@@ -1203,11 +1204,11 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
-        _childrenOfArray: {
+        _nodesOfArray: {
             value: {},
             enumerable: true
         },
-        _childrenOfArrayPrefix: {
+        _nodesOfArrayPrefix: {
             value: [],
             enumerable: true
         },
@@ -1302,15 +1303,9 @@ function drawDynamic(instance) {
                 item.node[INSTANCE].destroy(true);
         }*/
 
-        console.log('drawDynamic', item.node);
+        //console.log('drawDynamic', item.node)
 
         if (!item.node.childNodes.length) {
-
-            if (item.node.dataset.prefix) {
-                if (!instance._childrenOfArrayPrefix.includes(item.node.dataset.prefix)) {
-                    instance._childrenOfArrayPrefix.push(item.node.dataset.prefix);
-                }
-            }
 
             var dynamicInstance = __webpack_require__(7).get({
                 root: root,
@@ -1325,30 +1320,30 @@ function drawDynamic(instance) {
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
                 var n = Object.keys(instance.children).length;
-                var n2 = Object.keys(instance._childrenOfArray).length;
                 instance.children[n++] = dynamicInstance;
-                instance._childrenOfArray[item.node.dataset.prefix ? item.node.dataset.prefix + n2++ : n2++] = dynamicInstance;
-                console.log(instance._childrenOfArray);
+                instance._nodesOfArray[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+                //console.log(instance._nodesOfArray)
             }
         }
         index -= 1;
     }
 }
-
+/*
 function clearDynamic(instance) {
-    var index = instance._dynamicChildren.length - 1;
+    let index = instance._dynamicChildren.length - 1;
 
     while (index >= 0) {
-        var item = instance._dynamicChildren[index];
+        let item = instance._dynamicChildren[index];
 
         if (!document.body.contains(item) && item[INSTANCE]) {
-            if (item[INSTANCE].props.dataKey === undefined) item[INSTANCE].destroy(true);
+            if (item[INSTANCE].props.dataKey === undefined)
+                item[INSTANCE].destroy(true);
             instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
     }
 }
-
+*/
 module.exports = {
     Component: Component,
     defineProperties: defineProperties,
@@ -2692,12 +2687,12 @@ var collection = __webpack_require__(2);
 var _require = __webpack_require__(20),
     use = _require.use;
 
-var component = __webpack_require__(50);
+var component = __webpack_require__(47);
 
 var _require2 = __webpack_require__(6),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(51);
+var mixin = __webpack_require__(48);
 var h = __webpack_require__(17);
 
 var _require3 = __webpack_require__(4),
@@ -3767,10 +3762,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3799,7 +3791,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3822,7 +3814,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3859,7 +3851,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 42 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3877,7 +3869,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 43 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3910,7 +3902,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 44 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3923,7 +3915,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 45 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3936,7 +3928,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 46 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3956,7 +3948,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 47 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4002,7 +3994,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4018,7 +4010,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 49 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4092,6 +4084,7 @@ var DOMManipulation = function () {
                 console.log('sostituisco');
                 $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
                 $newElement[CMP_INSTANCE]._rootElement = $newElement;
+                $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
             }
         }
     }, {
@@ -4296,7 +4289,7 @@ var DOMManipulation = function () {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 50 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4331,7 +4324,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

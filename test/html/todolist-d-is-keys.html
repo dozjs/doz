@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../../dist/doz.js?5896254er8658858592834oi092158"></script>
+    <script src="../../dist/doz.js?58962584588580r75g9e284oi092158"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -77,35 +77,19 @@
 
 <script>
 
-    Doz.mixin({
-        _getIndexByUniqueId(id) {
-            console.log(id)
-            let index;
-            const store = this.getStore('todo');
-            for (let i = 0; i < store.record.length; i++) {
-                if (store.record[i].id === id) {
-                    index = i;
-                    break;
-                }
-            }
-
-            return index;
-        },
-    });
-
     const actions = {
-        done(id) {
-            let index = this._componentsByInternalId[0]._getIndexByUniqueId(id);
+        done(key) {
             const store = this.getStore('todo');
+            const index = store.record.findIndex(item => item.key === key);
             store.record[index].done = !store.record[index].done;
         },
 
         add() {
-            console.log('add');
+            //console.log('add');
             const store = this.getStore('todo');
             if (store.todo) {
                 store.record.push({
-                    id: Date.now() + Math.random(),
+                    key: Date.now() + Math.random(),
                     title: store.todo,
                     done: false
                 });
@@ -113,10 +97,9 @@
             }
         },
 
-        remove(id) {
+        remove(key) {
             const store = this.getStore('todo');
-            let index = this._componentsByInternalId[0]._getIndexByUniqueId(id);
-            if (typeof index !== 'number') return;
+            const index = store.record.findIndex(item => item.key === key);
             if (confirm(`Remove ${store.record[index].title}?`))
                 store.record.splice(index, 1);
         },
@@ -145,23 +128,20 @@
             input.focus();
         },
 
-        hideInput(id, e) {
+        hideInput(key, e) {
             const input = e.target;
             const text = e.target.previousElementSibling;
-
             if (!text) return;
             input.style.display = 'none';
             text.style.display = 'inline';
             const store = this.getStore('todo');
-            let index = this._componentsByInternalId[0]._getIndexByUniqueId(id);
-            if (typeof index !== 'number') return;
+            const index = store.record.findIndex(item => item.key === key);
             store.record[index].title = input.value;
         },
 
-        inputEnterPress(id, e) {
-            let index = this._componentsByInternalId[0]._getIndexByUniqueId(id);
+        inputEnterPress(key, e) {
             if (e.keyCode === 13) {
-                this.action.hideInput(index, e);
+                this.action.hideInput(key, e);
             }
         },
 
@@ -177,13 +157,15 @@
         template(h) {
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
-                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
+                    <button onclick="console.log(this.internalId, this.props.title)" title="HTML">H</button>
+                    <button onclick="this.action.remove(${this.props.dataKey})" title="Delete">&cross;</button>
+                    <button onclick="this.action.done(${this.props.dataKey})" title="Done">&check;</button>
+                    ${this.props.dataKey} -
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.id})"
-                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            onblur="this.action.hideInput(${this.props.dataKey})"
+                            onkeypress="this.action.inputEnterPress(${this.props.dataKey})"
                             style="display: none"
                             type="text"
                         >
@@ -192,7 +174,7 @@
             `;
         },
         onUnmount() {
-            console.log('UNMOUNT', this.internalId)
+            console.log('UNMOUNT', this);
         },
         onDestroy() {
             console.log('DESTROY')
@@ -204,20 +186,22 @@
             return h`
                 <button onclick="this.action.add()" >Add</button>
                 <button onclick="this.action.removeAll()" >Remove all</button>
-                <x-update-man/>
             `;
         }
     });
-
     Doz.component('x-update-man', {
         props: {
             index: 0,
+            indexes: '',
             value: ''
         },
         template(h) {
             return h`
                 <div>
                     index: <input d-bind="index" type="number"> value: <input d-bind="value" type="text"> <button onclick="this.update()">Update</button>
+                </div>
+                <div>
+                    remove indexes: <input d-bind="indexes" type="text"> <button onclick="this.removeIndexes()">removeIndexes</button>
                 </div>
                 <div>
                     <button onclick="this.swap()">Swap</button>
@@ -227,9 +211,17 @@
             `
         },
         update() {
-            let record = this.getStore('todo').record[this.props.index];
+            let record = Object.assign({}, this.getStore('todo').record[this.props.index]);
             record.title = this.props.value;
             this.getStore('todo').record[this.props.index] = record;
+
+        },
+        removeIndexes() {
+            let record = this.getStore('todo').record;
+            (this.props.indexes+'').split(',').forEach(i => {
+                record.splice(i, 1);
+            });
+            //this.getStore('todo').record = record;
 
         },
         swap() {
@@ -252,7 +244,6 @@
             this.getStore('todo').record = record.sort();
         }
     });
-
     Doz.component('doz-todo', {
         store: 'todo',
         template(h) {
@@ -264,7 +255,7 @@
                     </div>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        h`<li id="${item.id}" data-key="${item.id}" d-is="doz-todo-item" title="${item.title}" done="${item.done}"></li>`
+                        h`<li d-is="doz-todo-item" data-key="${item.key}" title="${item.title}" done="${item.done}"></li>`
                     )}
                     </ul>
                     <div class="todo-info">
@@ -282,15 +273,15 @@
         },
 
         onMount() {
-            this.props.record = JSON.parse(localStorage.getItem('doz-todo')) || [
-                {title: "Buy milk", done: false},
-                {title: "Buy cigarettes", done: false}
+            this.props.record = JSON.parse(localStorage.getItem('doz-todo-keys')) || [
+                {title: "Buy milk", done: false, key: new Date() + Math.random()},
+                {title: "Buy cigarettes", done: false, key: new Date() + Math.random()}
             ];
         },
 
         onUpdate() {
             this.action.updateTotal();
-            localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
+            localStorage.setItem('doz-todo-keys', JSON.stringify(this.props.record));
         }
     });
 
@@ -299,7 +290,8 @@
         root: document.getElementById('app'),
         template: `
             <h1>TO-DO list</h1>
-            <doz-todo></doz-todo>
+            <x-update-man/>
+            <doz-todo/>
         `
     });
 

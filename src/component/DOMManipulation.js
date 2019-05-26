@@ -46,6 +46,7 @@ class DOMManipulation {
             console.log('sostituisco')
             $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
             $newElement[CMP_INSTANCE]._rootElement = $newElement;
+            $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
         }
     };
 

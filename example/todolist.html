@@ -198,7 +198,7 @@
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     ${this.each(this.props.record, (item, i) =>
-                        h`<doz-todo-item data-key="${item.time}" id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                     )}
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
