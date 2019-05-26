@@ -366,7 +366,7 @@ function callBeforeDestroy(context) {
 function callDestroy(context) {
     context.app.emit('componentDestroy', context);
 
-    delete context.app._componentsByInternalId[context.internalId];
+    //delete context.app._componentsByUId[context.uId];
 
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
 
@@ -891,7 +891,7 @@ var Component = function (_DOMManipulation) {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
                 //Remove attributes from component tag
-                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'data-prefix']);
+                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -899,7 +899,7 @@ var Component = function (_DOMManipulation) {
                 }
             }
 
-            this._parentElement.dataset.uid = this.internalId + '-' + Math.random();
+            //this._parentElement.dataset.uid = this.props.__UID__;
 
             this._prev = next;
             hooks.callAfterRender(this);
@@ -1222,10 +1222,10 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        internalId: {
-            value: opt.app.generateInternalId(obj),
+        /*uId: {
+            value: opt.app.generateUId(obj),
             enumerable: true
-        },
+        },*/
         parent: {
             value: opt.parentCmp,
             enumerable: true,
@@ -1409,17 +1409,30 @@ function transformChildStyle(child, parent) {
     if (child.nodeName !== 'STYLE') return;
 
     var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    var dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
+
+    //console.log(dataSetUId)
+
     var tagByData = void 0;
     if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
-    scopedInner(child.textContent, parent.cmp.tag, tagByData);
+
+    if (dataSetUId) tagByData = '[data-uid="' + dataSetUId + '"]';
+
+    //scopedInner(child.textContent, parent.cmp.tag, tagByData);
+    scopedInner(child.textContent, dataSetUId, tagByData);
+
     var emptyStyle = document.createElement('script');
     emptyStyle.type = 'text/style';
     emptyStyle.textContent = ' ';
-    emptyStyle.dataset.id = parent.cmp.tag + '--style';
-    emptyStyle.dataset.owner = parent.cmp.tag;
+    //emptyStyle.dataset.id = parent.cmp.tag + '--style';
+    emptyStyle.dataset.id = dataSetUId + '--style';
+    emptyStyle.dataset.owner = dataSetUId; //parent.cmp.tag;
+
     if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
+
     child.parentNode.replaceChild(emptyStyle, child);
     child = emptyStyle.nextSibling;
+
     return child;
 }
 
@@ -1445,6 +1458,8 @@ function get() {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
+
+            var uId = cfg.app.generateUId();
 
             isChildStyle = transformChildStyle($child, parent);
 
@@ -1535,7 +1550,7 @@ function get() {
                 }
 
                 propsInit(newElement);
-                $child.dataset.uid = newElement.internalId;
+                $child.dataset.uid = uId;
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -2806,14 +2821,14 @@ var Doz = function () {
         }, cfg);
 
         Object.defineProperties(this, {
-            _lastInternalId: {
+            _lastUId: {
                 value: 0,
                 writable: true
             },
-            _componentsByInternalId: {
+            /*_componentsByUId: {
                 value: {},
                 writable: true
-            },
+            },*/
             _components: {
                 value: {},
                 writable: true
@@ -3036,11 +3051,11 @@ var Doz = function () {
             return this;
         }
     }, {
-        key: 'generateInternalId',
-        value: function generateInternalId(component) {
-            var internalId = this._lastInternalId++;
-            this._componentsByInternalId[internalId] = component;
-            return internalId;
+        key: 'generateUId',
+        value: function generateUId() {
+            //let uId = this._lastUId++;
+            //this._componentsByUId[uId] = component;
+            return this._lastUId++;
         }
     }]);
 
@@ -3111,7 +3126,7 @@ module.exports = {
 function createStyle(cssContent, tag) {
     var result = void 0;
     var styleId = tag + '--style';
-    var styleExists = document.querySelector('#' + styleId);
+    var styleExists = document.getElementById(styleId);
 
     if (styleExists) {
         result = styleExists.innerHTML = cssContent;

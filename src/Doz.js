@@ -43,14 +43,14 @@ class Doz {
         }, cfg);
 
         Object.defineProperties(this, {
-            _lastInternalId: {
+            _lastUId: {
                 value: 0,
                 writable: true
             },
-            _componentsByInternalId: {
+            /*_componentsByUId: {
                 value: {},
                 writable: true
-            },
+            },*/
             _components: {
                 value: {},
                 writable: true
@@ -238,10 +238,10 @@ class Doz {
         return this;
     }
 
-    generateInternalId(component) {
-        let internalId = this._lastInternalId++;
-        this._componentsByInternalId[internalId] = component;
-        return internalId;
+    generateUId() {
+        //let uId = this._lastUId++;
+        //this._componentsByUId[uId] = component;
+        return this._lastUId++;
     }
 }
 

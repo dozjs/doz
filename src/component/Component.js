@@ -236,7 +236,7 @@ class Component extends DOMManipulation {
             const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
             //Remove attributes from component tag
-            removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'data-prefix']);
+            removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
             if (!this._rootElement && rootElement) {
                 this._rootElement = rootElement;
@@ -244,7 +244,7 @@ class Component extends DOMManipulation {
             }
         }
 
-        this._parentElement.dataset.uid = this.internalId + '-' + Math.random();
+        //this._parentElement.dataset.uid = this.props.__UID__;
 
         this._prev = next;
         hooks.callAfterRender(this);
@@ -484,10 +484,10 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        internalId: {
-            value: opt.app.generateInternalId(obj),
+        /*uId: {
+            value: opt.app.generateUId(obj),
             enumerable: true
-        },
+        },*/
         parent: {
             value: opt.parentCmp,
             enumerable: true,
