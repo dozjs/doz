@@ -367,6 +367,10 @@ function callDestroy(context) {
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
+    var style = document.getElementById(context.uId + '--style');
+    if (style) {
+        style.parentNode.removeChild(style);
+    }
 
     if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
 
@@ -863,6 +867,7 @@ var Component = function (_DOMManipulation) {
 
             var _defined = function _defined(change, i) {
                 //console.log(change, i);
+                // Trova la presunta chiave da eliminare
                 if (Array.isArray(change.target)) {
                     if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
                         if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
@@ -870,6 +875,25 @@ var Component = function (_DOMManipulation) {
                         }
                     }
                     if (change.type === 'delete') thereIsDelete = true;
+                }
+
+                // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+                if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
+                    var _defined2 = function _defined2(item) {
+                        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined) {
+                            if (_this2._nodesOfArray[item.key][INSTANCE]) {
+                                _this2._nodesOfArray[item.key][INSTANCE].destroy();
+                            } else {
+                                _this2._nodesOfArray[item.key].parentNode.removeChild(_this2._nodesOfArray[item.key]);
+                            }
+                        }
+                    };
+
+                    var _defined3 = change.previousValue;
+
+                    for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+                        _defined2(_defined3[_i4], _i4, _defined3);
+                    }
                 }
             };
 
@@ -898,8 +922,6 @@ var Component = function (_DOMManipulation) {
                     this._parentElement = rootElement.parentNode;
                 }
             }
-
-            //this._parentElement.dataset.uid = this.props.__UID__;
 
             this._prev = next;
             hooks.callAfterRender(this);
@@ -943,14 +965,14 @@ var Component = function (_DOMManipulation) {
 
                 hooks.callMount(this);
 
-                var _defined2 = function _defined2(child) {
+                var _defined4 = function _defined4(child) {
                     _this3.children[child].mount();
                 };
 
-                var _defined3 = Object.keys(this.children);
+                var _defined5 = Object.keys(this.children);
 
-                for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                    _defined2(_defined3[_i4], _i4, _defined3);
+                for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+                    _defined4(_defined5[_i6], _i6, _defined5);
                 }
 
                 return this;
@@ -1003,14 +1025,14 @@ var Component = function (_DOMManipulation) {
 
             if (!silently) hooks.callUnmount(this);
 
-            var _defined4 = function _defined4(child) {
+            var _defined6 = function _defined6(child) {
                 _this4.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
-            var _defined5 = Object.keys(this.children);
+            var _defined7 = Object.keys(this.children);
 
-            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                _defined4(_defined5[_i6], _i6, _defined5);
+            for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
+                _defined6(_defined7[_i8], _i8, _defined7);
             }
 
             return this;
@@ -1026,14 +1048,14 @@ var Component = function (_DOMManipulation) {
                 return;
             }
 
-            var _defined6 = function _defined6(child) {
+            var _defined8 = function _defined8(child) {
                 _this5.children[child].destroy();
             };
 
-            var _defined7 = Object.keys(this.children);
+            var _defined9 = Object.keys(this.children);
 
-            for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
-                _defined6(_defined7[_i8], _i8, _defined7);
+            for (var _i10 = 0; _i10 <= _defined9.length - 1; _i10++) {
+                _defined8(_defined9[_i10], _i10, _defined9);
             }
 
             hooks.callDestroy(this);
@@ -1408,15 +1430,18 @@ function getComponentName(child) {
 function transformChildStyle(child, parent) {
     if (child.nodeName !== 'STYLE') return;
 
-    var dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
-    var dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
-
+    //const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    var dataSetUId = parent.cmp.uId;
+    //const dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
+    parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
     //console.log(dataSetUId)
 
     var tagByData = void 0;
-    if (dataSetId) tagByData = '[data-is="' + dataSetId + '"]';
+    //if (dataSetId)
+    //tagByData = `[data-is="${dataSetId}"]`;
 
-    if (dataSetUId) tagByData = '[data-uid="' + dataSetUId + '"]';
+    //if (dataSetUId)
+    tagByData = '[data-uid="' + dataSetUId + '"]';
 
     //scopedInner(child.textContent, parent.cmp.tag, tagByData);
     scopedInner(child.textContent, dataSetUId, tagByData);
@@ -1550,7 +1575,10 @@ function get() {
                 }
 
                 propsInit(newElement);
-                $child.dataset.uid = uId;
+
+                //$child.dataset.uid = uId;
+                Object.defineProperty(newElement, 'uId', { value: uId });
+
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
@@ -1798,14 +1826,14 @@ var ObservableSlim = function () {
         var _notifyObservers = function _notifyObservers(numChanges) {
 
             // reset calls number after 10ms
-            if (autoDomDelay) {
+            /*if (autoDomDelay) {
                 domDelay = ++calls > 1;
                 delay(function () {
                     calls = 0;
                 });
-            }
+            }*/
 
-            domDelay = true;
+            //domDelay = true;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -3447,7 +3475,6 @@ var _require2 = __webpack_require__(0),
     NS = _require2.NS;
 
 var canDecode = __webpack_require__(14);
-//const diffKey = require('./patch');
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];

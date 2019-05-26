@@ -1,7 +1,6 @@
 const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS} = require('../constants');
 const canDecode = require('../utils/can-decode');
-//const diffKey = require('./patch');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];

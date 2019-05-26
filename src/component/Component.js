@@ -210,6 +210,7 @@ class Component extends DOMManipulation {
         let thereIsDelete = false;
         changes.forEach((change, i) => {
             //console.log(change, i);
+            // Trova la presunta chiave da eliminare
             if (Array.isArray(change.target)) {
                 if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
                     if (change.previousValue && typeof change.previousValue === 'object' && change.previousValue.key !== undefined) {
@@ -218,6 +219,21 @@ class Component extends DOMManipulation {
                 }
                 if (change.type === 'delete')
                     thereIsDelete = true;
+            }
+
+            // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+            if (candidateKeyToRemove === undefined && (Array.isArray(change.previousValue) && !Array.isArray(change.newValue))
+                || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
+            ) {
+                change.previousValue.forEach(item => {
+                    if (item && typeof item === 'object' && item.key !== undefined) {
+                        if(this._nodesOfArray[item.key][INSTANCE]) {
+                            this._nodesOfArray[item.key][INSTANCE].destroy();
+                        } else {
+                            this._nodesOfArray[item.key].parentNode.removeChild(this._nodesOfArray[item.key]);
+                        }
+                    }
+                });
             }
         });
 
@@ -243,8 +259,6 @@ class Component extends DOMManipulation {
                 this._parentElement = rootElement.parentNode;
             }
         }
-
-        //this._parentElement.dataset.uid = this.props.__UID__;
 
         this._prev = next;
         hooks.callAfterRender(this);

@@ -26,16 +26,17 @@ function transformChildStyle(child, parent) {
     if (child.nodeName !== 'STYLE')
         return;
 
-    const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
-    const dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
-
+    //const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    const dataSetUId = parent.cmp.uId;
+    //const dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
+    parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
     //console.log(dataSetUId)
 
     let tagByData;
-    if (dataSetId)
-        tagByData = `[data-is="${dataSetId}"]`;
+    //if (dataSetId)
+        //tagByData = `[data-is="${dataSetId}"]`;
 
-    if (dataSetUId)
+    //if (dataSetUId)
         tagByData = `[data-uid="${dataSetUId}"]`;
 
     //scopedInner(child.textContent, parent.cmp.tag, tagByData);
@@ -163,7 +164,10 @@ function get(cfg = {}) {
                 }
 
                 propsInit(newElement);
-                $child.dataset.uid = uId;
+
+                //$child.dataset.uid = uId;
+                Object.defineProperty(newElement, 'uId', {value: uId});
+
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {

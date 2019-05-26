@@ -122,6 +122,10 @@ function callDestroy(context) {
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
+    const style = document.getElementById(context.uId + '--style');
+    if (style) {
+        style.parentNode.removeChild(style);
+    }
 
     if (context.store && context.app._stores[context.store])
         delete context.app._stores[context.store];
