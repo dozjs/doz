@@ -11,7 +11,7 @@ function composeStyleInner(cssContent, tag, tagByData) {
 
     tag = tagByData || tag;
 
-    let sanitizeTagForAnimation = tag.replace(/[\w]/g, '');
+    let sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
     cssContent = cssContent
         .replace(/{/g, '{\n')
