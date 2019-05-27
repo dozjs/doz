@@ -209,7 +209,7 @@ class Component extends DOMManipulation {
         let candidateKeyToRemove;
         let thereIsDelete = false;
         changes.forEach((change) => {
-            //console.log(change, i);
+            console.log(change);
             // Trova la presunta chiave da eliminare
             if (Array.isArray(change.target)) {
                 if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
@@ -226,8 +226,9 @@ class Component extends DOMManipulation {
                 || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
             ) {
                 change.previousValue.forEach(item => {
-                    if (item && typeof item === 'object' && item.key !== undefined) {
+                    if (item && typeof item === 'object' && item.key !== undefined && this._nodesOfArray[item.key] !== undefined) {
                         console.log(this._nodesOfArray)
+
                         if(this._nodesOfArray[item.key][INSTANCE]) {
                             this._nodesOfArray[item.key][INSTANCE].destroy();
                         } else {
