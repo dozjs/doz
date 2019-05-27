@@ -20,7 +20,7 @@ function create(instance) {
         recreate = true;
     }
 
-    instance._props = proxy.create(instance._rawProps, null,
+    instance._props = proxy.create(instance._rawProps, true,
         changes => {
             if (!instance._isRendered) return;
 

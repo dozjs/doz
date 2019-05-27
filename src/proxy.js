@@ -81,12 +81,12 @@ const ObservableSlim = (function () {
         let _notifyObservers = function (numChanges) {
 
             // reset calls number after 10ms
-            /*if (autoDomDelay) {
+            if (autoDomDelay) {
                 domDelay = ++calls > 1;
                 delay(function () {
                     calls = 0;
                 });
-            }*/
+            }
 
             //domDelay = true;
 

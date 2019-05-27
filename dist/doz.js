@@ -866,7 +866,6 @@ var Component = function (_DOMManipulation) {
             var thereIsDelete = false;
 
             var _defined = function _defined(change) {
-                console.log(change);
                 // Trova la presunta chiave da eliminare
                 if (Array.isArray(change.target)) {
                     if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
@@ -881,8 +880,7 @@ var Component = function (_DOMManipulation) {
                 if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
                     var _defined2 = function _defined2(item) {
                         if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._nodesOfArray[item.key] !== undefined) {
-                            console.log(_this2._nodesOfArray);
-
+                            //console.log(this._nodesOfArray)
                             if (_this2._nodesOfArray[item.key][INSTANCE]) {
                                 _this2._nodesOfArray[item.key][INSTANCE].destroy();
                             } else {
@@ -925,6 +923,7 @@ var Component = function (_DOMManipulation) {
 
             this._prev = next;
             hooks.callAfterRender(this);
+            //drawDynamic(this)
             if (initial) {
                 drawDynamic(this);
             } else {
@@ -1789,12 +1788,12 @@ var ObservableSlim = function () {
         var _notifyObservers = function _notifyObservers(numChanges) {
 
             // reset calls number after 10ms
-            /*if (autoDomDelay) {
+            if (autoDomDelay) {
                 domDelay = ++calls > 1;
                 delay(function () {
                     calls = 0;
                 });
-            }*/
+            }
 
             //domDelay = true;
 
@@ -3333,7 +3332,7 @@ function create(instance) {
         recreate = true;
     }
 
-    instance._props = proxy.create(instance._rawProps, null, function (changes) {
+    instance._props = proxy.create(instance._rawProps, true, function (changes) {
         if (!instance._isRendered) return;
 
         if (instance.delayUpdate) {
