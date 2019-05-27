@@ -261,11 +261,11 @@ class Component extends DOMManipulation {
         this._prev = next;
         hooks.callAfterRender(this);
         //drawDynamic(this)
-        if (initial) {
+        //if (initial) {
             drawDynamic(this);
-        } else {
+        /*} else {
             delay(() => drawDynamic(this));
-        }
+        }*/
     }
 
     renderPause() {

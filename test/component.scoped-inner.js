@@ -20,7 +20,7 @@ describe('Component.scoped-inner', function () {
             }
         `;
 
-        const result = scopedInner(style, 'x-any');
+        const result = scopedInner(style, 1,'x-any');
 
         be.err.true(/x-any button,x-any img{/g.test(result));
         be.err.true(/x-any button {/g.test(result));

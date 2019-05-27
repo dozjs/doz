@@ -27,6 +27,8 @@ describe('Doz.instance.hooks', function () {
                 'onMountProto',
                 'onMount',
                 'onBeforeUpdate',
+                'onMountAsyncProto',
+                'onMountAsync',
                 'onUpdateProto',
                 'onUpdate',
                 'onBeforeUnmount',
@@ -35,8 +37,6 @@ describe('Doz.instance.hooks', function () {
                 'onBeforeDestroy',
                 'onDestroyProto',
                 'onAfterRender',
-                'onMountAsyncProto',
-                'onMountAsync',
                 'onDestroy'
             ];
 
@@ -134,7 +134,7 @@ describe('Doz.instance.hooks', function () {
                 onMyCmpDestroy() {
                     setTimeout(function () {
                         queueEvents.push('onDestroy');
-                        //console.log(queueEvents, shouldBe);
+                        console.log(queueEvents, shouldBe);
                         be.err(done).equal(queueEvents, shouldBe);
                     }, 100);
                 }

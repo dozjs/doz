@@ -924,13 +924,11 @@ var Component = function (_DOMManipulation) {
             this._prev = next;
             hooks.callAfterRender(this);
             //drawDynamic(this)
-            if (initial) {
-                drawDynamic(this);
-            } else {
-                delay(function () {
-                    return drawDynamic(_this2);
-                });
-            }
+            //if (initial) {
+            drawDynamic(this);
+            /*} else {
+                delay(() => drawDynamic(this));
+            }*/
         }
     }, {
         key: 'renderPause',
