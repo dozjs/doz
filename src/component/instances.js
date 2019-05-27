@@ -32,12 +32,7 @@ function transformChildStyle(child, parent) {
     parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
     //console.log(dataSetUId)
 
-    let tagByData;
-    //if (dataSetId)
-        //tagByData = `[data-is="${dataSetId}"]`;
-
-    //if (dataSetUId)
-        tagByData = `[data-uid="${dataSetUId}"]`;
+    let tagByData = `[data-uid="${dataSetUId}"]`;
 
     //scopedInner(child.textContent, parent.cmp.tag, tagByData);
     scopedInner(child.textContent, dataSetUId, tagByData);
@@ -49,8 +44,7 @@ function transformChildStyle(child, parent) {
     emptyStyle.dataset.id = dataSetUId + '--style';
     emptyStyle.dataset.owner = dataSetUId;//parent.cmp.tag;
 
-    if (tagByData)
-        emptyStyle.dataset.ownerByData = tagByData;
+    emptyStyle.dataset.ownerByData = tagByData;
 
     child.parentNode.replaceChild(emptyStyle, child);
     child = emptyStyle.nextSibling;

@@ -865,7 +865,7 @@ var Component = function (_DOMManipulation) {
             var candidateKeyToRemove = void 0;
             var thereIsDelete = false;
 
-            var _defined = function _defined(change, i) {
+            var _defined = function _defined(change) {
                 //console.log(change, i);
                 // Trova la presunta chiave da eliminare
                 if (Array.isArray(change.target)) {
@@ -881,6 +881,7 @@ var Component = function (_DOMManipulation) {
                 if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
                     var _defined2 = function _defined2(item) {
                         if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined) {
+                            console.log(_this2._nodesOfArray);
                             if (_this2._nodesOfArray[item.key][INSTANCE]) {
                                 _this2._nodesOfArray[item.key][INSTANCE].destroy();
                             } else {
@@ -900,8 +901,6 @@ var Component = function (_DOMManipulation) {
             for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
                 _defined(changes[_i2], _i2, changes);
             }
-
-            //console.log('candidateKeyToRemove', candidateKeyToRemove);
 
             if (!thereIsDelete) candidateKeyToRemove = undefined;
 
@@ -1230,10 +1229,6 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
-        _nodesOfArrayPrefix: {
-            value: [],
-            enumerable: true
-        },
 
         //Public
         tag: {
@@ -1244,10 +1239,6 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        /*uId: {
-            value: opt.app.generateUId(obj),
-            enumerable: true
-        },*/
         parent: {
             value: opt.parentCmp,
             enumerable: true,
@@ -1312,20 +1303,12 @@ function defineProperties(obj, opt) {
 }
 
 function drawDynamic(instance) {
-    //clearDynamic(instance);
 
     var index = instance._processing.length - 1;
 
     while (index >= 0) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
-
-        /*if (item.node[INSTANCE]) {
-            if(item[INSTANCE].props.dataKey === undefined)
-                item.node[INSTANCE].destroy(true);
-        }*/
-
-        //console.log('drawDynamic', item.node)
 
         if (!item.node.childNodes.length) {
 
@@ -1337,39 +1320,21 @@ function drawDynamic(instance) {
             });
 
             if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
                 var n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;
                 instance._nodesOfArray[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
-                //console.log(instance._nodesOfArray)
             }
         }
         index -= 1;
     }
 }
-/*
-function clearDynamic(instance) {
-    let index = instance._dynamicChildren.length - 1;
 
-    while (index >= 0) {
-        let item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            if (item[INSTANCE].props.dataKey === undefined)
-                item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
-        }
-        index -= 1;
-    }
-}
-*/
 module.exports = {
     Component: Component,
     defineProperties: defineProperties,
-    //clearDynamic,
     drawDynamic: drawDynamic
 };
 
@@ -1436,12 +1401,7 @@ function transformChildStyle(child, parent) {
     parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
     //console.log(dataSetUId)
 
-    var tagByData = void 0;
-    //if (dataSetId)
-    //tagByData = `[data-is="${dataSetId}"]`;
-
-    //if (dataSetUId)
-    tagByData = '[data-uid="' + dataSetUId + '"]';
+    var tagByData = '[data-uid="' + dataSetUId + '"]';
 
     //scopedInner(child.textContent, parent.cmp.tag, tagByData);
     scopedInner(child.textContent, dataSetUId, tagByData);
@@ -1453,7 +1413,7 @@ function transformChildStyle(child, parent) {
     emptyStyle.dataset.id = dataSetUId + '--style';
     emptyStyle.dataset.owner = dataSetUId; //parent.cmp.tag;
 
-    if (tagByData) emptyStyle.dataset.ownerByData = tagByData;
+    emptyStyle.dataset.ownerByData = tagByData;
 
     child.parentNode.replaceChild(emptyStyle, child);
     child = emptyStyle.nextSibling;
@@ -1696,10 +1656,10 @@ module.exports = html;
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
 
-function composeStyleInner(cssContent, tag, tagByData) {
+function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
 
-    tag = tagByData || tag;
+    //tag = tagByData || tag;
 
     var sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
@@ -3136,10 +3096,10 @@ module.exports = bind;
 var composeStyleInner = __webpack_require__(9);
 var createStyle = __webpack_require__(26);
 
-function scopedInner(cssContent, tag, tagByData) {
+function scopedInner(cssContent, uId, tag) {
     if (typeof cssContent !== 'string') return;
-    cssContent = composeStyleInner(cssContent, tag, tagByData);
-    return createStyle(cssContent, tag);
+    cssContent = composeStyleInner(cssContent, tag);
+    return createStyle(cssContent, uId);
 }
 
 module.exports = {
@@ -3153,9 +3113,9 @@ module.exports = {
 "use strict";
 
 
-function createStyle(cssContent, tag) {
+function createStyle(cssContent, uId) {
     var result = void 0;
-    var styleId = tag + '--style';
+    var styleId = uId + '--style';
     var styleExists = document.getElementById(styleId);
 
     if (styleExists) {
@@ -4084,8 +4044,6 @@ var _require = __webpack_require__(0),
 
 var DOMManipulation = function () {
     function DOMManipulation() {
-        //this._deadChildren = [];
-
         _classCallCheck(this, DOMManipulation);
     }
 
@@ -4107,7 +4065,7 @@ var DOMManipulation = function () {
                 if ($parent.nodeName === 'SCRIPT') {
                     // it could be heavy
                     if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                        document.getElementById($parent.dataset.id).textContent = composeStyleInner($oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
+                        document.getElementById($parent.dataset.id).textContent = composeStyleInner($oldElement.textContent, $parent.dataset.ownerByData);
                     }
                 }
                 return $oldElement;
@@ -4119,13 +4077,8 @@ var DOMManipulation = function () {
 
         // noinspection JSMethodCanBeStatic
         value: function $$afterNodeChange($newElement, $oldElement) {
-            // Destroy component
-            /*if($oldElement && $oldElement.firstChild && $oldElement.firstChild[CMP_INSTANCE]) {
-                $oldElement.firstChild[CMP_INSTANCE].destroy(true);
-            }*/
             //Re-assign CMP INSTANCE to new element
             if ($oldElement[CMP_INSTANCE]) {
-                console.log('sostituisco');
                 $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
                 $newElement[CMP_INSTANCE]._rootElement = $newElement;
                 $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
@@ -4181,10 +4134,8 @@ var DOMManipulation = function () {
     }, {
         key: '$$afterAttributeCreate',
         value: function $$afterAttributeCreate($target, name, value, nodeProps) {
-            //console.log(nodeProps)
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
-                //bindValue = nodeProps[value];
                 bindValue = this.props[value];
             }
             if (nodeProps) this._setRef($target, name, nodeProps[name]);

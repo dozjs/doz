@@ -8,10 +8,6 @@ const {INSTANCE, CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 
 class DOMManipulation {
 
-    constructor() {
-        //this._deadChildren = [];
-    }
-
     $$afterNodeElementCreate($el, node, initial) {
         if (typeof $el.hasAttribute === 'function')
             if ((node.type.indexOf('-') !== -1
@@ -28,7 +24,7 @@ class DOMManipulation {
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner($oldElement.textContent, $parent.dataset.owner, $parent.dataset.ownerByData);
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner($oldElement.textContent, $parent.dataset.ownerByData);
                 }
             }
             return $oldElement;
@@ -37,13 +33,8 @@ class DOMManipulation {
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
-        // Destroy component
-        /*if($oldElement && $oldElement.firstChild && $oldElement.firstChild[CMP_INSTANCE]) {
-            $oldElement.firstChild[CMP_INSTANCE].destroy(true);
-        }*/
         //Re-assign CMP INSTANCE to new element
         if ($oldElement[CMP_INSTANCE]) {
-            console.log('sostituisco')
             $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
             $newElement[CMP_INSTANCE]._rootElement = $newElement;
             $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
@@ -83,10 +74,8 @@ class DOMManipulation {
     }
 
     $$afterAttributeCreate($target, name, value, nodeProps) {
-        //console.log(nodeProps)
         let bindValue;
         if (this._setBind($target, name, value)) {
-            //bindValue = nodeProps[value];
             bindValue = this.props[value];
         }
         if (nodeProps)

@@ -6,10 +6,10 @@
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
 
-function composeStyleInner(cssContent, tag, tagByData) {
+function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
 
-    tag = tagByData || tag;
+    //tag = tagByData || tag;
 
     let sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 

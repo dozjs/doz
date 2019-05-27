@@ -208,7 +208,7 @@ class Component extends DOMManipulation {
 
         let candidateKeyToRemove;
         let thereIsDelete = false;
-        changes.forEach((change, i) => {
+        changes.forEach((change) => {
             //console.log(change, i);
             // Trova la presunta chiave da eliminare
             if (Array.isArray(change.target)) {
@@ -227,6 +227,7 @@ class Component extends DOMManipulation {
             ) {
                 change.previousValue.forEach(item => {
                     if (item && typeof item === 'object' && item.key !== undefined) {
+                        console.log(this._nodesOfArray)
                         if(this._nodesOfArray[item.key][INSTANCE]) {
                             this._nodesOfArray[item.key][INSTANCE].destroy();
                         } else {
@@ -236,8 +237,6 @@ class Component extends DOMManipulation {
                 });
             }
         });
-
-        //console.log('candidateKeyToRemove', candidateKeyToRemove);
 
         if (!thereIsDelete)
             candidateKeyToRemove = undefined;
@@ -484,10 +483,6 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
-        _nodesOfArrayPrefix: {
-            value: [],
-            enumerable: true
-        },
 
         //Public
         tag: {
@@ -498,10 +493,6 @@ function defineProperties(obj, opt) {
             value: opt.app,
             enumerable: true
         },
-        /*uId: {
-            value: opt.app.generateUId(obj),
-            enumerable: true
-        },*/
         parent: {
             value: opt.parentCmp,
             enumerable: true,
@@ -566,20 +557,12 @@ function defineProperties(obj, opt) {
 }
 
 function drawDynamic(instance) {
-    //clearDynamic(instance);
 
     let index = instance._processing.length - 1;
 
     while (index >= 0) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
-
-        /*if (item.node[INSTANCE]) {
-            if(item[INSTANCE].props.dataKey === undefined)
-                item.node[INSTANCE].destroy(true);
-        }*/
-
-        //console.log('drawDynamic', item.node)
 
         if (!item.node.childNodes.length) {
 
@@ -591,38 +574,20 @@ function drawDynamic(instance) {
             });
 
             if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
                 let n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;
                 instance._nodesOfArray[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
-                //console.log(instance._nodesOfArray)
             }
         }
         index -= 1;
     }
 }
-/*
-function clearDynamic(instance) {
-    let index = instance._dynamicChildren.length - 1;
 
-    while (index >= 0) {
-        let item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            if (item[INSTANCE].props.dataKey === undefined)
-                item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
-        }
-        index -= 1;
-    }
-}
-*/
 module.exports = {
     Component,
     defineProperties,
-    //clearDynamic,
     drawDynamic
 };

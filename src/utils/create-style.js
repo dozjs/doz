@@ -1,6 +1,6 @@
-function createStyle(cssContent, tag) {
+function createStyle(cssContent, uId) {
     let result;
-    const styleId = `${tag}--style`;
+    const styleId = `${uId}--style`;
     const styleExists = document.getElementById(styleId);
 
     if (styleExists) {
