@@ -174,19 +174,6 @@ module.exports = {
 "use strict";
 
 
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var data = __webpack_require__(27);
 
 /**
@@ -237,13 +224,26 @@ module.exports = {
 };
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -698,8 +698,9 @@ var localMixin = __webpack_require__(45);
 
 var _require2 = __webpack_require__(4),
     compile = _require2.compile;
+//const delay = require('../utils/delay');
 
-var delay = __webpack_require__(1);
+
 var propsInit = __webpack_require__(19);
 
 var _require3 = __webpack_require__(12),
@@ -1362,7 +1363,7 @@ var _require2 = __webpack_require__(0),
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
-var collection = __webpack_require__(2);
+var collection = __webpack_require__(1);
 var hooks = __webpack_require__(3);
 
 var _require3 = __webpack_require__(4),
@@ -1723,7 +1724,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
@@ -2635,7 +2636,7 @@ module.exports = propsInit;
 "use strict";
 
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     registerPlugin = _require.registerPlugin,
     data = _require.data;
 
@@ -2685,7 +2686,7 @@ module.exports = __webpack_require__(22);
 
 
 var Doz = __webpack_require__(23);
-var collection = __webpack_require__(2);
+var collection = __webpack_require__(1);
 
 var _require = __webpack_require__(20),
     use = _require.use;
@@ -3369,7 +3370,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function propsListener(instance, changes) {
 
@@ -4031,7 +4032,7 @@ var composeStyleInner = __webpack_require__(9);
 var camelToDash = __webpack_require__(15);
 var dashToCamel = __webpack_require__(10);
 var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
@@ -4288,7 +4289,7 @@ module.exports = DOMManipulation;
 "use strict";
 
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),
