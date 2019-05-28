@@ -260,7 +260,7 @@ class Component extends DOMManipulation {
         }
 
         hooks.callAfterRender(this);
-        drawDynamic(this)
+        drawDynamic(this);
         /*if (initial) {
             drawDynamic(this);
         } else {
