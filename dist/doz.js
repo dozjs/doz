@@ -919,14 +919,14 @@ var Component = function (_DOMManipulation) {
                     this._rootElement = rootElement;
                     this._parentElement = rootElement.parentNode;
                 }
+                this._prev = next;
             }
 
-            this._prev = next;
             hooks.callAfterRender(this);
-            //drawDynamic(this)
-            //if (initial) {
             drawDynamic(this);
-            /*} else {
+            /*if (initial) {
+                drawDynamic(this);
+            } else {
                 delay(() => drawDynamic(this));
             }*/
         }
@@ -1041,7 +1041,7 @@ var Component = function (_DOMManipulation) {
 
             if (this.unmount(onlyInstance, true) === false) return;
 
-            if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
+            if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
                 return;
             }
 
