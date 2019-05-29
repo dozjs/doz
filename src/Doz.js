@@ -239,9 +239,7 @@ class Doz {
     }
 
     generateUId() {
-        //let uId = this._lastUId++;
-        //this._componentsByUId[uId] = component;
-        return this._lastUId++;
+        return ++this._lastUId;
     }
 }
 

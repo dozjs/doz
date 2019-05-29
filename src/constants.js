@@ -41,6 +41,8 @@ module.exports = {
         BIND: 'd-bind',
         REF: 'd-ref',
         IS: 'd-is',
+        // Attributes for both
+        KEY: 'd-key',
         // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',

@@ -1,4 +1,4 @@
-const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
+const {TAG, CMP_INSTANCE, INSTANCE, REGEX, ATTR} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -225,12 +225,11 @@ class Component extends DOMManipulation {
                 || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
             ) {
                 change.previousValue.forEach(item => {
-                    if (item && typeof item === 'object' && item.key !== undefined && this._nodesOfArray[item.key] !== undefined) {
-                        //console.log(this._nodesOfArray)
-                        if(this._nodesOfArray[item.key][INSTANCE]) {
-                            this._nodesOfArray[item.key][INSTANCE].destroy();
+                    if (item && typeof item === 'object' && item.key !== undefined && this._dynamicNodes[item.key] !== undefined) {
+                        if(this._dynamicNodes[item.key][INSTANCE]) {
+                            this._dynamicNodes[item.key][INSTANCE].destroy();
                         } else {
-                            this._nodesOfArray[item.key].parentNode.removeChild(this._nodesOfArray[item.key]);
+                            this._dynamicNodes[item.key].parentNode.removeChild(this._dynamicNodes[item.key]);
                         }
                     }
                 });
@@ -240,11 +239,11 @@ class Component extends DOMManipulation {
         if (!thereIsDelete)
             candidateKeyToRemove = undefined;
 
-        if (candidateKeyToRemove !== undefined && this._nodesOfArray[candidateKeyToRemove] !== undefined) {
-            if(this._nodesOfArray[candidateKeyToRemove][INSTANCE]) {
-                this._nodesOfArray[candidateKeyToRemove][INSTANCE].destroy();
+        if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
+            if(this._dynamicNodes[candidateKeyToRemove][INSTANCE]) {
+                this._dynamicNodes[candidateKeyToRemove][INSTANCE].destroy();
             } else {
-                this._nodesOfArray[candidateKeyToRemove].parentNode.removeChild(this._nodesOfArray[candidateKeyToRemove]);
+                this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
             }
         } else {
             const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
@@ -479,7 +478,7 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
-        _nodesOfArray: {
+        _dynamicNodes: {
             value: {},
             enumerable: true
         },
@@ -566,6 +565,11 @@ function drawDynamic(instance) {
 
         if (!item.node.childNodes.length) {
 
+            if (item.node.hasAttribute(ATTR.KEY)) {
+                item.node.dataset.key = item.node.getAttribute(ATTR.KEY);
+                item.node.removeAttribute(ATTR.KEY);
+            }
+
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
@@ -579,7 +583,7 @@ function drawDynamic(instance) {
                 instance._processing.splice(index, 1);
                 let n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;
-                instance._nodesOfArray[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
             }
         }
         index -= 1;

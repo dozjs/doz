@@ -124,6 +124,8 @@ module.exports = {
         BIND: 'd-bind',
         REF: 'd-ref',
         IS: 'd-is',
+        // Attributes for both
+        KEY: 'd-key',
         // Attributes for Components
         ALIAS: 'd:alias',
         STORE: 'd:store',
@@ -677,7 +679,8 @@ var _require = __webpack_require__(0),
     TAG = _require.TAG,
     CMP_INSTANCE = _require.CMP_INSTANCE,
     INSTANCE = _require.INSTANCE,
-    REGEX = _require.REGEX;
+    REGEX = _require.REGEX,
+    ATTR = _require.ATTR;
 
 var observer = __webpack_require__(30);
 var hooks = __webpack_require__(3);
@@ -880,12 +883,12 @@ var Component = function (_DOMManipulation) {
                 // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
                 if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
                     var _defined2 = function _defined2(item) {
-                        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._nodesOfArray[item.key] !== undefined) {
-                            //console.log(this._nodesOfArray)
-                            if (_this2._nodesOfArray[item.key][INSTANCE]) {
-                                _this2._nodesOfArray[item.key][INSTANCE].destroy();
+                        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._dynamicNodes[item.key] !== undefined) {
+                            //console.log(this._dynamicNodes)
+                            if (_this2._dynamicNodes[item.key][INSTANCE]) {
+                                _this2._dynamicNodes[item.key][INSTANCE].destroy();
                             } else {
-                                _this2._nodesOfArray[item.key].parentNode.removeChild(_this2._nodesOfArray[item.key]);
+                                _this2._dynamicNodes[item.key].parentNode.removeChild(_this2._dynamicNodes[item.key]);
                             }
                         }
                     };
@@ -904,11 +907,11 @@ var Component = function (_DOMManipulation) {
 
             if (!thereIsDelete) candidateKeyToRemove = undefined;
 
-            if (candidateKeyToRemove !== undefined && this._nodesOfArray[candidateKeyToRemove] !== undefined) {
-                if (this._nodesOfArray[candidateKeyToRemove][INSTANCE]) {
-                    this._nodesOfArray[candidateKeyToRemove][INSTANCE].destroy();
+            if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
+                if (this._dynamicNodes[candidateKeyToRemove][INSTANCE]) {
+                    this._dynamicNodes[candidateKeyToRemove][INSTANCE].destroy();
                 } else {
-                    this._nodesOfArray[candidateKeyToRemove].parentNode.removeChild(this._nodesOfArray[candidateKeyToRemove]);
+                    this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
                 }
             } else {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
@@ -1224,7 +1227,7 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
-        _nodesOfArray: {
+        _dynamicNodes: {
             value: {},
             enumerable: true
         },
@@ -1311,6 +1314,11 @@ function drawDynamic(instance) {
 
         if (!item.node.childNodes.length) {
 
+            if (item.node.hasAttribute(ATTR.KEY)) {
+                item.node.dataset.key = item.node.getAttribute(ATTR.KEY);
+                item.node.removeAttribute(ATTR.KEY);
+            }
+
             var dynamicInstance = __webpack_require__(7).get({
                 root: root,
                 template: item.node.outerHTML,
@@ -1324,7 +1332,7 @@ function drawDynamic(instance) {
                 instance._processing.splice(index, 1);
                 var n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;
-                instance._nodesOfArray[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
             }
         }
         index -= 1;
@@ -3044,7 +3052,7 @@ var Doz = function () {
         value: function generateUId() {
             //let uId = this._lastUId++;
             //this._componentsByUId[uId] = component;
-            return this._lastUId++;
+            return ++this._lastUId;
         }
     }]);
 
