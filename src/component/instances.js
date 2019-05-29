@@ -26,20 +26,29 @@ function transformChildStyle(child, parent) {
     if (child.nodeName !== 'STYLE')
         return;
 
-    const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
-    let tagByData;
-    if (dataSetId)
-        tagByData = `[data-is="${dataSetId}"]`;
-    scopedInner(child.textContent, parent.cmp.tag, tagByData);
+    //const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
+    const dataSetUId = parent.cmp.uId;
+    //const dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
+    parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
+    //console.log(dataSetUId)
+
+    let tagByData = `[data-uid="${dataSetUId}"]`;
+
+    //scopedInner(child.textContent, parent.cmp.tag, tagByData);
+    scopedInner(child.textContent, dataSetUId, tagByData);
+
     const emptyStyle = document.createElement('script');
     emptyStyle.type = 'text/style';
     emptyStyle.textContent = ' ';
-    emptyStyle.dataset.id = parent.cmp.tag + '--style';
-    emptyStyle.dataset.owner = parent.cmp.tag;
-    if (tagByData)
-        emptyStyle.dataset.ownerByData = tagByData;
+    //emptyStyle.dataset.id = parent.cmp.tag + '--style';
+    emptyStyle.dataset.id = dataSetUId + '--style';
+    emptyStyle.dataset.owner = dataSetUId;//parent.cmp.tag;
+
+    emptyStyle.dataset.ownerByData = tagByData;
+
     child.parentNode.replaceChild(emptyStyle, child);
     child = emptyStyle.nextSibling;
+
     return child;
 }
 
@@ -59,8 +68,12 @@ function get(cfg = {}) {
     let isChildStyle;
     const trash = [];
 
+    //console.log(cfg.template);
+
     function walk($child, parent = {}) {
         while ($child) {
+
+            const uId = cfg.app.generateUId();
 
             isChildStyle = transformChildStyle($child, parent);
 
@@ -145,6 +158,10 @@ function get(cfg = {}) {
                 }
 
                 propsInit(newElement);
+
+                //$child.dataset.uid = uId;
+                Object.defineProperty(newElement, 'uId', {value: uId});
+
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {

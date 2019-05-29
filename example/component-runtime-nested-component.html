@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component at runtime</title>
+    <script src="../dist/doz.js?589654804884"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            height: 50px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Component at runtime</h1>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('fist-component', {
+        template(h) {
+            return h`
+                <button forceupdate onclick="this.drawOther()">Mount</i></button>
+                <button forceupdate onclick="this.removeOther()">Destroy</i></button>
+            `;
+        },
+        drawOther() {
+            if (this.other) return;
+            this.other = this.mount(`
+                <div>
+                    <button-component/>
+                </div>
+            `);
+
+            console.log('component mounted');
+            this.other.onDestroy = function () {
+                console.log('component destroyed');
+            };
+        },
+        removeOther() {
+            if (this.other) {
+                this.other.destroy();
+                this.other = null;
+            }
+        }
+    });
+
+    Doz.component('button-component', {
+        onCreate() {
+            console.log(this.parent.tag)
+        },
+        props: {
+            state: false
+        },
+        template(h) {
+            return h`
+                <style>
+                    button {
+                        background: red;
+                    }
+                </style>
+                <button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>
+                <label-component/>
+            `;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        },
+        onDestroy() {
+
+        }
+    });
+
+    Doz.component('label-component', {
+        onCreate() {
+            console.log(this.parent.tag)
+        },
+        props: {
+            state: false
+        },
+        template(h) {
+            return h`
+                <style>
+                    label {
+                        background: greenyellow;
+                    }
+                </style>
+                <label>Hello</label>
+            `;
+        },
+        onDestroy() {
+
+        }
+    });
+
+
+    new Doz({
+        root: '#app',
+        template: `<fist-component/>`
+    });
+
+</script>
+</body>
+</html>

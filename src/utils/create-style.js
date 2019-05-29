@@ -1,7 +1,7 @@
-function createStyle(cssContent, tag) {
+function createStyle(cssContent, uId) {
     let result;
-    const styleId = `${tag}--style`;
-    const styleExists = document.querySelector(`#${styleId}`);
+    const styleId = `${uId}--style`;
+    const styleExists = document.getElementById(styleId);
 
     if (styleExists) {
         result = styleExists.innerHTML = cssContent;

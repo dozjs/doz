@@ -7,7 +7,7 @@ const manipulate = require('./manipulate');
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
-    instance.render();
+    instance.render(undefined, changes);
     updateBoundElementsByChanges(instance, changes);
 }
 
@@ -20,7 +20,7 @@ function create(instance) {
         recreate = true;
     }
 
-    instance._props = proxy.create(instance._rawProps, null,
+    instance._props = proxy.create(instance._rawProps, true,
         changes => {
             if (!instance._isRendered) return;
 

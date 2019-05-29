@@ -1,4 +1,4 @@
-const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
+const {TAG, CMP_INSTANCE, INSTANCE, REGEX, ATTR} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -16,7 +16,7 @@ const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 const localMixin = require('./local-mixin');
 const {compile} = require('../vdom/parser');
-const delay = require('../utils/delay');
+//const delay = require('../utils/delay');
 const propsInit = require('./props-init');
 const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 const DOMManipulation = require('./DOMManipulation');
@@ -77,7 +77,7 @@ class Component extends DOMManipulation {
         if (typeof props === 'function')
             props = props();
 
-        this._rawProps = Object.assign({}, props,this._opt ? this._opt.props : {});
+        this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
         store.sync(this);
     }
@@ -165,7 +165,7 @@ class Component extends DOMManipulation {
         let res;
         if (Array.isArray(obj)) {
             if (safe) this.beginSafeRender();
-            res = obj.map(func).map(stringEl => {
+            res = obj.map(func).map((stringEl, i) => {
                 if (typeof stringEl === 'string') {
                     return stringEl.trim()
                 }
@@ -175,6 +175,7 @@ class Component extends DOMManipulation {
         return res;
     }
 
+    // noinspection JSMethodCanBeStatic
     toStyle(obj) {
         return toInlineStyle(obj)
     }
@@ -191,11 +192,12 @@ class Component extends DOMManipulation {
         return this.app.getComponentById(id);
     }
 
+    // noinspection JSMethodCanBeStatic
     template() {
         return '';
     }
 
-    render(initial) {
+    render(initial, changes = []) {
         if (this._renderPause) return;
         this.beginSafeRender();
         const template = this.template(h);
@@ -204,24 +206,65 @@ class Component extends DOMManipulation {
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
-        const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+        let candidateKeyToRemove;
+        let thereIsDelete = false;
+        changes.forEach((change) => {
+            // Trova la presunta chiave da eliminare
+            if (Array.isArray(change.target)) {
+                if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+                    if (change.previousValue && typeof change.previousValue === 'object' && change.previousValue.key !== undefined) {
+                        candidateKeyToRemove = change.previousValue.key;
+                    }
+                }
+                if (change.type === 'delete')
+                    thereIsDelete = true;
+            }
 
-        //Remove attributes from component tag
-        removeAllAttributes(this._cfgRoot, ['data-is']);
+            // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+            if (candidateKeyToRemove === undefined && (Array.isArray(change.previousValue) && !Array.isArray(change.newValue))
+                || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
+            ) {
+                change.previousValue.forEach(item => {
+                    if (item && typeof item === 'object' && item.key !== undefined && this._dynamicNodes[item.key] !== undefined) {
+                        if(this._dynamicNodes[item.key][INSTANCE]) {
+                            this._dynamicNodes[item.key][INSTANCE].destroy();
+                        } else {
+                            this._dynamicNodes[item.key].parentNode.removeChild(this._dynamicNodes[item.key]);
+                        }
+                    }
+                });
+            }
+        });
 
-        if (!this._rootElement && rootElement) {
-            this._rootElement = rootElement;
-            this._parentElement = rootElement.parentNode;
+        if (!thereIsDelete)
+            candidateKeyToRemove = undefined;
+
+        if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
+            if(this._dynamicNodes[candidateKeyToRemove][INSTANCE]) {
+                this._dynamicNodes[candidateKeyToRemove][INSTANCE].destroy();
+            } else {
+                this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
+            }
+        } else {
+            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+
+            //Remove attributes from component tag
+            removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
+
+            if (!this._rootElement && rootElement) {
+                this._rootElement = rootElement;
+                this._parentElement = rootElement.parentNode;
+            }
+            this._prev = next;
         }
-
-        this._prev = next;
 
         hooks.callAfterRender(this);
-        if (initial) {
+        drawDynamic(this);
+        /*if (initial) {
             drawDynamic(this);
-        }else {
+        } else {
             delay(() => drawDynamic(this));
-        }
+        }*/
     }
 
     renderPause() {
@@ -294,8 +337,10 @@ class Component extends DOMManipulation {
 
         if (!onlyInstance) {
             this._rootElement.parentNode.parentNode.replaceChild(this._unmountedPlaceholder, this._unmountedParentNode);
-        } else if (this._rootElement.parentNode)
-            this._rootElement.parentNode.innerHTML = '';
+        } else if (this._rootElement.parentNode) {
+            //this._rootElement.parentNode.innerHTML = '';
+            this._rootElement.parentNode.parentNode.removeChild(this._rootElement.parentNode);
+        }
 
         this._unmounted = !byDestroy;
 
@@ -314,7 +359,7 @@ class Component extends DOMManipulation {
         if (this.unmount(onlyInstance, true) === false)
             return;
 
-        if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false || !this._rootElement.parentNode)) {
+        if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
             return;
         }
 
@@ -433,6 +478,10 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
+        _dynamicNodes: {
+            value: {},
+            enumerable: true
+        },
 
         //Public
         tag: {
@@ -441,10 +490,6 @@ function defineProperties(obj, opt) {
         },
         app: {
             value: opt.app,
-            enumerable: true
-        },
-        internalId: {
-            value: opt.app.generateInternalId(obj),
             enumerable: true
         },
         parent: {
@@ -511,7 +556,6 @@ function defineProperties(obj, opt) {
 }
 
 function drawDynamic(instance) {
-    clearDynamic(instance);
 
     let index = instance._processing.length - 1;
 
@@ -519,11 +563,13 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        if (item.node[INSTANCE]) {
-            item.node[INSTANCE].destroy(true);
-        }
-
         if (!item.node.childNodes.length) {
+
+            if (item.node.hasAttribute(ATTR.KEY)) {
+                item.node.dataset.key = item.node.getAttribute(ATTR.KEY);
+                item.node.removeAttribute(ATTR.KEY);
+            }
+
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
@@ -532,25 +578,13 @@ function drawDynamic(instance) {
             });
 
             if (dynamicInstance) {
-                instance._dynamicChildren.push(dynamicInstance._rootElement.parentNode);
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
+                let n = Object.keys(instance.children).length;
+                instance.children[n++] = dynamicInstance;
+                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
             }
-        }
-        index -= 1;
-    }
-}
-
-function clearDynamic(instance) {
-    let index = instance._dynamicChildren.length - 1;
-
-    while (index >= 0) {
-        let item = instance._dynamicChildren[index];
-
-        if (!document.body.contains(item) && item[INSTANCE]) {
-            item[INSTANCE].destroy(true);
-            instance._dynamicChildren.splice(index, 1);
         }
         index -= 1;
     }
@@ -559,6 +593,5 @@ function clearDynamic(instance) {
 module.exports = {
     Component,
     defineProperties,
-    clearDynamic,
     drawDynamic
 };

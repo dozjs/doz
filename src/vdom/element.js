@@ -69,7 +69,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
-
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
@@ -86,6 +85,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (newNode.type) {
         // walk node
+
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -93,7 +93,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             cmp
         );
 
-        if(cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
+        if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
