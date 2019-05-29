@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.19.0] - 2019-05-29
+- **Added** directive `d-key` for loops
+- **Added** `uId` property
+- **Fixed** possible wrong destroy components
+- **Improved** scoped style, now creates a style for each component instance
+
 ## [1.18.3] - 2019-05-23
 - **Fixed** empty initial input when use d-bind
 
