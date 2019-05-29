@@ -1315,12 +1315,15 @@ Doz.component('my-list', {
     props: {
         colors: [
             {
+                id: 1,
                 name: 'Red'
             },
             {
+                id: 2,
                 name: 'Green'
             },
             {
+                id: 3,
                 name: 'Orange'
             }
         ]
@@ -1329,7 +1332,7 @@ Doz.component('my-list', {
         return h`
             <ul>
                 ${this.each(this.props.colors, (color,  i) => h`
-                    <li>${i}) ${color.name}</li>
+                    <li d-key="${color.id}">${i}) ${color.name}</li>
                 `)}
             </ul>
         `
@@ -1346,6 +1349,8 @@ new Doz({
     }
 });
 ```
+
+**Important** The directive `d-key` help Doz identify which items have changed, are added, or are removed.
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
 
@@ -1402,18 +1407,20 @@ new Doz({
     root: '#app',
     template(h) {
         return h`
-            <my-salutation></my-salutation>
+            <my-salutation/>
         `
     }
 });
 ```
 
-> **Psss**, Doz adds a simple prefix like tag component to every rule and inject the style in to DOM in this way:
+**Since 1.19.0**
+
+> Doz adds a data-uid (unique ID) attribute to node HTML of component and inject the style in to DOM in this way:
 
 ```
 <head>
 ...
- <style> my-component .myClass{color:#000}</style>
+ <style> [data-uid="1"] .myClass{color:#000}</style>
 </head>
 ```
 
