@@ -108,9 +108,18 @@ function compile(data) {
                     currentParent = last(stack);
                 }
             }
+
+            // Replace KEY attribute with a dataset
+            if (props[ATTR.KEY] !== undefined) {
+                props['data-key'] = props[ATTR.KEY];
+                delete props[ATTR.KEY];
+            }
+
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
                 currentParent.childrenHasKey = true;
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+
             stack.push(currentParent);
         }
 

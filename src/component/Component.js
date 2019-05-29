@@ -1,4 +1,4 @@
-const {TAG, CMP_INSTANCE, INSTANCE, REGEX, ATTR} = require('../constants');
+const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -564,11 +564,6 @@ function drawDynamic(instance) {
         let root = item.node.parentNode;
 
         if (!item.node.childNodes.length) {
-
-            if (item.node.hasAttribute(ATTR.KEY)) {
-                item.node.dataset.key = item.node.getAttribute(ATTR.KEY);
-                item.node.removeAttribute(ATTR.KEY);
-            }
 
             const dynamicInstance = require('./instances').get({
                 root,

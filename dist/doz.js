@@ -545,8 +545,17 @@ function compile(data) {
                     currentParent = last(stack);
                 }
             }
+
+            // Replace KEY attribute with a dataset
+            if (props[ATTR.KEY] !== undefined) {
+                props['data-key'] = props[ATTR.KEY];
+                delete props[ATTR.KEY];
+            }
+
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+
             stack.push(currentParent);
         }
 
@@ -679,8 +688,7 @@ var _require = __webpack_require__(0),
     TAG = _require.TAG,
     CMP_INSTANCE = _require.CMP_INSTANCE,
     INSTANCE = _require.INSTANCE,
-    REGEX = _require.REGEX,
-    ATTR = _require.ATTR;
+    REGEX = _require.REGEX;
 
 var observer = __webpack_require__(30);
 var hooks = __webpack_require__(3);
@@ -884,7 +892,6 @@ var Component = function (_DOMManipulation) {
                 if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
                     var _defined2 = function _defined2(item) {
                         if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._dynamicNodes[item.key] !== undefined) {
-                            //console.log(this._dynamicNodes)
                             if (_this2._dynamicNodes[item.key][INSTANCE]) {
                                 _this2._dynamicNodes[item.key][INSTANCE].destroy();
                             } else {
@@ -1313,11 +1320,6 @@ function drawDynamic(instance) {
         var root = item.node.parentNode;
 
         if (!item.node.childNodes.length) {
-
-            if (item.node.hasAttribute(ATTR.KEY)) {
-                item.node.dataset.key = item.node.getAttribute(ATTR.KEY);
-                item.node.removeAttribute(ATTR.KEY);
-            }
 
             var dynamicInstance = __webpack_require__(7).get({
                 root: root,
@@ -3050,8 +3052,6 @@ var Doz = function () {
     }, {
         key: 'generateUId',
         value: function generateUId() {
-            //let uId = this._lastUId++;
-            //this._componentsByUId[uId] = component;
             return ++this._lastUId;
         }
     }]);
