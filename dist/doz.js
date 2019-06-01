@@ -111,6 +111,7 @@ module.exports = {
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
         IS_CLASS: /^(class\s|function\s+_class)|(throw new TypeError\("Cannot call a class)/i,
+        IS_OBJECT_OR_ARRAY: /^{((\s+)?["']?.+["']?(\s+)?:(\s+)?["']?.+?["']?(\s+)?,?(\s+)?)+}|^\[.+]/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
@@ -630,6 +631,9 @@ module.exports = {
 "use strict";
 
 
+var _require = __webpack_require__(0),
+    REGEX = _require.REGEX;
+
 var test = {
     'undefined': undefined,
     'null': null,
@@ -641,16 +645,24 @@ var test = {
 };
 
 function castStringTo(obj) {
+
     if (typeof obj !== 'string') {
         return obj;
     }
 
     if (test.hasOwnProperty(obj)) {
         return test[obj];
-    } else if (/^[{\[]/.test(obj)) {
+        /*} else if (/^[{\[]/.test(obj)) {
+            try {
+                return JSON.parse(obj)
+            } catch (e) {
+            }*/
+    } else if (REGEX.IS_OBJECT_OR_ARRAY.test(obj)) {
         try {
-            return JSON.parse(obj);
+            return eval('var o; o=' + obj);
         } catch (e) {}
+    } else if (/^0{2,}/.test(obj)) {
+        return obj;
     } else if (/^[0-9]/.test(obj)) {
         var num = parseFloat(obj);
         if (!isNaN(num)) {
