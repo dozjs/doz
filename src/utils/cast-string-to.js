@@ -1,14 +1,8 @@
-const {REGEX} = require('../constants');
-
-const test = {
-    'undefined': undefined,
-    'null': null,
-    'NaN': NaN,
-    'Infinity': Infinity,
-    'true': true,
-    'false': false,
-    '0': 0
-};
+const isJSON = require('./is-json');
+const isNumber = require('./is-number');
+const toJSON = require('./to-json');
+const toNumber = require('./to-number');
+const typesMap = require('./types-map');
 
 function castStringTo(obj) {
 
@@ -16,32 +10,16 @@ function castStringTo(obj) {
         return obj;
     }
 
-    if (test.hasOwnProperty(obj)) {
-        return test[obj];
-        /*} else if (/^[{\[]/.test(obj)) {
-            try {
-                return JSON.parse(obj)
-            } catch (e) {
-            }*/
-    } else if (REGEX.IS_OBJECT_OR_ARRAY.test(obj)) {
-        try {
-            return eval('var o; o=' + obj)
-        } catch (e) {
-        }
-    } else if (/^0{2,}/.test(obj)) {
-        return obj;
-    } else if(/^[0-9]/.test(obj)) {
-        const num = parseFloat(obj);
-        if (!isNaN(num)) {
-            if (isFinite(obj)) {
-                if (obj.toLowerCase().indexOf('0x') === 0) {
-                    return parseInt(obj, 16);
-                }
-                return num;
-            }
-        }
+    if (typesMap.hasOwnProperty(obj)) {
+        return typesMap[obj];
+    } else if (isJSON(obj)) {
+        return toJSON(obj)
+    } else if (isNumber(obj)) {
+        return toNumber(obj);
     }
+
     return obj;
+
 }
 
 module.exports = castStringTo;

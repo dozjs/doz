@@ -55,7 +55,7 @@ class Element {
 
 }
 
-function compile(data) {
+function compile(data, cmp) {
 
     if (!data) return '';
 
@@ -98,7 +98,8 @@ function compile(data) {
                     match[0].substring(1, match[0].length-1),
                     attMatch[2],
                     props[attMatch[2]],
-                    props
+                    props,
+                    cmp
                 )
             }
 

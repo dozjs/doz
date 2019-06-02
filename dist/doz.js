@@ -111,7 +111,6 @@ module.exports = {
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
         IS_CLASS: /^(class\s|function\s+_class)|(throw new TypeError\("Cannot call a class)/i,
-        IS_OBJECT_OR_ARRAY: /^{((\s+)?["']?.+["']?(\s+)?:(\s+)?["']?.+?["']?(\s+)?,?(\s+)?)+}|^\[.+]/,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
@@ -499,7 +498,7 @@ var Element = function () {
     return Element;
 }();
 
-function compile(data) {
+function compile(data, cmp) {
 
     if (!data) return '';
 
@@ -537,7 +536,7 @@ function compile(data) {
             props = {};
             for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props);
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, cmp);
             }
 
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
@@ -631,18 +630,11 @@ module.exports = {
 "use strict";
 
 
-var _require = __webpack_require__(0),
-    REGEX = _require.REGEX;
-
-var test = {
-    'undefined': undefined,
-    'null': null,
-    'NaN': NaN,
-    'Infinity': Infinity,
-    'true': true,
-    'false': false,
-    '0': 0
-};
+var isJSON = __webpack_require__(49);
+var isNumber = __webpack_require__(50);
+var toJSON = __webpack_require__(51);
+var toNumber = __webpack_require__(52);
+var typesMap = __webpack_require__(53);
 
 function castStringTo(obj) {
 
@@ -650,30 +642,14 @@ function castStringTo(obj) {
         return obj;
     }
 
-    if (test.hasOwnProperty(obj)) {
-        return test[obj];
-        /*} else if (/^[{\[]/.test(obj)) {
-            try {
-                return JSON.parse(obj)
-            } catch (e) {
-            }*/
-    } else if (REGEX.IS_OBJECT_OR_ARRAY.test(obj)) {
-        try {
-            return eval('var o; o=' + obj);
-        } catch (e) {}
-    } else if (/^0{2,}/.test(obj)) {
-        return obj;
-    } else if (/^[0-9]/.test(obj)) {
-        var num = parseFloat(obj);
-        if (!isNaN(num)) {
-            if (isFinite(obj)) {
-                if (obj.toLowerCase().indexOf('0x') === 0) {
-                    return parseInt(obj, 16);
-                }
-                return num;
-            }
-        }
+    if (typesMap.hasOwnProperty(obj)) {
+        return typesMap[obj];
+    } else if (isJSON(obj)) {
+        return toJSON(obj);
+    } else if (isNumber(obj)) {
+        return toNumber(obj);
     }
+
     return obj;
 }
 
@@ -882,7 +858,7 @@ var Component = function (_DOMManipulation) {
             this.beginSafeRender();
             var template = this.template(h);
             this.endSafeRender();
-            var next = compile(template);
+            var next = compile(template, this);
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
@@ -4354,6 +4330,82 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isJSON(obj) {
+    return (/^[{\[]/.test(obj)
+    );
+};
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isNumber(obj) {
+    if (/^0{2,}/.test(obj)) return false;
+    return (/^[0-9]/.test(obj)
+    );
+};
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function toJSON(obj) {
+    try {
+        return JSON.parse(obj);
+    } catch (e) {
+        return obj;
+    }
+};
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function toNumber(obj) {
+    var num = parseFloat(obj);
+    if (!isNaN(num)) {
+        if (isFinite(obj)) {
+            if (obj.toLowerCase().indexOf('0x') === 0) {
+                return parseInt(obj, 16);
+            }
+            return num;
+        }
+    }
+    return obj;
+};
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    'undefined': undefined,
+    'null': null,
+    'NaN': NaN,
+    'Infinity': Infinity,
+    'true': true,
+    'false': false
+};
 
 /***/ })
 /******/ ]);
