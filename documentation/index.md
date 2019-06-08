@@ -14,6 +14,7 @@ Below some basic concepts:
 - [Component definition](#component-definition)
     - [Props](#props)
     - [Props types](#props-types)
+        - [Types available](#types-available)
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
