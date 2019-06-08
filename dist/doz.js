@@ -245,38 +245,6 @@ module.exports = delay;
 "use strict";
 
 
-var isJSON = __webpack_require__(28);
-var isNumber = __webpack_require__(29);
-var toJSON = __webpack_require__(30);
-var toNumber = __webpack_require__(31);
-var typesMap = __webpack_require__(32);
-
-function castStringTo(obj) {
-
-    if (typeof obj !== 'string') {
-        return obj;
-    }
-
-    if (typesMap.hasOwnProperty(obj)) {
-        return typesMap[obj];
-    } else if (isJSON(obj)) {
-        return toJSON(obj);
-    } else if (isNumber(obj)) {
-        return toNumber(obj);
-    }
-
-    return obj;
-}
-
-module.exports = castStringTo;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var delay = __webpack_require__(2);
 
 function callBeforeCreate(context) {
@@ -452,7 +420,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -462,7 +430,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(3);
+var castStringTo = __webpack_require__(5);
 var dashToCamel = __webpack_require__(10);
 
 var _require = __webpack_require__(0),
@@ -656,6 +624,38 @@ module.exports = {
 };
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var isJSON = __webpack_require__(28);
+var isNumber = __webpack_require__(29);
+var toJSON = __webpack_require__(30);
+var toNumber = __webpack_require__(31);
+var typesMap = __webpack_require__(32);
+
+function castStringTo(obj) {
+
+    if (typeof obj !== 'string') {
+        return obj;
+    }
+
+    if (typesMap.hasOwnProperty(obj)) {
+        return typesMap[obj];
+    } else if (isJSON(obj)) {
+        return toJSON(obj);
+    } else if (isNumber(obj)) {
+        return toNumber(obj);
+    }
+
+    return obj;
+}
+
+module.exports = castStringTo;
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -679,7 +679,7 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(35);
-var hooks = __webpack_require__(4);
+var hooks = __webpack_require__(3);
 var update = __webpack_require__(38).updateElement;
 var store = __webpack_require__(42);
 var ids = __webpack_require__(43);
@@ -695,7 +695,7 @@ var h = __webpack_require__(17);
 var loadLocal = __webpack_require__(50);
 var localMixin = __webpack_require__(51);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(4),
     compile = _require2.compile;
 //const delay = require('../utils/delay');
 
@@ -1362,9 +1362,9 @@ var _require2 = __webpack_require__(0),
     REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(1);
-var hooks = __webpack_require__(4);
+var hooks = __webpack_require__(3);
 
-var _require3 = __webpack_require__(5),
+var _require3 = __webpack_require__(4),
     serializeProps = _require3.serializeProps;
 
 var _require4 = __webpack_require__(33),
@@ -2426,7 +2426,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(55);
+var castType = __webpack_require__(37);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2714,7 +2714,7 @@ var _require2 = __webpack_require__(6),
 var mixin = __webpack_require__(54);
 var h = __webpack_require__(17);
 
-var _require3 = __webpack_require__(5),
+var _require3 = __webpack_require__(4),
     compile = _require3.compile;
 
 Object.defineProperties(Doz, {
@@ -3396,7 +3396,7 @@ module.exports = hmr;
 
 
 var proxy = __webpack_require__(11);
-var events = __webpack_require__(4);
+var events = __webpack_require__(3);
 
 var _require = __webpack_require__(12),
     updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
@@ -3497,7 +3497,52 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 37 */,
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var types = {
+    string: function string(value) {
+        if (typeof value === 'string') return value;
+        return JSON.stringify(value);
+    },
+    number: function number(value) {
+        if (typeof value === 'number') return value;
+        return Number(value);
+    },
+    boolean: function boolean(value) {
+        if (typeof value === 'boolean') return value;else if (value === 'true' || value === 1) return true;else if (value === 'false' || value === 0) return false;else {
+            return !!value;
+        }
+    },
+    object: function object(value) {
+        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value) return value;
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return value;
+        }
+    },
+    array: function array(value) {
+        return this.object(value);
+    },
+    date: function date(value) {
+        if (value instanceof Date) return value;else return new Date(value);
+    }
+};
+
+module.exports = function castType(value, type) {
+    if (types[type] !== undefined) {
+        value = types[type](value);
+    }
+    return value;
+};
+
+/***/ }),
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3667,7 +3712,7 @@ var _require = __webpack_require__(0),
     CMP_INSTANCE = _require.CMP_INSTANCE,
     DIR_IS = _require.DIR_IS;
 
-var castStringTo = __webpack_require__(3);
+var castStringTo = __webpack_require__(5);
 var objectPath = __webpack_require__(41);
 
 function isEventAttribute(name) {
@@ -4123,7 +4168,7 @@ var canDecode = __webpack_require__(14);
 var composeStyleInner = __webpack_require__(9);
 var camelToDash = __webpack_require__(15);
 var dashToCamel = __webpack_require__(10);
-var castStringTo = __webpack_require__(3);
+var castStringTo = __webpack_require__(5);
 var delay = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
@@ -4426,52 +4471,6 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var types = {
-    string: function string(value) {
-        if (typeof value === 'string') return value;
-        return JSON.stringify(value);
-    },
-    number: function number(value) {
-        if (typeof value === 'number') return value;
-        return Number(value);
-    },
-    boolean: function boolean(value) {
-        if (typeof value === 'boolean') return value;else if (value === 'true' || value === 1) return true;else if (value === 'false' || value === 0) return false;else {
-            return !!value;
-        }
-    },
-    object: function object(value) {
-        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value) return value;
-        try {
-            return JSON.parse(value);
-        } catch (e) {
-            return value;
-        }
-    },
-    array: function array(value) {
-        return this.object(value);
-    },
-    date: function date(value) {
-        if (value instanceof Date) return value;else return new Date(value);
-    }
-};
-
-module.exports = function castType(value, type) {
-    if (types[type] !== undefined) {
-        value = types[type](value);
-    }
-    return value;
-};
 
 /***/ })
 /******/ ]);
