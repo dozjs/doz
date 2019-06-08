@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.20.0] - 2019-06-08
+- **Added** `propsType` object config, now it is possible define a type for each prop.
+- **Improved** auto-cast
+
 ## [1.19.0] - 2019-05-29
 - **Added** directive `d-key` for loops
 - **Added** `uId` property
