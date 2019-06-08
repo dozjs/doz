@@ -56,6 +56,11 @@ export default interface ConfigComponent {
     propsComputed?: object
 
     /**
+     * An object that defines the type for each prop.
+     */
+    propsType?: object
+
+    /**
      * If true, the manipulation operation will be performed on the read data. Default: false.
      */
     propsComputedOnFly?: boolean

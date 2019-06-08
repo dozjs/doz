@@ -13,6 +13,7 @@ Below some basic concepts:
 - [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
+    - [Props types](#props-types)
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
@@ -155,6 +156,46 @@ new Doz({
 [FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/3)
 
 ---
+
+### Props types
+
+**Since 1.20.0**
+
+When passing a prop via attribute, it is automatically converted to the most appropriate type. 
+The reason for this conversion is that all the attributes are strings. 
+Now, using the "propsType" object, you can define a type for each prop.
+
+```javascript
+Doz.component('my-types', {
+    propsType: {
+        myParam: 'string'
+    },
+    template() {
+        return `
+            <h3>This is number but string: ${this.props.myParam}</h3>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <my-types my-param="10"/>
+        `
+    }
+});
+```
+---
+
+#### Types available
+
+- `string`
+- `number`
+- `boolean`
+- `object`
+- `array`
+- `date`
 
 ### Props listener
 

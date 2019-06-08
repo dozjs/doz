@@ -149,6 +149,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: undefined
 - **Description**: Defines listeners for manipulation operation over props.
 
+### propsType
+
+- **Since**: 1.20.0
+- **Type**: `object`
+- **Default**: undefined
+- **Description**: Defines the type for each prop.
+
 ### propsConvertOnFly
 
 - **Since**: 1.13.0
