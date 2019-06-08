@@ -281,7 +281,12 @@
                 proxy.length = target.length;
                 return returnValue;
             };
-
+        } else if (proxy instanceof Date) {
+            Object
+                .getOwnPropertyNames(Date.prototype)
+                .forEach(function(k){
+                    Object.defineProperty(proxy, k, {get: getter.bind(target, k)});
+                });
         } else {
             // The Proxy polyfill cannot handle adding new properties. Seal the target and proxy.
             Object.seal(target);

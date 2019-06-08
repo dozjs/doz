@@ -42,7 +42,7 @@ describe('Doz.props-type', function () {
                         mzeromore="00"
                         mstring="Doz"
                         marray="[1, 2, 3]"
-                        mobject='{"a": 1, "b": 2, "c": 3}'
+                        mobject='{"a": 1, "b": 2, "c": 3, "d": [9,10]}'
                         mbooleantrue="true"
                         mbooleanfalse="false"
                     />
@@ -50,7 +50,7 @@ describe('Doz.props-type', function () {
             });
         });
 
-        it.skip('should be ok with type defined as string', function (done) {
+        it('should be ok with type defined as string', function (done) {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('my-cmp', {
@@ -64,7 +64,8 @@ describe('Doz.props-type', function () {
                     marray: 'string',
                     mobject: 'string',
                     mbooleantrue: 'string',
-                    mbooleanfalse: 'string'
+                    mbooleanfalse: 'string',
+                    mdate: 'date'
                 },
 
                 template() {
@@ -82,6 +83,7 @@ describe('Doz.props-type', function () {
                     be.err.string(this.props.mobject);
                     be.err.string(this.props.mbooleantrue);
                     be.err.string(this.props.mbooleanfalse);
+                    be.err.true(this.props.mdate instanceof Date);
                     done();
                 }
             });
@@ -95,9 +97,10 @@ describe('Doz.props-type', function () {
                         mzeromore="00"
                         mstring="Doz"
                         marray="[1, 2, 3]"
-                        mobject='{"a": 1, "b": 2, "c": 3}'
+                        mobject='{"a": 1, "b": 2, "c": 3, "d": [9,10]}'
                         mbooleantrue="true"
                         mbooleanfalse="false"
+                        mdate="2019-06-08"
                     />
                 `
             });

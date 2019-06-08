@@ -31,6 +31,8 @@ function create(instance) {
             } else {
                 runUpdate(instance, changes);
             }
+        }, (target, property) => {
+            target[property] = manipulate(instance, target[property], property);
         });
 
     proxy.manipulate(instance._props, (value, currentPath, onFly) => {

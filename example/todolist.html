@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p1234"></script>
+    <script src="../dist/doz.js?p1p4234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -151,6 +151,9 @@
     };
 
     Doz.component('doz-todo-item', {
+        propsType: {
+            title: 'string'
+        },
         onMount() {
             //console.log('parent', this)
         },
@@ -212,6 +215,10 @@
             todo: '',
             total: 0,
             totalDone: 0
+        },
+
+        propsType: {
+            todo: 'string'
         },
 
         onMount() {

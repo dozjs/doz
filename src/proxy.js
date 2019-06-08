@@ -130,6 +130,10 @@ const ObservableSlim = (function () {
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 let targetProp = target[property];
 
+                if (target instanceof Date && targetProp instanceof Function && targetProp !== null) {
+                    return targetProp.bind(target);
+                }
+
                 // if we are traversing into a new object, then we want to record path to that object and return a new observable.
                 // recursively returning a new observable allows us a single Observable.observe() to monitor all changes on
                 // the target object and any objects nested within.
@@ -461,7 +465,7 @@ const ObservableSlim = (function () {
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
          * @returns {Object}
          */
-        create: function (target, domDelay, observer) {
+        create: function (target, domDelay, observer, iterateBeforeCreate) {
 
             // test if the target is a Proxy, if it is then we need to retrieve the original object behind the Proxy.
             // we do not allow creating proxies of proxies because -- given the recursive design of ObservableSlim -- it would lead to sharp increases in memory usage
@@ -485,6 +489,9 @@ const ObservableSlim = (function () {
                 let keys = Object.keys(target);
                 for (let i = 0, l = keys.length; i < l; i++) {
                     let property = keys[i];
+                    if (typeof iterateBeforeCreate === 'function') {
+                        iterateBeforeCreate(target, property);
+                    }
                     if (target[property] instanceof Object && target[property] !== null) iterate(proxy[property]);
                 }
             })(proxy);

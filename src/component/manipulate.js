@@ -1,4 +1,14 @@
+const castType = require('./cast-type');
+
 function manipulate(instance, value, currentPath, onFly, init) {
+
+    if (typeof instance.propsType === 'object') {
+        const type = instance.propsType[currentPath];
+
+        if (type !== undefined) {
+            value = castType(value, type);
+        }
+    }
 
     if (init) {
         onFly = instance.propsConvertOnFly;
