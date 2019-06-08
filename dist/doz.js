@@ -2426,7 +2426,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(37);
+var castType = __webpack_require__(55);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -3497,52 +3497,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var types = {
-    string: function string(value) {
-        if (typeof value === 'string') return value;
-        return JSON.stringify(value);
-    },
-    number: function number(value) {
-        if (typeof value === 'number') return value;
-        return Number(value);
-    },
-    boolean: function boolean(value) {
-        if (typeof value === 'boolean') return value;else if (value === 'true' || value === 1) return true;else if (value === 'false' || value === 0) return false;else {
-            return !!value;
-        }
-    },
-    object: function object(value) {
-        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value) return value;
-        try {
-            return JSON.parse(value);
-        } catch (e) {
-            return value;
-        }
-    },
-    array: function array(value) {
-        return this.object(value);
-    },
-    date: function date(value) {
-        if (value instanceof Date) return value;else return new Date(value);
-    }
-};
-
-module.exports = function castType(value, type) {
-    if (types[type] !== undefined) {
-        value = types[type](value);
-    }
-    return value;
-};
-
-/***/ }),
+/* 37 */,
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4471,6 +4426,52 @@ function globalMixin(obj) {
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var types = {
+    string: function string(value) {
+        if (typeof value === 'string') return value;
+        return JSON.stringify(value);
+    },
+    number: function number(value) {
+        if (typeof value === 'number') return value;
+        return Number(value);
+    },
+    boolean: function boolean(value) {
+        if (typeof value === 'boolean') return value;else if (value === 'true' || value === 1) return true;else if (value === 'false' || value === 0) return false;else {
+            return !!value;
+        }
+    },
+    object: function object(value) {
+        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value) return value;
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return value;
+        }
+    },
+    array: function array(value) {
+        return this.object(value);
+    },
+    date: function date(value) {
+        if (value instanceof Date) return value;else return new Date(value);
+    }
+};
+
+module.exports = function castType(value, type) {
+    if (types[type] !== undefined) {
+        value = types[type](value);
+    }
+    return value;
+};
 
 /***/ })
 /******/ ]);
