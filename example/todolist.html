@@ -154,9 +154,6 @@
         propsType: {
             title: 'string'
         },
-        onMount() {
-            //console.log('parent', this)
-        },
         template(h) {
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
@@ -169,6 +166,7 @@
                             onkeypress="this.action.inputEnterPress(${this.props.id})"
                             style="display: none"
                             type="text"
+                            d-bind="title"
                         >
                     </span>
                 </div>
