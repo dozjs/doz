@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.20.1] - 2019-07-08
+- **Fixed** another possible error "Cannot call a class as a function" when using a component built with class pattern or single function
+
 ## [1.20.0] - 2019-06-08
 - **Added** `propsType` object config, now it is possible define a type for each prop.
 - **Improved** auto-cast
