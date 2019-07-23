@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.20.1  
+// [DOZ]  Build version: 1.20.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -110,7 +110,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_CLASS: /^(class\s|function\s+_class)|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
+        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
@@ -2751,7 +2751,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.20.1',
+        value: '1.20.2',
         enumerable: true
     }
 });
@@ -4285,7 +4285,7 @@ var DOMManipulation = function () {
         value: function $$afterAttributesCreate($target, bindValue) {
             if (typeof bindValue === 'undefined') return;
 
-            delay(function () {
+            setTimeout(function () {
                 var inputs = void 0;
                 var input = void 0;
                 if ($target.type === 'radio') {
@@ -4305,7 +4305,7 @@ var DOMManipulation = function () {
                 } else {
                     $target.value = bindValue;
                 }
-            });
+            }, 50);
         }
     }, {
         key: '$$afterAttributeUpdate',

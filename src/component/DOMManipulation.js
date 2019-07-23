@@ -88,7 +88,7 @@ class DOMManipulation {
         if (typeof bindValue === 'undefined')
             return;
 
-        delay(() => {
+        setTimeout(() => {
             let inputs;
             let input;
             if ($target.type === 'radio') {
@@ -109,7 +109,7 @@ class DOMManipulation {
             } else {
                 $target.value = bindValue;
             }
-        });
+        }, 50);
     }
 
     $$afterAttributeUpdate($target, name, value) {
