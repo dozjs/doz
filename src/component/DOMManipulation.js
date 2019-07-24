@@ -5,7 +5,7 @@ const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
 const {INSTANCE, CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
-const Spye = require('../utils/spye');
+//const Spye = require('../utils/spye');
 
 class DOMManipulation {
 
@@ -89,8 +89,7 @@ class DOMManipulation {
         if (typeof bindValue === 'undefined')
             return;
 
-        //setTimeout(() => {
-        new Spye($target, {unwatchAfterCreate: true}).onCreate(() => {
+        delay(() => {
             let inputs;
             let input;
             if ($target.type === 'radio') {
@@ -112,7 +111,6 @@ class DOMManipulation {
                 $target.value = bindValue;
             }
         });
-        //}, 50);
     }
 
     $$afterAttributeUpdate($target, name, value) {
