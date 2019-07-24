@@ -139,12 +139,12 @@
     Doz.component('search-page', {
         template() {
             return `
-                <div>I'm search page with query "${this.props.query}"</div>
+                <div>I'm search page with query "${this.props.element}"</div>
             `
         },
         onCreate() {
             console.log(this.getComponentById('router'))
-            this.props.query = this.getComponentById('router')._query['t'];
+            this.props.element = this.getComponentById('router')._query['t'];
             console.log(this.tag, 'created')
         },
         onDestroy() {

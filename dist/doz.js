@@ -2706,12 +2706,12 @@ var collection = __webpack_require__(1);
 var _require = __webpack_require__(20),
     use = _require.use;
 
-var component = __webpack_require__(53);
+var component = __webpack_require__(54);
 
 var _require2 = __webpack_require__(6),
     Component = _require2.Component;
 
-var mixin = __webpack_require__(54);
+var mixin = __webpack_require__(55);
 var h = __webpack_require__(17);
 
 var _require3 = __webpack_require__(4),
@@ -4178,6 +4178,8 @@ var _require = __webpack_require__(0),
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
 
+var Spye = __webpack_require__(53);
+
 var DOMManipulation = function () {
     function DOMManipulation() {
         _classCallCheck(this, DOMManipulation);
@@ -4285,7 +4287,8 @@ var DOMManipulation = function () {
         value: function $$afterAttributesCreate($target, bindValue) {
             if (typeof bindValue === 'undefined') return;
 
-            setTimeout(function () {
+            //setTimeout(() => {
+            new Spye($target, { unwatchAfterCreate: true }).onCreate(function () {
                 var inputs = void 0;
                 var input = void 0;
                 if ($target.type === 'radio') {
@@ -4305,7 +4308,8 @@ var DOMManipulation = function () {
                 } else {
                     $target.value = bindValue;
                 }
-            }, 50);
+            });
+            //}, 50);
         }
     }, {
         key: '$$afterAttributeUpdate',
@@ -4426,6 +4430,142 @@ module.exports = DOMManipulation;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @class
+ */
+var Spye = function () {
+
+    /**
+     * Create instance
+     * @param query {Object} element that you want watch
+     * @param [opts] {Object} configuration object
+     * @param [opts.autoWatch=true] {boolean} auto watch
+     * @param [opts.unwatchAfterCreate=false] {boolean} stop check after detect element creation
+     * @param [opts.unwatchAfterRemove=false] {boolean} stop check after detect element remove
+     */
+    function Spye(element) {
+        var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        _classCallCheck(this, Spye);
+
+        this.opts = Object.assign({}, {
+            autoWatch: true,
+            unwatchAfterCreate: false,
+            unwatchAfterRemove: false
+        }, opts);
+
+        this.element = element;
+
+        this._checkCount = 0;
+
+        this._created = null;
+
+        this._onCreate = function () {};
+
+        this._onRemove = function () {};
+
+        if (this.opts.autoWatch) this.watch();
+    }
+
+    /**
+     * Check
+     * @returns {Spye}
+     * @ignore
+     * @private
+     */
+
+
+    _createClass(Spye, [{
+        key: "check",
+        value: function check() {
+            ++this._checkCount;
+            var exists = document.body.contains(this.element);
+            if (exists && !this._created) {
+                this._created = true;
+                this._onCreate.call(null, this.element, this);
+                if (this.opts.unwatchAfterCreate) this.unwatch();
+            }
+            if (!exists && this._created) {
+                this._created = false;
+                this._onRemove.call(null, this);
+                if (this.opts.unwatchAfterRemove) this.unwatch();
+            }
+
+            return this;
+        }
+
+        /**
+         * Start watching
+         * @returns {Spye}
+         */
+
+    }, {
+        key: "watch",
+        value: function watch() {
+            var _this = this;
+
+            this._tick = requestAnimationFrame(function () {
+                _this.check();
+            });
+            return this;
+        }
+
+        /**
+         * Stop watching
+         * @returns {Spye}
+         */
+
+    }, {
+        key: "unwatch",
+        value: function unwatch() {
+            cancelAnimationFrame(this._tick);
+            this._tick = null;
+            return this;
+        }
+
+        /**
+         * Fired when element is created
+         * @param callback
+         * @returns {Spye}
+         */
+
+    }, {
+        key: "onCreate",
+        value: function onCreate(callback) {
+            this._onCreate = callback;
+            return this;
+        }
+
+        /**
+         * Fired when element is removed
+         * @param callback
+         * @returns {Spye}
+         */
+
+    }, {
+        key: "onRemove",
+        value: function onRemove(callback) {
+            this._onRemove = callback;
+            return this;
+        }
+    }]);
+
+    return Spye;
+}();
+
+module.exports = Spye;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _require = __webpack_require__(1),
     registerComponent = _require.registerComponent;
 
@@ -4455,7 +4595,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
