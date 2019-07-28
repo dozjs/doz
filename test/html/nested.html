@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589654888"></script>
+    <script src="../../dist/doz.js?589654t888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -49,12 +49,39 @@
             return h`
                 <x-cmp>
                     <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
-                    <x-cmp-2/>
+                    <x-cmp-2>
+                        ${this.props.linkName}
+                    </x-cmp-2>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
             `;
         }
+    }).on('draw', (next, prev, component) => {
+        walkChildren(next);
+        console.log(component.children[0].template(Doz.h));
+        console.log(component.children[0].children[0].template(Doz.h));
+        console.log(component.template(Doz.h));
+        //console.log(component.getHTMLElement().firstChild.outerHTML);
+        let nextCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
+        let prevCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
+
+        nextCompiled.children[0].children[2].children[0] = component.props.linkName;
+
+        //console.log({...next});
+        //console.log(compiledNext);
+
+        Object.assign(next, nextCompiled);
+        Object.assign(prev, prevCompiled);
+
     });
+
+    function walkChildren(next) {
+        // bisogna scorrere tutto next
+        // identificare il tag type,
+        // se è di tipo componente, allora devo cercare
+        // l'istanza e chiamare "template" dopodichè
+        // compilare e sostituire con questo compilato
+    }
 
 </script>
 </body>

@@ -3635,6 +3635,8 @@ function update($parent, newNode, oldNode) {
     var initial = arguments[5];
 
 
+    //console.log('newNode', newNode, 'oldNode', oldNode)
+
     if (!$parent) return;
 
     if (!oldNode) {
