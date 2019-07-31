@@ -279,9 +279,10 @@
 
         onMount() {
             this.props.record = JSON.parse(localStorage.getItem('doz-todo-keys')) || [
-                {title: "Buy milk", done: false, key: new Date() + Math.random()},
-                {title: "Buy cigarettes", done: false, key: new Date() + Math.random()}
+                {title: "Buy milk", done: false, key: Date.now() + Math.random()},
+                {title: "Buy cigarettes", done: false, key: Date.now() + Math.random()}
             ];
+            console.log(this);
         },
 
         onUpdate() {
