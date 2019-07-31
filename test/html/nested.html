@@ -40,6 +40,16 @@
         }
     });
 
+    Doz.component('x-cmp-d', {
+        template(h) {
+            return h`
+                <div style="background: orangered; padding: 20px;">
+                    ssss
+                </div>
+            `
+        }
+    });
+
     new Doz({
         root: '#app',
         props: {
@@ -52,30 +62,48 @@
                     <x-cmp-2>
                         ${this.props.linkName}
                     </x-cmp-2>
+                    <x-cmp-d/>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
             `;
         }
     }).on('draw', (next, prev, component) => {
-        walkChildren(next);
-        console.log(component.children[0].template(Doz.h));
-        console.log(component.children[0].children[0].template(Doz.h));
-        console.log(component.template(Doz.h));
+        //console.log(next)
+        walkChildren(next, component);
+        //console.log(component.children[0].template(Doz.h));
+        //console.log(component.children[0].children[0].template(Doz.h));
+        //console.log(component.template(Doz.h));
         //console.log(component.getHTMLElement().firstChild.outerHTML);
-        let nextCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
-        let prevCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
+        //let nextCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
+        //let prevCompiled = Doz.compile(component.getHTMLElement().firstChild.outerHTML);
 
-        nextCompiled.children[0].children[2].children[0] = component.props.linkName;
+        //nextCompiled.children[0].children[2].children[0] = component.props.linkName;
 
         //console.log({...next});
         //console.log(compiledNext);
 
-        Object.assign(next, nextCompiled);
-        Object.assign(prev, prevCompiled);
+        //Object.assign(next, nextCompiled);
+        //Object.assign(prev, prevCompiled);
 
     });
 
-    function walkChildren(next) {
+    function walkChildren(next, parentComponent, cmpIndex = 0) {
+        if(/-/g.test(next.type)){
+            console.log(next.type, parentComponent);
+
+            Object.values(parentComponent.children).forEach((cmp, i) => {
+                if(cmp.tag === next.type) {
+                    let cmpContent = Doz.compile(cmp.template(Doz.h));
+                    //console.log(cmp.tag, i, cmpIndex);
+                    next.children.unshift(cmpContent);
+                    //console.log(next.children);
+                    parentComponent = cmp;
+                    cmpIndex++;
+                }
+            });
+
+            next.children.forEach(item => walkChildren(item, parentComponent, cmpIndex));
+        }
         // bisogna scorrere tutto next
         // identificare il tag type,
         // se è di tipo componente, allora devo cercare
