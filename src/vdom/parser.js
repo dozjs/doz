@@ -119,6 +119,9 @@ function compile(data, cmp) {
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
                 currentParent.childrenHasKey = true;
 
+            if (/-/.test(match[2]) && /-/.test(currentParent.type))
+                cmp._maybeSlot = true;
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
             stack.push(currentParent);

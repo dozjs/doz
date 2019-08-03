@@ -185,6 +185,12 @@ function get(cfg = {}) {
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                    } else {
+                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                    }
+
                 }
 
                 cfg.autoCmp = null;

@@ -554,6 +554,8 @@ function compile(data, cmp) {
 
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
 
+            if (/-/.test(match[2]) && /-/.test(currentParent.type)) cmp._maybeSlot = true;
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
             stack.push(currentParent);
@@ -1262,6 +1264,10 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
+        childrenByTag: {
+            value: {},
+            enumerable: true
+        },
         rawChildren: {
             value: [],
             enumerable: true
@@ -1559,6 +1565,11 @@ function get() {
                 if (parent.cmp) {
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                    } else {
+                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                    }
                 }
 
                 cfg.autoCmp = null;
@@ -3636,6 +3647,7 @@ function update($parent, newNode, oldNode) {
 
 
     //console.log('newNode', newNode, 'oldNode', oldNode)
+    if (newNode && newNode.cmp) cmp = newNode.cmp;
 
     if (!$parent) return;
 

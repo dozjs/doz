@@ -518,6 +518,10 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
+        childrenByTag: {
+            value: {},
+            enumerable: true
+        },
         rawChildren: {
             value: [],
             enumerable: true
