@@ -482,6 +482,10 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
+        _rawHTML: {
+            value: '',
+            writable: true
+        },
 
         //Public
         tag: {

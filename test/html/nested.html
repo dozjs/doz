@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5d8965r4t3888"></script>
+    <script src="../../dist/doz.js?5d896kj5r4t3d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -46,7 +46,7 @@
                 <div style="background: greenyellow; padding: 20px;">
                     world ${this.props.name}
                     <button onclick="console.log(this)" >who is</button>
-                    <x-cmp-3></x-cmp-3>
+                    <x-cmp-3>${this.props.name}</x-cmp-3>
                 </div>
             `
         },
@@ -95,8 +95,9 @@
     }).on('draw', (next, prev, component) => {
         //let prevCompiled = Doz.compile(Doz.h(component.getHTMLElement().firstChild.outerHTML));
         //Object.assign(prev, prevCompiled);
-        if(component._maybeSlot)
+        if(component._maybeSlot) {
             walkChildren(next, component);
+        }
     });
 
     function walkChildren(next, parentComponent, cmpIndex = 0) {
@@ -106,7 +107,9 @@
             let cmp = parentComponent.childrenByTag[next.type][cmpIndex];
             if (cmp) {
                 let cmpContent = Doz.compile(cmp.template(Doz.h), cmp);
-                //console.log(next.type,cmp)
+                //let cmpContent = Doz.compile(Doz.h`${cmp._rawHTML}`, cmp);
+                //console.log(cmp.template(Doz.h))
+                //console.log(Doz.h`${cmp._rawHTML}`)
                 next.cmp = cmp;
                 next.children.unshift(cmpContent);
                 parentComponent = cmp;
