@@ -17,11 +17,11 @@ Doz.component('my-component', {
 Component compiled and mounted into the DOM
 
 ```   
-<tag-component> --------------> tag wrapper
+<my-component> --------------> tag wrapper
     <div> -------------------> tag root
         My component
     </div>
-</tag-component>
+</my-component>
 ```
 
 The tag wrapper is accessible via `this.getHTMLElement()`, 
