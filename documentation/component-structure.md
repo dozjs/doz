@@ -17,7 +17,7 @@ Doz.component('my-component', {
 Component compiled and mounted into the DOM
 
 ```   
-<my-component> --------------> tag wrapper
+<tag-component> --------------> tag wrapper
     <div> -------------------> tag root
         My component
     </div>
