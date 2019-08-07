@@ -48,11 +48,15 @@ $ npm start
 #### Component definition
 
 ```javascript
-Doz.component('button-counter', {
+Doz.define('button-counter', class extends Doz.Component {
 
-    props: {
-        counter: 0
-    },
+    constructor(o) {
+        super(o);
+        
+        this.props = {
+            counter: 0
+        }
+    }
 
     template(h) {
         return h`
