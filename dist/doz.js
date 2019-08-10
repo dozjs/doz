@@ -793,6 +793,12 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'emit',
         value: function emit(name) {
+            console.log(this._callback && this._callback[name] !== undefined);
+            console.log(this._callback[name]);
+            console.log(this.parent.tag);
+            console.log(this.parent[this._callback[name]] !== undefined);
+            console.log(typeof this.parent[this._callback[name]] === 'function');
+
             if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -911,8 +917,11 @@ var Component = function (_DOMManipulation) {
                     this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
                 }
             } else {
-                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+                //console.log(this.originalChildNodesLength)
+
+                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+                //console.log(this.getHTMLElement())
                 //Remove attributes from component tag
                 removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
@@ -1494,6 +1503,9 @@ function get() {
 
                 var newElement = void 0;
 
+                //console.log(parent.cmp);
+                //console.log(cfg.parent);
+
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
                     if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
@@ -1532,6 +1544,8 @@ function get() {
                     });
                 }
 
+                //console.log($child.nodeName, $child.childNodes.length);
+
                 if (!newElement) {
                     $child = $child.nextSibling;
                     continue;
@@ -1545,10 +1559,12 @@ function get() {
 
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', { value: uId });
+                Object.defineProperty(newElement, 'originalChildNodesLength', { value: $child.childNodes.length });
 
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
+                    //console.log($child.nodeName, $child.childNodes.length);
                     newElement._isRendered = true;
                     newElement.render(true);
 
@@ -1558,11 +1574,9 @@ function get() {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
-                    /*
-                    console.log($child.nodeName, newElement._rootElement.nodeName, $child.firstChild.nodeName)
-                    if(newElement._rootElement !== $child.firstChild)
-                    newElement._rootElement.appendChild($child.firstChild)
-                    */
+                    //console.log(newElement.tag, newElement._maybeSlot, newElement._rootElement.outerHTML, newElement._rootElement.childNodes.length)
+                    //newElement._rootElement.appendChild($child.firstChild);
+
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -2613,6 +2627,7 @@ function update($parent, newNode, oldNode) {
     } else if (newNode.type) {
         // walk node
 
+
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
         if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
@@ -2620,8 +2635,10 @@ function update($parent, newNode, oldNode) {
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
+        //console.log(cmp.originalChildNodesLength, newLength, oldLength, $parent.childNodes);
+
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
+            update($parent.childNodes[index + cmp.originalChildNodesLength], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
         clearDead();

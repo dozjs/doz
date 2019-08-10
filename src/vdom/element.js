@@ -89,6 +89,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     } else if (newNode.type) {
         // walk node
 
+
+
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],
             newNode.props,
@@ -101,9 +103,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
 
+        //console.log(cmp.originalChildNodesLength, newLength, oldLength, $parent.childNodes);
+
         for (let i = 0; i < newLength || i < oldLength; i++) {
             update(
-                $parent.childNodes[index],
+                $parent.childNodes[index + cmp.originalChildNodesLength],
                 newNode.children[i],
                 oldNode.children[i],
                 i,

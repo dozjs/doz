@@ -119,6 +119,9 @@ function get(cfg = {}) {
 
                 let newElement;
 
+                //console.log(parent.cmp);
+                //console.log(cfg.parent);
+
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
                     if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
@@ -148,6 +151,8 @@ function get(cfg = {}) {
                     });
                 }
 
+                //console.log($child.nodeName, $child.childNodes.length);
+
                 if (!newElement) {
                     $child = $child.nextSibling;
                     continue;
@@ -161,10 +166,12 @@ function get(cfg = {}) {
 
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', {value: uId});
+                Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
+                    //console.log($child.nodeName, $child.childNodes.length);
                     newElement._isRendered = true;
                     newElement.render(true);
 
@@ -175,11 +182,9 @@ function get(cfg = {}) {
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
 
-                    /*
-                    console.log($child.nodeName, newElement._rootElement.nodeName, $child.firstChild.nodeName)
-                    if(newElement._rootElement !== $child.firstChild)
-                    newElement._rootElement.appendChild($child.firstChild)
-                    */
+                    //console.log(newElement.tag, newElement._maybeSlot, newElement._rootElement.outerHTML, newElement._rootElement.childNodes.length)
+                    //newElement._rootElement.appendChild($child.firstChild);
+
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 

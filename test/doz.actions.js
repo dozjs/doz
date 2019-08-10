@@ -39,7 +39,7 @@ describe('Doz.actions', function () {
                 template: `
                     <salutation-card
                         title="MR."
-                        name="Doz"> 
+                        name="Doz"> <a>a</a>
                     </salutation-card>
                 `
             });

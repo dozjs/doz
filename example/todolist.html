@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p125p4234"></script>
+    <script src="../dist/doz.js?p125p24234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -157,8 +157,8 @@
         template(h) {
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
-                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
+                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>&nbsp;
+                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>&nbsp;
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
@@ -183,8 +183,7 @@
     Doz.component('doz-todo-buttons', {
         template(h) {
             return h`
-                <button onclick="this.action.add()" >Add</button>
-                <button onclick="this.action.removeAll()" >Remove all</button>
+                <button onclick="this.action.add()" >Add</button> <button onclick="this.action.removeAll()" >Remove all</button>
             `;
         }
     });
@@ -195,7 +194,7 @@
             return h`
                 <div>
                     <div class="todo-input">
-                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
+                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">&nbsp;
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     ${this.each(this.props.record, (item, i) =>

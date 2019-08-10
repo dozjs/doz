@@ -154,6 +154,12 @@ class Component extends DOMManipulation {
     }
 
     emit(name, ...args) {
+        console.log(this._callback && this._callback[name] !== undefined);
+        console.log(this._callback[name]);
+        console.log(this.parent.tag);
+        console.log(this.parent[this._callback[name]] !== undefined);
+        console.log(typeof this.parent[this._callback[name]] === 'function');
+
         if (this._callback && this._callback[name] !== undefined
             && this.parent[this._callback[name]] !== undefined
             && typeof this.parent[this._callback[name]] === 'function') {
@@ -246,8 +252,11 @@ class Component extends DOMManipulation {
                 this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
             }
         } else {
-            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+            //console.log(this.originalChildNodesLength)
+
+            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+            //console.log(this.getHTMLElement())
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 

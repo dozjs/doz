@@ -15,14 +15,14 @@ describe('Doz.callback', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('prev-cmp', {
-                template() {
-                    return '<div>ok</div>'
+                template(h) {
+                    return h`<div>ok</div>`
                 }
             });
 
             Doz.component('salutation-card', {
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>
                             <prev-cmp/>
                             <div>
@@ -38,8 +38,8 @@ describe('Doz.callback', function () {
             });
 
             Doz.component('caller-o', {
-                template() {
-                    return `<div>Callback</div>`
+                template(h) {
+                    return h`<div>Callback</div>`
                 },
                 onCreate() {
                     console.log('created');
@@ -52,12 +52,13 @@ describe('Doz.callback', function () {
 
             new Doz({
                 root: '#app',
-                template: `
+                template(h) {
+                    return h`
                     <salutation-card
                         title="MR."
                         name="Doz">
                     </salutation-card>
-                `
+                `}
             });
 
             console.log(document.body.innerHTML)
