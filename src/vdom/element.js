@@ -53,7 +53,6 @@ function create(node, cmp, initial) {
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
-    //console.log('newNode', newNode, 'oldNode', oldNode)
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
 

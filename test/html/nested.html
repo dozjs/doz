@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5d896kj5r4t3d888"></script>
+    <script src="../../dist/doz.js?5d8966kj5r4t3d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -70,11 +70,21 @@
         props: {
             linkName: 'A link'
         },
+        __template(h) {
+            return h`
+                <x-cmp>
+                    <x-cmp-2 name="Mike">
+                        ${this.props.linkName}
+                    </x-cmp-2>
+                </x-cmp>
+                <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
+            `;
+        },
         template(h) {
             return h`
                 <x-cmp>
-                    <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
-                    <x-cmp-2 name="Mike">
+                    <a href="#" title="${this.props.linkName}">${this.props.linkName}</a><hr/>
+                    <x-cmp-2 name="Mike + ${this.props.linkName}">
                         ${this.props.linkName}
                     </x-cmp-2>
                     <x-cmp-2 name="Ricali">
@@ -96,7 +106,7 @@
         //let prevCompiled = Doz.compile(Doz.h(component.getHTMLElement().firstChild.outerHTML));
         //Object.assign(prev, prevCompiled);
         if(component._maybeSlot) {
-            walkChildren(next, component);
+            //walkChildren(next, component);
         }
     });
 
@@ -107,12 +117,34 @@
             let cmp = parentComponent.childrenByTag[next.type][cmpIndex];
             if (cmp) {
                 let cmpContent = Doz.compile(cmp.template(Doz.h), cmp);
+                let nPrev = Doz.compile(Doz.h`${cmp.getHTMLElement().innerHTML}`, cmp);
                 //let cmpContent = Doz.compile(Doz.h`${cmp._rawHTML}`, cmp);
                 //console.log(cmp.template(Doz.h))
                 //console.log(Doz.h`${cmp._rawHTML}`)
-                next.cmp = cmp;
-                next.children.unshift(cmpContent);
+
+                console.log('------', cmp.tag, next.type, '------');
+                //console.log(next);
+
+                //console.log(nPrev);
+                //console.log(cmp._prev);
+
+
+                //next.cmp = cmp;
+                //next.children.unshift(cmpContent);
                 parentComponent = cmp;
+
+                //let nNext = Object.assign({}, next);
+                let nNext = JSON.parse(JSON.stringify(next));
+                //nNext.children.unshift(cmpContent);
+                cmpContent.children = cmpContent.children.concat(nNext.children);
+
+                //console.log(nNext);
+                console.log(cmpContent);
+                console.log(cmp._prev);
+
+                cmp.renderPause();
+                Doz.update(cmp._cfgRoot, cmpContent, nPrev, 0, cmp);
+                cmp.renderResume(false);
             }
         }
 
