@@ -793,11 +793,11 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'emit',
         value: function emit(name) {
-            console.log(this._callback && this._callback[name] !== undefined);
+            /*console.log(this._callback && this._callback[name] !== undefined);
             console.log(this._callback[name]);
             console.log(this.parent.tag);
             console.log(this.parent[this._callback[name]] !== undefined);
-            console.log(typeof this.parent[this._callback[name]] === 'function');
+            console.log(typeof this.parent[this._callback[name]] === 'function');*/
 
             if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -1460,6 +1460,8 @@ function get() {
 
         while ($child) {
 
+            //console.log('---', $child.nodeName);
+
             var uId = cfg.app.generateUId();
 
             isChildStyle = transformChildStyle($child, parent);
@@ -1478,6 +1480,8 @@ function get() {
             }
 
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
+
+            //console.log('-----', !!cmp);
 
             if (cmp) {
 
@@ -1503,10 +1507,13 @@ function get() {
 
                 var newElement = void 0;
 
-                if (parent.cmp) {
+                /*
+                if(parent.cmp) {
                     console.log('parent.cmp', parent.cmp.tag);
                 }
-                if (cfg.parent) console.log('cfg.parent', cfg.parent.tag);
+                if(cfg.parent)
+                    console.log('cfg.parent', cfg.parent.tag);
+                   */
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -1602,11 +1609,12 @@ function get() {
             }
 
             if ($child.hasChildNodes()) {
-                console.log('----', $child.firstChild.nodeName, parentElement.tag);
+                //console.log('----', $child.firstChild.nodeName, parentElement.tag)
                 walk($child.firstChild, { cmp: parentElement });
             }
 
             if (!cmp) {
+                //console.log('aaaaaa')
                 parentElement = parent.cmp;
             }
 

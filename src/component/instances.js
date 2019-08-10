@@ -73,6 +73,8 @@ function get(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
 
+            //console.log('---', $child.nodeName);
+
             const uId = cfg.app.generateUId();
 
             isChildStyle = transformChildStyle($child, parent);
@@ -94,6 +96,8 @@ function get(cfg = {}) {
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
                 collection.getComponent(cmpName);
+
+            //console.log('-----', !!cmp);
 
             if (cmp) {
 
@@ -119,11 +123,14 @@ function get(cfg = {}) {
 
                 let newElement;
 
+                /*
                 if(parent.cmp) {
                     console.log('parent.cmp', parent.cmp.tag);
                 }
                 if(cfg.parent)
                     console.log('cfg.parent', cfg.parent.tag);
+
+                 */
 
 
                 if (typeof cmp.cfg === 'function') {
@@ -213,11 +220,12 @@ function get(cfg = {}) {
             }
 
             if ($child.hasChildNodes()) {
-                console.log('----', $child.firstChild.nodeName, parentElement.tag)
+                //console.log('----', $child.firstChild.nodeName, parentElement.tag)
                 walk($child.firstChild, {cmp: parentElement})
             }
 
             if (!cmp) {
+                //console.log('aaaaaa')
                 parentElement = parent.cmp;
             }
 

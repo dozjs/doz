@@ -154,11 +154,11 @@ class Component extends DOMManipulation {
     }
 
     emit(name, ...args) {
-        console.log(this._callback && this._callback[name] !== undefined);
+        /*console.log(this._callback && this._callback[name] !== undefined);
         console.log(this._callback[name]);
         console.log(this.parent.tag);
         console.log(this.parent[this._callback[name]] !== undefined);
-        console.log(typeof this.parent[this._callback[name]] === 'function');
+        console.log(typeof this.parent[this._callback[name]] === 'function');*/
 
         if (this._callback && this._callback[name] !== undefined
             && this.parent[this._callback[name]] !== undefined
