@@ -35,7 +35,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(REGEX.MATCH_NLS, ' ');
+    return str.replace(REGEX.MATCH_NLS, '');
 }
 
 class Element {

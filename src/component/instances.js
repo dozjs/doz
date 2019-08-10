@@ -174,6 +174,13 @@ function get(cfg = {}) {
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
 
+
+                    /*
+                    console.log($child.nodeName, newElement._rootElement.nodeName, $child.firstChild.nodeName)
+                    if(newElement._rootElement !== $child.firstChild)
+                    newElement._rootElement.appendChild($child.firstChild)
+                    */
+
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     hooks.callMount(newElement);

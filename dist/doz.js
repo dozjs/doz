@@ -473,7 +473,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(REGEX.MATCH_NLS, ' ');
+    return str.replace(REGEX.MATCH_NLS, '');
 }
 
 var Element = function () {
@@ -1557,6 +1557,12 @@ function get() {
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
+
+                    /*
+                    console.log($child.nodeName, newElement._rootElement.nodeName, $child.firstChild.nodeName)
+                    if(newElement._rootElement !== $child.firstChild)
+                    newElement._rootElement.appendChild($child.firstChild)
+                    */
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
