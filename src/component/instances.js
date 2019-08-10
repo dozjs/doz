@@ -119,8 +119,12 @@ function get(cfg = {}) {
 
                 let newElement;
 
-                //console.log(parent.cmp);
-                //console.log(cfg.parent);
+                if(parent.cmp) {
+                    console.log('parent.cmp', parent.cmp.tag);
+                }
+                if(cfg.parent)
+                    console.log('cfg.parent', cfg.parent.tag);
+
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -209,6 +213,7 @@ function get(cfg = {}) {
             }
 
             if ($child.hasChildNodes()) {
+                console.log('----', $child.firstChild.nodeName, parentElement.tag)
                 walk($child.firstChild, {cmp: parentElement})
             }
 

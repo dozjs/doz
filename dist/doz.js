@@ -1503,8 +1503,10 @@ function get() {
 
                 var newElement = void 0;
 
-                //console.log(parent.cmp);
-                //console.log(cfg.parent);
+                if (parent.cmp) {
+                    console.log('parent.cmp', parent.cmp.tag);
+                }
+                if (cfg.parent) console.log('cfg.parent', cfg.parent.tag);
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -1600,6 +1602,7 @@ function get() {
             }
 
             if ($child.hasChildNodes()) {
+                console.log('----', $child.firstChild.nodeName, parentElement.tag);
                 walk($child.firstChild, { cmp: parentElement });
             }
 
