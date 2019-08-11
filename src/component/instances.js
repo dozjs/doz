@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {CMP_INSTANCE, CMP_TAG_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -176,6 +176,9 @@ function get(cfg = {}) {
 
                 propsInit(newElement);
 
+                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
+
+
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', {value: uId});
                 Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
@@ -183,20 +186,29 @@ function get(cfg = {}) {
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
-                    //console.log($child.nodeName, $child.childNodes.length);
                     newElement._isRendered = true;
                     newElement.render(true);
+
+                    // Create an observer instance linked to the callback function
+                    /*const observer = new MutationObserver((mutationsList, observer) => {
+                        for(let mutation of mutationsList) {
+                            if (mutation.type === 'attributes') {
+                                console.log(mutation)
+                                console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                            }
+                        }
+                    });
+
+                    // Start observing the target node for configured mutations
+                    observer.observe(newElement.getHTMLElement(), {attributes: true});
+                */
 
                     if (!componentInstance) {
                         componentInstance = newElement;
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
-
-
-                    //console.log(newElement.tag, newElement._maybeSlot, newElement._rootElement.outerHTML, newElement._rootElement.childNodes.length)
-                    //newElement._rootElement.appendChild($child.firstChild);
-
+                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -205,7 +217,6 @@ function get(cfg = {}) {
                 }
 
                 parentElement = newElement;
-                //componentIsCreated = newElement;
 
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length;
@@ -219,22 +230,15 @@ function get(cfg = {}) {
                 }
 
                 cfg.autoCmp = null;
-
             }
 
             if ($child.hasChildNodes()) {
-                //console.log('----', $child.firstChild.nodeName, parentElement.tag)
                 if (parentElement) {
                     walk($child.firstChild, {cmp: parentElement})
                 } else {
                     walk($child.firstChild, {cmp: parent.cmp})
                 }
             }
-
-            /*if (!cmp) {
-                //console.log('aaaaaa')
-                //parentElement = parent.cmp;
-            }*/
 
             $child = $child.nextSibling;
         }

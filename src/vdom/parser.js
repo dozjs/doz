@@ -34,6 +34,7 @@ function last(arr) {
     return arr[arr.length - 1];
 }
 
+
 function removeNLS(str) {
     return str.replace(REGEX.MATCH_NLS, '');
 }

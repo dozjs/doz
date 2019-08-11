@@ -4,7 +4,7 @@ const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
-const {INSTANCE, CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {INSTANCE, CMP_INSTANCE, CMP_TAG_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 //const Spye = require('../utils/spye');
 
 class DOMManipulation {
@@ -117,8 +117,11 @@ class DOMManipulation {
         if (this.updateChildrenProps && $target) {
             name = dashToCamel(name);
             const firstChild = $target.firstChild;
+
             if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
                 firstChild[CMP_INSTANCE].props[name] = value;
+            } else if($target[CMP_TAG_INSTANCE]){
+                $target[CMP_TAG_INSTANCE].props[name] = value;
             }
         }
     }

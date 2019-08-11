@@ -85,6 +85,7 @@ module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
+    CMP_TAG_INSTANCE: '__DOZ_TAG_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -793,12 +794,6 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'emit',
         value: function emit(name) {
-            /*console.log(this._callback && this._callback[name] !== undefined);
-            console.log(this._callback[name]);
-            console.log(this.parent.tag);
-            console.log(this.parent[this._callback[name]] !== undefined);
-            console.log(typeof this.parent[this._callback[name]] === 'function');*/
-
             if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -1376,6 +1371,7 @@ var _require = __webpack_require__(26),
 
 var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
+    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE,
     ATTR = _require2.ATTR,
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
@@ -1567,6 +1563,9 @@ function get() {
 
                 propsInit(newElement);
 
+                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
+
+
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', { value: uId });
                 Object.defineProperty(newElement, 'originalChildNodesLength', { value: $child.childNodes.length });
@@ -1574,19 +1573,28 @@ function get() {
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
-                    //console.log($child.nodeName, $child.childNodes.length);
                     newElement._isRendered = true;
                     newElement.render(true);
+
+                    // Create an observer instance linked to the callback function
+                    /*const observer = new MutationObserver((mutationsList, observer) => {
+                        for(let mutation of mutationsList) {
+                            if (mutation.type === 'attributes') {
+                                console.log(mutation)
+                                console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                            }
+                        }
+                    });
+                      // Start observing the target node for configured mutations
+                    observer.observe(newElement.getHTMLElement(), {attributes: true});
+                    */
 
                     if (!componentInstance) {
                         componentInstance = newElement;
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
-
-                    //console.log(newElement.tag, newElement._maybeSlot, newElement._rootElement.outerHTML, newElement._rootElement.childNodes.length)
-                    //newElement._rootElement.appendChild($child.firstChild);
-
+                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -1595,7 +1603,6 @@ function get() {
                 }
 
                 parentElement = newElement;
-                //componentIsCreated = newElement;
 
                 if (parent.cmp) {
                     var n = Object.keys(parent.cmp.children).length;
@@ -1611,18 +1618,12 @@ function get() {
             }
 
             if ($child.hasChildNodes()) {
-                //console.log('----', $child.firstChild.nodeName, parentElement.tag)
                 if (parentElement) {
                     walk($child.firstChild, { cmp: parentElement });
                 } else {
                     walk($child.firstChild, { cmp: parent.cmp });
                 }
             }
-
-            /*if (!cmp) {
-                //console.log('aaaaaa')
-                //parentElement = parent.cmp;
-            }*/
 
             $child = $child.nextSibling;
         }
@@ -2550,7 +2551,8 @@ var _require = __webpack_require__(40),
 
 var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
-    NS = _require2.NS;
+    NS = _require2.NS,
+    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE;
 
 var canDecode = __webpack_require__(15);
 
@@ -2644,6 +2646,12 @@ function update($parent, newNode, oldNode) {
     } else if (newNode.type) {
         // walk node
 
+        // I don't understand how, but it works
+        //if ($parent[CMP_TAG_INSTANCE] && $parent.nodeName !== 'X-CMP-3') {
+        if ($parent[CMP_TAG_INSTANCE] === cmp) {
+            //console.log($parent.nodeName, $parent[CMP_TAG_INSTANCE].tag, $parent[CMP_TAG_INSTANCE].originalChildNodesLength, cmp.tag, cmp.originalChildNodesLength);
+            index += cmp.originalChildNodesLength;
+        }
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
 
@@ -2652,10 +2660,8 @@ function update($parent, newNode, oldNode) {
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
-        //console.log(cmp.originalChildNodesLength, newLength, oldLength, $parent.childNodes);
-
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index + cmp.originalChildNodesLength], newNode.children[i], oldNode.children[i], i, cmp, initial);
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
         }
 
         clearDead();
@@ -4238,6 +4244,7 @@ var delay = __webpack_require__(2);
 var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     CMP_INSTANCE = _require.CMP_INSTANCE,
+    CMP_TAG_INSTANCE = _require.CMP_TAG_INSTANCE,
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
@@ -4378,8 +4385,11 @@ var DOMManipulation = function () {
             if (this.updateChildrenProps && $target) {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;
+
                 if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
                     firstChild[CMP_INSTANCE].props[name] = value;
+                } else if ($target[CMP_TAG_INSTANCE]) {
+                    $target[CMP_TAG_INSTANCE].props[name] = value;
                 }
             }
         }
