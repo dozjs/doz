@@ -246,8 +246,11 @@ class Component extends DOMManipulation {
                 this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
             }
         } else {
-            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+            //console.log(this.originalChildNodesLength)
+
+            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+            //console.log(this.getHTMLElement())
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
@@ -482,6 +485,10 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
+        _rawHTML: {
+            value: '',
+            writable: true
+        },
 
         //Public
         tag: {
@@ -515,6 +522,10 @@ function defineProperties(obj, opt) {
             enumerable: true
         },
         children: {
+            value: {},
+            enumerable: true
+        },
+        childrenByTag: {
             value: {},
             enumerable: true
         },

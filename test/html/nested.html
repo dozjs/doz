@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?589654888"></script>
+    <script src="../../dist/doz.js?5dp89ku66kj5r4thp3d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -16,6 +16,7 @@
     </style>
 </head>
 <body>
+
 <div id="app"></div>
 
 <script>
@@ -30,11 +31,74 @@
         }
     });
 
+    Doz.component('x-cmp-3', {
+        props: {
+            clock: '-'
+        },
+        template(h) {
+            return h`
+                <style>
+                :root {
+                    display: block;
+                    border: 1px solid #000;
+                }
+                </style>
+                <div style="background: lightseagreen; padding: 20px;">
+                    x-cmp-3 ${this.props.clock}
+                </div>
+            `
+        },
+        onMount() {
+            setInterval(() => {
+                this.props.clock = new Date().toLocaleTimeString()
+            }, 1000)
+        }
+    });
+
     Doz.component('x-cmp-2', {
+        props: {
+            clock: '-'
+        },
         template(h) {
             return h`
                 <div style="background: greenyellow; padding: 20px;">
-                    world
+                    <div>world ${this.props.name}</div>
+                    <div>world ${this.props.name}</div>
+                    <div>world ${this.props.name}</div>
+                    <div>world ${this.props.name}</div>
+                    <button onclick="console.log(this)" >who is</button>
+                    <ul>
+                        <li><strong>${this.props.name}</strong></li>
+                        <li><strong>${this.props.name}</strong></li>
+                    </ul>
+                    <x-cmp-3>
+                        <div>${this.props.name}</div>
+                        <div><strong>${this.props.clock}</strong></div>
+                        <div>${this.props.name}</div>
+                        <x-cmp-d>${this.props.name + Math.random()}</x-cmp-d>
+                        <div>${this.props.name}</div>
+                    </x-cmp-3>
+                </div>
+            `;
+        },
+        onMount() {
+            setInterval(() => {
+                this.props.clock = new Date().toLocaleTimeString()
+            }, 1000)
+        }
+    });
+
+    Doz.component('x-cmp-d', {
+        template(h) {
+            return h`
+                <style>
+                    :root {
+                        border: 1px solid #000;
+                        display: block;
+                    }
+                </style>
+                <div style="background: orangered; padding: 20px;">
+                    x-cmp-d
                 </div>
             `
         }
@@ -48,13 +112,75 @@
         template(h) {
             return h`
                 <x-cmp>
-                    <a href="#" title="${this.props.linkName}">${this.props.linkName}</a>
-                    <x-cmp-2/>
+                    <a href="#" title="${this.props.linkName}">${this.props.linkName}</a><hr/>
+                    <x-cmp-2 name="Mike + ${this.props.linkName}">
+                        ${this.props.linkName}
+                    </x-cmp-2>
+                    <x-cmp-2 name="Ricali">
+                        <div style="background: cornflowerblue">wow ${this.props.linkName + ' - ' + 'e'}</div>
+                    </x-cmp-2>
+                    <x-cmp-d/>
                 </x-cmp>
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
             `;
+        },
+    }).on('draw', (next, prev, component) => {
+        //let prevCompiled = Doz.compile(Doz.h(component.getHTMLElement().firstChild.outerHTML));
+        //Object.assign(prev, prevCompiled);
+        if(component._maybeSlot) {
+            //walkChildren(next, component);
         }
     });
+
+    function walkChildren(next, parentComponent, cmpIndex = 0) {
+        if(!/-/g.test(next.type)) return;
+
+        if (parentComponent.childrenByTag[next.type]) {
+            let cmp = parentComponent.childrenByTag[next.type][cmpIndex];
+            if (cmp) {
+                let cmpContent = Doz.compile(cmp.template(Doz.h), cmp);
+                let nPrev = Doz.compile(Doz.h`${cmp.getHTMLElement().innerHTML}`, cmp);
+                //let cmpContent = Doz.compile(Doz.h`${cmp._rawHTML}`, cmp);
+                //console.log(cmp.template(Doz.h))
+                //console.log(Doz.h`${cmp._rawHTML}`)
+
+                console.log('------', cmp.tag, next.type, '------');
+                //console.log(next);
+
+                //console.log(nPrev);
+                //console.log(cmp._prev);
+
+
+                //next.cmp = cmp;
+                //next.children.unshift(cmpContent);
+                parentComponent = cmp;
+
+                //let nNext = Object.assign({}, next);
+                let nNext = JSON.parse(JSON.stringify(next));
+                //nNext.children.unshift(cmpContent);
+                cmpContent.children = cmpContent.children.concat(nNext.children);
+
+                //console.log(nNext);
+                console.log(cmpContent);
+                console.log(cmp._prev);
+
+                cmp.renderPause();
+                Doz.update(cmp._cfgRoot, cmpContent, nPrev, 0, cmp);
+                cmp.renderResume(false);
+            }
+        }
+
+        let cmpStoreIndex = {};
+
+        next.children.forEach((item, i) => {
+            if (cmpStoreIndex[item.type] === undefined)
+                cmpStoreIndex[item.type] = 0;
+            else
+                cmpStoreIndex[item.type]++;
+
+            walkChildren(item, parentComponent, cmpStoreIndex[item.type])
+        });
+    }
 
 </script>
 </body>

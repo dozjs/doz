@@ -39,7 +39,7 @@ describe('Doz.actions', function () {
                 template: `
                     <salutation-card
                         title="MR."
-                        name="Doz">
+                        name="Doz"> <a>a</a>
                     </salutation-card>
                 `
             });
@@ -47,6 +47,7 @@ describe('Doz.actions', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
+                console.log('<div id="app"><dz-app><salutation-card><div>Hello Dear Teddy</div> </salutation-card></dz-app></div>');
                 //console.log(app);
                 be.err(done).true(/Hello Dear Teddy</g.test(html));
             },100);

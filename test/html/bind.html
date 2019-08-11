@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - model</title>
+    <title>Title</title>
+    <script src="../../dist/doz.js?58965pp949584735622"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('doz-text', {
+        template(h){
+            return h`
+                <div>
+                    <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
+                    <p>Value: ${this.props.message}</p>
+                    <button onclick="this.setNew()">Set to hello</button>
+                </div>
+            `
+        },
+        props: {
+            message: 'ciao'
+        },
+        setNew() {
+            this.props.message = 'hello'
+        },
+        propsListenerAsync: {
+            message(v, o) {
+                console.log(v, o)
+            }
+        }
+    });
+
+    Doz.component('doz-radio', {
+        template(h){
+            return h`
+                <div>
+                    <input type="radio" d-bind="gender" name="gender" value="male"> Male
+                    <input type="radio" d-bind="gender" name="gender" value="female"> Female
+                    <input type="radio" d-bind="gender" name="gender" value="other"> Other
+                    <p>Value: ${this.props.gender}</p>
+                    <button onclick="this.setNew()">Set to female</button>
+                </div>
+            `
+        },
+        props: {
+            gender: 'male'
+        },
+        setNew() {
+            this.props.gender = 'female'
+        }
+    });
+
+    Doz.component('doz-select', {
+        template(h){
+            return h`
+                <div>
+                    <select d-bind="item">
+                        <option value="" disabled="true" selected="true" hidden="true">Please Choose...</option>
+                        <option value="Milk">Milk</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Chicken">Chicken</option>
+                    </select>
+                    <p>Value: ${this.props.item}</p>
+                    <button onclick="this.setNew()">Set to Chicken</button>
+                </div>
+            `
+        },
+        props: {
+            item: 'Tomato'
+        },
+        setNew() {
+            this.props.item = 'Chicken'
+        }
+    });
+
+    Doz.component('doz-select-multiple', {
+        template(h){
+            return h`
+                <div>
+                    <select d-bind="item" multiple="multiple">
+                        <option value="" disabled="true" selected="true" hidden="true">Please Choose...</option>
+                        <option value="Milk">Milk</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Chicken">Chicken</option>
+                    </select>
+                    <p>Value: ${this.props.item}</p>
+                    <button onclick="this.setNew()">Set to Chicken, Milk</button>
+                </div>
+            `
+        },
+        props: {
+            item: 'Tomato'
+        },
+        setNew() {
+            this.props.item = ['Chicken', 'Milk']
+        }
+    });
+
+    Doz.component('doz-checkbox', {
+        template(h){
+            return h`
+                <div>
+                    <input type="checkbox" d-bind="done" name="done"> ${this.props.done} <br/><br/>
+                    <button onclick="this.setNew()">Set to true</button>
+                </div>
+            `
+        },
+        props: {
+            done: false
+        },
+        setNew() {
+            this.props.done = true
+        }
+    });
+
+    Doz.component('doz-checkbox-multiple', {
+        template(h){
+            return h`
+                <div>
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Mustard"> Mustard
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Mayonnaise"> Mayonnaise
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Ketchup"> Ketchup
+                    <input type="checkbox" d-bind="sauce" name="sauce" value="Pink Sauce"> Pink Sauce
+                    <p>Value: ${this.props.sauce}</p>
+                    <button onclick="this.setNew()">Set to Mustard, Pink Sauce</button>
+                </div>
+            `
+        },
+        props: {
+            sauce: ['Ketchup', 'Mayonnaise']
+        },
+        setNew() {
+            this.props.sauce = ['Mustard', 'Pink Sauce']
+        }
+    });
+
+    new Doz({
+        root: document.getElementById('app'),
+        template: `
+            <h3>Input type text</h3>
+            <doz-text placeholder="write a message"></doz-text>
+            <hr>
+            <h3>Input type radio</h3>
+            <doz-radio></doz-radio>
+            <hr>
+            <h3>Input type checkbox</h3>
+            <doz-checkbox></doz-checkbox>
+            <hr>
+            <h3>Input type checkbox multiple</h3>
+            <doz-checkbox-multiple></doz-checkbox-multiple>
+            <hr>
+            <h3>Select</h3>
+            <doz-select></doz-select>
+            <hr>
+            <h3>Select multiple</h3>
+            <doz-select-multiple></doz-select-multiple>
+        `
+    });
+
+</script>
+</body>
+</html>

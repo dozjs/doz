@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -85,6 +85,7 @@ module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
     CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
+    CMP_TAG_INSTANCE: '__DOZ_TAG_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -176,7 +177,7 @@ module.exports = {
 "use strict";
 
 
-var data = __webpack_require__(27);
+var data = __webpack_require__(28);
 
 /**
  * Register a component to global
@@ -299,14 +300,15 @@ function callMountAsync(context) {
     if (typeof context.onMountAsync === 'function') {
         delay(function () {
             context.onMountAsync.call(context);
+            context.app.emit('componentMountAsync', context);
         });
     }
     if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
         delay(function () {
             context.parent[context.__onMountAsync].call(context.parent, context);
+            context.app.emit('componentMountAsync', context);
         });
     }
-    context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
@@ -473,7 +475,7 @@ function last(arr) {
 }
 
 function removeNLS(str) {
-    return str.replace(REGEX.MATCH_NLS, ' ');
+    return str.replace(REGEX.MATCH_NLS, '');
 }
 
 var Element = function () {
@@ -554,6 +556,8 @@ function compile(data, cmp) {
 
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
 
+            if (/-/.test(match[2]) && /-/.test(currentParent.type)) cmp._maybeSlot = true;
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
             stack.push(currentParent);
@@ -630,11 +634,11 @@ module.exports = {
 "use strict";
 
 
-var isJSON = __webpack_require__(28);
-var isNumber = __webpack_require__(29);
-var toJSON = __webpack_require__(30);
-var toNumber = __webpack_require__(31);
-var typesMap = __webpack_require__(32);
+var isJSON = __webpack_require__(29);
+var isNumber = __webpack_require__(30);
+var toJSON = __webpack_require__(31);
+var toNumber = __webpack_require__(32);
+var typesMap = __webpack_require__(33);
 
 function castStringTo(obj) {
 
@@ -678,9 +682,9 @@ var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(35);
+var observer = __webpack_require__(36);
 var hooks = __webpack_require__(3);
-var update = __webpack_require__(38).updateElement;
+var update = __webpack_require__(39).updateElement;
 var store = __webpack_require__(42);
 var ids = __webpack_require__(43);
 var proxy = __webpack_require__(11);
@@ -689,9 +693,9 @@ var queueReady = __webpack_require__(45);
 var queueDraw = __webpack_require__(46);
 var extendInstance = __webpack_require__(47);
 var cloneObject = __webpack_require__(48);
-var toLiteralString = __webpack_require__(16);
+var toLiteralString = __webpack_require__(17);
 var removeAllAttributes = __webpack_require__(49);
-var h = __webpack_require__(17);
+var h = __webpack_require__(18);
 var loadLocal = __webpack_require__(50);
 var localMixin = __webpack_require__(51);
 
@@ -700,7 +704,7 @@ var _require2 = __webpack_require__(4),
 //const delay = require('../utils/delay');
 
 
-var propsInit = __webpack_require__(19);
+var propsInit = __webpack_require__(20);
 
 var _require3 = __webpack_require__(12),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
@@ -909,8 +913,11 @@ var Component = function (_DOMManipulation) {
                     this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
                 }
             } else {
-                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
+                //console.log(this.originalChildNodesLength)
+
+                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+                //console.log(this.getHTMLElement())
                 //Remove attributes from component tag
                 removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
@@ -1226,6 +1233,10 @@ function defineProperties(obj, opt) {
             value: {},
             enumerable: true
         },
+        _rawHTML: {
+            value: '',
+            writable: true
+        },
 
         //Public
         tag: {
@@ -1259,6 +1270,10 @@ function defineProperties(obj, opt) {
             enumerable: true
         },
         children: {
+            value: {},
+            enumerable: true
+        },
+        childrenByTag: {
             value: {},
             enumerable: true
         },
@@ -1352,11 +1367,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var html = __webpack_require__(8);
 
-var _require = __webpack_require__(25),
+var _require = __webpack_require__(26),
     scopedInner = _require.scopedInner;
 
 var _require2 = __webpack_require__(0),
     CMP_INSTANCE = _require2.CMP_INSTANCE,
+    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE,
     ATTR = _require2.ATTR,
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
@@ -1367,15 +1383,15 @@ var hooks = __webpack_require__(3);
 var _require3 = __webpack_require__(4),
     serializeProps = _require3.serializeProps;
 
-var _require4 = __webpack_require__(33),
+var _require4 = __webpack_require__(34),
     extract = _require4.extract;
 
-var hmr = __webpack_require__(34);
+var hmr = __webpack_require__(35);
 
 var _require5 = __webpack_require__(6),
     Component = _require5.Component;
 
-var propsInit = __webpack_require__(19);
+var propsInit = __webpack_require__(20);
 
 function getComponentName(child) {
     var cmpName = void 0;
@@ -1429,7 +1445,6 @@ function get() {
     cfg.root.appendChild(cfg.template);
 
     var componentInstance = null;
-    var parentElement = void 0;
     var cmpName = void 0;
     var isChildStyle = void 0;
     var trash = [];
@@ -1440,6 +1455,8 @@ function get() {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
+
+            //console.log('---', $child.nodeName);
 
             var uId = cfg.app.generateUId();
 
@@ -1459,6 +1476,10 @@ function get() {
             }
 
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
+
+            //console.log('-----', !!cmp);
+
+            var parentElement = void 0;
 
             if (cmp) {
 
@@ -1483,6 +1504,14 @@ function get() {
                 var dProps = extract(props);
 
                 var newElement = void 0;
+
+                /*
+                if(parent.cmp) {
+                    console.log('parent.cmp', parent.cmp.tag);
+                }
+                if(cfg.parent)
+                    console.log('cfg.parent', cfg.parent.tag);
+                   */
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -1522,6 +1551,8 @@ function get() {
                     });
                 }
 
+                //console.log($child.nodeName, $child.childNodes.length);
+
                 if (!newElement) {
                     $child = $child.nextSibling;
                     continue;
@@ -1533,8 +1564,12 @@ function get() {
 
                 propsInit(newElement);
 
+                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
+
+
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', { value: uId });
+                Object.defineProperty(newElement, 'originalChildNodesLength', { value: $child.childNodes.length });
 
                 newElement.app.emit('componentPropsInit', newElement);
 
@@ -1547,8 +1582,9 @@ function get() {
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
+                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
 
-                    $child.insertBefore(newElement._rootElement, $child.firstChild);
+                    //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
@@ -1559,17 +1595,22 @@ function get() {
                 if (parent.cmp) {
                     var n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                    } else {
+                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                    }
                 }
 
                 cfg.autoCmp = null;
             }
 
             if ($child.hasChildNodes()) {
-                walk($child.firstChild, { cmp: parentElement });
-            }
-
-            if (!cmp) {
-                parentElement = parent.cmp;
+                if (parentElement) {
+                    walk($child.firstChild, { cmp: parentElement });
+                } else {
+                    walk($child.firstChild, { cmp: parent.cmp });
+                }
             }
 
             $child = $child.nextSibling;
@@ -2426,7 +2467,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(37);
+var castType = __webpack_require__(38);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2490,6 +2531,154 @@ module.exports = manipulate;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(40),
+    attach = _require.attach,
+    updateAttributes = _require.updateAttributes;
+
+var _require2 = __webpack_require__(0),
+    TAG = _require2.TAG,
+    NS = _require2.NS,
+    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE;
+
+var canDecode = __webpack_require__(15);
+
+var storeElementNode = Object.create(null);
+var deadChildren = [];
+
+function isChanged(nodeA, nodeB) {
+    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
+}
+
+function create(node, cmp, initial) {
+    if (typeof node === 'undefined') return;
+
+    var nodeStored = void 0;
+    var $el = void 0;
+
+    if (typeof node === 'string') {
+        return document.createTextNode(
+        // use decode only if necessary
+        canDecode(node));
+    }
+
+    if (node.type[0] === '#') {
+        node.type = TAG.EMPTY;
+    }
+
+    nodeStored = storeElementNode[node.type];
+    if (nodeStored) {
+        $el = nodeStored.cloneNode();
+    } else {
+        $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
+
+        storeElementNode[node.type] = $el.cloneNode(true);
+    }
+
+    attach($el, node.props, cmp);
+
+    var _defined2 = node.children;
+
+    var _defined3 = function _defined3(item) {
+        return create(item, cmp, initial);
+    };
+
+    var _defined = new Array(_defined2.length);
+
+    for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+        _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+    }
+
+    for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
+        $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
+    }
+
+    cmp.$$afterNodeElementCreate($el, node, initial);
+
+    return $el;
+}
+
+function update($parent, newNode, oldNode) {
+    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var cmp = arguments[4];
+    var initial = arguments[5];
+
+
+    if (newNode && newNode.cmp) cmp = newNode.cmp;
+
+    if (!$parent) return;
+
+    if (!oldNode) {
+        // create node
+        return $parent.appendChild(create(newNode, cmp, initial));
+    } else if (!newNode) {
+        // remove node
+        if ($parent.childNodes[index]) {
+            deadChildren.push($parent.childNodes[index]);
+        }
+    } else if (isChanged(newNode, oldNode)) {
+        // node changes
+        var $oldElement = $parent.childNodes[index];
+        if (!$oldElement) return;
+        var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
+        if (canReuseElement) return canReuseElement;
+
+        var $newElement = create(newNode, cmp, initial);
+
+        $parent.replaceChild($newElement, $oldElement);
+
+        cmp.$$afterNodeChange($newElement, $oldElement);
+
+        return $newElement;
+    } else if (newNode.type) {
+        // walk node
+
+        // I don't understand how, but it works
+        //if ($parent[CMP_TAG_INSTANCE] && $parent.nodeName !== 'X-CMP-3') {
+        if ($parent[CMP_TAG_INSTANCE] === cmp) {
+            //console.log($parent.nodeName, $parent[CMP_TAG_INSTANCE].tag, $parent[CMP_TAG_INSTANCE].originalChildNodesLength, cmp.tag, cmp.originalChildNodesLength);
+            index += cmp.originalChildNodesLength;
+        }
+
+        var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
+
+        if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
+
+        var newLength = newNode.children.length;
+        var oldLength = oldNode.children.length;
+
+        for (var i = 0; i < newLength || i < oldLength; i++) {
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
+        }
+
+        clearDead();
+
+        cmp.$$afterNodeWalk();
+    }
+}
+
+function clearDead() {
+    var dl = deadChildren.length;
+
+    while (dl--) {
+        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        deadChildren.splice(dl, 1);
+    }
+}
+
+module.exports = {
+    create: create,
+    update: update
+};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var html = __webpack_require__(8);
 
 function canDecode(str) {
@@ -2500,7 +2689,7 @@ function canDecode(str) {
 module.exports = canDecode;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2513,7 +2702,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2526,7 +2715,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2581,7 +2770,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2619,7 +2808,7 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2645,7 +2834,7 @@ function propsInit(instance) {
 module.exports = propsInit;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2685,25 +2874,25 @@ module.exports = {
 };
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(22);
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Doz = __webpack_require__(23);
+module.exports = __webpack_require__(23);
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(24);
 var collection = __webpack_require__(1);
 
-var _require = __webpack_require__(20),
+var _require = __webpack_require__(21),
     use = _require.use;
 
 var component = __webpack_require__(53);
@@ -2712,10 +2901,13 @@ var _require2 = __webpack_require__(6),
     Component = _require2.Component;
 
 var mixin = __webpack_require__(54);
-var h = __webpack_require__(17);
+var h = __webpack_require__(18);
 
 var _require3 = __webpack_require__(4),
     compile = _require3.compile;
+
+var _require4 = __webpack_require__(14),
+    update = _require4.update;
 
 Object.defineProperties(Doz, {
     collection: {
@@ -2742,6 +2934,10 @@ Object.defineProperties(Doz, {
         value: h,
         enumerable: true
     },
+    update: {
+        value: update,
+        enumerable: true
+    },
     mixin: {
         value: mixin,
         enumerable: true
@@ -2759,7 +2955,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2771,15 +2967,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var bind = __webpack_require__(24);
+var bind = __webpack_require__(25);
 var instances = __webpack_require__(7);
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(16);
-var plugin = __webpack_require__(20);
+var toLiteralString = __webpack_require__(17);
+var plugin = __webpack_require__(21);
 
 var Doz = function () {
     function Doz() {
@@ -3067,7 +3263,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3099,14 +3295,14 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var composeStyleInner = __webpack_require__(9);
-var createStyle = __webpack_require__(26);
+var createStyle = __webpack_require__(27);
 
 function scopedInner(cssContent, uId, tag) {
     if (typeof cssContent !== 'string') return;
@@ -3119,7 +3315,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3145,7 +3341,7 @@ function createStyle(cssContent, uId) {
 module.exports = createStyle;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3157,7 +3353,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3169,7 +3365,7 @@ module.exports = function isJSON(obj) {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3182,7 +3378,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3197,7 +3393,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3217,7 +3413,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3233,7 +3429,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3345,7 +3541,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3389,7 +3585,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3401,7 +3597,7 @@ var events = __webpack_require__(3);
 var _require = __webpack_require__(12),
     updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
 
-var propsListener = __webpack_require__(36);
+var propsListener = __webpack_require__(37);
 var manipulate = __webpack_require__(13);
 
 function runUpdate(instance, changes) {
@@ -3453,7 +3649,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3497,7 +3693,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3543,154 +3739,16 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var element = __webpack_require__(39);
-
-module.exports = {
-    updateElement: element.update
-};
-
-/***/ }),
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _require = __webpack_require__(40),
-    attach = _require.attach,
-    updateAttributes = _require.updateAttributes;
-
-var _require2 = __webpack_require__(0),
-    TAG = _require2.TAG,
-    NS = _require2.NS;
-
-var canDecode = __webpack_require__(14);
-
-var storeElementNode = Object.create(null);
-var deadChildren = [];
-
-function isChanged(nodeA, nodeB) {
-    return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
-}
-
-function create(node, cmp, initial) {
-    if (typeof node === 'undefined') return;
-
-    var nodeStored = void 0;
-    var $el = void 0;
-
-    if (typeof node === 'string') {
-        return document.createTextNode(
-        // use decode only if necessary
-        canDecode(node));
-    }
-
-    if (node.type[0] === '#') {
-        node.type = TAG.EMPTY;
-    }
-
-    nodeStored = storeElementNode[node.type];
-    if (nodeStored) {
-        $el = nodeStored.cloneNode();
-    } else {
-        $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
-
-        storeElementNode[node.type] = $el.cloneNode(true);
-    }
-
-    attach($el, node.props, cmp);
-
-    var _defined2 = node.children;
-
-    var _defined3 = function _defined3(item) {
-        return create(item, cmp, initial);
-    };
-
-    var _defined = new Array(_defined2.length);
-
-    for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-        _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
-    }
-
-    for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
-        $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
-    }
-
-    cmp.$$afterNodeElementCreate($el, node, initial);
-
-    return $el;
-}
-
-function update($parent, newNode, oldNode) {
-    var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-    var cmp = arguments[4];
-    var initial = arguments[5];
-
-
-    if (!$parent) return;
-
-    if (!oldNode) {
-        // create node
-        return $parent.appendChild(create(newNode, cmp, initial));
-    } else if (!newNode) {
-        // remove node
-        if ($parent.childNodes[index]) {
-            deadChildren.push($parent.childNodes[index]);
-        }
-    } else if (isChanged(newNode, oldNode)) {
-        // node changes
-        var $oldElement = $parent.childNodes[index];
-        if (!$oldElement) return;
-        var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
-        if (canReuseElement) return canReuseElement;
-
-        var $newElement = create(newNode, cmp, initial);
-
-        $parent.replaceChild($newElement, $oldElement);
-
-        cmp.$$afterNodeChange($newElement, $oldElement);
-
-        return $newElement;
-    } else if (newNode.type) {
-        // walk node
-
-        var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
-
-        if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
-
-        var newLength = newNode.children.length;
-        var oldLength = oldNode.children.length;
-
-        for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
-        }
-
-        clearDead();
-
-        cmp.$$afterNodeWalk();
-    }
-}
-
-function clearDead() {
-    var dl = deadChildren.length;
-
-    while (dl--) {
-        deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
-        deadChildren.splice(dl, 1);
-    }
-}
+var element = __webpack_require__(14);
 
 module.exports = {
-    create: create,
-    update: update
+    updateElement: element.update
 };
 
 /***/ }),
@@ -3962,7 +4020,7 @@ module.exports = {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(15);
+var camelToDash = __webpack_require__(16);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4140,7 +4198,7 @@ module.exports = loadLocal;
 "use strict";
 
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(19);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -4164,9 +4222,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var canDecode = __webpack_require__(14);
+var canDecode = __webpack_require__(15);
 var composeStyleInner = __webpack_require__(9);
-var camelToDash = __webpack_require__(15);
+var camelToDash = __webpack_require__(16);
 var dashToCamel = __webpack_require__(10);
 var castStringTo = __webpack_require__(5);
 var delay = __webpack_require__(2);
@@ -4174,6 +4232,7 @@ var delay = __webpack_require__(2);
 var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
     CMP_INSTANCE = _require.CMP_INSTANCE,
+    CMP_TAG_INSTANCE = _require.CMP_TAG_INSTANCE,
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
@@ -4314,8 +4373,11 @@ var DOMManipulation = function () {
             if (this.updateChildrenProps && $target) {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;
+
                 if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
                     firstChild[CMP_INSTANCE].props[name] = value;
+                } else if ($target[CMP_TAG_INSTANCE]) {
+                    $target[CMP_TAG_INSTANCE].props[name] = value;
                 }
             }
         }
@@ -4465,7 +4527,7 @@ module.exports = component;
 var _require = __webpack_require__(6),
     Component = _require.Component;
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(19);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);

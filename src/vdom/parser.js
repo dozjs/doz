@@ -34,8 +34,9 @@ function last(arr) {
     return arr[arr.length - 1];
 }
 
+
 function removeNLS(str) {
-    return str.replace(REGEX.MATCH_NLS, ' ');
+    return str.replace(REGEX.MATCH_NLS, '');
 }
 
 class Element {
@@ -118,6 +119,9 @@ function compile(data, cmp) {
 
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
                 currentParent.childrenHasKey = true;
+
+            if (/-/.test(match[2]) && /-/.test(currentParent.type))
+                cmp._maybeSlot = true;
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 

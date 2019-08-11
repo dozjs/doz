@@ -39,7 +39,7 @@ describe('Doz.class.observer.loadProps', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div> ciao </div></dz-app></div>')
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div>ciao</div></dz-app></div>')
             }, 500);
 
         });
@@ -89,7 +89,7 @@ describe('Doz.class.observer.loadProps', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div> ciao </div></cmp-x></dz-app></div>')
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div>ciao</div></cmp-x></dz-app></div>')
             }, 500);
 
         });
@@ -129,7 +129,7 @@ describe('Doz.class.observer.loadProps', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div> ciao suffix </div></dz-app></div>')
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div>ciao suffix</div></dz-app></div>')
             }, 500);
 
         });
@@ -186,7 +186,7 @@ describe('Doz.class.observer.loadProps', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div> ciao suffix </div></cmp-x></dz-app></div>')
+                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div>ciao suffix</div></cmp-x></dz-app></div>')
             }, 500);
 
         });

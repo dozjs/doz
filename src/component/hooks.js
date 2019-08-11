@@ -52,14 +52,15 @@ function callMountAsync(context) {
     if (typeof context.onMountAsync === 'function') {
         delay(() => {
             context.onMountAsync.call(context);
+            context.app.emit('componentMountAsync', context);
         });
     }
     if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
         delay(() => {
             context.parent[context.__onMountAsync].call(context.parent, context);
+            context.app.emit('componentMountAsync', context);
         });
     }
-    context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {

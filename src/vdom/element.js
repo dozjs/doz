@@ -1,5 +1,5 @@
 const {attach, updateAttributes} = require('./attributes');
-const {TAG, NS} = require('../constants');
+const {TAG, NS, CMP_TAG_INSTANCE} = require('../constants');
 const canDecode = require('../utils/can-decode');
 
 const storeElementNode = Object.create(null);
@@ -53,6 +53,9 @@ function create(node, cmp, initial) {
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
+    if (newNode && newNode.cmp)
+        cmp = newNode.cmp;
+
     if (!$parent) return;
 
     if (!oldNode) {
@@ -85,6 +88,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     } else if (newNode.type) {
         // walk node
+
+        // I don't understand how, but it works
+        //if ($parent[CMP_TAG_INSTANCE] && $parent.nodeName !== 'X-CMP-3') {
+        if ($parent[CMP_TAG_INSTANCE] === cmp) {
+            //console.log($parent.nodeName, $parent[CMP_TAG_INSTANCE].tag, $parent[CMP_TAG_INSTANCE].originalChildNodesLength, cmp.tag, cmp.originalChildNodesLength);
+            index += cmp.originalChildNodesLength;
+        }
 
         let attributesUpdated = updateAttributes(
             $parent.childNodes[index],

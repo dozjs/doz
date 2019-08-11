@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {CMP_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {CMP_INSTANCE, CMP_TAG_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -63,7 +63,6 @@ function get(cfg = {}) {
     cfg.root.appendChild(cfg.template);
 
     let componentInstance = null;
-    let parentElement;
     let cmpName;
     let isChildStyle;
     const trash = [];
@@ -72,6 +71,8 @@ function get(cfg = {}) {
 
     function walk($child, parent = {}) {
         while ($child) {
+
+            //console.log('---', $child.nodeName);
 
             const uId = cfg.app.generateUId();
 
@@ -94,6 +95,10 @@ function get(cfg = {}) {
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
                 collection.getComponent(cmpName);
+
+            //console.log('-----', !!cmp);
+
+            let parentElement;
 
             if (cmp) {
 
@@ -118,6 +123,16 @@ function get(cfg = {}) {
                 const dProps = extract(props);
 
                 let newElement;
+
+                /*
+                if(parent.cmp) {
+                    console.log('parent.cmp', parent.cmp.tag);
+                }
+                if(cfg.parent)
+                    console.log('cfg.parent', cfg.parent.tag);
+
+                 */
+
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -148,6 +163,8 @@ function get(cfg = {}) {
                     });
                 }
 
+                //console.log($child.nodeName, $child.childNodes.length);
+
                 if (!newElement) {
                     $child = $child.nextSibling;
                     continue;
@@ -159,8 +176,12 @@ function get(cfg = {}) {
 
                 propsInit(newElement);
 
+                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
+
+
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', {value: uId});
+                Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
 
@@ -173,8 +194,9 @@ function get(cfg = {}) {
                     }
 
                     newElement._rootElement[CMP_INSTANCE] = newElement;
+                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
 
-                    $child.insertBefore(newElement._rootElement, $child.firstChild);
+                    //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
@@ -185,17 +207,23 @@ function get(cfg = {}) {
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length;
                     parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                    } else {
+                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                    }
+
                 }
 
                 cfg.autoCmp = null;
             }
 
             if ($child.hasChildNodes()) {
-                walk($child.firstChild, {cmp: parentElement})
-            }
-
-            if (!cmp) {
-                parentElement = parent.cmp;
+                if (parentElement) {
+                    walk($child.firstChild, {cmp: parentElement})
+                } else {
+                    walk($child.firstChild, {cmp: parent.cmp})
+                }
             }
 
             $child = $child.nextSibling;
