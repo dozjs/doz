@@ -63,7 +63,6 @@ function get(cfg = {}) {
     cfg.root.appendChild(cfg.template);
 
     let componentInstance = null;
-    let parentElement;
     let cmpName;
     let isChildStyle;
     const trash = [];
@@ -98,6 +97,8 @@ function get(cfg = {}) {
                 collection.getComponent(cmpName);
 
             //console.log('-----', !!cmp);
+
+            let parentElement;
 
             if (cmp) {
 
@@ -204,6 +205,7 @@ function get(cfg = {}) {
                 }
 
                 parentElement = newElement;
+                //componentIsCreated = newElement;
 
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length;
@@ -217,17 +219,22 @@ function get(cfg = {}) {
                 }
 
                 cfg.autoCmp = null;
+
             }
 
             if ($child.hasChildNodes()) {
                 //console.log('----', $child.firstChild.nodeName, parentElement.tag)
-                walk($child.firstChild, {cmp: parentElement})
+                if (parentElement) {
+                    walk($child.firstChild, {cmp: parentElement})
+                } else {
+                    walk($child.firstChild, {cmp: parent.cmp})
+                }
             }
 
-            if (!cmp) {
+            /*if (!cmp) {
                 //console.log('aaaaaa')
-                parentElement = parent.cmp;
-            }
+                //parentElement = parent.cmp;
+            }*/
 
             $child = $child.nextSibling;
         }

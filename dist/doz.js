@@ -1448,7 +1448,6 @@ function get() {
     cfg.root.appendChild(cfg.template);
 
     var componentInstance = null;
-    var parentElement = void 0;
     var cmpName = void 0;
     var isChildStyle = void 0;
     var trash = [];
@@ -1482,6 +1481,8 @@ function get() {
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
             //console.log('-----', !!cmp);
+
+            var parentElement = void 0;
 
             if (cmp) {
 
@@ -1594,6 +1595,7 @@ function get() {
                 }
 
                 parentElement = newElement;
+                //componentIsCreated = newElement;
 
                 if (parent.cmp) {
                     var n = Object.keys(parent.cmp.children).length;
@@ -1610,13 +1612,17 @@ function get() {
 
             if ($child.hasChildNodes()) {
                 //console.log('----', $child.firstChild.nodeName, parentElement.tag)
-                walk($child.firstChild, { cmp: parentElement });
+                if (parentElement) {
+                    walk($child.firstChild, { cmp: parentElement });
+                } else {
+                    walk($child.firstChild, { cmp: parent.cmp });
+                }
             }
 
-            if (!cmp) {
+            /*if (!cmp) {
                 //console.log('aaaaaa')
-                parentElement = parent.cmp;
-            }
+                //parentElement = parent.cmp;
+            }*/
 
             $child = $child.nextSibling;
         }
