@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.21.0] - unreleased
+- **Improved** nested component system
+- **Changed** template parser, now removes all spaces after new line and tab
+- **Fixed** possible wrong parent component
+
 ## [1.20.2] - 2019-07-09
 - **Fixed** "Cannot call a class as a function" during development
 
