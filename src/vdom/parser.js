@@ -169,6 +169,10 @@ function serializeProps(node) {
             let attr = attributes[j];
 
             propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
+            /*if (REGEX.IS_ON.test(attr.name)) {
+                node.removeAttribute(attr.name)
+                console.log(node.hasAttribute(attr.name))
+            }*/
 
         }
     }
@@ -185,6 +189,14 @@ function propsFixer(nName, aName, aValue, props, dIS) {
     } else {
         if (REGEX.IS_STRING_QUOTED.test(aValue))
             aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
+
+        //console.log(aName, REGEX.IS_ON.test(aName))
+
+        if (REGEX.IS_REF.test(aName)) return;
+        if (REGEX.IS_BIND.test(aName)) return;
+        if (REGEX.IS_IS.test(aName)) return;
+        //if (REGEX.IS_ON.test(aName)) return;
+
         props[
             REGEX.IS_CUSTOM_TAG.test(nName) || dIS
                 ? dashToCamel(aName)

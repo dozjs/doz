@@ -103,6 +103,8 @@ module.exports = {
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
+        IS_IS: /^d-is$/,
+        IS_ON: /^d:on$/,
         IS_ALIAS: /^d:alias$/,
         IS_STORE: /^d:store$/,
         IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
@@ -300,15 +302,14 @@ function callMountAsync(context) {
     if (typeof context.onMountAsync === 'function') {
         delay(function () {
             context.onMountAsync.call(context);
-            context.app.emit('componentMountAsync', context);
         });
     }
     if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
         delay(function () {
             context.parent[context.__onMountAsync].call(context.parent, context);
-            context.app.emit('componentMountAsync', context);
         });
     }
+    context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
@@ -604,6 +605,10 @@ function serializeProps(node) {
             var attr = attributes[j];
 
             propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
+            /*if (REGEX.IS_ON.test(attr.name)) {
+                node.removeAttribute(attr.name)
+                console.log(node.hasAttribute(attr.name))
+            }*/
         }
     }
     return props;
@@ -617,6 +622,14 @@ function propsFixer(nName, aName, aValue, props, dIS) {
         delete props[aName];
     } else {
         if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
+
+        //console.log(aName, REGEX.IS_ON.test(aName))
+
+        if (REGEX.IS_REF.test(aName)) return;
+        if (REGEX.IS_BIND.test(aName)) return;
+        if (REGEX.IS_IS.test(aName)) return;
+        //if (REGEX.IS_ON.test(aName)) return;
+
         props[REGEX.IS_CUSTOM_TAG.test(nName) || dIS ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
     }
 }
