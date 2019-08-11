@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Improved** nested component system
 - **Changed** template parser, now removes all spaces after new line and tab
 - **Fixed** possible wrong parent component
+- **Removed** specials attributes from compiled code
 
 ## [1.20.2] - 2019-07-09
 - **Fixed** "Cannot call a class as a function" during development
