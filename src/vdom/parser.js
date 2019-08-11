@@ -189,7 +189,6 @@ function propsFixer(nName, aName, aValue, props, dIS) {
     } else {
         if (REGEX.IS_STRING_QUOTED.test(aValue))
             aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-
         //console.log(aName, REGEX.IS_ON.test(aName))
 
         if (REGEX.IS_REF.test(aName)) return;
