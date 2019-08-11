@@ -300,14 +300,15 @@ function callMountAsync(context) {
     if (typeof context.onMountAsync === 'function') {
         delay(function () {
             context.onMountAsync.call(context);
+            context.app.emit('componentMountAsync', context);
         });
     }
     if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
         delay(function () {
             context.parent[context.__onMountAsync].call(context.parent, context);
+            context.app.emit('componentMountAsync', context);
         });
     }
-    context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
@@ -1575,19 +1576,6 @@ function get() {
                 if (hooks.callBeforeMount(newElement) !== false) {
                     newElement._isRendered = true;
                     newElement.render(true);
-
-                    // Create an observer instance linked to the callback function
-                    /*const observer = new MutationObserver((mutationsList, observer) => {
-                        for(let mutation of mutationsList) {
-                            if (mutation.type === 'attributes') {
-                                console.log(mutation)
-                                console.log('The ' + mutation.attributeName + ' attribute was modified.');
-                            }
-                        }
-                    });
-                      // Start observing the target node for configured mutations
-                    observer.observe(newElement.getHTMLElement(), {attributes: true});
-                    */
 
                     if (!componentInstance) {
                         componentInstance = newElement;

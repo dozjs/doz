@@ -189,20 +189,6 @@ function get(cfg = {}) {
                     newElement._isRendered = true;
                     newElement.render(true);
 
-                    // Create an observer instance linked to the callback function
-                    /*const observer = new MutationObserver((mutationsList, observer) => {
-                        for(let mutation of mutationsList) {
-                            if (mutation.type === 'attributes') {
-                                console.log(mutation)
-                                console.log('The ' + mutation.attributeName + ' attribute was modified.');
-                            }
-                        }
-                    });
-
-                    // Start observing the target node for configured mutations
-                    observer.observe(newElement.getHTMLElement(), {attributes: true});
-                */
-
                     if (!componentInstance) {
                         componentInstance = newElement;
                     }
