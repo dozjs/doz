@@ -59,6 +59,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     if (!$parent) return;
 
     if (!oldNode) {
+        // create node
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
@@ -66,8 +67,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
                 return $parent.insertBefore(create(newNode, cmp, initial), $lastNode)
             }
         }
-
-        // create node
         return $parent.appendChild(create(newNode, cmp, initial));
 
     } else if (!newNode) {
