@@ -181,7 +181,7 @@ function get(cfg = {}) {
 
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', {value: uId});
-                Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
+                //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
 

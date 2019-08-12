@@ -1581,7 +1581,7 @@ function get() {
 
                 //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', { value: uId });
-                Object.defineProperty(newElement, 'originalChildNodesLength', { value: $child.childNodes.length });
+                //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
 
@@ -2552,7 +2552,8 @@ var _require = __webpack_require__(40),
 var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
     NS = _require2.NS,
-    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE;
+    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE,
+    CMP_INSTANCE = _require2.CMP_INSTANCE;
 
 var canDecode = __webpack_require__(15);
 
@@ -2646,11 +2647,21 @@ function update($parent, newNode, oldNode) {
     } else if (newNode.type) {
         // walk node
 
-        // I don't understand how, but it works
-        //if ($parent[CMP_TAG_INSTANCE] && $parent.nodeName !== 'X-CMP-3') {
-        if ($parent[CMP_TAG_INSTANCE] === cmp) {
-            //console.log($parent.nodeName, $parent[CMP_TAG_INSTANCE].tag, $parent[CMP_TAG_INSTANCE].originalChildNodesLength, cmp.tag, cmp.originalChildNodesLength);
-            index += cmp.originalChildNodesLength;
+        /*
+        Adjust index so it's possible update props in nested component like:
+          <parent-component>
+            <child-component>
+                ${this.props.foo}
+            </child-component>
+            <child-component>
+                ${this.props.bar}
+            </child-component>
+        </parent-component>
+         */
+        if ($parent[CMP_TAG_INSTANCE] === cmp && $parent.childNodes.length) {
+            // subtract 1 (should be dz-root) to child nodes length
+            // check if last child node is a root of the component
+            if ($parent.childNodes[$parent.childNodes.length - 1][CMP_INSTANCE]) index += $parent.childNodes.length - 1;
         }
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
