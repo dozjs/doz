@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.20.3  
+// [DOZ]  Build version: 1.21.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2970,7 +2970,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.20.3',
+        value: '1.21.0',
         enumerable: true
     }
 });
