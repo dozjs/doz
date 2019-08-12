@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - model</title>
     <title>Title</title>
-    <script src="../../dist/doz.js?58965pp949584735622"></script>
+    <script src="../../dist/doz.js?58965pp9495845735622"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -22,6 +22,29 @@
 <div id="app"></div>
 
 <script>
+
+    Doz.component('doz-text-zero', {
+        template(h){
+            return h`
+                <div>
+                    <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
+                    <p>Value: ${this.props.message}</p>
+                    <button onclick="this.setNew()">Set to hello</button>
+                </div>
+            `
+        },
+        props: {
+            message: 0
+        },
+        setNew() {
+            this.props.message = 1
+        },
+        propsListenerAsync: {
+            message(v, o) {
+                console.log(v, o)
+            }
+        }
+    });
 
     Doz.component('doz-text', {
         template(h){
@@ -153,6 +176,9 @@
     new Doz({
         root: document.getElementById('app'),
         template: `
+            <h3>Input type text</h3>
+            <doz-text-zero placeholder="write a message"></doz-text-zero>
+            <hr>
             <h3>Input type text</h3>
             <doz-text placeholder="write a message"></doz-text>
             <hr>

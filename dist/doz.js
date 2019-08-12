@@ -3941,7 +3941,7 @@ function attach($target, nodeProps, cmp) {
         setAttribute($target, name, nodeProps[name], cmp);
         addEventListener($target, name, nodeProps[name], cmp);
         var canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
-        if (canBindValue) bindValue = canBindValue;
+        if (canBindValue !== undefined) bindValue = canBindValue;
     }
 
     var datasetArray = Object.keys($target.dataset);
