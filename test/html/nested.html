@@ -124,63 +124,9 @@
                 <button onclick="this.props.linkName = 'timestamp: ' + Date.now()">change link name</button>
             `;
         },
-    }).on('draw', (next, prev, component) => {
-        //let prevCompiled = Doz.compile(Doz.h(component.getHTMLElement().firstChild.outerHTML));
-        //Object.assign(prev, prevCompiled);
-        if(component._maybeSlot) {
-            //walkChildren(next, component);
-        }
     });
 
-    function walkChildren(next, parentComponent, cmpIndex = 0) {
-        if(!/-/g.test(next.type)) return;
 
-        if (parentComponent.childrenByTag[next.type]) {
-            let cmp = parentComponent.childrenByTag[next.type][cmpIndex];
-            if (cmp) {
-                let cmpContent = Doz.compile(cmp.template(Doz.h), cmp);
-                let nPrev = Doz.compile(Doz.h`${cmp.getHTMLElement().innerHTML}`, cmp);
-                //let cmpContent = Doz.compile(Doz.h`${cmp._rawHTML}`, cmp);
-                //console.log(cmp.template(Doz.h))
-                //console.log(Doz.h`${cmp._rawHTML}`)
-
-                console.log('------', cmp.tag, next.type, '------');
-                //console.log(next);
-
-                //console.log(nPrev);
-                //console.log(cmp._prev);
-
-
-                //next.cmp = cmp;
-                //next.children.unshift(cmpContent);
-                parentComponent = cmp;
-
-                //let nNext = Object.assign({}, next);
-                let nNext = JSON.parse(JSON.stringify(next));
-                //nNext.children.unshift(cmpContent);
-                cmpContent.children = cmpContent.children.concat(nNext.children);
-
-                //console.log(nNext);
-                console.log(cmpContent);
-                console.log(cmp._prev);
-
-                cmp.renderPause();
-                Doz.update(cmp._cfgRoot, cmpContent, nPrev, 0, cmp);
-                cmp.renderResume(false);
-            }
-        }
-
-        let cmpStoreIndex = {};
-
-        next.children.forEach((item, i) => {
-            if (cmpStoreIndex[item.type] === undefined)
-                cmpStoreIndex[item.type] = 0;
-            else
-                cmpStoreIndex[item.type]++;
-
-            walkChildren(item, parentComponent, cmpStoreIndex[item.type])
-        });
-    }
 
 </script>
 </body>

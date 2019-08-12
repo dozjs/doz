@@ -59,6 +59,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     if (!$parent) return;
 
     if (!oldNode) {
+        if ($parent.childNodes.length) {
+            // If last node is a root, insert before
+            let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
+            if ($lastNode[CMP_INSTANCE]) {
+                return $parent.insertBefore(create(newNode, cmp, initial), $lastNode)
+            }
+        }
+
         // create node
         return $parent.appendChild(create(newNode, cmp, initial));
 
@@ -104,7 +112,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         if ($parent[CMP_TAG_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if($parent.childNodes[$parent.childNodes.length - 1][CMP_INSTANCE])
+            if ($parent.childNodes[$parent.childNodes.length - 1][CMP_INSTANCE])
                 index += $parent.childNodes.length - 1;
         }
 
