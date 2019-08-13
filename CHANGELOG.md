@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.21.1] - 2019-08-13
+- **Fixed** an issue relative to nested component system. If last node is a dz-root, the new element created must be insert before it.
+
 ## [1.21.0] - 2019-08-12
 - **Improved** nested component system
 - **Changed** template parser, now removes all spaces after new line and tab
