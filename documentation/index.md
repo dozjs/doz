@@ -1393,6 +1393,7 @@ new Doz({
 ```
 
 **Important** The directive `d-key` help Doz identify which items have changed, are added, or are removed.
+**Important** Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
 
@@ -1411,8 +1412,8 @@ Doz.component('my-salutation', {
         return h`
 
             <style>
-                /* :root rule referring to container in this case my-salutation */
-                :root {
+                /* :wrapper rule referring to container in this case my-salutation */
+                :wrapper {
                     border: 1px solid #ff0000;
                 }
 
