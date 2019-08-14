@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p125p2GF54234"></script>
+    <script src="../dist/doz.js?p125p82GF554234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -172,6 +172,9 @@
                 </div>
             `;
         },
+        onMount() {
+            //console.log('MOUNT', this.tag, this.props.title)
+        },
         onUnmount() {
             console.log('UNMOUNT', this.tag, this.props.title)
         },
@@ -227,7 +230,7 @@
         },
 
         onUpdate() {
-            //console.log('update')
+            //console.log('update', this);
             this.action.updateTotal();
             localStorage.setItem('doz-todo', JSON.stringify(this.props.record));
         }

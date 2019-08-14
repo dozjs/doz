@@ -1020,10 +1020,13 @@ var Component = function (_DOMManipulation) {
             var byDestroy = arguments[1];
             var silently = arguments[2];
 
+
+            console.log('BEFORE UNMM');
+
             if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                 return;
             }
-
+            console.log('UNMM');
             if (hooks.callBeforeUnmount(this) === false) return false;
 
             this._unmountedParentNode = this._rootElement.parentNode;
@@ -1057,6 +1060,7 @@ var Component = function (_DOMManipulation) {
         value: function destroy(onlyInstance) {
             var _this5 = this;
 
+            console.log('deeeeeeeeeeeeeeeeestr');
             if (this.unmount(onlyInstance, true) === false) return;
 
             if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
@@ -1243,7 +1247,7 @@ function defineProperties(obj, opt) {
         },
         _dynamicNodes: {
             value: {},
-            enumerable: true
+            writable: true
         },
         _rawHTML: {
             value: '',
@@ -1334,24 +1338,33 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        if (!item.node.childNodes.length) {
+        //if (!item.node.childNodes.length) {
+        //console.log(item.node)
+        var dynamicInstance = __webpack_require__(7).get({
+            root: root,
+            template: item.node.outerHTML,
+            app: instance.app,
+            parent: instance
+        });
 
-            var dynamicInstance = __webpack_require__(7).get({
-                root: root,
-                template: item.node.outerHTML,
-                app: instance.app,
-                parent: instance
-            });
+        //console.log('drawDynamic', instance,dynamicInstance)
 
-            if (dynamicInstance) {
-                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
-                instance._processing.splice(index, 1);
-                var n = Object.keys(instance.children).length;
-                instance.children[n++] = dynamicInstance;
-                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+        if (dynamicInstance) {
+            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+            instance._processing.splice(index, 1);
+            var n = Object.keys(instance.children).length;
+            instance.children[n++] = dynamicInstance;
+
+            if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
+                instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
+            } else {
+                instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
             }
+
+            if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
         }
+        //}
         index -= 1;
     }
 }
@@ -4284,7 +4297,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-                console.log('processing', this);
+                //console.log('processing', this.tag, $el)
                 this._processing.push({ node: $el, action: 'create' });
             }
         }

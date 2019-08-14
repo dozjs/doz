@@ -14,7 +14,7 @@ class DOMManipulation {
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
                 && !initial) {
-                console.log('processing', this)
+                //console.log('processing', this.tag, $el)
                 this._processing.push({node: $el, action: 'create'});
             }
     }

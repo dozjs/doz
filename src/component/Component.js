@@ -327,11 +327,15 @@ class Component extends DOMManipulation {
     }
 
     unmount(onlyInstance = false, byDestroy, silently) {
+
+
+        console.log('BEFORE UNMM')
+
         if (!onlyInstance && (Boolean(this._unmountedParentNode)
             || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
             return;
         }
-
+        console.log('UNMM')
         if (hooks.callBeforeUnmount(this) === false)
             return false;
 
@@ -358,7 +362,7 @@ class Component extends DOMManipulation {
     }
 
     destroy(onlyInstance) {
-
+console.log('deeeeeeeeeeeeeeeeestr')
         if (this.unmount(onlyInstance, true) === false)
             return;
 
@@ -483,7 +487,7 @@ function defineProperties(obj, opt) {
         },
         _dynamicNodes: {
             value: {},
-            enumerable: true
+            writable: true
         },
         _rawHTML: {
             value: '',
@@ -574,8 +578,8 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        if (!item.node.childNodes.length) {
-
+        //if (!item.node.childNodes.length) {
+            //console.log(item.node)
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
@@ -583,15 +587,25 @@ function drawDynamic(instance) {
                 parent: instance
             });
 
+            //console.log('drawDynamic', instance,dynamicInstance)
+
             if (dynamicInstance) {
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
                 dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
                 let n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;
-                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+
+                if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
+                    instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
+                } else {
+                    instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
+                }
+
+                if (item.node.dataset.key)
+                    instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
             }
-        }
+        //}
         index -= 1;
     }
 }
