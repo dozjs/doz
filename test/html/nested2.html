@@ -91,7 +91,7 @@
                 <x-grid>
                         ${this.each(this.props.rows, (row, i) => `
                             <x-item>
-                                <button onclick="this.removeItem(${i})">x</button> <x-label value="${row.value}"/>
+                                <button forceupdate onclick="this.removeItem(${i})">x</button> <x-label value="${row.value}"/>
                             </x-item>
                         `)}
                 </x-grid>
