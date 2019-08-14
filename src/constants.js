@@ -1,8 +1,8 @@
 module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
+    WRAPPER_INSTANCE: '__DOZ_WRAPPER_INSTANCE__',
+    ROOT_INSTANCE: '__DOZ_ROOT_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
-    CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
-    CMP_TAG_INSTANCE: '__DOZ_TAG_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },

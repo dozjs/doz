@@ -47,10 +47,18 @@
         }
     });
 
-    Doz.component('x-item', {
+    Doz.component('x-label', {
         template(h) {
             return h`
                 <span>-- ${this.props.value}</span>
+            `
+        }
+    });
+
+    Doz.component('x-item', {
+        template(h) {
+            return h`
+                <div><hr/></div>
             `
         }
     });
@@ -82,9 +90,9 @@
                 <button onclick="this.addItem()">Add item</button>
                 <x-grid>
                         ${this.each(this.props.rows, (row, i) => `
-                            <div>
-                                <button onclick="this.removeItem(${i})">x</button> <x-item value="${row.value}"/>
-                            </div>
+                            <x-item>
+                                <button onclick="this.removeItem(${i})">x</button> <x-label value="${row.value}"/>
+                            </x-item>
                         `)}
                 </x-grid>
             `;

@@ -1,4 +1,4 @@
-const {TAG, CMP_INSTANCE, INSTANCE, REGEX} = require('../constants');
+const {TAG, ROOT_INSTANCE, INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -308,7 +308,7 @@ class Component extends DOMManipulation {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                 this._rootElement = newElement;
-                this._rootElement[CMP_INSTANCE] = this;
+                this._rootElement[ROOT_INSTANCE] = this;
             }
 
             let root = this._rootElement;

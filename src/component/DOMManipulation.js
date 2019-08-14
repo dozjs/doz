@@ -4,7 +4,7 @@ const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
-const {INSTANCE, CMP_INSTANCE, CMP_TAG_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {INSTANCE, ROOT_INSTANCE, WRAPPER_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 //const Spye = require('../utils/spye');
 
 class DOMManipulation {
@@ -14,6 +14,7 @@ class DOMManipulation {
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
                 && !initial) {
+                console.log('processing', this)
                 this._processing.push({node: $el, action: 'create'});
             }
     }
@@ -35,10 +36,10 @@ class DOMManipulation {
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
         //Re-assign CMP INSTANCE to new element
-        if ($oldElement[CMP_INSTANCE]) {
-            $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
-            $newElement[CMP_INSTANCE]._rootElement = $newElement;
-            $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
+        if ($oldElement[ROOT_INSTANCE]) {
+            $newElement[ROOT_INSTANCE] = $oldElement[ROOT_INSTANCE];
+            $newElement[ROOT_INSTANCE]._rootElement = $newElement;
+            $newElement[ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[ROOT_INSTANCE].internalId;
         }
     };
 
@@ -118,10 +119,10 @@ class DOMManipulation {
             name = dashToCamel(name);
             const firstChild = $target.firstChild;
 
-            if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
-                firstChild[CMP_INSTANCE].props[name] = value;
-            } else if($target[CMP_TAG_INSTANCE]){
-                $target[CMP_TAG_INSTANCE].props[name] = value;
+            if (firstChild && firstChild[ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[ROOT_INSTANCE]._publicProps, name)) {
+                firstChild[ROOT_INSTANCE].props[name] = value;
+            } else if($target[WRAPPER_INSTANCE]){
+                $target[WRAPPER_INSTANCE].props[name] = value;
             }
         }
     }

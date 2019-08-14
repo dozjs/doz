@@ -83,9 +83,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 module.exports = {
     INSTANCE: '__DOZ_INSTANCE__',
+    WRAPPER_INSTANCE: '__DOZ_WRAPPER_INSTANCE__',
+    ROOT_INSTANCE: '__DOZ_ROOT_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
-    CMP_INSTANCE: '__DOZ_CMP_INSTANCE__',
-    CMP_TAG_INSTANCE: '__DOZ_TAG_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -690,7 +690,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
-    CMP_INSTANCE = _require.CMP_INSTANCE,
+    ROOT_INSTANCE = _require.ROOT_INSTANCE,
     INSTANCE = _require.INSTANCE,
     REGEX = _require.REGEX;
 
@@ -996,7 +996,7 @@ var Component = function (_DOMManipulation) {
                     var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                     this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                     this._rootElement = newElement;
-                    this._rootElement[CMP_INSTANCE] = this;
+                    this._rootElement[ROOT_INSTANCE] = this;
                 }
 
                 var root = this._rootElement;
@@ -1383,8 +1383,8 @@ var _require = __webpack_require__(26),
     scopedInner = _require.scopedInner;
 
 var _require2 = __webpack_require__(0),
-    CMP_INSTANCE = _require2.CMP_INSTANCE,
-    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE,
+    ROOT_INSTANCE = _require2.ROOT_INSTANCE,
+    WRAPPER_INSTANCE = _require2.WRAPPER_INSTANCE,
     ATTR = _require2.ATTR,
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
@@ -1593,8 +1593,8 @@ function get() {
                         componentInstance = newElement;
                     }
 
-                    newElement._rootElement[CMP_INSTANCE] = newElement;
-                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
+                    newElement._rootElement[ROOT_INSTANCE] = newElement;
+                    newElement.getHTMLElement()[WRAPPER_INSTANCE] = newElement;
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -2556,8 +2556,8 @@ var _require = __webpack_require__(40),
 var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
     NS = _require2.NS,
-    CMP_TAG_INSTANCE = _require2.CMP_TAG_INSTANCE,
-    CMP_INSTANCE = _require2.CMP_INSTANCE;
+    WRAPPER_INSTANCE = _require2.WRAPPER_INSTANCE,
+    ROOT_INSTANCE = _require2.ROOT_INSTANCE;
 
 var canDecode = __webpack_require__(15);
 
@@ -2631,7 +2631,7 @@ function update($parent, newNode, oldNode) {
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
-            if ($lastNode[CMP_INSTANCE]) {
+            if ($lastNode[ROOT_INSTANCE]) {
                 return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
             }
         }
@@ -2669,10 +2669,10 @@ function update($parent, newNode, oldNode) {
             </child-component>
         </parent-component>
          */
-        if ($parent[CMP_TAG_INSTANCE] === cmp && $parent.childNodes.length) {
+        if ($parent[WRAPPER_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if ($parent.childNodes[$parent.childNodes.length - 1][CMP_INSTANCE]) index += $parent.childNodes.length - 1;
+            if ($parent.childNodes[$parent.childNodes.length - 1][ROOT_INSTANCE]) index += $parent.childNodes.length - 1;
         }
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
@@ -3805,9 +3805,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
-    ATTR = _require.ATTR,
-    CMP_INSTANCE = _require.CMP_INSTANCE,
-    DIR_IS = _require.DIR_IS;
+    ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(5);
 var objectPath = __webpack_require__(41);
@@ -4270,8 +4268,8 @@ var delay = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
     INSTANCE = _require.INSTANCE,
-    CMP_INSTANCE = _require.CMP_INSTANCE,
-    CMP_TAG_INSTANCE = _require.CMP_TAG_INSTANCE,
+    ROOT_INSTANCE = _require.ROOT_INSTANCE,
+    WRAPPER_INSTANCE = _require.WRAPPER_INSTANCE,
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
@@ -4286,6 +4284,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
+                console.log('processing', this);
                 this._processing.push({ node: $el, action: 'create' });
             }
         }
@@ -4313,10 +4312,10 @@ var DOMManipulation = function () {
         // noinspection JSMethodCanBeStatic
         value: function $$afterNodeChange($newElement, $oldElement) {
             //Re-assign CMP INSTANCE to new element
-            if ($oldElement[CMP_INSTANCE]) {
-                $newElement[CMP_INSTANCE] = $oldElement[CMP_INSTANCE];
-                $newElement[CMP_INSTANCE]._rootElement = $newElement;
-                $newElement[CMP_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[CMP_INSTANCE].internalId;
+            if ($oldElement[ROOT_INSTANCE]) {
+                $newElement[ROOT_INSTANCE] = $oldElement[ROOT_INSTANCE];
+                $newElement[ROOT_INSTANCE]._rootElement = $newElement;
+                $newElement[ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[ROOT_INSTANCE].internalId;
             }
         }
     }, {
@@ -4413,10 +4412,10 @@ var DOMManipulation = function () {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;
 
-                if (firstChild && firstChild[CMP_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[CMP_INSTANCE]._publicProps, name)) {
-                    firstChild[CMP_INSTANCE].props[name] = value;
-                } else if ($target[CMP_TAG_INSTANCE]) {
-                    $target[CMP_TAG_INSTANCE].props[name] = value;
+                if (firstChild && firstChild[ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[ROOT_INSTANCE]._publicProps, name)) {
+                    firstChild[ROOT_INSTANCE].props[name] = value;
+                } else if ($target[WRAPPER_INSTANCE]) {
+                    $target[WRAPPER_INSTANCE].props[name] = value;
                 }
             }
         }

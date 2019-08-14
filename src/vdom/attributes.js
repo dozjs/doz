@@ -1,4 +1,4 @@
-const {REGEX, ATTR, CMP_INSTANCE, DIR_IS} = require('../constants');
+const {REGEX, ATTR} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
 

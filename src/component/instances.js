@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {CMP_INSTANCE, CMP_TAG_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {ROOT_INSTANCE, WRAPPER_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -193,8 +193,8 @@ function get(cfg = {}) {
                         componentInstance = newElement;
                     }
 
-                    newElement._rootElement[CMP_INSTANCE] = newElement;
-                    newElement.getHTMLElement()[CMP_TAG_INSTANCE] = newElement;
+                    newElement._rootElement[ROOT_INSTANCE] = newElement;
+                    newElement.getHTMLElement()[WRAPPER_INSTANCE] = newElement;
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
