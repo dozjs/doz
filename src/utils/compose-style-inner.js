@@ -13,11 +13,15 @@ function composeStyleInner(cssContent, tag) {
 
     let sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
+    if (/:root/.test(cssContent)) {
+        console.warn('[DEPRECATION] the :root pseudo selector is deprecated, use :wrapper instead');
+    }
+
     cssContent = cssContent
         .replace(/{/g, '{\n')
         .replace(/}/g, '}\n')
-        .replace(/^(\s+)?:root(\s+)?{/gm, tag + ' {')
-        .replace(/:root/g, '')
+        .replace(/^(\s+)?(:wrapper|:root)(\s+)?{/gm, tag + ' {')
+        .replace(/(:wrapper|:root)/g, '')
         .replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, `$1 ${sanitizeTagForAnimation}-$2`)
         .replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, `$1 ${sanitizeTagForAnimation}-$2`)
         .replace(/[^\s].*{/gm, match => {
