@@ -1392,8 +1392,9 @@ new Doz({
 });
 ```
 
-**Important** The directive `d-key` help Doz identify which items have changed, are added, or are removed.
-**Important** Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
+**Important**: The directive `d-key` help Doz identify which items have changed, are added, or are removed.
+
+**Important**: Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
 
