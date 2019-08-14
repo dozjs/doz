@@ -246,11 +246,8 @@ class Component extends DOMManipulation {
                 this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
             }
         } else {
-
-            //console.log(this.originalChildNodesLength)
-
             const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
-            //console.log(this.getHTMLElement())
+
             //Remove attributes from component tag
             removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
@@ -327,15 +324,11 @@ class Component extends DOMManipulation {
     }
 
     unmount(onlyInstance = false, byDestroy, silently) {
-
-
-        console.log('BEFORE UNMM')
-
         if (!onlyInstance && (Boolean(this._unmountedParentNode)
             || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
             return;
         }
-        console.log('UNMM')
+
         if (hooks.callBeforeUnmount(this) === false)
             return false;
 
@@ -362,7 +355,6 @@ class Component extends DOMManipulation {
     }
 
     destroy(onlyInstance) {
-console.log('deeeeeeeeeeeeeeeeestr')
         if (this.unmount(onlyInstance, true) === false)
             return;
 
@@ -579,15 +571,12 @@ function drawDynamic(instance) {
         let root = item.node.parentNode;
 
         //if (!item.node.childNodes.length) {
-            //console.log(item.node)
             const dynamicInstance = require('./instances').get({
                 root,
                 template: item.node.outerHTML,
                 app: instance.app,
                 parent: instance
             });
-
-            //console.log('drawDynamic', instance,dynamicInstance)
 
             if (dynamicInstance) {
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);

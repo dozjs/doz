@@ -925,11 +925,8 @@ var Component = function (_DOMManipulation) {
                     this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
                 }
             } else {
-
-                //console.log(this.originalChildNodesLength)
-
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
-                //console.log(this.getHTMLElement())
+
                 //Remove attributes from component tag
                 removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
 
@@ -1020,13 +1017,10 @@ var Component = function (_DOMManipulation) {
             var byDestroy = arguments[1];
             var silently = arguments[2];
 
-
-            console.log('BEFORE UNMM');
-
             if (!onlyInstance && (Boolean(this._unmountedParentNode) || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
                 return;
             }
-            console.log('UNMM');
+
             if (hooks.callBeforeUnmount(this) === false) return false;
 
             this._unmountedParentNode = this._rootElement.parentNode;
@@ -1060,7 +1054,6 @@ var Component = function (_DOMManipulation) {
         value: function destroy(onlyInstance) {
             var _this5 = this;
 
-            console.log('deeeeeeeeeeeeeeeeestr');
             if (this.unmount(onlyInstance, true) === false) return;
 
             if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
@@ -1339,15 +1332,12 @@ function drawDynamic(instance) {
         var root = item.node.parentNode;
 
         //if (!item.node.childNodes.length) {
-        //console.log(item.node)
         var dynamicInstance = __webpack_require__(7).get({
             root: root,
             template: item.node.outerHTML,
             app: instance.app,
             parent: instance
         });
-
-        //console.log('drawDynamic', instance,dynamicInstance)
 
         if (dynamicInstance) {
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
