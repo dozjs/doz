@@ -27,7 +27,7 @@ Component compiled and mounted into the DOM
 The tag wrapper is accessible via `this.getHTMLElement()`, 
 this method returns the HTMLElement of the component.
 
-Multiple tag without parent node inside the template:
+A component with multiple tag without parent node inside the template:
 
 ```js
 Doz.component('my-component', {
@@ -39,3 +39,17 @@ Doz.component('my-component', {
     }
 });
 ```
+
+It will be compiled in this way:
+
+```   
+<my-component> --------------> tag wrapper
+    <dz-root> ---------------> tag root
+        <div>hello</div>
+        <div>world</div>
+    </dz-root>
+</my-component>
+```
+
+Automatically Doz adds a special tag called dz-root and wrap the content
+with it.
