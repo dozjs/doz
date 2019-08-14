@@ -193,9 +193,13 @@ class Doz {
             root: this.cfg.root,
             template: this.baseTemplate,
             app: this
-        }) || [];
+        });// || [];
 
         return this;
+    }
+
+    get mainComponent() {
+        return this._tree;
     }
 
     getComponent(alias) {

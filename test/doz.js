@@ -202,5 +202,23 @@ describe('Doz', function () {
             });
 
         });
+
+        it('mainComponent should be equal to _tree', function () {
+
+            // language=HTML
+            document.body.innerHTML = `
+                <div id="app"></div>`;
+
+            const view = new Doz({
+                root: document.getElementById('app'),
+                template() {
+                    return `<div>ciao</div>`
+                },
+                onMount() {
+                    be.err.equal(this.app.mainComponent, this.app._tree);
+                }
+            });
+
+        });
     });
 });

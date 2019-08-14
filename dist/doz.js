@@ -3223,7 +3223,7 @@ var Doz = function () {
                 root: this.cfg.root,
                 template: this.baseTemplate,
                 app: this
-            }) || [];
+            }); // || [];
 
             return this;
         }
@@ -3284,6 +3284,11 @@ var Doz = function () {
         key: 'generateUId',
         value: function generateUId() {
             return ++this._lastUId;
+        }
+    }, {
+        key: 'mainComponent',
+        get: function get() {
+            return this._tree;
         }
     }]);
 

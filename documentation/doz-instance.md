@@ -59,6 +59,15 @@ new Doz({
 - **Description**: This object allow to sharing things between components.
 
 
+### Properties
+
+### mainComponent
+
+- **Since**: 1.22.0
+- **Type**: `Component`
+- **Description**: This returns the main component of the app.
+
+
 ### Methods
 
 #### doz.draw()
