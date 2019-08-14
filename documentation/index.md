@@ -835,9 +835,13 @@ Doz.component('my-wrapper', {
     template(h) {
         return h`
             <div>
-                <button onclick="this.mount('<hello-world></hello-world>')">Mount</button>
+                <button onclick="this.showHello()">Mount</button>
             </div>
         `
+    },
+    
+    showHello() {
+    	this.mount('<hello-world/>');
     }
 });
 
@@ -850,9 +854,10 @@ new Doz({
         `
     }
 });
+
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/c4kaoc95/)
+[FIDDLE](https://jsfiddle.net/fabioricali/uz5sv1gr/2/)
 
 ---
 
