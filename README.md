@@ -48,7 +48,9 @@ $ npm start
 #### Component definition
 
 ```javascript
-Doz.define('button-counter', class extends Doz.Component {
+import {define, Component} from 'doz'
+
+define('button-counter', class extends Component {
 
     constructor(o) {
         super(o);
@@ -63,8 +65,8 @@ Doz.define('button-counter', class extends Doz.Component {
 
             <style>
                 button {
-                    background: #ff000;
-                    color: #fff;
+                    font-size: 16px;
+                    padding: 20px;
                 }
             </style>
 
@@ -81,6 +83,8 @@ Doz.define('button-counter', class extends Doz.Component {
 #### Make an app with the component defined above
 
 ```javascript
+import Doz from 'doz'
+
 new Doz({
 
     root: '#app',
@@ -93,6 +97,8 @@ new Doz({
 
 });
 ```
+
+[LIVE](https://jsfiddle.net/fabioricali/vsm6ef50/5/)
 
 ## Doz ecosystem
 - 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provide a boilerplate to creating app and component
