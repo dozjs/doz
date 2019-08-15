@@ -1717,10 +1717,10 @@ function composeStyleInner(cssContent, tag) {
     var sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
     if (/:root/.test(cssContent)) {
-        console.warn('[DEPRECATION] the :root pseudo selector is deprecated, use :wrapper instead');
+        console.warn('[DEPRECATION] the :root pseudo selector is deprecated, use :component or :wrapper instead');
     }
 
-    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?(:wrapper|:root)(\s+)?{/gm, tag + ' {').replace(/(:wrapper|:root)/g, '').replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, '$1 ' + sanitizeTagForAnimation + '-$2').replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, '$1 ' + sanitizeTagForAnimation + '-$2').replace(/[^\s].*{/gm, function (match) {
+    cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:(component|wrapper|root)(\s+)?{/gm, tag + ' {').replace(/:(component|wrapper|root)/g, '').replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, '$1 ' + sanitizeTagForAnimation + '-$2').replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, '$1 ' + sanitizeTagForAnimation + '-$2').replace(/[^\s].*{/gm, function (match) {
 
         if (/^(@|(from|to|\d+%)[^-_])/.test(match)) return match;
 
