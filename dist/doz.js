@@ -82,9 +82,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 module.exports = {
-    INSTANCE: '__DOZ_INSTANCE__',
-    WRAPPER_INSTANCE: '__DOZ_WRAPPER_INSTANCE__',
-    ROOT_INSTANCE: '__DOZ_ROOT_INSTANCE__',
+    COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
+    COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
+    COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -690,8 +690,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var _require = __webpack_require__(0),
     TAG = _require.TAG,
-    ROOT_INSTANCE = _require.ROOT_INSTANCE,
-    INSTANCE = _require.INSTANCE,
+    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
+    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(36);
@@ -896,8 +896,8 @@ var Component = function (_DOMManipulation) {
                 if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
                     var _defined2 = function _defined2(item) {
                         if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._dynamicNodes[item.key] !== undefined) {
-                            if (_this2._dynamicNodes[item.key][INSTANCE]) {
-                                _this2._dynamicNodes[item.key][INSTANCE].destroy();
+                            if (_this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                                _this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
                             } else {
                                 _this2._dynamicNodes[item.key].parentNode.removeChild(_this2._dynamicNodes[item.key]);
                             }
@@ -919,8 +919,8 @@ var Component = function (_DOMManipulation) {
             if (!thereIsDelete) candidateKeyToRemove = undefined;
 
             if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
-                if (this._dynamicNodes[candidateKeyToRemove][INSTANCE]) {
-                    this._dynamicNodes[candidateKeyToRemove][INSTANCE].destroy();
+                if (this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+                    this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
                 } else {
                     this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
                 }
@@ -993,7 +993,7 @@ var Component = function (_DOMManipulation) {
                     var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                     this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                     this._rootElement = newElement;
-                    this._rootElement[ROOT_INSTANCE] = this;
+                    this._rootElement[COMPONENT_ROOT_INSTANCE] = this;
                 }
 
                 var root = this._rootElement;
@@ -1341,7 +1341,7 @@ function drawDynamic(instance) {
 
         if (dynamicInstance) {
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-            dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
             instance._processing.splice(index, 1);
             var n = Object.keys(instance.children).length;
             instance.children[n++] = dynamicInstance;
@@ -1386,8 +1386,8 @@ var _require = __webpack_require__(26),
     scopedInner = _require.scopedInner;
 
 var _require2 = __webpack_require__(0),
-    ROOT_INSTANCE = _require2.ROOT_INSTANCE,
-    WRAPPER_INSTANCE = _require2.WRAPPER_INSTANCE,
+    COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
+    COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
     ATTR = _require2.ATTR,
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
@@ -1596,8 +1596,8 @@ function get() {
                         componentInstance = newElement;
                     }
 
-                    newElement._rootElement[ROOT_INSTANCE] = newElement;
-                    newElement.getHTMLElement()[WRAPPER_INSTANCE] = newElement;
+                    newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
+                    newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -2559,8 +2559,8 @@ var _require = __webpack_require__(40),
 var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
     NS = _require2.NS,
-    WRAPPER_INSTANCE = _require2.WRAPPER_INSTANCE,
-    ROOT_INSTANCE = _require2.ROOT_INSTANCE;
+    COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
+    COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE;
 
 var canDecode = __webpack_require__(15);
 
@@ -2634,7 +2634,7 @@ function update($parent, newNode, oldNode) {
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
-            if ($lastNode[ROOT_INSTANCE]) {
+            if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
                 return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
             }
         }
@@ -2672,10 +2672,10 @@ function update($parent, newNode, oldNode) {
             </child-component>
         </parent-component>
          */
-        if ($parent[WRAPPER_INSTANCE] === cmp && $parent.childNodes.length) {
+        if ($parent[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if ($parent.childNodes[$parent.childNodes.length - 1][ROOT_INSTANCE]) index += $parent.childNodes.length - 1;
+            if ($parent.childNodes[$parent.childNodes.length - 1][COMPONENT_ROOT_INSTANCE]) index += $parent.childNodes.length - 1;
         }
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
@@ -4270,9 +4270,9 @@ var castStringTo = __webpack_require__(5);
 var delay = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
-    INSTANCE = _require.INSTANCE,
-    ROOT_INSTANCE = _require.ROOT_INSTANCE,
-    WRAPPER_INSTANCE = _require.WRAPPER_INSTANCE,
+    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
+    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
+    COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX;
@@ -4314,11 +4314,11 @@ var DOMManipulation = function () {
 
         // noinspection JSMethodCanBeStatic
         value: function $$afterNodeChange($newElement, $oldElement) {
-            //Re-assign CMP INSTANCE to new element
-            if ($oldElement[ROOT_INSTANCE]) {
-                $newElement[ROOT_INSTANCE] = $oldElement[ROOT_INSTANCE];
-                $newElement[ROOT_INSTANCE]._rootElement = $newElement;
-                $newElement[ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[ROOT_INSTANCE].internalId;
+            //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+            if ($oldElement[COMPONENT_ROOT_INSTANCE]) {
+                $newElement[COMPONENT_ROOT_INSTANCE] = $oldElement[COMPONENT_ROOT_INSTANCE];
+                $newElement[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
+                $newElement[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[COMPONENT_ROOT_INSTANCE].internalId;
             }
         }
     }, {
@@ -4328,7 +4328,7 @@ var DOMManipulation = function () {
         // noinspection JSMethodCanBeStatic
         value: function $$beforeNodeWalk($parent, index, attributesUpdated) {
             if ($parent.childNodes[index]) {
-                var dynInstance = $parent.childNodes[index][INSTANCE];
+                var dynInstance = $parent.childNodes[index][COMPONENT_DYNAMIC_INSTANCE];
                 // Can update props of dynamic instances?
                 if (dynInstance && attributesUpdated.length) {
                     var _defined = function _defined(props) {
@@ -4415,10 +4415,10 @@ var DOMManipulation = function () {
                 name = dashToCamel(name);
                 var firstChild = $target.firstChild;
 
-                if (firstChild && firstChild[ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[ROOT_INSTANCE]._publicProps, name)) {
-                    firstChild[ROOT_INSTANCE].props[name] = value;
-                } else if ($target[WRAPPER_INSTANCE]) {
-                    $target[WRAPPER_INSTANCE].props[name] = value;
+                if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
+                    firstChild[COMPONENT_ROOT_INSTANCE].props[name] = value;
+                } else if ($target[COMPONENT_INSTANCE]) {
+                    $target[COMPONENT_INSTANCE].props[name] = value;
                 }
             }
         }

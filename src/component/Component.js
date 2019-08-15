@@ -1,4 +1,4 @@
-const {TAG, ROOT_INSTANCE, INSTANCE, REGEX} = require('../constants');
+const {TAG, COMPONENT_ROOT_INSTANCE, COMPONENT_DYNAMIC_INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -226,8 +226,8 @@ class Component extends DOMManipulation {
             ) {
                 change.previousValue.forEach(item => {
                     if (item && typeof item === 'object' && item.key !== undefined && this._dynamicNodes[item.key] !== undefined) {
-                        if(this._dynamicNodes[item.key][INSTANCE]) {
-                            this._dynamicNodes[item.key][INSTANCE].destroy();
+                        if(this._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                            this._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
                         } else {
                             this._dynamicNodes[item.key].parentNode.removeChild(this._dynamicNodes[item.key]);
                         }
@@ -240,8 +240,8 @@ class Component extends DOMManipulation {
             candidateKeyToRemove = undefined;
 
         if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
-            if(this._dynamicNodes[candidateKeyToRemove][INSTANCE]) {
-                this._dynamicNodes[candidateKeyToRemove][INSTANCE].destroy();
+            if(this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+                this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
             } else {
                 this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
             }
@@ -305,7 +305,7 @@ class Component extends DOMManipulation {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                 this._rootElement = newElement;
-                this._rootElement[ROOT_INSTANCE] = this;
+                this._rootElement[COMPONENT_ROOT_INSTANCE] = this;
             }
 
             let root = this._rootElement;
@@ -580,7 +580,7 @@ function drawDynamic(instance) {
 
             if (dynamicInstance) {
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-                dynamicInstance._rootElement.parentNode[INSTANCE] = dynamicInstance;
+                dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
                 instance._processing.splice(index, 1);
                 let n = Object.keys(instance.children).length;
                 instance.children[n++] = dynamicInstance;

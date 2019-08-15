@@ -239,8 +239,8 @@ module.exports = html;
 },{}],25:[function(require,module,exports) {
 module.exports = {
     ROOT: '__DOZ_GLOBAL_COMPONENTS__',
-    INSTANCE: '__DOZ_INSTANCE__',
-    ROOT_INSTANCE: '__DOZ_CMP_INSTANCE__',
+    COMPONENT_DYNAMIC_INSTANCE: '__DOZ_INSTANCE__',
+    COMPONENT_ROOT_INSTANCE: '__DOZ_CMP_INSTANCE__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -1306,7 +1306,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = require('../constants'),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
-    CMP_INSTANCE = _require.ROOT_INSTANCE;
+    CMP_INSTANCE = _require.COMPONENT_ROOT_INSTANCE;
 
 var castStringTo = require('../utils/cast-string-to');
 var dashToCamel = require('../utils/dash-to-camel');
@@ -1542,10 +1542,10 @@ var _require = require('./attributes'),
 var deadChildren = [];
 
 var _require2 = require('../constants'),
-    INSTANCE = _require2.INSTANCE,
+    INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE,
     TAG = _require2.TAG,
     NS = _require2.NS,
-    CMP_INSTANCE = _require2.ROOT_INSTANCE;
+    CMP_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE;
 
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
@@ -1598,7 +1598,7 @@ function update($parent, newNode, oldNode) {
         var newElement = create(newNode, cmp, initial);
         var oldElement = $parent.childNodes[index];
 
-        //Re-assign CMP INSTANCE to new element
+        //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
         if (oldElement[CMP_INSTANCE]) {
             newElement[CMP_INSTANCE] = oldElement[CMP_INSTANCE];
             newElement[CMP_INSTANCE]._rootElement = newElement;
@@ -1846,8 +1846,8 @@ var html = require('../utils/html');
 
 var _require = require('../constants'),
     TAG = _require.TAG,
-    CMP_INSTANCE = _require.ROOT_INSTANCE,
-    INSTANCE = _require.INSTANCE;
+    CMP_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
+    INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE;
 
 var collection = require('../collection');
 var observer = require('./observer');

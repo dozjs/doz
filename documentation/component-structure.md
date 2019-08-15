@@ -1,6 +1,6 @@
 # Component structure
 
-Declare the component "my-component"
+When declare a component for example "my-component"
 
 ```js
 Doz.component('my-component', {
@@ -14,17 +14,17 @@ Doz.component('my-component', {
 });
 ```
 
-Component compiled and mounted into the DOM
+it will be compiled and mounted into the DOM in this way
 
 ```   
-<my-component> --------------> tag wrapper
+<my-component> --------------> tag component
     <div> -------------------> tag root
         My component
     </div>
 </my-component>
 ```
 
-The tag wrapper is accessible via `this.getHTMLElement()`, 
+The tag component is also accessible via `this.getHTMLElement()`, 
 this method returns the HTMLElement of the component.
 
 A component with multiple tag without parent node inside the template:
@@ -40,10 +40,10 @@ Doz.component('my-component', {
 });
 ```
 
-It will be compiled in this way:
+instead it will be compiled in this way:
 
 ```   
-<my-component> --------------> tag wrapper
+<my-component> --------------> tag component
     <dz-root> ---------------> tag root
         <div>hello</div>
         <div>world</div>

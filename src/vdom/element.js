@@ -1,5 +1,5 @@
 const {attach, updateAttributes} = require('./attributes');
-const {TAG, NS, WRAPPER_INSTANCE, ROOT_INSTANCE} = require('../constants');
+const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE} = require('../constants');
 const canDecode = require('../utils/can-decode');
 
 const storeElementNode = Object.create(null);
@@ -63,7 +63,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
-            if ($lastNode[ROOT_INSTANCE]) {
+            if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
                 return $parent.insertBefore(create(newNode, cmp, initial), $lastNode)
             }
         }
@@ -108,10 +108,10 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             </child-component>
         </parent-component>
          */
-        if ($parent[WRAPPER_INSTANCE] === cmp && $parent.childNodes.length) {
+        if ($parent[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if ($parent.childNodes[$parent.childNodes.length - 1][ROOT_INSTANCE])
+            if ($parent.childNodes[$parent.childNodes.length - 1][COMPONENT_ROOT_INSTANCE])
                 index += $parent.childNodes.length - 1;
         }
 
