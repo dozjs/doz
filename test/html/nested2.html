@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5dp891ku666ìkj5r4thp73d888"></script>
+    <script src="../../dist/doz.js?5dp891ku66k6ìkj5r4thp73d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -91,11 +91,16 @@
                 <x-grid>
                         ${this.each(this.props.rows, (row, i) => `
                             <x-item>
-                                <button forceupdate onclick="this.removeItem(${i})">x</button> <x-label value="${row.value}"/>
+                                <button forceupdate onclick="this.removeItem(${i})">x</button>&nbsp;
+                                <button forceupdate onclick="this.infoItem(${i})">i</button>&nbsp;
+                                ${i} <x-label value="${row.value}"/>
                             </x-item>
                         `)}
                 </x-grid>
             `;
+        },
+        infoItem(index) {
+            console.log(index, this.props.rows[index]);
         },
         removeItem(index) {
             this.props.rows.splice(index, 1)
@@ -104,7 +109,6 @@
             this.props.rows.push({
                 value: Math.random()
             });
-            setTimeout(()=> console.log(this))
         }
     });
 

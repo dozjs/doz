@@ -64,9 +64,10 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
             if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
-                return $parent.insertBefore(create(newNode, cmp, initial), $lastNode)
+                return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
             }
         }
+
         return $parent.appendChild(create(newNode, cmp, initial));
 
     } else if (!newNode) {
@@ -78,6 +79,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         const $oldElement = $parent.childNodes[index];
+
         if (!$oldElement) return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;

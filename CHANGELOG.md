@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.22.2] - 2019-08-15
+- **Fixed** last dynamic component created into a list don't works fine
+
 ## [1.22.1] - 2019-08-15
 - **Added** alias pseudo element :component
 - **Fixed** minors

@@ -1340,7 +1340,18 @@ function drawDynamic(instance) {
         });
 
         if (dynamicInstance) {
+
+            // Replace with dynamic instance original node
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+
+            // if original node has children
+            if (item.node.childNodes.length) {
+                // replace again -.-
+                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
+                // and append root element of dynamic instance :D
+                item.node.appendChild(dynamicInstance._rootElement);
+            }
+
             dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
             instance._processing.splice(index, 1);
             var n = Object.keys(instance.children).length;
@@ -2638,6 +2649,7 @@ function update($parent, newNode, oldNode) {
                 return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
             }
         }
+
         return $parent.appendChild(create(newNode, cmp, initial));
     } else if (!newNode) {
         // remove node
@@ -2647,6 +2659,7 @@ function update($parent, newNode, oldNode) {
     } else if (isChanged(newNode, oldNode)) {
         // node changes
         var $oldElement = $parent.childNodes[index];
+
         if (!$oldElement) return;
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
