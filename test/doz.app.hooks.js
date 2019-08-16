@@ -112,6 +112,7 @@ describe('Doz.app.hooks', function () {
 
             setTimeout(function () {
                 console.log(result)
+                console.log(shouldBe)
                 be.err(done).equal(result, shouldBe);
             }, 3500);
         });

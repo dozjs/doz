@@ -133,6 +133,7 @@ describe('Doz.view.solo', function () {
                 onDestroy() {
                     setTimeout(function () {
                         queueEvents.push('onDestroy');
+                        console.log(queueEvents, shouldBe)
                         be.err(done).equal(queueEvents, shouldBe);
                     },100);
                 }

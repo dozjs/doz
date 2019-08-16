@@ -81,6 +81,16 @@ function callUpdate(context, changes) {
     context.app.emit('componentUpdate', context, changes);
 }
 
+function callDrawByParent(context, changes) {
+    if (typeof context.onDrawByParent === 'function') {
+        return context.onDrawByParent.call(context, changes);
+    }
+    if (context.parent && typeof context.parent[context.__onDrawByParent] === 'function') {
+        return context.parent[context.__onDrawByParent].call(context.parent, context, changes);
+    }
+    //context.app.emit('componentDrawByParent', context, changes);
+}
+
 function callAfterRender(context, changes) {
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
@@ -168,6 +178,7 @@ module.exports = {
     callMountAsync,
     callBeforeUpdate,
     callUpdate,
+    callDrawByParent,
     callAfterRender,
     callBeforeUnmount,
     callUnmount,

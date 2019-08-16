@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.22.1  
+// [DOZ]  Build version: 1.22.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -142,6 +142,7 @@ module.exports = {
         ON_MOUNT_ASYNC: 'd:onmountasync',
         ON_BEFORE_UPDATE: 'd:onbeforeupdate',
         ON_UPDATE: 'd:onupdate',
+        ON_DRAW_BY_PARENT: 'd:ondrawbyparent',
         ON_AFTER_RENDER: 'd:onafterrender',
         ON_BEFORE_UNMOUNT: 'd:onbeforeunmount',
         ON_UNMOUNT: 'd:onunmount',
@@ -163,6 +164,7 @@ module.exports = {
         ON_MOUNT_ASYNC: '__onMountAsync',
         ON_BEFORE_UPDATE: '__onBeforeUpdate',
         ON_UPDATE: '__onUpdate',
+        ON_DRAW_BY_PARENT: '__onDrawByParent',
         ON_AFTER_RENDER: '__onAfterRender',
         ON_BEFORE_UNMOUNT: '__onBeforeUnmount',
         ON_UNMOUNT: '__onUnmount',
@@ -331,6 +333,16 @@ function callUpdate(context, changes) {
     context.app.emit('componentUpdate', context, changes);
 }
 
+function callDrawByParent(context, changes) {
+    if (typeof context.onDrawByParent === 'function') {
+        return context.onDrawByParent.call(context, changes);
+    }
+    if (context.parent && typeof context.parent[context.__onDrawByParent] === 'function') {
+        return context.parent[context.__onDrawByParent].call(context.parent, context, changes);
+    }
+    //context.app.emit('componentDrawByParent', context, changes);
+}
+
 function callAfterRender(context, changes) {
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
@@ -414,6 +426,7 @@ module.exports = {
     callMountAsync: callMountAsync,
     callBeforeUpdate: callBeforeUpdate,
     callUpdate: callUpdate,
+    callDrawByParent: callDrawByParent,
     callAfterRender: callAfterRender,
     callBeforeUnmount: callBeforeUnmount,
     callUnmount: callUnmount,
@@ -869,6 +882,7 @@ var Component = function (_DOMManipulation) {
             var _this2 = this;
 
             var changes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+            var silentAfterRenderEvent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
             if (this._renderPause) return;
             this.beginSafeRender();
@@ -937,7 +951,8 @@ var Component = function (_DOMManipulation) {
                 this._prev = next;
             }
 
-            hooks.callAfterRender(this);
+            if (!silentAfterRenderEvent) hooks.callAfterRender(this);
+
             drawDynamic(this);
             /*if (initial) {
                 drawDynamic(this);
@@ -1418,6 +1433,7 @@ var _require5 = __webpack_require__(6),
     Component = _require5.Component;
 
 var propsInit = __webpack_require__(20);
+var delay = __webpack_require__(2);
 
 function getComponentName(child) {
     var cmpName = void 0;
@@ -1508,127 +1524,135 @@ function get() {
             var parentElement = void 0;
 
             if (cmp) {
+                var _ret = function () {
 
-                if (parent.cmp) {
-                    var rawChild = $child.outerHTML;
-                    parent.cmp.rawChildren.push(rawChild);
-                }
-
-                // For node created by mount method
-                if (parent.cmp && parent.cmp.mounted) {
-                    $child = $child.nextSibling;
-                    continue;
-                }
-
-                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                    trash.push($child);
-                    $child = $child.nextSibling;
-                    continue;
-                }
-
-                var props = serializeProps($child);
-                var dProps = extract(props);
-
-                var newElement = void 0;
-
-                /*
-                if(parent.cmp) {
-                    console.log('parent.cmp', parent.cmp.tag);
-                }
-                if(cfg.parent)
-                    console.log('cfg.parent', cfg.parent.tag);
-                   */
-
-                if (typeof cmp.cfg === 'function') {
-                    // This implements single function component
-                    if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
-                        var func = cmp.cfg;
-                        cmp.cfg = function (_Component) {
-                            _inherits(_class, _Component);
-
-                            function _class() {
-                                _classCallCheck(this, _class);
-
-                                return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
-                            }
-
-                            return _class;
-                        }(Component);
-                        cmp.cfg.prototype.template = func;
+                    if (parent.cmp) {
+                        var rawChild = $child.outerHTML;
+                        parent.cmp.rawChildren.push(rawChild);
                     }
 
-                    newElement = new cmp.cfg({
-                        tag: cmpName,
-                        root: $child,
-                        app: cfg.app,
-                        props: props,
-                        dProps: dProps,
-                        parentCmp: parent.cmp || cfg.parent
-                    });
-                } else {
-                    newElement = new Component({
-                        tag: cmpName,
-                        cmp: cmp,
-                        root: $child,
-                        app: cfg.app,
-                        props: props,
-                        dProps: dProps,
-                        parentCmp: parent.cmp || cfg.parent
-                    });
-                }
-
-                //console.log($child.nodeName, $child.childNodes.length);
-
-                if (!newElement) {
-                    $child = $child.nextSibling;
-                    continue;
-                }
-
-                if (_typeof(newElement.module) === 'object') {
-                    hmr(newElement, newElement.module);
-                }
-
-                propsInit(newElement);
-
-                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
-
-
-                //$child.dataset.uid = uId;
-                Object.defineProperty(newElement, 'uId', { value: uId });
-                //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
-
-                newElement.app.emit('componentPropsInit', newElement);
-
-                if (hooks.callBeforeMount(newElement) !== false) {
-                    newElement._isRendered = true;
-                    newElement.render(true);
-
-                    if (!componentInstance) {
-                        componentInstance = newElement;
+                    // For node created by mount method
+                    if (parent.cmp && parent.cmp.mounted) {
+                        $child = $child.nextSibling;
+                        return 'continue';
                     }
 
-                    newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
-                    newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+                    if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                        trash.push($child);
+                        $child = $child.nextSibling;
+                        return 'continue';
+                    }
 
-                    //$child.insertBefore(newElement._rootElement, $child.firstChild);
+                    var props = serializeProps($child);
+                    var dProps = extract(props);
 
-                    hooks.callMount(newElement);
-                    hooks.callMountAsync(newElement);
-                }
+                    var newElement = void 0;
 
-                parentElement = newElement;
+                    /*
+                    if(parent.cmp) {
+                        console.log('parent.cmp', parent.cmp.tag);
+                    }
+                    if(cfg.parent)
+                        console.log('cfg.parent', cfg.parent.tag);
+                       */
 
-                if (parent.cmp) {
-                    var n = Object.keys(parent.cmp.children).length;
-                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
-                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                    if (typeof cmp.cfg === 'function') {
+                        // This implements single function component
+                        if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+                            var func = cmp.cfg;
+                            cmp.cfg = function (_Component) {
+                                _inherits(_class, _Component);
+
+                                function _class() {
+                                    _classCallCheck(this, _class);
+
+                                    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+                                }
+
+                                return _class;
+                            }(Component);
+                            cmp.cfg.prototype.template = func;
+                        }
+
+                        newElement = new cmp.cfg({
+                            tag: cmpName,
+                            root: $child,
+                            app: cfg.app,
+                            props: props,
+                            dProps: dProps,
+                            parentCmp: parent.cmp || cfg.parent
+                        });
                     } else {
-                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                        newElement = new Component({
+                            tag: cmpName,
+                            cmp: cmp,
+                            root: $child,
+                            app: cfg.app,
+                            props: props,
+                            dProps: dProps,
+                            parentCmp: parent.cmp || cfg.parent
+                        });
                     }
-                }
 
-                cfg.autoCmp = null;
+                    //console.log($child.nodeName, $child.childNodes.length);
+
+                    if (!newElement) {
+                        $child = $child.nextSibling;
+                        return 'continue';
+                    }
+
+                    if (_typeof(newElement.module) === 'object') {
+                        hmr(newElement, newElement.module);
+                    }
+
+                    propsInit(newElement);
+
+                    Object.defineProperty(newElement, 'uId', { value: uId });
+                    //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
+
+                    newElement.app.emit('componentPropsInit', newElement);
+
+                    if (hooks.callBeforeMount(newElement) !== false) {
+
+                        newElement._isRendered = true;
+                        newElement.render(true);
+
+                        if (!componentInstance) {
+                            componentInstance = newElement;
+                        }
+
+                        newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
+                        newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+
+                        //$child.insertBefore(newElement._rootElement, $child.firstChild);
+
+                        // This is an hack for call render a second time so the
+                        // event onAppDraw and onDrawByParent are fired after
+                        // that the component is mounted
+                        delay(function () {
+                            newElement.render(false, [], true);
+                        });
+
+                        hooks.callMount(newElement);
+                        hooks.callMountAsync(newElement);
+                    }
+
+                    parentElement = newElement;
+
+                    if (parent.cmp) {
+                        var n = Object.keys(parent.cmp.children).length;
+                        parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                        if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                            parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                        } else {
+                            parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                        }
+                    }
+
+                    cfg.autoCmp = null;
+                }();
+
+                if (_ret === 'continue') continue;
             }
 
             if ($child.hasChildNodes()) {
@@ -2574,6 +2598,7 @@ var _require2 = __webpack_require__(0),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE;
 
 var canDecode = __webpack_require__(15);
+var hooks = __webpack_require__(3);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2634,11 +2659,27 @@ function update($parent, newNode, oldNode) {
     var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var cmp = arguments[4];
     var initial = arguments[5];
+    var cmpParent = arguments[6];
 
 
     if (newNode && newNode.cmp) cmp = newNode.cmp;
 
     if (!$parent) return;
+
+    if (cmpParent && $parent[COMPONENT_INSTANCE]) {
+        //if ($parent[COMPONENT_INSTANCE]) {
+        //if ($parent[COMPONENT_INSTANCE]) {
+        //console.log($parent[COMPONENT_INSTANCE])
+        /*console.log('UPDATE', $parent[COMPONENT_INSTANCE].tag);
+        console.log('cmpParent', cmpParent.tag);
+        console.log(newNode, oldNode);*/
+        //console.log('on nested update')
+        var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
+        if (result !== undefined && result !== null && (typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object') {
+            newNode = result.newNode || newNode;
+            oldNode = result.oldNode || oldNode;
+        }
+    }
 
     if (!oldNode) {
         // create node
@@ -2708,7 +2749,7 @@ function update($parent, newNode, oldNode) {
         var oldLength = oldNode.children.length;
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
-            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial);
+            update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         }
 
         clearDead();
@@ -3006,7 +3047,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.22.1',
+        value: '1.22.2',
         enumerable: true
     }
 });
@@ -3565,6 +3606,11 @@ function extract(props) {
     if (props[ATTR.ON_UPDATE] !== undefined) {
         dProps[DPROPS.ON_UPDATE] = props[ATTR.ON_UPDATE];
         delete props[ATTR.ON_UPDATE];
+    }
+
+    if (props[ATTR.ON_DRAW_BY_PARENT] !== undefined) {
+        dProps[DPROPS.ON_DRAW_BY_PARENT] = props[ATTR.ON_DRAW_BY_PARENT];
+        delete props[ATTR.ON_DRAW_BY_PARENT];
     }
 
     if (props[ATTR.ON_AFTER_RENDER] !== undefined) {

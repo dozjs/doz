@@ -8,6 +8,7 @@ const {extract} = require('./d-props');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
+const delay = require('../utils/delay');
 
 function getComponentName(child) {
     let cmpName;
@@ -176,16 +177,13 @@ function get(cfg = {}) {
 
                 propsInit(newElement);
 
-                //console.log(newElement.tag, $child, $child.childNodes, $child.childNodes.length);
-
-
-                //$child.dataset.uid = uId;
                 Object.defineProperty(newElement, 'uId', {value: uId});
                 //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
 
                 if (hooks.callBeforeMount(newElement) !== false) {
+
                     newElement._isRendered = true;
                     newElement.render(true);
 
@@ -198,8 +196,17 @@ function get(cfg = {}) {
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
+                    // This is an hack for call render a second time so the
+                    // event onAppDraw and onDrawByParent are fired after
+                    // that the component is mounted
+                    delay(() => {
+                        newElement.render(false, [], true)
+                    });
+
+
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
+
                 }
 
                 parentElement = newElement;

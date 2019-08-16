@@ -1,6 +1,7 @@
 const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE} = require('../constants');
 const canDecode = require('../utils/can-decode');
+const hooks = require('../component/hooks');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -51,12 +52,27 @@ function create(node, cmp, initial) {
     return $el;
 }
 
-function update($parent, newNode, oldNode, index = 0, cmp, initial) {
+function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
 
     if (!$parent) return;
+
+    if (cmpParent && $parent[COMPONENT_INSTANCE]) {
+    //if ($parent[COMPONENT_INSTANCE]) {
+    //if ($parent[COMPONENT_INSTANCE]) {
+    //console.log($parent[COMPONENT_INSTANCE])
+        /*console.log('UPDATE', $parent[COMPONENT_INSTANCE].tag);
+        console.log('cmpParent', cmpParent.tag);
+        console.log(newNode, oldNode);*/
+        //console.log('on nested update')
+        let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
+        if (result !== undefined && result !== null && typeof result === 'object') {
+            newNode = result.newNode || newNode;
+            oldNode = result.oldNode || oldNode;
+        }
+    }
 
     if (!oldNode) {
         // create node
@@ -145,7 +161,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
                 oldNode.children[i],
                 i,
                 cmp,
-                initial
+                initial,
+                $parent[COMPONENT_INSTANCE] || cmpParent
             );
         }
 

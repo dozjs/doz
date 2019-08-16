@@ -64,6 +64,11 @@ function extract(props) {
         delete  props[ATTR.ON_UPDATE];
     }
 
+    if (props[ATTR.ON_DRAW_BY_PARENT] !== undefined) {
+        dProps[DPROPS.ON_DRAW_BY_PARENT] = props[ATTR.ON_DRAW_BY_PARENT];
+        delete  props[ATTR.ON_DRAW_BY_PARENT];
+    }
+
     if (props[ATTR.ON_AFTER_RENDER] !== undefined) {
         dProps[DPROPS.ON_AFTER_RENDER] = props[ATTR.ON_AFTER_RENDER];
         delete  props[ATTR.ON_AFTER_RENDER];

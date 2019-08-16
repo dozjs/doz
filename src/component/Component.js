@@ -197,7 +197,7 @@ class Component extends DOMManipulation {
         return '';
     }
 
-    render(initial, changes = []) {
+    render(initial, changes = [], silentAfterRenderEvent = false) {
         if (this._renderPause) return;
         this.beginSafeRender();
         const template = this.template(h);
@@ -258,7 +258,9 @@ class Component extends DOMManipulation {
             this._prev = next;
         }
 
-        hooks.callAfterRender(this);
+        if (!silentAfterRenderEvent)
+            hooks.callAfterRender(this);
+
         drawDynamic(this);
         /*if (initial) {
             drawDynamic(this);

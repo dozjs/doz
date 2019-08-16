@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5dp891ku66k6ìkj5r4thp73d888"></script>
+    <script src="../../dist/doz.js?5dp891ku66k64ì4k5j5r4thp73d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -21,10 +21,6 @@
 
         constructor(o) {
             super(o);
-
-            this.props = {
-                counter: 0
-            }
         }
 
         template(h) {
@@ -60,15 +56,46 @@
                     }
                 </style>
 
-        `
+            `
         }
 
-        onAppDraw(o) {
-            if (o.type === 'a-card') {
-                o.children[0].children.push(' the time');
+        onDrawByParent(newNode, oldNode) {
+            if (newNode.type === 'a-card-body') {
+                console.log('onDrawByParent', this.tag);
+                newNode.children.push(' time');
             }
         }
+    });
 
+    Doz.define('a-card-label', class extends Doz.Component {
+
+        constructor(o) {
+            super(o);
+        }
+
+        template(h) {
+            return h`
+
+                <style>
+                    :component {
+                        font-family: sans-serif;
+                        padding: 20px;
+                        border: 1px solid #cf70ff;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                    }
+                </style>
+
+            `
+        }
+
+        onDrawByParent(newNode, oldNode) {
+            console.log('onDrawByParent', this.tag);
+            return  {
+                newNode: 'ciao'
+            }
+        }
     });
 
     new Doz({
@@ -78,18 +105,30 @@
         },
         template(h) {
             return h`
-                <a-card>
-                    <a-card-body>
-                        ${this.props.clock}
-                    </a-card-body>
-                    <a-card-footer>
-                        wow footer
-                    </a-card-footer>
-                </a-card>
+                <style>
+                    p {
+                        text-align:center
+                    }
+                </style>
+                <div>
+                    <p>Lorem ipsum dolor sit</p>
+                    <a-card>
+                        <a-card-body>
+                            ${this.props.clock}
+                            <a-card-label>
+                                hello
+                            </a-card-label>
+                        </a-card-body>
+                        <a-card-footer>
+                            wow footer
+                        </a-card-footer>
+                    </a-card>
+                </div>
         `
         },
-        onMount() {
-            setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
+        onMountAsync() {
+            //this.render();
+            //setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
         }
     });
 

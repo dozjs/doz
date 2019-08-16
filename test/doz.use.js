@@ -10,7 +10,7 @@ describe('Doz.use', function () {
 
     describe('create app', function () {
 
-        it('should be ok', function (done) {
+        it.skip('should be ok', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
