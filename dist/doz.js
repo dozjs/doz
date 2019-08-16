@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.22.2  
+// [DOZ]  Build version: 1.22.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -115,6 +115,7 @@ module.exports = {
         IS_SVG: /^svg$/,
         IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
+        GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
@@ -2607,7 +2608,7 @@ function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
-function create(node, cmp, initial) {
+function create(node, cmp, initial, cmpParent) {
     if (typeof node === 'undefined') return;
 
     var nodeStored = void 0;
@@ -2632,12 +2633,12 @@ function create(node, cmp, initial) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
-    attach($el, node.props, cmp);
+    attach($el, node.props, cmp, cmpParent);
 
     var _defined2 = node.children;
 
     var _defined3 = function _defined3(item) {
-        return create(item, cmp, initial);
+        return create(item, cmp, initial, cmpParent);
     };
 
     var _defined = new Array(_defined2.length);
@@ -2690,13 +2691,13 @@ function update($parent, newNode, oldNode) {
             // If last node is a root, insert before
             var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
             if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
-                $newElement = create(newNode, cmp, initial);
+                $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 $parent.insertBefore($newElement, $lastNode);
                 //console.log('$newElement', $newElement)
                 return $newElement;
             }
         }
-        $newElement = create(newNode, cmp, initial);
+        $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         $parent.appendChild($newElement);
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
         return $newElement;
@@ -2713,7 +2714,7 @@ function update($parent, newNode, oldNode) {
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
-        var _$newElement = create(newNode, cmp, initial);
+        var _$newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
 
         $parent.replaceChild(_$newElement, $oldElement);
 
@@ -2741,7 +2742,7 @@ function update($parent, newNode, oldNode) {
             if ($parent.childNodes[lastIndex][COMPONENT_ROOT_INSTANCE]) index += lastIndex;
         }
 
-        var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
+        var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp, $parent[COMPONENT_INSTANCE] || cmpParent);
 
         if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
 
@@ -3047,7 +3048,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.22.2',
+        value: '1.22.1',
         enumerable: true
     }
 });
@@ -3925,13 +3926,14 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 function updateAttributes($target, newProps) {
     var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var cmp = arguments[3];
+    var cmpParent = arguments[4];
 
     var props = Object.assign({}, newProps, oldProps);
     var updated = [];
 
     var _defined = function _defined(name) {
         if (!$target || $target.nodeType !== 1) return;
-        updateAttribute($target, name, newProps[name], oldProps[name], cmp);
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
             var obj = {};
             obj[name] = newProps[name];
@@ -3965,11 +3967,14 @@ function trimQuotes(str) {
     return str.replace(REGEX.TRIM_QUOTES, '$1');
 }
 
-function addEventListener($target, name, value, cmp) {
+function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
 
-    var match = value.match(REGEX.GET_LISTENER);
+    // If use scope. from onDrawByParent event
+    match = value.match(REGEX.GET_LISTENER_SCOPE);
+
+    console.log('match', REGEX.GET_LISTENER_SCOPE, value);
 
     if (match) {
         var args = null;
@@ -3982,7 +3987,7 @@ function addEventListener($target, name, value, cmp) {
 
             var _defined4 = function _defined4(item) {
                 item = item.trim();
-                return item === 'this' ? cmp : castStringTo(trimQuotes(item));
+                return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item));
             };
 
             for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
@@ -3990,17 +3995,46 @@ function addEventListener($target, name, value, cmp) {
             }
         }
 
-        var isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
+        var method = objectPath(handler, cmpParent);
+
+        if (method !== undefined) {
+            value = args ? method.bind.apply(method, [cmpParent].concat(_toConsumableArray(args))) : method.bind(cmpParent);
+        }
+        return;
+    }
+
+    var match = value.match(REGEX.GET_LISTENER);
+
+    if (match) {
+        var _args = null;
+        var _handler = match[1];
+        var _stringArgs = match[2];
+        if (_stringArgs) {
+            var _defined5 = _stringArgs.split(',');
+
+            _args = new Array(_defined5.length);
+
+            var _defined6 = function _defined6(item) {
+                item = item.trim();
+                return item === 'this' ? cmp : castStringTo(trimQuotes(item));
+            };
+
+            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+                _args[_i6] = _defined6(_defined5[_i6], _i6, _defined5);
+            }
+        }
+
+        var isParentMethod = _handler.match(REGEX.IS_PARENT_METHOD);
 
         if (isParentMethod) {
-            handler = isParentMethod[1];
+            _handler = isParentMethod[1];
             cmp = cmp.parent;
         }
 
-        var method = objectPath(handler, cmp);
+        var _method = objectPath(_handler, cmp);
 
-        if (method !== undefined) {
-            value = args ? method.bind.apply(method, [cmp].concat(_toConsumableArray(args))) : method.bind(cmp);
+        if (_method !== undefined) {
+            value = _args ? _method.bind.apply(_method, [cmp].concat(_toConsumableArray(_args))) : _method.bind(cmp);
         }
     }
 
@@ -4014,7 +4048,7 @@ function addEventListener($target, name, value, cmp) {
     }
 }
 
-function attach($target, nodeProps, cmp) {
+function attach($target, nodeProps, cmp, cmpParent) {
 
     var bindValue = void 0;
     var name = void 0;
@@ -4023,15 +4057,15 @@ function attach($target, nodeProps, cmp) {
 
     for (var i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, nodeProps[name], cmp);
-        addEventListener($target, name, nodeProps[name], cmp);
+        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
+        addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         var canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
         if (canBindValue !== undefined) bindValue = canBindValue;
     }
 
     var datasetArray = Object.keys($target.dataset);
-    for (var _i5 = 0; _i5 < datasetArray.length; _i5++) {
-        if (REGEX.IS_LISTENER.test(datasetArray[_i5])) addEventListener($target, _i5, $target.dataset[datasetArray[_i5]], cmp);
+    for (var _i7 = 0; _i7 < datasetArray.length; _i7++) {
+        if (REGEX.IS_LISTENER.test(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
     }
 
     cmp.$$afterAttributesCreate($target, bindValue);

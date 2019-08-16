@@ -45,12 +45,12 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
     }
 }
 
-function updateAttributes($target, newProps, oldProps = {}, cmp) {
+function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
     Object.keys(props).forEach(name => {
         if(!$target || $target.nodeType !== 1) return;
-        updateAttribute($target, name, newProps[name], oldProps[name], cmp);
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
             let obj = {};
             obj[name] = newProps[name];
@@ -78,9 +78,35 @@ function trimQuotes(str) {
     return str.replace(REGEX.TRIM_QUOTES, '$1');
 }
 
-function addEventListener($target, name, value, cmp) {
+function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
+
+    // If use scope. from onDrawByParent event
+    match = value.match(REGEX.GET_LISTENER_SCOPE);
+
+    console.log('match', REGEX.GET_LISTENER_SCOPE, value)
+
+    if (match) {
+        let args = null;
+        let handler = match[1];
+        let stringArgs = match[2];
+        if (stringArgs) {
+            args = stringArgs.split(',').map(item => {
+                item = item.trim();
+                return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
+            })
+        }
+
+        const method = objectPath(handler, cmpParent);
+
+        if (method !== undefined) {
+            value = args
+                ? method.bind(cmpParent, ...args)
+                : method.bind(cmpParent);
+        }
+        return;
+    }
 
     let match = value.match(REGEX.GET_LISTENER);
 
@@ -129,7 +155,7 @@ function addEventListener($target, name, value, cmp) {
     }
 }
 
-function attach($target, nodeProps, cmp) {
+function attach($target, nodeProps, cmp, cmpParent) {
 
     let bindValue;
     let name;
@@ -138,8 +164,8 @@ function attach($target, nodeProps, cmp) {
 
     for(let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, nodeProps[name], cmp);
-        addEventListener($target, name, nodeProps[name], cmp);
+        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
+        addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         let canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
         if (canBindValue !== undefined) bindValue = canBindValue;
     }
@@ -147,7 +173,7 @@ function attach($target, nodeProps, cmp) {
     const datasetArray = Object.keys($target.dataset);
     for (let i = 0; i < datasetArray.length; i++) {
         if (REGEX.IS_LISTENER.test(datasetArray[i]))
-            addEventListener($target, i, $target.dataset[datasetArray[i]], cmp);
+            addEventListener($target, i, $target.dataset[datasetArray[i]], cmp, cmpParent);
     }
 
     cmp.$$afterAttributesCreate($target, bindValue);

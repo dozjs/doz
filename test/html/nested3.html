@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5dp891ku66k64ì4k5j5r4thp573d888"></script>
+    <script src="../../dist/doz.js?5dp891ku66k645ì4k5j5r4thp573d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -85,15 +85,29 @@
                         margin: 20px;
                         display: block;
                     }
+
+                    .title {
+                        color: #ffd9c2;
+                    }
                 </style>
+                <button onclick="console.log(this)">click</button>
 
             `
         }
 
+        showAlert(text) {
+            alert(text)
+        }
+
         onDrawByParent(newNode, oldNode) {
-            console.log('onDrawByParent', this.tag, oldNode);
+            //console.log('onDrawByParent', this.tag, oldNode);
             return  {
-                newNode: newNode + ' (ciao)'
+                newNode: Doz.compile(Doz.h`
+                    <div>
+                        <h1 class="title">${newNode}</h1>
+                        <button onclick="console.log(scope)">Click</button>
+                    </div>
+                `)
             }
         }
     });

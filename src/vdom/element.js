@@ -13,7 +13,7 @@ function isChanged(nodeA, nodeB) {
         nodeA.props && nodeA.props.forceupdate;
 }
 
-function create(node, cmp, initial) {
+function create(node, cmp, initial, cmpParent) {
     if (typeof node === 'undefined') return;
 
     let nodeStored;
@@ -41,10 +41,10 @@ function create(node, cmp, initial) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
-    attach($el, node.props, cmp);
+    attach($el, node.props, cmp, cmpParent);
 
     node.children
-        .map(item => create(item, cmp, initial))
+        .map(item => create(item, cmp, initial, cmpParent))
         .forEach($el.appendChild.bind($el));
 
     cmp.$$afterNodeElementCreate($el, node, initial);
@@ -83,13 +83,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
             if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
-                $newElement = create(newNode, cmp, initial);
+                $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 $parent.insertBefore($newElement, $lastNode);
                 //console.log('$newElement', $newElement)
                 return $newElement;
             }
         }
-        $newElement = create(newNode, cmp, initial);
+        $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         $parent.appendChild($newElement);
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
         return $newElement;
@@ -108,7 +108,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
-        const $newElement = create(newNode, cmp, initial);
+        const $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
 
         $parent.replaceChild(
             $newElement,
@@ -146,7 +146,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             $parent.childNodes[index],
             newNode.props,
             oldNode.props,
-            cmp
+            cmp,
+            $parent[COMPONENT_INSTANCE] || cmpParent
         );
 
         if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
