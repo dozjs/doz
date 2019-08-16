@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5dp891ku66k64ì4k5j5r4thp73d888"></script>
+    <script src="../../dist/doz.js?5dp891ku66k64ì4k5j5r4thp573d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -61,8 +61,8 @@
 
         onDrawByParent(newNode, oldNode) {
             if (newNode.type === 'a-card-body') {
-                console.log('onDrawByParent', this.tag);
-                newNode.children.push(' time');
+                //console.log('onDrawByParent oldNode', oldNode);
+                newNode.children[0] += ' time';
             }
         }
     });
@@ -91,9 +91,9 @@
         }
 
         onDrawByParent(newNode, oldNode) {
-            console.log('onDrawByParent', this.tag);
+            console.log('onDrawByParent', this.tag, oldNode);
             return  {
-                newNode: 'ciao'
+                newNode: newNode + ' (ciao)'
             }
         }
     });
@@ -126,9 +126,8 @@
                 </div>
         `
         },
-        onMountAsync() {
-            //this.render();
-            //setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
+        onMount() {
+            setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
         }
     });
 

@@ -333,12 +333,12 @@ function callUpdate(context, changes) {
     context.app.emit('componentUpdate', context, changes);
 }
 
-function callDrawByParent(context, changes) {
+function callDrawByParent(context, newNode, oldNode) {
     if (typeof context.onDrawByParent === 'function') {
-        return context.onDrawByParent.call(context, changes);
+        return context.onDrawByParent.call(context, newNode, oldNode);
     }
     if (context.parent && typeof context.parent[context.__onDrawByParent] === 'function') {
-        return context.parent[context.__onDrawByParent].call(context.parent, context, changes);
+        return context.parent[context.__onDrawByParent].call(context.parent, context, newNode, oldNode);
     }
     //context.app.emit('componentDrawByParent', context, changes);
 }
