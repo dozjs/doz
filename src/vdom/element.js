@@ -60,15 +60,23 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
 
     if (!oldNode) {
         // create node
+
+        let $newElement;
+
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
             if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
-                return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
+                $newElement = create(newNode, cmp, initial);
+                $parent.insertBefore($newElement, $lastNode);
+                //console.log('$newElement', $newElement)
+                return $newElement;
             }
         }
-
-        return $parent.appendChild(create(newNode, cmp, initial));
+        $newElement = create(newNode, cmp, initial);
+        $parent.appendChild($newElement);
+        //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
+        return $newElement;
 
     } else if (!newNode) {
         // remove node
@@ -109,12 +117,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial) {
                 ${this.props.bar}
             </child-component>
         </parent-component>
-         */
+        */
         if ($parent[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if ($parent.childNodes[$parent.childNodes.length - 1][COMPONENT_ROOT_INSTANCE])
-                index += $parent.childNodes.length - 1;
+            let lastIndex = $parent.childNodes.length - 1;
+            if ($parent.childNodes[lastIndex][COMPONENT_ROOT_INSTANCE])
+                index += lastIndex;
         }
 
         let attributesUpdated = updateAttributes(

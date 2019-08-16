@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - nested</title>
+    <script src="../../dist/doz.js?5dp891ku66k6ìkj5r4thp73d888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.define('a-card', class extends Doz.Component {
+
+        constructor(o) {
+            super(o);
+
+            this.props = {
+                counter: 0
+            }
+        }
+
+        template(h) {
+            return h`
+
+                <style>
+                    :component {
+                        font-family: sans-serif;
+                        padding: 20px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                    }
+
+                    a-card-body {
+                        text-align: center;
+                        font-size: 36px;
+                        padding: 20px;
+                        border: 1px solid #000;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                        background: #000;
+                        color: #fff;
+                    }
+
+                    a-card-footer {
+                        border-top: 1px solid #ccc;
+                        text-align: center;
+                        display: block;
+                        padding: 20px;
+                    }
+                </style>
+
+        `
+        }
+
+        onAppDraw(o) {
+            if (o.type === 'a-card') {
+                o.children[0].children.push(' the time');
+            }
+        }
+
+    });
+
+    new Doz({
+        root: '#app',
+        props: {
+            clock: '-'
+        },
+        template(h) {
+            return h`
+                <a-card>
+                    <a-card-body>
+                        ${this.props.clock}
+                    </a-card-body>
+                    <a-card-footer>
+                        wow footer
+                    </a-card-footer>
+                </a-card>
+        `
+        },
+        onMount() {
+            setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
+        }
+    });
+
+</script>
+</body>
+</html>

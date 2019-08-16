@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.22.2  
+// [DOZ]  Build version: 1.22.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2642,15 +2642,23 @@ function update($parent, newNode, oldNode) {
 
     if (!oldNode) {
         // create node
+
+        var $newElement = void 0;
+
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
             if ($lastNode[COMPONENT_ROOT_INSTANCE]) {
-                return $parent.insertBefore(create(newNode, cmp, initial), $lastNode);
+                $newElement = create(newNode, cmp, initial);
+                $parent.insertBefore($newElement, $lastNode);
+                //console.log('$newElement', $newElement)
+                return $newElement;
             }
         }
-
-        return $parent.appendChild(create(newNode, cmp, initial));
+        $newElement = create(newNode, cmp, initial);
+        $parent.appendChild($newElement);
+        //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
+        return $newElement;
     } else if (!newNode) {
         // remove node
         if ($parent.childNodes[index]) {
@@ -2664,13 +2672,13 @@ function update($parent, newNode, oldNode) {
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
 
-        var $newElement = create(newNode, cmp, initial);
+        var _$newElement = create(newNode, cmp, initial);
 
-        $parent.replaceChild($newElement, $oldElement);
+        $parent.replaceChild(_$newElement, $oldElement);
 
-        cmp.$$afterNodeChange($newElement, $oldElement);
+        cmp.$$afterNodeChange(_$newElement, $oldElement);
 
-        return $newElement;
+        return _$newElement;
     } else if (newNode.type) {
         // walk node
 
@@ -2684,11 +2692,12 @@ function update($parent, newNode, oldNode) {
                 ${this.props.bar}
             </child-component>
         </parent-component>
-         */
+        */
         if ($parent[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
-            if ($parent.childNodes[$parent.childNodes.length - 1][COMPONENT_ROOT_INSTANCE]) index += $parent.childNodes.length - 1;
+            var lastIndex = $parent.childNodes.length - 1;
+            if ($parent.childNodes[lastIndex][COMPONENT_ROOT_INSTANCE]) index += lastIndex;
         }
 
         var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp);
@@ -2997,7 +3006,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.22.2',
+        value: '1.22.1',
         enumerable: true
     }
 });
