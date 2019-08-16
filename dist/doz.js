@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 1.22.1  
+// [DOZ]  Build version: 1.22.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3048,7 +3048,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '1.22.1',
+        value: '1.22.2',
         enumerable: true
     }
 });
@@ -3974,8 +3974,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     // If use scope. from onDrawByParent event
     match = value.match(REGEX.GET_LISTENER_SCOPE);
 
-    console.log('match', REGEX.GET_LISTENER_SCOPE, value);
-
     if (match) {
         var args = null;
         var handler = match[1];
@@ -4040,11 +4038,18 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
-
-        var _func = function _func() {
-            eval(value);
-        };
-        $target.addEventListener(extractEventName(name), _func.bind(cmp));
+        //console.log('match', value, /(^|\()scope[.)]/g.test(value))
+        if (/(^|\()scope[.)]/g.test(value) || value === 'scope') {
+            var _func = function _func() {
+                eval(value.replace('scope', 'this'));
+            };
+            $target.addEventListener(extractEventName(name), _func.bind(cmpParent));
+        } else {
+            var _func2 = function _func2() {
+                eval(value);
+            };
+            $target.addEventListener(extractEventName(name), _func2.bind(cmp));
+        }
     }
 }
 

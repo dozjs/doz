@@ -85,7 +85,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     // If use scope. from onDrawByParent event
     match = value.match(REGEX.GET_LISTENER_SCOPE);
 
-    console.log('match', REGEX.GET_LISTENER_SCOPE, value)
+
 
     if (match) {
         let args = null;
@@ -144,14 +144,26 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         );
     else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
+        //console.log('match', value, /(^|\()scope[.)]/g.test(value))
+        if (/(^|\()scope[.)]/g.test(value) || value === 'scope') {
+            const _func = function () {
+                eval(value.replace('scope', 'this'));
+            };
+            $target.addEventListener(
+                extractEventName(name),
+                _func.bind(cmpParent)
+            );
+        } else {
+            const _func = function () {
+                eval(value)
+            };
+            $target.addEventListener(
+                extractEventName(name),
+                _func.bind(cmp)
+            );
+        }
 
-        const _func = function () {
-            eval(value)
-        };
-        $target.addEventListener(
-            extractEventName(name),
-            _func.bind(cmp)
-        );
+
     }
 }
 
