@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - slot</title>
+    <script src="../../dist/doz.js?5dp891ku66kì645ì4k5j5r44thp573d888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.define('a-card', class extends Doz.Component {
+
+        constructor(o) {
+            super(o);
+        }
+
+        template(h) {
+            return h`
+
+                <style>
+                    :component {
+                        font-family: sans-serif;
+                        padding: 20px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                    }
+
+                    a-card-body {
+                        text-align: center;
+                        font-size: 36px;
+                        padding: 20px;
+                        border: 1px solid #000;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                        background: #000;
+                        color: #fff;
+                    }
+
+                    a-card-footer {
+                        border-top: 1px solid #ccc;
+                        text-align: center;
+                        display: block;
+                        padding: 20px;
+                    }
+                </style>
+
+            `
+        }
+    });
+
+    Doz.define('a-card-label', class extends Doz.Component {
+
+        constructor(o) {
+            super(o);
+        }
+
+        template(h) {
+            return h`
+
+                <style>
+                    :component {
+                        font-family: sans-serif;
+                        padding: 20px;
+                        border: 1px solid #cf70ff;
+                        border-radius: 5px;
+                        margin: 20px;
+                        display: block;
+                    }
+
+                    .title {
+                        color: #ffd9c2;
+                    }
+                </style>
+                <slot name="my-slot">label is empty</slot>
+
+            `
+        }
+
+        // Manipulate v-dom
+        onDrawByParent(newNode, oldNode) {
+
+            /*return  {
+                newNode: Doz.compile(Doz.h`
+                    <div>
+                        <h1 class="title">${newNode}</h1>
+                        <button onclick="scope.showAlert('${newNode}')">Click scope</button>
+                    </div>
+                `)
+            }*/
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        props: {
+            clock: '-'
+        },
+        template(h) {
+            return h`
+                <style>
+                    p {
+                        text-align:center
+                    }
+                </style>
+                <div>
+                    <p>Lorem ipsum dolor sit</p>
+                    <a-card>
+                        <a-card-body>
+                            ${this.props.clock}
+                            <a-card-label>
+                                <span slot="my-slot">hello</span>
+                            </a-card-label>
+                        </a-card-body>
+                        <a-card-footer>
+                            wow footer
+                        </a-card-footer>
+                    </a-card>
+                </div>
+        `
+        },
+        onMount() {
+            setInterval(() => this.props.clock = new Date().toLocaleTimeString(), 1000)
+        }
+    });
+
+</script>
+</body>
+</html>
