@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `onDrawByParent` event to component, useful for nested component
+- **Added** magic word "scope" for listener referred to manipulation of v-dom inside `onDrawByParent` event 
+
 ## [1.22.2] - 2019-08-15
 - **Fixed** last dynamic component created into a list don't works fine
 
