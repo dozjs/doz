@@ -116,6 +116,7 @@ module.exports = {
         IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
+        IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
         TRIM_QUOTES: /^["'](.*)["']$/,
         THIS_TARGET: /\B\$this(?!\w)/g,
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
@@ -3972,9 +3973,10 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     if (!isEventAttribute(name)) return;
 
     // If use scope. from onDrawByParent event
-    match = value.match(REGEX.GET_LISTENER_SCOPE);
+    var match = value.match(REGEX.GET_LISTENER_SCOPE);
 
     if (match) {
+
         var args = null;
         var handler = match[1];
         var stringArgs = match[2];
@@ -3994,54 +3996,56 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         }
 
         var method = objectPath(handler, cmpParent);
-
         if (method !== undefined) {
             value = args ? method.bind.apply(method, [cmpParent].concat(_toConsumableArray(args))) : method.bind(cmpParent);
         }
-        return;
-    }
+    } else {
 
-    var match = value.match(REGEX.GET_LISTENER);
+        match = value.match(REGEX.GET_LISTENER);
 
-    if (match) {
-        var _args = null;
-        var _handler = match[1];
-        var _stringArgs = match[2];
-        if (_stringArgs) {
-            var _defined5 = _stringArgs.split(',');
+        if (match) {
+            var _args = null;
+            var _handler = match[1];
+            var _stringArgs = match[2];
+            if (_stringArgs) {
+                var _defined5 = _stringArgs.split(',');
 
-            _args = new Array(_defined5.length);
+                _args = new Array(_defined5.length);
 
-            var _defined6 = function _defined6(item) {
-                item = item.trim();
-                return item === 'this' ? cmp : castStringTo(trimQuotes(item));
-            };
+                var _defined6 = function _defined6(item) {
+                    item = item.trim();
+                    return item === 'this' ? cmp : castStringTo(trimQuotes(item));
+                };
 
-            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                _args[_i6] = _defined6(_defined5[_i6], _i6, _defined5);
+                for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+                    _args[_i6] = _defined6(_defined5[_i6], _i6, _defined5);
+                }
             }
-        }
 
-        var isParentMethod = _handler.match(REGEX.IS_PARENT_METHOD);
+            var isParentMethod = _handler.match(REGEX.IS_PARENT_METHOD);
 
-        if (isParentMethod) {
-            _handler = isParentMethod[1];
-            cmp = cmp.parent;
-        }
+            if (isParentMethod) {
+                _handler = isParentMethod[1];
+                cmp = cmp.parent;
+            }
 
-        var _method = objectPath(_handler, cmp);
+            var _method = objectPath(_handler, cmp);
 
-        if (_method !== undefined) {
-            value = _args ? _method.bind.apply(_method, [cmp].concat(_toConsumableArray(_args))) : _method.bind(cmp);
+            if (_method !== undefined) {
+                value = _args ? _method.bind.apply(_method, [cmp].concat(_toConsumableArray(_args))) : _method.bind(cmp);
+            }
         }
     }
 
     if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
-        //console.log('match', value, /(^|\()scope[.)]/g.test(value))
-        if (/(^|\()scope[.)]/g.test(value) || value === 'scope') {
+        // I don't understand but with regex test sometimes it don't works fine so use match... boh!
+        //if (REGEX.IS_LISTENER_SCOPE.test(value) || value === 'scope') {
+        if (value.match(REGEX.IS_LISTENER_SCOPE) || value === 'scope') {
             var _func = function _func() {
-                eval(value.replace('scope', 'this'));
+                // Brutal replace of scope with this
+                value = value.replace(/scope/g, 'this');
+                eval(value);
             };
             $target.addEventListener(extractEventName(name), _func.bind(cmpParent));
         } else {

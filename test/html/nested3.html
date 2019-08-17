@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - nested</title>
-    <script src="../../dist/doz.js?5dp891ku66k645ì4k5j5r4thp573d888"></script>
+    <script src="../../dist/doz.js?5dp891ku66kì645ì4k5j5r44thp573d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -105,7 +105,7 @@
                 newNode: Doz.compile(Doz.h`
                     <div>
                         <h1 class="title">${newNode}</h1>
-                        <button onclick="console.log(scope)">Click</button>
+                        <button onclick="scope.showAlert('${newNode}')">Click scope</button>
                     </div>
                 `)
             }

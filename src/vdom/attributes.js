@@ -83,11 +83,10 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     if (!isEventAttribute(name)) return;
 
     // If use scope. from onDrawByParent event
-    match = value.match(REGEX.GET_LISTENER_SCOPE);
-
-
+    let match = value.match(REGEX.GET_LISTENER_SCOPE);
 
     if (match) {
+
         let args = null;
         let handler = match[1];
         let stringArgs = match[2];
@@ -99,41 +98,41 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         }
 
         const method = objectPath(handler, cmpParent);
-
         if (method !== undefined) {
             value = args
                 ? method.bind(cmpParent, ...args)
                 : method.bind(cmpParent);
         }
-        return;
-    }
 
-    let match = value.match(REGEX.GET_LISTENER);
+    } else {
 
-    if (match) {
-        let args = null;
-        let handler = match[1];
-        let stringArgs = match[2];
-        if (stringArgs) {
-            args = stringArgs.split(',').map(item => {
-                item = item.trim();
-                return item === 'this' ? cmp : castStringTo(trimQuotes(item))
-            })
-        }
+        match = value.match(REGEX.GET_LISTENER);
 
-        let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
+        if (match) {
+            let args = null;
+            let handler = match[1];
+            let stringArgs = match[2];
+            if (stringArgs) {
+                args = stringArgs.split(',').map(item => {
+                    item = item.trim();
+                    return item === 'this' ? cmp : castStringTo(trimQuotes(item))
+                })
+            }
 
-        if (isParentMethod) {
-            handler = isParentMethod[1];
-            cmp = cmp.parent;
-        }
+            let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
 
-        const method = objectPath(handler, cmp);
+            if (isParentMethod) {
+                handler = isParentMethod[1];
+                cmp = cmp.parent;
+            }
 
-        if (method !== undefined) {
-            value = args
-                ? method.bind(cmp, ...args)
-                : method.bind(cmp);
+            const method = objectPath(handler, cmp);
+
+            if (method !== undefined) {
+                value = args
+                    ? method.bind(cmp, ...args)
+                    : method.bind(cmp);
+            }
         }
     }
 
@@ -144,10 +143,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         );
     else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
-        //console.log('match', value, /(^|\()scope[.)]/g.test(value))
-        if (/(^|\()scope[.)]/g.test(value) || value === 'scope') {
+        // I don't understand but with regex test sometimes it don't works fine so use match... boh!
+        //if (REGEX.IS_LISTENER_SCOPE.test(value) || value === 'scope') {
+        if (value.match(REGEX.IS_LISTENER_SCOPE) || value === 'scope') {
             const _func = function () {
-                eval(value.replace('scope', 'this'));
+                // Brutal replace of scope with this
+                value = value.replace(/scope/g, 'this');
+                eval(value);
             };
             $target.addEventListener(
                 extractEventName(name),
@@ -162,8 +164,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 _func.bind(cmp)
             );
         }
-
-
     }
 }
 
