@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - slot2</title>
+    <script src="../../dist/doz.js?5dp891ku6545ì4k56j5r44th3p573d888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.component('salutation-card', {
+        template(h) {
+            return h`
+                <div>
+                    <slot name="header">default header</slot>
+                </div>
+                <div>
+                    <slot name="body">default body</slot>
+                </div>
+                <div>
+                    <slot name="footer">default footer</slot>
+                </div>
+            `
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template(h) {
+            return h`
+                <div>
+                    <salutation-card>
+                        <h1 slot="header">Hello</h1>
+                        <p slot="body">Lorem Ipsum Dolor Sit</p>
+                        <div slot="footer">Copyright</div>
+                    </salutation-card>
+                </div>
+            `
+        }
+    });
+
+</script>
+</body>
+</html>

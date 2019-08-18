@@ -131,9 +131,7 @@ function get(cfg = {}) {
                 }
                 if(cfg.parent)
                     console.log('cfg.parent', cfg.parent.tag);
-
                  */
-
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component

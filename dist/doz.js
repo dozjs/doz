@@ -1562,7 +1562,7 @@ function get() {
                     }
                     if(cfg.parent)
                         console.log('cfg.parent', cfg.parent.tag);
-                       */
+                     */
 
                     if (typeof cmp.cfg === 'function') {
                         // This implements single function component
@@ -4442,10 +4442,12 @@ var DOMManipulation = function () {
 
                 if ($el.nodeName === 'SLOT') {
                     //console.log('ha slot', $el.slot, this);
-                    if (this._slot[$el.name] === undefined) {
-                        this._slot[$el.name] = [$el];
+                    //console.log($el.name, $el.getAttribute('name'));
+                    var slotName = $el.getAttribute('name');
+                    if (this._slot[slotName] === undefined) {
+                        this._slot[slotName] = [$el];
                     } else {
-                        this._slot[$el.name].push($el);
+                        this._slot[slotName].push($el);
                     }
                 }
             }
