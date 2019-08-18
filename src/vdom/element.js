@@ -103,9 +103,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         console.log('create node', $parent);
         // create node
 
-        if (newNode.props && newNode.props.slot) {
+        /*if (newNode.props && newNode.props.slot) {
             return ;
-        }
+        }*/
 
         let $newElement;
 
