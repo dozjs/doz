@@ -491,6 +491,10 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _defaultSlot: {
+            value: null,
+            writable: true
+        },
 
         //Public
         tag: {
