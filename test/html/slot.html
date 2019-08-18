@@ -60,6 +60,20 @@
         }
     });
 
+    Doz.define('a-strong', class extends Doz.Component {
+
+        constructor(o) {
+            super(o);
+        }
+
+        template(h) {
+            return h`
+                <strong>this is strong</strong>
+            `
+        }
+
+    });
+
     Doz.define('a-card-label', class extends Doz.Component {
 
         constructor(o) {
@@ -84,6 +98,12 @@
                     }
                 </style>
                 <slot name="my-slot"><div>label is empty</div></slot>
+                <div>
+                    <slot name="my-slot"><div>label is empty</div></slot>
+                </div>
+                <div>
+                    <slot name="my-slot-2"><div>label is empty</div></slot>
+                </div>
 
             `
         }
@@ -120,7 +140,7 @@
                         <a-card-body>
                             ${this.props.clock}
                             <a-card-label>
-                                <span slot="my-slot">hello ${Math.random()}</span>
+                                <span slot="my-slot">hello ${Math.random()} <a-strong/></span>
                             </a-card-label>
                         </a-card-body>
                         <a-card-footer>

@@ -2631,6 +2631,10 @@ function create(node, cmp, initial, cmpParent) {
         node.type = TAG.EMPTY;
     }
 
+    if (node.props && node.props.slot && !node.isNewSlotEl) {
+        return document.createComment('slot(' + node.props.slot + ')');
+    }
+
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
         $el = nodeStored.cloneNode();
@@ -2641,6 +2645,8 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     attach($el, node.props, cmp, cmpParent);
+
+    //console.log($el);
 
     var _defined2 = node.children;
 
@@ -2681,15 +2687,15 @@ function update($parent, newNode, oldNode) {
             var _defined4 = function _defined4($slot) {
                 // Slot is on DOM
                 if ($slot.parentNode) {
+                    newNode.isNewSlotEl = true;
                     var $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                     $newElement.removeAttribute('slot');
-                    console.log('devo sostituire', $slot, 'con', $newElement);
+                    // I must replace $slot element with $newElement
                     $slot.parentNode.replaceChild($newElement, $slot);
-
+                    // Assign at $slot a property that referred to $newElement
                     $slot.__newSlotEl = $newElement;
                 } else {
-                    console.log('devi aggiornare questo adesso', $slot.__newSlotEl, 'con le nuove modifiche', newNode);
-
+                    // Now I must update $slot.__newSlotEl using update function
                     // I need to known the index of newSlotEl in child nodes list of his parent
                     var indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
 
@@ -2714,12 +2720,8 @@ function update($parent, newNode, oldNode) {
     }
 
     if (!oldNode) {
-        console.log('create node', $parent);
+        //console.log('create node', $parent);
         // create node
-
-        if (newNode.props && newNode.props.slot) {
-            return;
-        }
 
         var $newElement = void 0;
 

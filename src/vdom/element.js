@@ -30,6 +30,10 @@ function create(node, cmp, initial, cmpParent) {
         node.type = TAG.EMPTY;
     }
 
+    if (node.props && node.props.slot && !node.isNewSlotEl) {
+        return  document.createComment(`slot(${node.props.slot})`);
+    }
+
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
         $el = nodeStored.cloneNode();
@@ -42,6 +46,8 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     attach($el, node.props, cmp, cmpParent);
+
+    //console.log($el);
 
     node.children
         .map(item => create(item, cmp, initial, cmpParent))
@@ -66,15 +72,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot].forEach($slot => {
                 // Slot is on DOM
                 if ($slot.parentNode) {
+                    newNode.isNewSlotEl = true;
                     let $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                     $newElement.removeAttribute('slot');
-                    console.log('devo sostituire', $slot, 'con', $newElement)
+                    // I must replace $slot element with $newElement
                     $slot.parentNode.replaceChild($newElement, $slot);
-
+                    // Assign at $slot a property that referred to $newElement
                     $slot.__newSlotEl = $newElement;
                 } else {
-                    console.log('devi aggiornare questo adesso', $slot.__newSlotEl, 'con le nuove modifiche', newNode);
-
+                    // Now I must update $slot.__newSlotEl using update function
                     // I need to known the index of newSlotEl in child nodes list of his parent
                     let indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
 
@@ -100,12 +106,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     }
 
     if (!oldNode) {
-        console.log('create node', $parent);
+        //console.log('create node', $parent);
         // create node
-
-        /*if (newNode.props && newNode.props.slot) {
-            return ;
-        }*/
 
         let $newElement;
 
