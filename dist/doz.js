@@ -183,19 +183,6 @@ module.exports = {
 "use strict";
 
 
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 var data = __webpack_require__(28);
 
 /**
@@ -246,13 +233,26 @@ module.exports = {
 };
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -336,6 +336,7 @@ function callUpdate(context, changes) {
 }
 
 function callDrawByParent(context, newNode, oldNode) {
+    if (!context) return;
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -572,7 +573,8 @@ function compile(data, cmp) {
 
             if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
 
-            if (/-/.test(match[2]) && /-/.test(currentParent.type)) cmp._maybeSlot = true;
+            //if (/-/.test(match[2]) && /-/.test(currentParent.type))
+            //cmp._maybeSlot = true;
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
@@ -1263,6 +1265,10 @@ function defineProperties(obj, opt) {
             value: '',
             writable: true
         },
+        _slot: {
+            value: {},
+            writable: true
+        },
 
         //Public
         tag: {
@@ -1420,7 +1426,7 @@ var _require2 = __webpack_require__(0),
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
-var collection = __webpack_require__(2);
+var collection = __webpack_require__(1);
 var hooks = __webpack_require__(3);
 
 var _require3 = __webpack_require__(4),
@@ -1435,7 +1441,7 @@ var _require5 = __webpack_require__(6),
     Component = _require5.Component;
 
 var propsInit = __webpack_require__(20);
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function getComponentName(child) {
     var cmpName = void 0;
@@ -1819,7 +1825,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
@@ -2653,6 +2659,7 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
+    //console.log(cmpParent)
 
     return $el;
 }
@@ -2669,13 +2676,36 @@ function update($parent, newNode, oldNode) {
     if (!$parent) return;
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
-        //if ($parent[COMPONENT_INSTANCE]) {
-        //if ($parent[COMPONENT_INSTANCE]) {
-        //console.log($parent[COMPONENT_INSTANCE])
-        /*console.log('UPDATE', $parent[COMPONENT_INSTANCE].tag);
-        console.log('cmpParent', cmpParent.tag);
-        console.log(newNode, oldNode);*/
-        //console.log('on nested update')
+        // Slot logic
+        if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && newNode.props && newNode.props.slot && $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot]) {
+            var _defined4 = function _defined4($slot) {
+                // Slot is on DOM
+                if ($slot.parentNode) {
+                    var $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    $newElement.removeAttribute('slot');
+                    console.log('devo sostituire', $slot, 'con', $newElement);
+                    $slot.parentNode.replaceChild($newElement, $slot);
+
+                    $slot.__newSlotEl = $newElement;
+                } else {
+                    console.log('devi aggiornare questo adesso', $slot.__newSlotEl, 'con le nuove modifiche', newNode);
+
+                    // I need to known the index of newSlotEl in child nodes list of his parent
+                    var indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
+
+                    update($slot.__newSlotEl.parentNode, newNode, oldNode, indexNewSlotEl, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                }
+            };
+
+            var _defined5 = $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot];
+
+            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+                _defined4(_defined5[_i6], _i6, _defined5);
+            }
+
+            return;
+        }
+
         var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
         if (result !== undefined && result !== null && (typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object') {
             newNode = result.newNode || newNode;
@@ -2684,7 +2714,12 @@ function update($parent, newNode, oldNode) {
     }
 
     if (!oldNode) {
+        console.log('create node', $parent);
         // create node
+
+        if (newNode.props && newNode.props.slot) {
+            return;
+        }
 
         var $newElement = void 0;
 
@@ -2703,14 +2738,15 @@ function update($parent, newNode, oldNode) {
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
         return $newElement;
     } else if (!newNode) {
+        //console.log('remove node', $parent);
         // remove node
         if ($parent.childNodes[index]) {
             deadChildren.push($parent.childNodes[index]);
         }
     } else if (isChanged(newNode, oldNode)) {
+        //console.log('node changes', $parent);
         // node changes
         var $oldElement = $parent.childNodes[index];
-
         if (!$oldElement) return;
         var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
@@ -2724,7 +2760,6 @@ function update($parent, newNode, oldNode) {
         return _$newElement;
     } else if (newNode.type) {
         // walk node
-
         /*
         Adjust index so it's possible update props in nested component like:
           <parent-component>
@@ -2942,7 +2977,7 @@ module.exports = propsInit;
 "use strict";
 
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     registerPlugin = _require.registerPlugin,
     data = _require.data;
 
@@ -2992,7 +3027,7 @@ module.exports = __webpack_require__(23);
 
 
 var Doz = __webpack_require__(24);
-var collection = __webpack_require__(2);
+var collection = __webpack_require__(1);
 
 var _require = __webpack_require__(21),
     use = _require.use;
@@ -3769,7 +3804,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 function propsListener(instance, changes) {
 
@@ -4378,7 +4413,7 @@ var composeStyleInner = __webpack_require__(9);
 var camelToDash = __webpack_require__(16);
 var dashToCamel = __webpack_require__(10);
 var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(2);
 
 var _require = __webpack_require__(0),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -4396,10 +4431,21 @@ var DOMManipulation = function () {
 
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
-        value: function $$afterNodeElementCreate($el, node, initial) {
-            if (typeof $el.hasAttribute === 'function') if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-                //console.log('processing', this.tag, $el)
-                this._processing.push({ node: $el, action: 'create' });
+        value: function $$afterNodeElementCreate($el, node, initial, cmpParent) {
+            if (typeof $el.hasAttribute === 'function') {
+                if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
+                    //console.log('processing', this.tag, $el)
+                    this._processing.push({ node: $el, action: 'create' });
+                }
+
+                if ($el.nodeName === 'SLOT') {
+                    //console.log('ha slot', $el.slot, this);
+                    if (this._slot[$el.name] === undefined) {
+                        this._slot[$el.name] = [$el];
+                    } else {
+                        this._slot[$el.name].push($el);
+                    }
+                }
             }
         }
 
@@ -4641,7 +4687,7 @@ module.exports = DOMManipulation;
 "use strict";
 
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),

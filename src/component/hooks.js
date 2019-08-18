@@ -82,6 +82,7 @@ function callUpdate(context, changes) {
 }
 
 function callDrawByParent(context, newNode, oldNode) {
+    if (!context) return ;
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }

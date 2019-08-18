@@ -487,6 +487,10 @@ function defineProperties(obj, opt) {
             value: '',
             writable: true
         },
+        _slot: {
+            value: {},
+            writable: true
+        },
 
         //Public
         tag: {

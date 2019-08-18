@@ -9,14 +9,26 @@ const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, 
 
 class DOMManipulation {
 
-    $$afterNodeElementCreate($el, node, initial) {
-        if (typeof $el.hasAttribute === 'function')
+    $$afterNodeElementCreate($el, node, initial, cmpParent) {
+        if (typeof $el.hasAttribute === 'function') {
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
                 && !initial) {
                 //console.log('processing', this.tag, $el)
                 this._processing.push({node: $el, action: 'create'});
             }
+
+            if ($el.nodeName === 'SLOT') {
+                //console.log('ha slot', $el.slot, this);
+                if (this._slot[$el.name] === undefined) {
+                    this._slot[$el.name] = [$el];
+                } else {
+                    this._slot[$el.name].push($el);
+                }
+
+            }
+        }
+
     }
 
     // noinspection JSMethodCanBeStatic

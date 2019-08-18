@@ -48,6 +48,7 @@ function create(node, cmp, initial, cmpParent) {
         .forEach($el.appendChild.bind($el));
 
     cmp.$$afterNodeElementCreate($el, node, initial);
+    //console.log(cmpParent)
 
     return $el;
 }
@@ -60,13 +61,37 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     if (!$parent) return;
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
-    //if ($parent[COMPONENT_INSTANCE]) {
-    //if ($parent[COMPONENT_INSTANCE]) {
-    //console.log($parent[COMPONENT_INSTANCE])
-        /*console.log('UPDATE', $parent[COMPONENT_INSTANCE].tag);
-        console.log('cmpParent', cmpParent.tag);
-        console.log(newNode, oldNode);*/
-        //console.log('on nested update')
+        // Slot logic
+        if (typeof newNode === 'object' && newNode.props && newNode.props.slot && $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot]) {
+            $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot].forEach($slot => {
+                // Slot is on DOM
+                if ($slot.parentNode) {
+                    let $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    $newElement.removeAttribute('slot');
+                    console.log('devo sostituire', $slot, 'con', $newElement)
+                    $slot.parentNode.replaceChild($newElement, $slot);
+
+                    $slot.__newSlotEl = $newElement;
+                } else {
+                    console.log('devi aggiornare questo adesso', $slot.__newSlotEl, 'con le nuove modifiche', newNode);
+
+                    // I need to known the index of newSlotEl in child nodes list of his parent
+                    let indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
+
+                    update(
+                        $slot.__newSlotEl.parentNode,
+                        newNode,
+                        oldNode,
+                        indexNewSlotEl,
+                        cmp,
+                        initial,
+                        $parent[COMPONENT_INSTANCE] || cmpParent
+                    );
+                }
+            });
+            return ;
+        }
+
         let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
         if (result !== undefined && result !== null && typeof result === 'object') {
             newNode = result.newNode || newNode;
@@ -75,7 +100,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     }
 
     if (!oldNode) {
+        console.log('create node', $parent);
         // create node
+
+        if (newNode.props && newNode.props.slot) {
+            return ;
+        }
 
         let $newElement;
 
@@ -95,15 +125,16 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         return $newElement;
 
     } else if (!newNode) {
+        //console.log('remove node', $parent);
         // remove node
         if ($parent.childNodes[index]) {
             deadChildren.push($parent.childNodes[index]);
         }
 
     } else if (isChanged(newNode, oldNode)) {
+        //console.log('node changes', $parent);
         // node changes
         const $oldElement = $parent.childNodes[index];
-
         if (!$oldElement) return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
@@ -121,7 +152,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     } else if (newNode.type) {
         // walk node
-
         /*
         Adjust index so it's possible update props in nested component like:
 
