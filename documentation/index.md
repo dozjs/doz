@@ -1411,11 +1411,161 @@ new Doz({
 
 **Since 1.23.0**
 
-Doz supports named slots and unnamed slots:
+Doz supports unnamed and named slots:
+
+Unnamed:
 
 ```javascript
+Doz.define('user-card', class extends Doz.Component {
 
+    constructor(o) {
+        super(o);
+    }
+
+    template(h) {
+        return h`
+
+            <style>
+                :component {
+                    font-family: sans-serif;
+                    width: 500px;
+                    display: block;
+                }
+                
+                .container {
+                    background: #ccc;
+                    padding: 20px;
+                    border-radius: 5px;
+                    border: 1px solid #888;
+                }
+                
+                h1, h2 {
+                    margin-top: 0;
+                }
+                
+                p {
+                    margin: 0;
+                }
+                
+                .body {
+                    font-size: 16px;
+                    padding: 20px;
+                    border: 1px solid #888;
+                    background: #fff;
+                    border-radius: 5px;
+                }
+            </style>
+
+            <div class="container">
+            	<h1>${this.props.name}</h1>
+              <div class="body"> 
+              	<h2>Biography</h2>
+              	<slot/>
+              </div>
+            </div>
+
+        `
+    }
+
+});
+
+new Doz({
+
+    root: '#app',
+
+    template(h) {
+        return h`
+            <user-card name="Mike Ricali">
+            	<p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                    Quisque magna neque, pharetra ac felis ut,
+                    finibus volutpat dolor. Orci varius.
+                </p>
+            </user-card>
+        `
+    }
+
+});
 ```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/un7qye53/)
+
+Named:
+
+```javascript
+Doz.define('user-card', class extends Doz.Component {
+
+    constructor(o) {
+        super(o);
+    }
+
+    template(h) {
+        return h`
+
+            <style>
+                :component {
+                    font-family: sans-serif;
+                    width: 500px;
+                    display: block;
+                }
+                
+                .container {
+                    background: #ccc;
+                    padding: 20px;
+                    border-radius: 5px;
+                    border: 1px solid #888;
+                }
+                
+                h1, h2 {
+                    margin-top: 0;
+                }
+                
+                p {
+                    margin: 0;
+                }
+                
+                .body {
+                    font-size: 16px;
+                    padding: 20px;
+                    border: 1px solid #888;
+                    background: #fff;
+                    border-radius: 5px;
+                }
+            </style>
+
+            <div class="container">
+            	<h1>${this.props.name}</h1>
+              <div class="body"> 
+              	<h2>Biography</h2>
+              	<slot/>
+              </div>
+            </div>
+
+        `
+    }
+
+});
+
+new Doz({
+
+    root: '#app',
+
+    template(h) {
+        return h`
+            <user-card name="Mike Ricali">
+            	<p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                    Quisque magna neque, pharetra ac felis ut,
+                    finibus volutpat dolor. Orci varius.
+                </p>
+            </user-card>
+        `
+    }
+
+});
+```
+
+[FIDDLE](https://jsfiddle.net/fabioricali/ky9Ln7w4/)
 
 ---
 
