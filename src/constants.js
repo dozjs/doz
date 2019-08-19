@@ -9,7 +9,7 @@ module.exports = {
     },
     TAG: {
         ROOT: 'dz-root',
-        EACH: 'dz-each-root',
+        EACH: 'dz-each-root', //not in use
         APP: 'dz-app',
         EMPTY: 'dz-empty',
         MOUNT: 'dz-mount',
