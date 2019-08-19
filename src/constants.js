@@ -13,6 +13,8 @@ module.exports = {
         APP: 'dz-app',
         EMPTY: 'dz-empty',
         MOUNT: 'dz-mount',
+        SLOT: 'dz-slot',
+        SLOT_UPPERCASE: 'DZ-SLOT',
         SUFFIX_ROOT: '-root',
         TEXT_NODE_PLACE: 'dz-text-node'
     },

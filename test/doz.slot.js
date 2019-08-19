@@ -90,7 +90,7 @@ describe('Doz.slot', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot(header)--><!--slot(footer)--><dz-root><div><h1>Hello</h1></div><div><slot name="body">default body</slot></div><div><div>Copyright</div></div></dz-root></salutation-card></div></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot(header)--><!--slot(footer)--><dz-root><div><h1>Hello</h1></div><div><dz-slot name="body">default body</dz-slot></div><div><div>Copyright</div></div></dz-root></salutation-card></div></dz-app></div>');
                 done()
             },500);
         });

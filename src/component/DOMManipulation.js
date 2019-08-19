@@ -4,12 +4,12 @@ const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
-const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX, DEFAULT_SLOT_KEY} = require('../constants');
+const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 //const Spye = require('../utils/spye');
 
 class DOMManipulation {
 
-    $$afterNodeElementCreate($el, node, initial, cmpParent) {
+    $$afterNodeElementCreate($el, node, initial) {
         if (typeof $el.hasAttribute === 'function') {
             if ((node.type.indexOf('-') !== -1
                 || (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)))
@@ -18,8 +18,8 @@ class DOMManipulation {
                 this._processing.push({node: $el, action: 'create'});
             }
 
-            if ($el.nodeName === 'SLOT') {
-                //console.log('ha slot', $el.slot, this);
+            if ($el.nodeName === TAG.SLOT_UPPERCASE) {
+                //console.log('ha slot', $el.nodeName);
                 //console.log($el.name, $el.getAttribute('name'));
                 let slotName = $el.getAttribute('name');
 

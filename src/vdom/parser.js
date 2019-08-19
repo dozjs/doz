@@ -42,6 +42,9 @@ function removeNLS(str) {
 class Element {
 
     constructor(name, props, isSVG) {
+
+        //if(name === 'slot') name = 'dzslot';
+
         this.type = name;
         this.props = Object.assign({}, props);
         this.children = [];
@@ -89,6 +92,10 @@ function compile(data, cmp) {
         if (regExcludeSpecial.test(match[0])) {
             continue;
         }
+
+        // transform slot to dz-slot
+        if (match[2] === 'slot')
+            match[2] = TAG.SLOT;
 
         if (!match[1]) {
             // not </ tags

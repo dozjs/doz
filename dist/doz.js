@@ -96,6 +96,8 @@ module.exports = {
         APP: 'dz-app',
         EMPTY: 'dz-empty',
         MOUNT: 'dz-mount',
+        SLOT: 'dz-slot',
+        SLOT_UPPERCASE: 'DZ-SLOT',
         SUFFIX_ROOT: '-root',
         TEXT_NODE_PLACE: 'dz-text-node'
     },
@@ -500,6 +502,8 @@ var Element = function () {
     function Element(name, props, isSVG) {
         _classCallCheck(this, Element);
 
+        //if(name === 'slot') name = 'dzslot';
+
         this.type = name;
         this.props = Object.assign({}, props);
         this.children = [];
@@ -550,6 +554,9 @@ function compile(data, cmp) {
         if (regExcludeSpecial.test(match[0])) {
             continue;
         }
+
+        // transform slot to dz-slot
+        if (match[2] === 'slot') match[2] = TAG.SLOT;
 
         if (!match[1]) {
             // not </ tags
@@ -4446,7 +4453,8 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX,
-    DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY;
+    DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
+    TAG = _require.TAG;
 //const Spye = require('../utils/spye');
 
 var DOMManipulation = function () {
@@ -4456,15 +4464,15 @@ var DOMManipulation = function () {
 
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
-        value: function $$afterNodeElementCreate($el, node, initial, cmpParent) {
+        value: function $$afterNodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') {
                 if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
                     //console.log('processing', this.tag, $el)
                     this._processing.push({ node: $el, action: 'create' });
                 }
 
-                if ($el.nodeName === 'SLOT') {
-                    //console.log('ha slot', $el.slot, this);
+                if ($el.nodeName === TAG.SLOT_UPPERCASE) {
+                    //console.log('ha slot', $el.nodeName);
                     //console.log($el.name, $el.getAttribute('name'));
                     var slotName = $el.getAttribute('name');
 
