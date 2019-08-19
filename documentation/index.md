@@ -43,6 +43,7 @@ Below some basic concepts:
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
+- [Slots](#slots)
 - [Scoped style](#scoped-style)
 - [Inline style](#inline-style)
 - [Actions](#actions)
@@ -1403,6 +1404,18 @@ new Doz({
 **Important**: Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
 
 [FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
+
+---
+
+### Slots
+
+**Since 1.23.0**
+
+Doz supports named slots and unnamed slots:
+
+```javascript
+
+```
 
 ---
 
