@@ -57,7 +57,7 @@ Below some basic concepts:
 - [IE11 support](#ie11-support)
 - [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
 - [Component structure](https://github.com/dozjs/doz/blob/master/documentation/component-structure.md)
-- [Reserved tags](#reserved-tags))
+- [Reserved tags](#reserved-tags)
 
 ## Installation
 ```
