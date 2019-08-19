@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
+- **Added** support to slots
 - **Added** `onDrawByParent` event to component, useful for nested component
 - **Added** magic word "scope" for listener referred to manipulation of v-dom inside `onDrawByParent` event 
 
