@@ -3,6 +3,7 @@ module.exports = {
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
+    DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },

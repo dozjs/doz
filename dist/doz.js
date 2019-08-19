@@ -86,6 +86,7 @@ module.exports = {
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
     DIR_IS: '__DOZ_D_IS__',
+    DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
@@ -1265,7 +1266,7 @@ function defineProperties(obj, opt) {
             value: '',
             writable: true
         },
-        _slot: {
+        _slots: {
             value: {},
             writable: true
         },
@@ -2613,7 +2614,8 @@ var _require2 = __webpack_require__(0),
     TAG = _require2.TAG,
     NS = _require2.NS,
     COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
-    COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE;
+    COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
+    DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
 var canDecode = __webpack_require__(15);
 var hooks = __webpack_require__(3);
@@ -2700,11 +2702,10 @@ function update($parent, newNode, oldNode) {
         var propsSlot = newNode.props ? newNode.props.slot : false;
 
         if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
-            propsSlot = '__DEFAULT__';
-            //newNode.targetDefaultSlot = true;
+            propsSlot = DEFAULT_SLOT_KEY;
         }
 
-        if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slot[propsSlot]) {
+        if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slots[propsSlot]) {
             var _defined4 = function _defined4($slot) {
                 // Slot is on DOM
                 if ($slot.parentNode) {
@@ -2724,13 +2725,13 @@ function update($parent, newNode, oldNode) {
                 }
             };
 
-            var _defined5 = $parent[COMPONENT_INSTANCE]._slot[propsSlot];
+            var _defined5 = $parent[COMPONENT_INSTANCE]._slots[propsSlot];
 
             for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
                 _defined4(_defined5[_i6], _i6, _defined5);
             }
 
-            return;
+            return true;
         }
 
         var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
@@ -4444,7 +4445,8 @@ var _require = __webpack_require__(0),
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
     ATTR = _require.ATTR,
     DIR_IS = _require.DIR_IS,
-    REGEX = _require.REGEX;
+    REGEX = _require.REGEX,
+    DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY;
 //const Spye = require('../utils/spye');
 
 var DOMManipulation = function () {
@@ -4468,13 +4470,13 @@ var DOMManipulation = function () {
 
                     if (!slotName) {
                         this._defaultSlot = $el;
-                        slotName = '__DEFAULT__';
+                        slotName = DEFAULT_SLOT_KEY;
                     }
 
-                    if (this._slot[slotName] === undefined) {
-                        this._slot[slotName] = [$el];
+                    if (this._slots[slotName] === undefined) {
+                        this._slots[slotName] = [$el];
                     } else {
-                        this._slot[slotName].push($el);
+                        this._slots[slotName].push($el);
                     }
                 }
             }

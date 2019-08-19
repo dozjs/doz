@@ -487,7 +487,7 @@ function defineProperties(obj, opt) {
             value: '',
             writable: true
         },
-        _slot: {
+        _slots: {
             value: {},
             writable: true
         },

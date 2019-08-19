@@ -1,5 +1,5 @@
 const {attach, updateAttributes} = require('./attributes');
-const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE} = require('../constants');
+const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY} = require('../constants');
 const canDecode = require('../utils/can-decode');
 const hooks = require('../component/hooks');
 
@@ -75,12 +75,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         let propsSlot = newNode.props ? newNode.props.slot : false;
 
         if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
-            propsSlot = '__DEFAULT__';
-            //newNode.targetDefaultSlot = true;
+            propsSlot = DEFAULT_SLOT_KEY;
         }
 
-        if (typeof newNode === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slot[propsSlot]) {
-            $parent[COMPONENT_INSTANCE]._slot[propsSlot].forEach($slot => {
+        if (typeof newNode === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slots[propsSlot]) {
+            $parent[COMPONENT_INSTANCE]._slots[propsSlot].forEach($slot => {
                 // Slot is on DOM
                 if ($slot.parentNode) {
                     newNode.isNewSlotEl = true;
@@ -106,7 +105,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     );
                 }
             });
-            return ;
+            return true;
         }
 
         let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);

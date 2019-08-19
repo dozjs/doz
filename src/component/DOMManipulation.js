@@ -4,7 +4,7 @@ const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
-const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX, DEFAULT_SLOT_KEY} = require('../constants');
 //const Spye = require('../utils/spye');
 
 class DOMManipulation {
@@ -25,13 +25,13 @@ class DOMManipulation {
 
                 if (!slotName) {
                     this._defaultSlot = $el;
-                    slotName = '__DEFAULT__';
+                    slotName = DEFAULT_SLOT_KEY;
                 }
 
-                if (this._slot[slotName] === undefined) {
-                    this._slot[slotName] = [$el];
+                if (this._slots[slotName] === undefined) {
+                    this._slots[slotName] = [$el];
                 } else {
-                    this._slot[slotName].push($el);
+                    this._slots[slotName].push($el);
                 }
 
             }

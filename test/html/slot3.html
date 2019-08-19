@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - slot2</title>
-    <script src="../../dist/doz.js?5dp891ku65645ì4k56j5r44th3p573d888"></script>
+    <script src="../../dist/doz.js?5dp891ku65645ì4k56lj5r44th3p573d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -23,6 +23,10 @@
                 <div style="background: yellowgreen">
                     <slot>default position</slot>
                 </div>
+                <div style="background: #c9c7ff">
+                    <slot>other default</slot>
+                </div>
+                <slot name="a slot">-</slot>
             `
         },
 
@@ -44,10 +48,15 @@
                             <h1>Hello</h1>
                             <h2>${this.props.clock}</h2>
                             <h3>ipsum</h3>
+                            <button onclick="this.myHandler()">click</button>
                         </div>
+                        <div slot="a slot">ciao</div>
                     </salutation-card>
                 </div>
             `
+        },
+        myHandler() {
+            console.log(this)
         },
         onMount() {
             setInterval(() => {
