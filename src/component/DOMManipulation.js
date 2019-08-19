@@ -22,17 +22,18 @@ class DOMManipulation {
                 //console.log('ha slot', $el.slot, this);
                 //console.log($el.name, $el.getAttribute('name'));
                 let slotName = $el.getAttribute('name');
-                console.log('slotName', slotName)
 
                 if (!slotName) {
                     this._defaultSlot = $el;
-                } else {
-                    if (this._slot[slotName] === undefined) {
-                        this._slot[slotName] = [$el];
-                    } else {
-                        this._slot[slotName].push($el);
-                    }
+                    slotName = '__DEFAULT__';
                 }
+
+                if (this._slot[slotName] === undefined) {
+                    this._slot[slotName] = [$el];
+                } else {
+                    this._slot[slotName].push($el);
+                }
+
             }
         }
 

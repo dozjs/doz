@@ -183,6 +183,19 @@ module.exports = {
 "use strict";
 
 
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var data = __webpack_require__(28);
 
 /**
@@ -233,26 +246,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -1269,6 +1269,10 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _defaultSlot: {
+            value: null,
+            writable: true
+        },
 
         //Public
         tag: {
@@ -1426,7 +1430,7 @@ var _require2 = __webpack_require__(0),
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
-var collection = __webpack_require__(1);
+var collection = __webpack_require__(2);
 var hooks = __webpack_require__(3);
 
 var _require3 = __webpack_require__(4),
@@ -1441,7 +1445,7 @@ var _require5 = __webpack_require__(6),
     Component = _require5.Component;
 
 var propsInit = __webpack_require__(20);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function getComponentName(child) {
     var cmpName = void 0;
@@ -1631,6 +1635,12 @@ function get() {
 
                         newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                         newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+
+                        // Replace first child if defaultSlot exists with a slot comment
+                        if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                            var slotPlaceholder = document.createComment('slot');
+                            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                        }
 
                         //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
@@ -1825,7 +1835,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
@@ -2631,6 +2641,8 @@ function create(node, cmp, initial, cmpParent) {
         node.type = TAG.EMPTY;
     }
 
+    //console.log(node.type, node.targetDefaultSlot);
+
     if (node.props && node.props.slot && !node.isNewSlotEl) {
         return document.createComment('slot(' + node.props.slot + ')');
     }
@@ -2683,7 +2695,16 @@ function update($parent, newNode, oldNode) {
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
         // Slot logic
-        if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && newNode.props && newNode.props.slot && $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot]) {
+        //console.log(newNode, $parent[COMPONENT_INSTANCE]);
+
+        var propsSlot = newNode.props ? newNode.props.slot : false;
+
+        if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
+            propsSlot = '__DEFAULT__';
+            //newNode.targetDefaultSlot = true;
+        }
+
+        if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slot[propsSlot]) {
             var _defined4 = function _defined4($slot) {
                 // Slot is on DOM
                 if ($slot.parentNode) {
@@ -2703,7 +2724,7 @@ function update($parent, newNode, oldNode) {
                 }
             };
 
-            var _defined5 = $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot];
+            var _defined5 = $parent[COMPONENT_INSTANCE]._slot[propsSlot];
 
             for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
                 _defined4(_defined5[_i6], _i6, _defined5);
@@ -2979,7 +3000,7 @@ module.exports = propsInit;
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerPlugin = _require.registerPlugin,
     data = _require.data;
 
@@ -3029,7 +3050,7 @@ module.exports = __webpack_require__(23);
 
 
 var Doz = __webpack_require__(24);
-var collection = __webpack_require__(1);
+var collection = __webpack_require__(2);
 
 var _require = __webpack_require__(21),
     use = _require.use;
@@ -3806,7 +3827,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 function propsListener(instance, changes) {
 
@@ -4415,7 +4436,7 @@ var composeStyleInner = __webpack_require__(9);
 var camelToDash = __webpack_require__(16);
 var dashToCamel = __webpack_require__(10);
 var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(1);
 
 var _require = __webpack_require__(0),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -4444,6 +4465,12 @@ var DOMManipulation = function () {
                     //console.log('ha slot', $el.slot, this);
                     //console.log($el.name, $el.getAttribute('name'));
                     var slotName = $el.getAttribute('name');
+
+                    if (!slotName) {
+                        this._defaultSlot = $el;
+                        slotName = '__DEFAULT__';
+                    }
+
                     if (this._slot[slotName] === undefined) {
                         this._slot[slotName] = [$el];
                     } else {
@@ -4691,7 +4718,7 @@ module.exports = DOMManipulation;
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),

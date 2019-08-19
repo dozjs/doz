@@ -95,7 +95,7 @@ describe('Doz.slot', function () {
             },500);
         });
 
-        it.skip('should be ok with slot unnamed', function (done) {
+        it('should be ok with slot unnamed', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
@@ -127,7 +127,7 @@ describe('Doz.slot', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot--><dz-root><div><div><h1>Hello</h1></div></div><div><slot>default position</slot></div></dz-root></salutation-card></div></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot--><div><div><h1>Hello</h1></div></div></salutation-card></div></dz-app></div>');
                 done()
             },500);
         });

@@ -192,6 +192,12 @@ function get(cfg = {}) {
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
+                    // Replace first child if defaultSlot exists with a slot comment
+                    if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                        let slotPlaceholder = document.createComment('slot');
+                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                    }
+
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     // This is an hack for call render a second time so the

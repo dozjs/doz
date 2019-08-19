@@ -30,6 +30,8 @@ function create(node, cmp, initial, cmpParent) {
         node.type = TAG.EMPTY;
     }
 
+    //console.log(node.type, node.targetDefaultSlot);
+
     if (node.props && node.props.slot && !node.isNewSlotEl) {
         return  document.createComment(`slot(${node.props.slot})`);
     }
@@ -68,8 +70,17 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
         // Slot logic
-        if (typeof newNode === 'object' && newNode.props && newNode.props.slot && $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot]) {
-            $parent[COMPONENT_INSTANCE]._slot[newNode.props.slot].forEach($slot => {
+        //console.log(newNode, $parent[COMPONENT_INSTANCE]);
+
+        let propsSlot = newNode.props ? newNode.props.slot : false;
+
+        if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
+            propsSlot = '__DEFAULT__';
+            //newNode.targetDefaultSlot = true;
+        }
+
+        if (typeof newNode === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slot[propsSlot]) {
+            $parent[COMPONENT_INSTANCE]._slot[propsSlot].forEach($slot => {
                 // Slot is on DOM
                 if ($slot.parentNode) {
                     newNode.isNewSlotEl = true;

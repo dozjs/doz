@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - slot2</title>
+    <script src="../../dist/doz.js?5dp891ku65645ì4k56j5r44th3p573d888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+    Doz.component('salutation-card', {
+        template(h) {
+            return h`
+                <div style="background: yellowgreen">
+                    <slot>default position</slot>
+                </div>
+            `
+        },
+
+        onMount() {
+            //console.log(this._slot)
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        props: {
+            clock: '--:--:--'
+        },
+        template(h) {
+            return h`
+                <div>
+                    <salutation-card>
+                        <div>
+                            <h1>Hello</h1>
+                            <h2>${this.props.clock}</h2>
+                            <h3>ipsum</h3>
+                        </div>
+                    </salutation-card>
+                </div>
+            `
+        },
+        onMount() {
+            setInterval(() => {
+                this.props.clock = new Date().toLocaleTimeString()
+            }, 1000)
+        }
+    });
+
+</script>
+</body>
+</html>
