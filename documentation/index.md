@@ -57,6 +57,7 @@ Below some basic concepts:
 - [IE11 support](#ie11-support)
 - [API](https://github.com/dozjs/doz/blob/master/documentation/api.md)
 - [Component structure](https://github.com/dozjs/doz/blob/master/documentation/component-structure.md)
+- [Reserved tags](#reserved-tags))
 
 ## Installation
 ```
@@ -1828,6 +1829,19 @@ Doz uses ES6 proxy that unfortunately is not supported by IE11. You must include
 <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Array.prototype.includes"></script>
 <script src="https://unpkg.com/doz/polyfill/proxy.js"></script>
 ```
+
+---
+
+### Reserved tags
+
+The tags you shouldn't use:
+
+- dz-app
+- dz-empty
+- dz-mount
+- dz-root
+- dz-slot
+- dz-text-node
 
 ---
 
