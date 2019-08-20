@@ -2703,8 +2703,14 @@ function update($parent, newNode, oldNode) {
     if (!$parent) return;
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
+
+        var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
+        if (result !== undefined && result !== null && (typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object') {
+            newNode = result.newNode || newNode;
+            oldNode = result.oldNode || oldNode;
+        }
+
         // Slot logic
-        //console.log(newNode, $parent[COMPONENT_INSTANCE]);
 
         var propsSlot = newNode.props ? newNode.props.slot : false;
 
@@ -2738,13 +2744,7 @@ function update($parent, newNode, oldNode) {
                 _defined4(_defined5[_i6], _i6, _defined5);
             }
 
-            return true;
-        }
-
-        var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
-        if (result !== undefined && result !== null && (typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object') {
-            newNode = result.newNode || newNode;
-            oldNode = result.oldNode || oldNode;
+            return;
         }
     }
 

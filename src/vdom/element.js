@@ -69,8 +69,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     if (!$parent) return;
 
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
+
+        let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
+        if (result !== undefined && result !== null && typeof result === 'object') {
+            newNode = result.newNode || newNode;
+            oldNode = result.oldNode || oldNode;
+        }
+
         // Slot logic
-        //console.log(newNode, $parent[COMPONENT_INSTANCE]);
 
         let propsSlot = newNode.props ? newNode.props.slot : false;
 
@@ -105,13 +111,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     );
                 }
             });
-            return true;
-        }
-
-        let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
-        if (result !== undefined && result !== null && typeof result === 'object') {
-            newNode = result.newNode || newNode;
-            oldNode = result.oldNode || oldNode;
+            return;
         }
     }
 
