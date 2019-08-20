@@ -55,19 +55,24 @@
         }
 
         template(h){
-            return h`<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter.value}</span></div>`
+            return h`
+                <div>
+                    <button onclick="this.myClickHandler()">
+                        ${this.props.title}
+                    </button> <span class="counter">${this.props.counter.value}</span>
+                </div>
+            `
         }
 
         myClickHandler() {
-            this.props.counter.value += 1;
+            this.props.counter.value++;
         }
     });
 
     new Doz({
         root: document.getElementById('app'),
         template: `
-            <doz-button-counter title="Click me!"></doz-button-counter>
-            <doz-button-counter title="Touch me!"></doz-button-counter>
+            <doz-button-counter title="Click me!"/>
         `
     });
 

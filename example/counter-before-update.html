@@ -43,31 +43,36 @@
 <script>
 
     Doz.component('doz-button-counter', {
-        template(){
-            return `<div><button d-ref="button" onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter}</span></div>`
+        template(h){
+            return h`
+                <div>
+                    <button disabled="${this.props.disabled}" onclick="this.myClickHandler()">
+                        ${this.props.title}
+                    </button> <span class="counter">${this.props.counter}</span>
+                </div>`
         },
+
         props: {
-            counter: 0
+            counter: 0,
+            disabled: false
         },
+
         myClickHandler() {
-            this.props.counter += 1;
+            this.props.counter++;
         },
-        onBeforeUpdate() {
-            return this.props.counter < 10;
-        },
+
         onUpdate() {
-            if (this.props.counter === 10) {
-                this.ref.button.setAttribute('disabled', 'false');
+            if (this.props.counter >= 10) {
+                this.props.disabled = true;
             }
         }
     });
 
     new Doz({
-        root: document.getElementById('app'),
+        root: '#app',
         template: `
-            <p>Stop after 10</p>
-            <doz-button-counter title="Click me!"></doz-button-counter>
-            <doz-button-counter title="Touch me!"></doz-button-counter>
+            <p>Stop at 10</p>
+            <doz-button-counter title="Click me!"/>
         `
     });
 

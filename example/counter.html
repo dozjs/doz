@@ -7,57 +7,59 @@
     <title>Doz - counter</title>
     <title>Title</title>
     <script src="../dist/doz.js?589654"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-        }
-
-        div {
-            font-size: 35px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        button {
-            height: 50px;
-            width: 100px;
-        }
-
-        .counter {
-            background: red;
-            padding: 5px;
-            border-radius: 50%;
-            color: white;
-            text-align: center;
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            font-size: 15px;
-            line-height: 25px;
-        }
-    </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 
     Doz.component('doz-button-counter', {
-        template(){
-            return `<div><button onclick="this.myClickHandler()">${this.props.title}</button> <span class="counter">${this.props.counter}</span></div>`
+        template(h){
+            return h`
+                <style>
+                    div {
+                        font-size: 35px;
+                        padding: 20px;
+                        text-align: center;
+                        font-family: sans-serif;
+                    }
+
+                    button {
+                        height: 50px;
+                        width: 100px;
+                        font-size: 24px;
+                        font-weight: bold;
+                    }
+
+                    .counter {
+                        background: red;
+                        padding: 10px;
+                        margin: 10px;
+                        border-radius: 50%;
+                        color: white;
+                        text-align: center;
+                        display: inline-block;
+                        width: 50px;
+                        height: 50px;
+                        font-size: 24px;
+                        line-height: 50px;
+                    }
+                </style>
+                <div>
+                    <h1>${this.props.title}</h1>
+                    <button onclick="this.props.counter++">+</button>
+                    <span class="counter">${this.props.counter}</span>
+                    <button onclick="this.props.counter--">-</button>
+                </div>`
         },
         props: {
             counter: 0
-        },
-        myClickHandler() {
-            this.props.counter += 1;
         }
     });
 
     new Doz({
-        root: document.getElementById('app'),
+        root: '#app',
         template: `
-            <doz-button-counter title="Click me!"></doz-button-counter>
-            <doz-button-counter title="Touch me!"></doz-button-counter>
+            <doz-button-counter title="The counter"/>
         `
     });
 
