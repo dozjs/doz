@@ -27,6 +27,7 @@ Below some basic concepts:
         - [Passing arguments](#passing-arguments)
     - [Emitter](#emitter)
     - [Lifecycle Hooks](#lifecycle-hooks)
+    - [Drawing Hooks](#drawing-hooks)
     - [Local component](#local-component)
     - [Mount](#mount)
     - [Empty attributes in HTML element](#empty-attributes-in-html-element)
@@ -708,6 +709,55 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/77o4e7nL/7/)
+
+---
+
+### Drawing hooks
+
+- `onAppDraw`: called every time that any component (of the whole app) is drawn
+    ```javascript
+    Doz.component('hello-world', {
+        template(h) {
+            return h`
+                <h2>Hello world</h2>
+            `
+        },
+        onAppDraw(newNode, prevNode, component) {
+            console.log(newNode, prevNode, component);
+            // you can also manipulate the v-dom
+            if (component.tag === 'the-clock')
+                newNode.children.push('ciao');
+        }
+    });
+    
+    Doz.component('the-clock', {
+        props: {
+            time: '--:--:--'
+        },
+        template(h) {
+            return h`
+                <h2>${this.props.time}</h2>
+            `
+        },
+        onMount() {
+            setInterval(()=> this.props.time = new Date().toLocaleTimeString(), 1000);
+        }
+    });
+    
+    new Doz({
+        root: '#app',
+        template(h) {
+            return h`
+                <h1>Welcome to my app:</h1>
+                <hello-world/>
+                <the-clock/>
+            `
+        }
+    });
+    ```
+    [FIDDLE](https://jsfiddle.net/fabioricali/5j24sxzb/)
+    
+- `onDrawByParent`: called every time that component is drawn by the parent for example in a slot scenario
 
 ---
 
