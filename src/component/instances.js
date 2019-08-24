@@ -4,7 +4,7 @@ const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX} = requi
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
-const {extract} = require('./d-props');
+const {extract} = require('./component-directives');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
@@ -121,7 +121,7 @@ function get(cfg = {}) {
                 }
 
                 const props = serializeProps($child);
-                const dProps = extract(props);
+                const componentDirectives = extract(props);
 
                 let newElement;
 
@@ -147,7 +147,7 @@ function get(cfg = {}) {
                         root: $child,
                         app: cfg.app,
                         props,
-                        dProps,
+                        componentDirectives,
                         parentCmp: parent.cmp || cfg.parent
                     });
                 } else {
@@ -157,7 +157,7 @@ function get(cfg = {}) {
                         root: $child,
                         app: cfg.app,
                         props,
-                        dProps,
+                        componentDirectives,
                         parentCmp: parent.cmp || cfg.parent
                     });
                 }

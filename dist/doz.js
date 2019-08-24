@@ -1599,7 +1599,7 @@ function get() {
                             root: $child,
                             app: cfg.app,
                             props: props,
-                            dProps: dProps,
+                            componentDirectives: dProps,
                             parentCmp: parent.cmp || cfg.parent
                         });
                     } else {
@@ -1609,7 +1609,7 @@ function get() {
                             root: $child,
                             app: cfg.app,
                             props: props,
-                            dProps: dProps,
+                            componentDirectives: dProps,
                             parentCmp: parent.cmp || cfg.parent
                         });
                     }

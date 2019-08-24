@@ -47,7 +47,7 @@ class Component extends DOMManipulation {
         defineProperties(this, opt);
 
         // Assign cfg to instance
-        extendInstance(this, opt.cmp.cfg, opt.dProps);
+        extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
 
         // Create mixin
         localMixin(this);
@@ -422,7 +422,7 @@ function defineProperties(obj, opt) {
             value: cloneObject(obj._rawProps)
         },
         _callback: {
-            value: opt.dProps['callback']
+            value: opt.componentDirectives['callback']
         },
         _isRendered: {
             value: false,
