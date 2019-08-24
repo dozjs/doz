@@ -1,4 +1,5 @@
 module.exports = {
     components: {},
-    plugins: []
+    plugins: [],
+    directives: {}
 };
