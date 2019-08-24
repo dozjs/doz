@@ -954,7 +954,7 @@ var Component = function (_DOMManipulation) {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
                 //Remove attributes from component tag
-                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key']);
+                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'style']);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
