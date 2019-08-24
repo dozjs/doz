@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.24.0] - 2019-08-24
+- **Changed** attributes "style" and "class" will not be removed from the component tag during render
+
 ## [1.23.1] - 2019-08-20
 - **Fixed** `onDrawByParent` was not called when there is a slot
 
