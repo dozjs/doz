@@ -19,6 +19,7 @@ module.exports = {
         TEXT_NODE_PLACE: 'dz-text-node'
     },
     REGEX: {
+        IS_DIRECTIVE: /^d[-:][\w-]+$/,
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,

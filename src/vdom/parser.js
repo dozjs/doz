@@ -198,13 +198,16 @@ function propsFixer(nName, aName, aValue, props, dIS) {
             aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
         //console.log(aName, REGEX.IS_ON.test(aName))
 
+        /*
         if (REGEX.IS_REF.test(aName)) return;
         if (REGEX.IS_BIND.test(aName)) return;
         if (REGEX.IS_IS.test(aName)) return;
-        //if (REGEX.IS_ON.test(aName)) return;
+        */
 
+        //if (REGEX.IS_ON.test(aName)) return;
+        //!REGEX.IS_DIRECTIVE.test(nName) &&
         props[
-            REGEX.IS_CUSTOM_TAG.test(nName) || dIS
+            (REGEX.IS_CUSTOM_TAG.test(nName) || dIS) && !REGEX.IS_DIRECTIVE.test(aName)
                 ? dashToCamel(aName)
                 : aName
             ] = aName === ATTR.FORCE_UPDATE

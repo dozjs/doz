@@ -136,7 +136,7 @@ class DOMManipulation {
 
     $$afterAttributeUpdate($target, name, value) {
         if (this.updateChildrenProps && $target) {
-            name = dashToCamel(name);
+            name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
             const firstChild = $target.firstChild;
 
             if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {

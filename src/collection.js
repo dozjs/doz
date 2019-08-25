@@ -40,10 +40,25 @@ function registerPlugin(plugin) {
     data.plugins.push(plugin);
 }
 
+/**
+ * Register a directive to global
+ * @param name
+ * @param cfg
+ */
+function registerDirective(name, cfg) {
+    name = name.toLowerCase();
+    cfg.name = name;
+    if (Object.prototype.hasOwnProperty.call(data.directives, name))
+        console.warn('Doz', `directive ${name} overwritten`);
+
+    data.directives[name] = cfg;
+}
+
 module.exports = {
     registerComponent,
     registerPlugin,
     getComponent,
+    registerDirective,
     removeAll,
     data
 };
