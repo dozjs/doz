@@ -5,7 +5,7 @@ function extractDirectivesFromProps(props) {
     let directives = {};
     Object.keys(props).forEach(key => {
         if (REGEX.IS_DIRECTIVE.test(key)) {
-            let keyWithoutD = key.replace(/^d-/, '');
+            let keyWithoutD = key.replace(/^d[-:]/, '');
             directives[keyWithoutD] = props[key];
         }
     });

@@ -45,9 +45,24 @@ function registerPlugin(plugin) {
  * @param name
  * @param cfg
  */
-function registerDirective(name, cfg) {
+function registerDirective(name, cfg = {}) {
+
+    if (typeof name !== 'string') {
+        throw new TypeError('Doz directive name must be a string');
+    }
+
+    if (typeof cfg !== 'object' || !cfg) {
+        throw new TypeError('Doz directive config must be an object');
+    }
+
+    if (name[0] === ':') {
+        cfg._onlyDozComponent = true;
+        name = name.substr(1);
+    }
+
     name = name.toLowerCase();
     cfg.name = name;
+
     if (Object.prototype.hasOwnProperty.call(data.directives, name))
         console.warn('Doz', `directive ${name} overwritten`);
 
