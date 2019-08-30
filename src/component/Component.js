@@ -20,7 +20,7 @@ const {compile} = require('../vdom/parser');
 const propsInit = require('./props-init');
 const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 const DOMManipulation = require('./DOMManipulation');
-const {callDirective} = require('../directive');
+const directive = require('../directive');
 
 class Component extends DOMManipulation {
 
@@ -63,7 +63,7 @@ class Component extends DOMManipulation {
         // Create observer to props
         observer.create(this, true);
 
-        callDirective('onComponentCreate', this);
+        directive.call('onComponentCreate', this);
 
         // Create shared store
         store.create(this);

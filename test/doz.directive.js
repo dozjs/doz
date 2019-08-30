@@ -74,5 +74,37 @@ describe('Doz.directive', function () {
 
         });
 
+        it('#3 should be ok', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.directive(':foo', {
+                onInit(app) {
+                    //console.log(app);
+                    done();
+                }
+            });
+
+            Doz.component('salutation-card', {
+                template() {
+                    return `
+                        <div>${this.props.title} ${this.props.name}</div>
+                    `
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        d:foo="bar"
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                `
+            });
+
+        });
+
     });
 });

@@ -16,17 +16,28 @@ function directive(name, options = {}) {
     registerDirective(name, options);
 }
 
-function callDirective(method, cmp, ...args) {
+function load(app) {
+    const ON_INIT = 'onInit';
+    Object.keys(data.directives).forEach(key => {
+        if (data.directives[key] !== undefined && typeof data.directives[key][ON_INIT] === 'function') {
+            data.directives[key][ON_INIT].call(null, app)
+        }
+    });
+}
+
+function call(method, cmp, ...args) {
     let directivesKeyValue = extractDirectivesFromProps(cmp.props);
     Object.keys(directivesKeyValue).forEach(key => {
         if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
             args.unshift(directivesKeyValue[key]);
-            data.directives[key][method].apply(cmp, args)
+            args.unshift(cmp);
+            data.directives[key][method].apply(null, args)
         }
     });
 }
 
 module.exports = {
     directive,
-    callDirective
+    call,
+    load
 };

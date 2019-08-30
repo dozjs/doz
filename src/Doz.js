@@ -3,6 +3,7 @@ const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
+const directive = require('./directive');
 
 class Doz {
 
@@ -176,6 +177,7 @@ class Doz {
         });
 
         plugin.load(this);
+        directive.load(this);
 
         if (this.cfg.autoDraw)
             this.draw();
