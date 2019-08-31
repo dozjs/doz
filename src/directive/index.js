@@ -16,15 +16,6 @@ function directive(name, options = {}) {
     registerDirective(name, options);
 }
 
-function load(app) {
-    const METHOD = 'onSystemAppInit';
-    Object.keys(data.directives).forEach(key => {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], app)
-        }
-    });
-}
-
 function callMethod(...args) {
     let method = args[0];
     let cmp = args[1];
@@ -55,6 +46,11 @@ function callComponentCreate(...args) {
 // All methods that starts with prefix callSystem are considered extra of directives hooks
 // because they don't use any prop but are useful for initializing stuff
 
+function callSystemAppInit(...args) {
+    args = ['onSystemAppInit', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 function callSystemComponentCreate(...args) {
     args = ['onSystemComponentCreate', ...args];
     callMethodNoDirective.apply(null, args);
@@ -78,8 +74,8 @@ function callSystemComponentLoadProps(...args) {
 module.exports = {
     directive,
     callMethod,
-    load,
     callComponentCreate,
+    callSystemAppInit,
     callSystemComponentCreate,
     callSystemComponentLoadProps,
     callSystemComponentSetConfig,

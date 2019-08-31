@@ -2,8 +2,8 @@ const {TAG, COMPONENT_ROOT_INSTANCE, COMPONENT_DYNAMIC_INSTANCE, REGEX} = requir
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
-const store = require('./store');
-const ids = require('./ids');
+//const store = require('./store');
+//const ids = require('./ids');
 const proxy = require('../proxy');
 const toInlineStyle = require('../utils/to-inline-style');
 const queueReady = require('./queue-ready');
@@ -69,7 +69,7 @@ class Component extends DOMManipulation {
         // Create shared store
         //store.create(this);
         // Create ID
-        ids.create(this);
+        //ids.create(this);
         // Add callback to ready queue
         queueReady.add(this);
         // Add callback app draw
@@ -133,11 +133,12 @@ class Component extends DOMManipulation {
             store.create(this);
         }
         */
-
+        /*
         if (typeof obj.id === 'string') {
             this.id = obj.id;
             ids.create(this);
         }
+        */
 
         if (typeof obj.autoCreateChildren === 'boolean') {
             this.autoCreateChildren = obj.autoCreateChildren;
@@ -195,6 +196,7 @@ class Component extends DOMManipulation {
         return this.app.getStore(storeName);
     }*/
 
+    /*
     getComponentById(id) {
         return this.app.getComponentById(id);
     }
@@ -202,6 +204,8 @@ class Component extends DOMManipulation {
     getCmp(id) {
         return this.app.getComponentById(id);
     }
+
+     */
 
     // noinspection JSMethodCanBeStatic
     template() {

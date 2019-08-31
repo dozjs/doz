@@ -1,1 +1,2 @@
 require('./store');
+require('./id');

@@ -67,10 +67,10 @@ class Doz {
             _cache: {
                 value: new Map()
             },
-            _ids: {
+            /*_ids: {
                 value: {},
                 writable: true
-            },
+            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -177,7 +177,7 @@ class Doz {
         });
 
         plugin.load(this);
-        directive.load(this);
+        directive.callSystemAppInit(this);
 
         if (this.cfg.autoDraw)
             this.draw();
@@ -209,11 +209,11 @@ class Doz {
             ? this._tree.children[alias]
             : undefined;
     }
-
+    /*
     getComponentById(id) {
         return this._ids[id];
     }
-
+    */
     /*getStore(store) {
         return this._stores[store];
     }*/
