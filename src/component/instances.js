@@ -9,6 +9,7 @@ const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
 const delay = require('../utils/delay');
+const directive = require('../directive');
 
 function getComponentName(child) {
     let cmpName;
@@ -121,7 +122,11 @@ function get(cfg = {}) {
                 }
 
                 const props = serializeProps($child);
-                const componentDirectives = extract(props);
+                //const componentDirectives = extract(props);
+                //console.log(extract(props))
+                const componentDirectives = directive.extractDirectivesFromProps(props);
+
+                //console.log(componentDirectives)
 
                 let newElement;
 

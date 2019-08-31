@@ -4,8 +4,10 @@ directive(':store', {
 
     createStore(instance, storeName) {
         if (typeof storeName === 'string') {
+            //console.warn(storeName)
             if (instance.app._stores[storeName] !== undefined) {
                 throw new Error(`Store already defined: ${storeName}`);
+                //console.warn(`Store already defined: ${storeName}`);
             }
             instance.app._stores[storeName] = instance.props;
         }
@@ -42,6 +44,7 @@ directive(':store', {
             }
         });
         if (instance.store !== undefined) {
+            //console.warn(instance.store, instance.props)
             this.createStore(instance, instance.store);
         }
     },
@@ -57,11 +60,13 @@ directive(':store', {
     onSystemComponentSetConfig(instance, obj) {
         if (typeof obj.store === 'string') {
             instance.store = obj.store;
-            this.createStore(instance, obj.store);
+            this.createStore(instance, instance.store);
         }
     },
 
     onComponentCreate(instance, directiveValue) {
+        //console.warn('----', directiveValue)
+        instance.store = directiveValue;
         this.createStore(instance, directiveValue);
     },
 });
