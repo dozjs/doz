@@ -109,7 +109,7 @@ describe('Doz.parent', function () {
                 const html = document.body.innerHTML;
                 console.log(html);
                 done()
-            },500);
+            },200);
 
 
         });

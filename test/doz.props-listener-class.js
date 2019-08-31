@@ -92,7 +92,7 @@ describe('Doz.props-listener-class', function () {
 
             setTimeout(()=>{
                 be.err(done).equal(result, ['a desc', 'a name', 'a title'])
-            }, 500);
+            }, 100);
 
         });
     });

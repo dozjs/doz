@@ -63,10 +63,11 @@ class Component extends DOMManipulation {
         // Create observer to props
         observer.create(this, true);
 
-        directive.call('onComponentCreate', this);
+        directive.callComponentCreateWithoutProps(this);
+        directive.callComponentCreate(this);
 
         // Create shared store
-        store.create(this);
+        //store.create(this);
         // Create ID
         ids.create(this);
         // Add callback to ready queue
@@ -83,7 +84,8 @@ class Component extends DOMManipulation {
 
         this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
-        store.sync(this);
+        //store.sync(this);
+        directive.callComponentSetProps(this);
     }
 
     get props() {
@@ -98,7 +100,8 @@ class Component extends DOMManipulation {
         propsInit(this);
         updateBoundElementsByPropsIteration(this);
         observer.create(this);
-        store.sync(this);
+        directive.callComponentLoadProps(this);
+        //store.sync(this);
         hooks.callLoadProps(this);
     }
 
@@ -112,6 +115,8 @@ class Component extends DOMManipulation {
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
 
+        directive.callComponentSetConfig(this, obj);
+
         if (typeof obj.mixin === 'object') {
             this.mixin = obj.mixin;
             localMixin(this);
@@ -122,10 +127,12 @@ class Component extends DOMManipulation {
             loadLocal(this);
         }
 
+        /*
         if (typeof obj.store === 'string') {
             this.store = obj.store;
             store.create(this);
         }
+        */
 
         if (typeof obj.id === 'string') {
             this.id = obj.id;
@@ -184,9 +191,9 @@ class Component extends DOMManipulation {
         return toInlineStyle(obj)
     }
 
-    getStore(storeName) {
+    /*getStore(storeName) {
         return this.app.getStore(storeName);
-    }
+    }*/
 
     getComponentById(id) {
         return this.app.getComponentById(id);

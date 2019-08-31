@@ -60,10 +60,10 @@ class Doz {
                 value: {},
                 writable: true
             },
-            _stores: {
+            /*_stores: {
                 value: {},
                 writable: true
-            },
+            },*/
             _cache: {
                 value: new Map()
             },
@@ -214,9 +214,9 @@ class Doz {
         return this._ids[id];
     }
 
-    getStore(store) {
+    /*getStore(store) {
         return this._stores[store];
-    }
+    }*/
 
     on(event, callback) {
         if (typeof event !== 'string')

@@ -20,7 +20,7 @@ function registerComponent(cmp) {
 function removeAll() {
     data.components = {};
     data.plugins = [];
-    data.directives = {};
+    //data.directives = {};
 }
 
 /**

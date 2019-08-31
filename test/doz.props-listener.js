@@ -79,7 +79,7 @@ describe('Doz.props-listener', function () {
 
             setTimeout(() => {
                 be.err(done).equal(result, ['a desc', 'a name', 'a title'])
-            }, 500);
+            }, 100);
 
         });
 
@@ -146,7 +146,7 @@ describe('Doz.props-listener', function () {
 
             setTimeout(() => {
                 be.err(done).equal(result, ['a desc', 'a name', 'a title'])
-            }, 500);
+            }, 100);
 
         });
     });

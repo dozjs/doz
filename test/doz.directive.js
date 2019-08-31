@@ -79,8 +79,8 @@ describe('Doz.directive', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.directive(':foo', {
-                onInit(app) {
-                    //console.log(app);
+                onAppInit(app) {
+                    if (app.shared.foo === 'bar')
                     done();
                 }
             });
@@ -95,6 +95,7 @@ describe('Doz.directive', function () {
 
             new Doz({
                 root: '#app',
+                shared: {foo: 'bar'},
                 template: `
                     <salutation-card
                         d:foo="bar"

@@ -8,6 +8,7 @@ const mixin = require('./component/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
 const {update} = require('./vdom/element');
+require('./directive/built-in/bootstrap');
 
 Object.defineProperties(Doz, {
     collection: {
