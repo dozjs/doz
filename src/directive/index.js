@@ -17,7 +17,7 @@ function directive(name, options = {}) {
 }
 
 function load(app) {
-    const METHOD = 'onAppInit';
+    const METHOD = 'onSystemAppInit';
     Object.keys(data.directives).forEach(key => {
         if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
             data.directives[key][METHOD].call(data.directives[key], app)
@@ -38,41 +38,41 @@ function callMethod(...args) {
     });
 }
 
+function callMethodNoDirective(...args) {
+    let method = args.shift();
+    Object.keys(data.directives).forEach(key => {
+        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+            data.directives[key][method].apply(data.directives[key], args)
+        }
+    });
+}
+
 function callComponentCreate(...args) {
     args = ['onComponentCreate', ...args];
     callMethod.apply(null, args)
 }
 
-function callComponentLoadProps(...args) {
-    args = ['onLoadProps', ...args];
-    callMethod.apply(null, args)
+// All methods that starts with prefix callSystem are considered extra of directives hooks
+// because they don't use any prop but are useful for initializing stuff
+
+function callSystemComponentCreate(...args) {
+    args = ['onSystemComponentCreate', ...args];
+    callMethodNoDirective.apply(null, args);
 }
 
-function callComponentCreateWithoutProps(instance) {
-    const METHOD = 'onComponentCreateWithoutProps';
-    Object.keys(data.directives).forEach(key => {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance)
-        }
-    });
+function callSystemComponentSetConfig(...args) {
+    args = ['onSystemComponentSetConfig', ...args];
+    callMethodNoDirective.apply(null, args);
 }
 
-function callComponentSetConfig(instance, obj) {
-    const METHOD = 'onComponentSetConfig';
-    Object.keys(data.directives).forEach(key => {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance, obj)
-        }
-    });
+function callSystemComponentSetProps(...args) {
+    args = ['onSystemComponentSetProps', ...args];
+    callMethodNoDirective.apply(null, args);
 }
 
-function callComponentSetProps(instance) {
-    const METHOD = 'onComponentSetProps';
-    Object.keys(data.directives).forEach(key => {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance)
-        }
-    });
+function callSystemComponentLoadProps(...args) {
+    args = ['onSystemComponentLoadProps', ...args];
+    callMethodNoDirective.apply(null, args);
 }
 
 module.exports = {
@@ -80,8 +80,8 @@ module.exports = {
     callMethod,
     load,
     callComponentCreate,
-    callComponentCreateWithoutProps,
-    callComponentLoadProps,
-    callComponentSetConfig,
-    callComponentSetProps
+    callSystemComponentCreate,
+    callSystemComponentLoadProps,
+    callSystemComponentSetConfig,
+    callSystemComponentSetProps
 };

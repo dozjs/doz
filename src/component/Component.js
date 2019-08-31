@@ -63,7 +63,7 @@ class Component extends DOMManipulation {
         // Create observer to props
         observer.create(this, true);
 
-        directive.callComponentCreateWithoutProps(this);
+        directive.callSystemComponentCreate(this);
         directive.callComponentCreate(this);
 
         // Create shared store
@@ -85,7 +85,7 @@ class Component extends DOMManipulation {
         this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
         //store.sync(this);
-        directive.callComponentSetProps(this);
+        directive.callSystemComponentSetProps(this);
     }
 
     get props() {
@@ -100,7 +100,7 @@ class Component extends DOMManipulation {
         propsInit(this);
         updateBoundElementsByPropsIteration(this);
         observer.create(this);
-        directive.callComponentLoadProps(this);
+        directive.callSystemComponentLoadProps(this);
         //store.sync(this);
         hooks.callLoadProps(this);
     }
@@ -115,7 +115,7 @@ class Component extends DOMManipulation {
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
 
-        directive.callComponentSetConfig(this, obj);
+        directive.callSystemComponentSetConfig(this, obj);
 
         if (typeof obj.mixin === 'object') {
             this.mixin = obj.mixin;

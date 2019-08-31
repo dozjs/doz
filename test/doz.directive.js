@@ -79,7 +79,7 @@ describe('Doz.directive', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.directive(':foo', {
-                onAppInit(app) {
+                onSystemAppInit(app) {
                     if (app.shared.foo === 'bar')
                     done();
                 }
