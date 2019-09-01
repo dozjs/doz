@@ -124,9 +124,11 @@ function get(cfg = {}) {
                 const props = serializeProps($child);
                 //const componentDirectives = extract(props);
                 //console.log(extract(props))
-                const componentDirectives = directive.extractDirectivesFromProps(props);
+                const componentDirectives = {};// directive.extractDirectivesFromProps(props);
 
-                //console.log(componentDirectives)
+                /*console.log('props', props)
+                console.log('directives', componentDirectives)
+                console.log('-----')*/
 
                 let newElement;
 
@@ -153,7 +155,8 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
+                        parentCmp: parent.cmp || cfg.parent,
+                        uId
                     });
                 } else {
                     newElement = new Component({
@@ -163,7 +166,8 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
+                        parentCmp: parent.cmp || cfg.parent,
+                        uId
                     });
                 }
 
@@ -180,7 +184,7 @@ function get(cfg = {}) {
 
                 propsInit(newElement);
 
-                Object.defineProperty(newElement, 'uId', {value: uId});
+                //Object.defineProperty(newElement, 'uId', {value: uId});
                 //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);

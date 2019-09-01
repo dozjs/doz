@@ -7,7 +7,7 @@ function extractDirectivesFromProps(props, deleteProps) {
         if (REGEX.IS_DIRECTIVE.test(key)) {
             let keyWithoutD = key.replace(/^d[-:]/, '');
             directives[keyWithoutD] = props[key];
-            if (deleteProps)
+            //if (deleteProps)
                 delete props[key];
         }
     });
@@ -74,6 +74,11 @@ function callSystemComponentLoadProps(...args) {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemComponentDestroy(...args) {
+    args = ['onSystemComponentDestroy', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 module.exports = {
     directive,
     callMethod,
@@ -83,5 +88,6 @@ module.exports = {
     callSystemComponentCreate,
     callSystemComponentLoadProps,
     callSystemComponentSetConfig,
-    callSystemComponentSetProps
+    callSystemComponentSetProps,
+    callSystemComponentDestroy
 };

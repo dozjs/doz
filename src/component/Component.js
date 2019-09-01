@@ -516,6 +516,10 @@ function defineProperties(obj, opt) {
             value: opt.cmp.tag,
             enumerable: true
         },
+        uId: {
+            value: opt.uId,
+            enumerable: true
+        },
         app: {
             value: opt.app,
             enumerable: true

@@ -1,4 +1,5 @@
 const delay = require('../utils/delay');
+const directive = require('../directive');
 
 function callBeforeCreate(context) {
     if (typeof context.onBeforeCreate === 'function') {
@@ -138,14 +139,13 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
 
-    if (context.store && context.app._stores[context.store])
-        delete context.app._stores[context.store];
+    directive.callSystemComponentDestroy(context);
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    if (context.id && context.app._ids[context.id])
-        delete context.app._ids[context.id];
+    /*if (context.id && context.app._ids[context.id])
+        delete context.app._ids[context.id];*/
     if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);

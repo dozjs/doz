@@ -4,12 +4,11 @@ directive(':store', {
 
     createStore(instance, storeName) {
         if (typeof storeName === 'string') {
-            //console.warn(storeName)
             if (instance.app._stores[storeName] !== undefined) {
                 throw new Error(`Store already defined: ${storeName}`);
-                //console.warn(`Store already defined: ${storeName}`);
             }
             instance.app._stores[storeName] = instance.props;
+            instance.store = storeName;
         }
     },
 
@@ -34,6 +33,7 @@ directive(':store', {
         });
     },
 
+    // Create by property defined
     onSystemComponentCreate(instance) {
         Object.defineProperties(instance, {
             getStore: {
@@ -43,10 +43,15 @@ directive(':store', {
                 enumerable: true
             }
         });
-        if (instance.store !== undefined) {
-            //console.warn(instance.store, instance.props)
+
+        if (instance.store !== undefined && instance.props['d:store'] === undefined) {
             this.createStore(instance, instance.store);
         }
+    },
+
+    // Create by props
+    onComponentCreate(instance, directiveValue) {
+        this.createStore(instance, directiveValue);
     },
 
     onSystemComponentLoadProps(instance) {
@@ -59,14 +64,12 @@ directive(':store', {
 
     onSystemComponentSetConfig(instance, obj) {
         if (typeof obj.store === 'string') {
-            instance.store = obj.store;
-            this.createStore(instance, instance.store);
+            this.createStore(instance, obj.store);
         }
     },
 
-    onComponentCreate(instance, directiveValue) {
-        //console.warn('----', directiveValue)
-        instance.store = directiveValue;
-        this.createStore(instance, directiveValue);
+    onSystemComponentDestroy(instance) {
+        if (instance.store && instance.app._stores[instance.store])
+            delete instance.app._stores[instance.store];
     },
 });

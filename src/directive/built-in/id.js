@@ -8,6 +8,7 @@ directive(':id', {
                 throw new Error(`ID already defined: ${id}`);
             }
             instance.app._ids[id] = instance;
+            instance.id = id;
         }
     },
 
@@ -41,20 +42,24 @@ directive(':id', {
                 enumerable: true
             }
         });
-        if (instance.id !== undefined) {
-            this.createId(instance, instance.id);
-        }
-    },
 
-    onSystemComponentSetConfig(instance, obj) {
-        if (typeof obj.id === 'string') {
-            instance.id = obj.id;
+        if (instance.id !== undefined && instance.props['d:id'] === undefined) {
             this.createId(instance, instance.id);
         }
     },
 
     onComponentCreate(instance, directiveValue) {
-        instance.id = directiveValue;
-        this.createId(instance, instance.id);
+        this.createId(instance, directiveValue);
+    },
+
+    onSystemComponentSetConfig(instance, obj) {
+        if (typeof obj.id === 'string') {
+            this.createId(instance, obj.id);
+        }
+    },
+
+    onSystemComponentDestroy(instance) {
+        if (instance.id && instance.app._ids[instance.id])
+            delete instance.app._ids[instance.id];
     },
 });
