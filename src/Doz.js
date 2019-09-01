@@ -204,11 +204,12 @@ class Doz {
         return this._tree;
     }
 
+    /*
     getComponent(alias) {
         return this._tree
             ? this._tree.children[alias]
             : undefined;
-    }
+    }*/
     /*
     getComponentById(id) {
         return this._ids[id];

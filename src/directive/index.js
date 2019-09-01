@@ -33,11 +33,26 @@ function callMethod(...args) {
 
 function callMethodNoDirective(...args) {
     let method = args.shift();
-    Object.keys(data.directives).forEach(key => {
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            data.directives[key][method].apply(data.directives[key], args)
+    let oKeys = Object.keys(data.directives);
+    let callback;
+
+    // Search for a possible callback
+    for (let i = 0; i < args.length; i++) {
+        if (typeof args[i] === 'function') {
+            callback = args[i];
+            break;
         }
-    });
+    }
+
+    for (let i = 0; i < oKeys.length; i++) {
+        let key = oKeys[i];
+        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+            let res = data.directives[key][method].apply(data.directives[key], args);
+            // If res returns something, fire the callback
+            if (res !== undefined && callback)
+                callback(res);
+        }
+    }
 }
 
 function callComponentCreate(...args) {
@@ -79,6 +94,11 @@ function callSystemComponentDestroy(...args) {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemComponentAssignIndex(...args) {
+    args = ['onSystemComponentAssignIndex', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 module.exports = {
     directive,
     callMethod,
@@ -89,5 +109,6 @@ module.exports = {
     callSystemComponentLoadProps,
     callSystemComponentSetConfig,
     callSystemComponentSetProps,
-    callSystemComponentDestroy
+    callSystemComponentDestroy,
+    callSystemComponentAssignIndex
 };

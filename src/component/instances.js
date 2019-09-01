@@ -4,7 +4,7 @@ const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX} = requi
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
-const {extract} = require('./component-directives');
+//const {extract} = require('./component-directives');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
@@ -225,8 +225,15 @@ function get(cfg = {}) {
                 parentElement = newElement;
 
                 if (parent.cmp) {
-                    let n = Object.keys(parent.cmp.children).length;
-                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    let n = Object.keys(parent.cmp.children).length++;
+                    directive.callSystemComponentAssignIndex(newElement, n, (index) => {
+                        parent.cmp.children[index] = newElement;
+                    });
+
+                    /*
+                    let n = Object.keys(parent.cmp.children).length++;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n] = newElement;
+                     */
                     if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
                         parent.cmp.childrenByTag[newElement.tag] = [newElement];
                     } else {

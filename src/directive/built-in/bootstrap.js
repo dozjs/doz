@@ -1,2 +1,0 @@
-require('./store');
-require('./id');
