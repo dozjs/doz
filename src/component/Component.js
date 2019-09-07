@@ -63,8 +63,8 @@ class Component extends DOMManipulation {
         // Create observer to props
         observer.create(this, true);
 
-        directive.callSystemComponentCreate(this);
-        directive.callComponentCreate(this);
+        //directive.callSystemComponentCreate(this);
+        //directive.callComponentCreate(this);
 
         // Create shared store
         //store.create(this);
@@ -100,7 +100,7 @@ class Component extends DOMManipulation {
         propsInit(this);
         updateBoundElementsByPropsIteration(this);
         observer.create(this);
-        directive.callSystemComponentLoadProps(this);
+        //directive.callSystemComponentLoadProps(this);
         //store.sync(this);
         hooks.callLoadProps(this);
     }

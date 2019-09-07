@@ -95,6 +95,66 @@ function callSystemComponentCreate(...args) {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemComponentBeforeCreate(...args) {
+    args = ['onSystemComponentBeforeCreate', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentConfigCreate(...args) {
+    args = ['onSystemComponentConfigCreate', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeMount(...args) {
+    args = ['onSystemComponentBeforeMount', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentMount(...args) {
+    args = ['onSystemComponentMount', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentMountAsync(...args) {
+    args = ['onSystemComponentMountAsync', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeUpdate(...args) {
+    args = ['onSystemComponentBeforeUpdate', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentUpdate(...args) {
+    args = ['onSystemComponentUpdate', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentDrawByParent(...args) {
+    args = ['onSystemComponentDrawByParent', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentAfterRender(...args) {
+    args = ['onSystemComponentAfterRender', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeUnmount(...args) {
+    args = ['onSystemComponentBeforeUnmount', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentUnmount(...args) {
+    args = ['onSystemComponentUnmount', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeDestroy(...args) {
+    args = ['onSystemComponentBeforeDestroy', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 function callSystemComponentSetConfig(...args) {
     args = ['onSystemComponentSetConfig', ...args];
     callMethodNoDirective.apply(null, args);
@@ -131,5 +191,17 @@ module.exports = {
     callSystemComponentSetConfig,
     callSystemComponentSetProps,
     callSystemComponentDestroy,
-    callSystemComponentAssignIndex
+    callSystemComponentAssignIndex,
+    callSystemComponentBeforeCreate,
+    callSystemComponentConfigCreate,
+    callSystemComponentBeforeMount,
+    callSystemComponentMount,
+    callSystemComponentBeforeDestroy,
+    callSystemComponentUnmount,
+    callSystemComponentBeforeUnmount,
+    callSystemComponentAfterRender,
+    callSystemComponentDrawByParent,
+    callSystemComponentUpdate,
+    callSystemComponentBeforeUpdate,
+    callSystemComponentMountAsync
 };

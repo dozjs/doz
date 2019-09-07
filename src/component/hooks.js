@@ -2,6 +2,7 @@ const delay = require('../utils/delay');
 const directive = require('../directive');
 
 function callBeforeCreate(context) {
+    directive.callSystemComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
     }
@@ -11,6 +12,8 @@ function callBeforeCreate(context) {
 }
 
 function callCreate(context) {
+    directive.callSystemComponentCreate(context);
+    directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
     }
@@ -21,6 +24,7 @@ function callCreate(context) {
 }
 
 function callConfigCreate(context) {
+    directive.callSystemComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -31,6 +35,7 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
+    directive.callSystemComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
     }
@@ -40,6 +45,7 @@ function callBeforeMount(context) {
 }
 
 function callMount(context) {
+    directive.callSystemComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
     }
@@ -50,20 +56,18 @@ function callMount(context) {
 }
 
 function callMountAsync(context) {
+    delay(()=> directive.callSystemComponentMountAsync(context));
     if (typeof context.onMountAsync === 'function') {
-        delay(() => {
-            context.onMountAsync.call(context);
-        });
+        delay(() => context.onMountAsync.call(context));
     }
     if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
-        delay(() => {
-            context.parent[context.__onMountAsync].call(context.parent, context);
-        });
+        delay(() => context.parent[context.__onMountAsync].call(context.parent, context));
     }
     context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
+    directive.callSystemComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
     }
@@ -73,6 +77,7 @@ function callBeforeUpdate(context, changes) {
 }
 
 function callUpdate(context, changes) {
+    directive.callSystemComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
     }
@@ -84,6 +89,9 @@ function callUpdate(context, changes) {
 
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return ;
+
+    directive.callSystemComponentDrawByParent(context, newNode, oldNode);
+
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -94,6 +102,7 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
+    directive.callSystemComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
     }
@@ -103,6 +112,7 @@ function callAfterRender(context, changes) {
 }
 
 function callBeforeUnmount(context) {
+    directive.callSystemComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
     }
@@ -112,6 +122,7 @@ function callBeforeUnmount(context) {
 }
 
 function callUnmount(context) {
+    directive.callSystemComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
     }
@@ -122,6 +133,7 @@ function callUnmount(context) {
 }
 
 function callBeforeDestroy(context) {
+    directive.callSystemComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
     }
@@ -131,6 +143,7 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
+    directive.callSystemComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
@@ -139,7 +152,7 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
 
-    directive.callSystemComponentDestroy(context);
+    //directive.callSystemComponentDestroy(context);
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
@@ -161,9 +174,11 @@ function callDestroy(context) {
 }
 
 function callLoadProps(context) {
+    directive.callSystemComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
     }
+
     if (context.parent && typeof context.parent[context.__onLoadProps] === 'function') {
         context.parent[context.__onLoadProps].call(context.parent, context);
     }
