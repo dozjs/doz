@@ -1,16 +1,27 @@
 const {registerDirective, data} = require('../collection');
 const {REGEX} = require('../constants.js');
 
-function extractDirectivesFromProps(props, deleteProps) {
+function extractDirectivesFromProps(cmp) {
+    let canBeDeleteProps = false;
+    let props;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
     let directives = {};
     Object.keys(props).forEach(key => {
         if (REGEX.IS_DIRECTIVE.test(key)) {
             let keyWithoutD = key.replace(/^d[-:]/, '');
             directives[keyWithoutD] = props[key];
-            //if (deleteProps)
-            delete props[key];
+            if (canBeDeleteProps)
+                delete props[key];
         }
     });
+
     return directives;
 }
 
@@ -23,8 +34,9 @@ function callMethod(...args) {
     let cmp = args[1];
     // Remove first argument event name
     args.shift();
+    console.warn(cmp.tag, method, cmp.props)
 
-    let directivesKeyValue = extractDirectivesFromProps(cmp.props);
+    let directivesKeyValue = extractDirectivesFromProps(cmp);
 
     Object.keys(directivesKeyValue).forEach(key => {
 
@@ -39,7 +51,9 @@ function callMethod(...args) {
         }
 
         let directiveObj = data.directives[key];
-
+        //console.log(method, directiveObj)
+        if (directiveObj)
+        //console.warn(method, directiveObj[method])
         if (directiveObj && typeof directiveObj[method] === 'function') {
             // Clone args object
             let outArgs = Object.assign([], args);
@@ -47,6 +61,7 @@ function callMethod(...args) {
             outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
             outArgs.push(keyArguments);
+
             directiveObj[method].apply(directiveObj, outArgs)
         }
     });
@@ -76,8 +91,18 @@ function callMethodNoDirective(...args) {
     }
 }
 
+function callComponentBeforeCreate(...args) {
+    args = ['onComponentBeforeCreate', ...args];
+    callMethod.apply(null, args)
+}
+
 function callComponentCreate(...args) {
     args = ['onComponentCreate', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentBeforeMount(...args) {
+    args = ['onComponentBeforeMount', ...args];
     callMethod.apply(null, args)
 }
 
@@ -184,7 +209,9 @@ module.exports = {
     directive,
     callMethod,
     extractDirectivesFromProps,
+    callComponentBeforeCreate,
     callComponentCreate,
+    callComponentBeforeMount,
     callSystemAppInit,
     callSystemComponentCreate,
     callSystemComponentLoadProps,

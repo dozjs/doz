@@ -97,12 +97,15 @@ describe('Doz.instance.hooks', function () {
                         />`
                 },
                 onMyCmpBeforeCreate() {
+                    console.log('onBeforeCreate');
                     queueEvents.push('onBeforeCreate');
                 },
                 onMyCmpCreate() {
+                    console.log('onCreate');
                     queueEvents.push('onCreate');
                 },
                 onMyCmpBeforeMount() {
+                    console.log('onBeforeMount');
                     queueEvents.push('onBeforeMount');
                 },
                 onMyCmpMount() {

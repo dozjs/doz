@@ -3,11 +3,9 @@ const directive = require('../directive');
 
 function callBeforeCreate(context) {
     directive.callSystemComponentBeforeCreate(context);
+    directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeCreate] === 'function') {
-        return context.parent[context.__onBeforeCreate].call(context.parent, context);
     }
 }
 
@@ -16,9 +14,6 @@ function callCreate(context) {
     directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
-        context.parent[context.__onCreate].call(context.parent, context);
     }
     context.app.emit('componentCreate', context);
 }
@@ -36,11 +31,9 @@ function callConfigCreate(context) {
 
 function callBeforeMount(context) {
     directive.callSystemComponentBeforeMount(context);
+    directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeMount] === 'function') {
-        return context.parent[context.__onBeforeMount].call(context.parent, context);
     }
 }
 

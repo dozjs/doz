@@ -48,7 +48,8 @@ class Component extends DOMManipulation {
         defineProperties(this, opt);
 
         // Assign cfg to instance
-        extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
+        //extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
+        extendInstance(this, opt.cmp.cfg);
 
         // Create mixin
         localMixin(this);
@@ -62,7 +63,6 @@ class Component extends DOMManipulation {
 
         // Create observer to props
         observer.create(this, true);
-
         //directive.callSystemComponentCreate(this);
         //directive.callComponentCreate(this);
 
