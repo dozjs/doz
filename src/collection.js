@@ -62,7 +62,15 @@ function registerDirective(name, cfg = {}) {
     }
 
     name = name.toLowerCase();
+    let namePart = [];
+    if (name.indexOf('-') !== -1) {
+        namePart = name.split('-');
+        name = namePart[0];
+        namePart.shift();
+    }
+
     cfg.name = name;
+    cfg.dynamicParams = namePart;
 
     if (Object.prototype.hasOwnProperty.call(data.directives, name))
         console.warn('Doz', `directive ${name} overwritten`);

@@ -8,7 +8,7 @@ function extractDirectivesFromProps(props, deleteProps) {
             let keyWithoutD = key.replace(/^d[-:]/, '');
             directives[keyWithoutD] = props[key];
             //if (deleteProps)
-                delete props[key];
+            delete props[key];
         }
     });
     return directives;
@@ -21,11 +21,23 @@ function directive(name, options = {}) {
 function callMethod(...args) {
     let method = args[0];
     let cmp = args[1];
+    // Remove first argument event name
+    args.shift();
     let directivesKeyValue = extractDirectivesFromProps(cmp.props);
     Object.keys(directivesKeyValue).forEach(key => {
+        let dynamicKeyParts = [];
+        let originKey = key;
+        if (key.indexOf('-') !== -1) {
+            console.log('search for dynamic directives', key)
+            dynamicKeyParts = key.split('-');
+            key = dynamicKeyParts[0];
+            dynamicKeyParts.shift();
+        }
+
         if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            args.unshift(directivesKeyValue[key]);
-            args.unshift(cmp);
+            // Add directive value
+            args.push(directivesKeyValue[originKey]);
+            args.push(dynamicKeyParts);
             data.directives[key][method].apply(data.directives[key], args)
         }
     });

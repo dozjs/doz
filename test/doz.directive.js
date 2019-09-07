@@ -15,9 +15,9 @@ describe('Doz.directive', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.directive('foo', {
-                onComponentCreate(directiveValue) {
-                    console.log(directiveValue);
-                    done();
+                onComponentCreate(cmp, directiveValue) {
+                    if(directiveValue === 'bar')
+                        done();
                 }
             });
 
@@ -47,9 +47,9 @@ describe('Doz.directive', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.directive(':foo', {
-                onComponentCreate(directiveValue) {
-                    console.log(directiveValue);
-                    done();
+                onComponentCreate(cmp, directiveValue) {
+                    if(directiveValue === 'bar')
+                        done();
                 }
             });
 
@@ -99,6 +99,40 @@ describe('Doz.directive', function () {
                 template: `
                     <salutation-card
                         d:foo="bar"
+                        title="MR."
+                        name="Doz">
+                    </salutation-card>
+                `
+            });
+
+        });
+
+        it('#4 should be ok', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.directive(':foo-$param', {
+                onComponentCreate(cmp, directiveValue, dynamicKeyArguments) {
+                    console.warn(directiveValue)
+                    console.warn(dynamicKeyArguments)
+                    if (directiveValue === 'bar' && dynamicKeyArguments[0] === 'hello')
+                    done();
+                }
+            });
+
+            Doz.component('salutation-card', {
+                template() {
+                    return `
+                        <div>${this.props.title} ${this.props.name}</div>
+                    `
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template: `
+                    <salutation-card
+                        d:foo-hello="bar"
                         title="MR."
                         name="Doz">
                     </salutation-card>

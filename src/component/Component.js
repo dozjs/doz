@@ -165,13 +165,13 @@ class Component extends DOMManipulation {
         proxy.endRender(this.props)
     }
 
-    emit(name, ...args) {
+    /*emit(name, ...args) {
         if (this._callback && this._callback[name] !== undefined
             && this.parent[this._callback[name]] !== undefined
             && typeof this.parent[this._callback[name]] === 'function') {
             this.parent[this._callback[name]].apply(this.parent, args);
         }
-    }
+    }*/
 
     each(obj, func, safe = false) {
         let res;
@@ -436,9 +436,9 @@ function defineProperties(obj, opt) {
         _initialProps: {
             value: cloneObject(obj._rawProps)
         },
-        _callback: {
+        /*_callback: {
             value: opt.componentDirectives['callback']
-        },
+        },*/
         _isRendered: {
             value: false,
             writable: true
