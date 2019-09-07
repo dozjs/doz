@@ -2,16 +2,6 @@ const {directive} = require('../index');
 
 directive(':on-$event', {
 
-    /*createId(instance, id) {
-        if (typeof id === 'string') {
-            if (instance.app._ids[id] !== undefined) {
-                throw new Error(`ID already defined: ${id}`);
-            }
-            instance.app._ids[id] = instance;
-            instance.id = id;
-        }
-    },*/
-
     onSystemComponentCreate(instance) {
         Object.defineProperties(instance, {
             _callback: {
@@ -31,18 +21,10 @@ directive(':on-$event', {
         });
     },
 
-    onComponentCreate(instance, directiveValue) {
-        //this.createId(instance, directiveValue);
-    },
-/*
-    onSystemComponentSetConfig(instance, obj) {
-        if (typeof obj.id === 'string') {
-            this.createId(instance, obj.id);
-        }
+    onComponentCreate(instance, directiveValue, keyArguments) {
+        let source = {};
+        source[keyArguments.event] = directiveValue;
+        Object.assign(instance._callback, source);
     },
 
-    onSystemComponentDestroy(instance) {
-        if (instance.id && instance.app._ids[instance.id])
-            delete instance.app._ids[instance.id];
-    },*/
 });

@@ -70,7 +70,7 @@ function registerDirective(name, cfg = {}) {
     }
 
     cfg.name = name;
-    cfg.dynamicParams = namePart;
+    cfg._keyArguments = namePart.map(item => item.substr(1)); // remove $
 
     if (Object.prototype.hasOwnProperty.call(data.directives, name))
         console.warn('Doz', `directive ${name} overwritten`);

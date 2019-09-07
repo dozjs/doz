@@ -23,22 +23,29 @@ function callMethod(...args) {
     let cmp = args[1];
     // Remove first argument event name
     args.shift();
+    //console.warn(cmp.props)
     let directivesKeyValue = extractDirectivesFromProps(cmp.props);
+    //console.warn(directivesKeyValue)
     Object.keys(directivesKeyValue).forEach(key => {
-        let dynamicKeyParts = [];
+
+        let keyArgumentsValues = [];
+        let keyArguments = {};
         let originKey = key;
+
         if (key.indexOf('-') !== -1) {
-            console.log('search for dynamic directives', key)
-            dynamicKeyParts = key.split('-');
-            key = dynamicKeyParts[0];
-            dynamicKeyParts.shift();
+            keyArgumentsValues = key.split('-');
+            key = keyArgumentsValues[0];
+            keyArgumentsValues.shift();
         }
 
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+        let directiveObj = data.directives[key];
+
+        if (directiveObj && typeof directiveObj[method] === 'function') {
             // Add directive value
             args.push(directivesKeyValue[originKey]);
-            args.push(dynamicKeyParts);
-            data.directives[key][method].apply(data.directives[key], args)
+            directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
+            args.push(keyArguments);
+            directiveObj[method].apply(directiveObj, args)
         }
     });
 }

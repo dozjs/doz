@@ -112,10 +112,10 @@ describe('Doz.directive', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.directive(':foo-$param', {
-                onComponentCreate(cmp, directiveValue, dynamicKeyArguments) {
-                    console.warn(directiveValue)
-                    console.warn(dynamicKeyArguments)
-                    if (directiveValue === 'bar' && dynamicKeyArguments[0] === 'hello')
+                onComponentCreate(cmp, directiveValue, keyArguments) {
+                    //console.warn(directiveValue)
+                    //console.warn(dynamicKeyArguments)
+                    if (directiveValue === 'bar' && keyArguments.param === 'hello')
                     done();
                 }
             });

@@ -187,13 +187,13 @@ function serializeProps(node) {
 }
 
 function propsFixer(nName, aName, aValue, props, dIS) {
-    let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    /*let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
         if (props[ATTR.LISTENER] === undefined)
             props[ATTR.LISTENER] = {};
         props[ATTR.LISTENER][isComponentListener[1]] = aValue;
         delete props[aName];
-    } else {
+    } else {*/
         if (REGEX.IS_STRING_QUOTED.test(aValue))
             aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
         //console.log(aName, REGEX.IS_ON.test(aName))
@@ -213,7 +213,7 @@ function propsFixer(nName, aName, aValue, props, dIS) {
             ] = aName === ATTR.FORCE_UPDATE
             ? true
             : castStringTo(aValue);
-    }
+    //}
 }
 
 module.exports = {
