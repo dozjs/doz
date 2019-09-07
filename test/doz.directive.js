@@ -113,8 +113,6 @@ describe('Doz.directive', function () {
 
             Doz.directive(':foo-$param', {
                 onComponentCreate(cmp, directiveValue, keyArguments) {
-                    //console.warn(directiveValue)
-                    //console.warn(dynamicKeyArguments)
                     if (directiveValue === 'bar' && keyArguments.param === 'hello')
                     done();
                 }
@@ -133,6 +131,7 @@ describe('Doz.directive', function () {
                 template: `
                     <salutation-card
                         d:foo-hello="bar"
+                        d:foo-ciao="goo"
                         title="MR."
                         name="Doz">
                     </salutation-card>

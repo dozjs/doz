@@ -23,9 +23,9 @@ function callMethod(...args) {
     let cmp = args[1];
     // Remove first argument event name
     args.shift();
-    //console.warn(cmp.props)
+
     let directivesKeyValue = extractDirectivesFromProps(cmp.props);
-    //console.warn(directivesKeyValue)
+
     Object.keys(directivesKeyValue).forEach(key => {
 
         let keyArgumentsValues = [];
@@ -41,11 +41,13 @@ function callMethod(...args) {
         let directiveObj = data.directives[key];
 
         if (directiveObj && typeof directiveObj[method] === 'function') {
+            // Clone args object
+            let outArgs = Object.assign([], args);
             // Add directive value
-            args.push(directivesKeyValue[originKey]);
+            outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
-            args.push(keyArguments);
-            directiveObj[method].apply(directiveObj, args)
+            outArgs.push(keyArguments);
+            directiveObj[method].apply(directiveObj, outArgs)
         }
     });
 }
