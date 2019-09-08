@@ -81,88 +81,13 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-module.exports = {
-    COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
-    COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
-    COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    DIR_IS: '__DOZ_D_IS__',
-    DEFAULT_SLOT_KEY: '__DEFAULT__',
-    NS: {
-        SVG: 'http://www.w3.org/2000/svg'
-    },
-    TAG: {
-        ROOT: 'dz-root',
-        EACH: 'dz-each-root', //not in use
-        APP: 'dz-app',
-        EMPTY: 'dz-empty',
-        MOUNT: 'dz-mount',
-        SLOT: 'dz-slot',
-        SLOT_UPPERCASE: 'DZ-SLOT',
-        SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'dz-text-node'
-    },
-    REGEX: {
-        IS_DIRECTIVE: /^d[-:][\w-]+$/,
-        IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
-        IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
-        IS_BIND: /^d-bind$/,
-        IS_REF: /^d-ref$/,
-        IS_IS: /^d-is$/,
-        /*
-        IS_ON: /^d:on$/,
-        IS_ALIAS: /^d:alias$/,
-        IS_STORE: /^d:store$/,
-        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
-         */
-        IS_LISTENER: /^on/,
-        IS_ID_SELECTOR: /^#[\w-_:.]+$/,
-        IS_PARENT_METHOD: /^parent.(.*)/,
-        IS_STRING_QUOTED: /^"\w+"/,
-        IS_SVG: /^svg$/,
-        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
-        GET_LISTENER: /^this.(.*)\((.*)\)/,
-        GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
-        IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
-        TRIM_QUOTES: /^["'](.*)["']$/,
-        THIS_TARGET: /\B\$this(?!\w)/g,
-        HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
-        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
-        MATCH_NLS: /\n\s+/gm,
-        REPLACE_QUOT: /"/g,
-        REPLACE_D_DIRECTIVE: /^d[-:]/
-    },
-    ATTR: {
-        // Attributes for HTMLElement
-        BIND: 'd-bind',
-        REF: 'd-ref',
-        IS: 'd-is',
-        // Attributes for both
-        KEY: 'd-key',
-        // Attributes for Components
-        /*
-        ALIAS: 'd:alias',
-        STORE: 'd:store',
-        LISTENER: 'd:on',
-        ID: 'd:id',
-        */
-        FORCE_UPDATE: 'forceupdate'
-    }
-};
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var _require = __webpack_require__(2),
     registerDirective = _require.registerDirective,
     data = _require.data;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     REGEX = _require2.REGEX;
 
 function extractDirectivesFromProps(cmp) {
@@ -284,10 +209,6 @@ function callMethodNoDirective() {
             if (res !== undefined && callback) callback(res);
         }
     }
-}
-
-function callMethodDOM() {
-    console.warn('---------');
 }
 
 // Hooks for DOM element
@@ -596,6 +517,24 @@ function callSystemComponentAssignIndex() {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemWalkDOM() {
+    for (var _len35 = arguments.length, args = Array(_len35), _key35 = 0; _key35 < _len35; _key35++) {
+        args[_key35] = arguments[_key35];
+    }
+
+    args = ['onSystemWalkDOM'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentAssignName() {
+    for (var _len36 = arguments.length, args = Array(_len36), _key36 = 0; _key36 < _len36; _key36++) {
+        args[_key36] = arguments[_key36];
+    }
+
+    args = ['onSystemComponentAssignName'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
 module.exports = {
     directive: directive,
     callMethod: callMethod,
@@ -635,7 +574,84 @@ module.exports = {
     callSystemComponentDrawByParent: callSystemComponentDrawByParent,
     callSystemComponentUpdate: callSystemComponentUpdate,
     callSystemComponentBeforeUpdate: callSystemComponentBeforeUpdate,
-    callSystemComponentMountAsync: callSystemComponentMountAsync
+    callSystemComponentMountAsync: callSystemComponentMountAsync,
+    callSystemWalkDOM: callSystemWalkDOM,
+    callSystemComponentAssignName: callSystemComponentAssignName
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
+    COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
+    COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
+    DIR_IS: '__DOZ_D_IS__',
+    DEFAULT_SLOT_KEY: '__DEFAULT__',
+    NS: {
+        SVG: 'http://www.w3.org/2000/svg'
+    },
+    TAG: {
+        ROOT: 'dz-root',
+        EACH: 'dz-each-root', //not in use
+        APP: 'dz-app',
+        EMPTY: 'dz-empty',
+        MOUNT: 'dz-mount',
+        SLOT: 'dz-slot',
+        SLOT_UPPERCASE: 'DZ-SLOT',
+        SUFFIX_ROOT: '-root',
+        TEXT_NODE_PLACE: 'dz-text-node'
+    },
+    REGEX: {
+        IS_DIRECTIVE: /^d[-:][\w-]+$/,
+        IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
+        IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
+        IS_BIND: /^d-bind$/,
+        //IS_REF: /^d-ref$/,
+        IS_IS: /^d-is$/,
+        /*
+        IS_ON: /^d:on$/,
+        IS_ALIAS: /^d:alias$/,
+        IS_STORE: /^d:store$/,
+        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
+         */
+        IS_LISTENER: /^on/,
+        IS_ID_SELECTOR: /^#[\w-_:.]+$/,
+        IS_PARENT_METHOD: /^parent.(.*)/,
+        IS_STRING_QUOTED: /^"\w+"/,
+        IS_SVG: /^svg$/,
+        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))/i,
+        GET_LISTENER: /^this.(.*)\((.*)\)/,
+        GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
+        IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
+        TRIM_QUOTES: /^["'](.*)["']$/,
+        THIS_TARGET: /\B\$this(?!\w)/g,
+        HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
+        HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
+        MATCH_NLS: /\n\s+/gm,
+        REPLACE_QUOT: /"/g,
+        REPLACE_D_DIRECTIVE: /^d[-:]/
+    },
+    ATTR: {
+        // Attributes for HTMLElement
+        BIND: 'd-bind',
+        //REF: 'd-ref',
+        IS: 'd-is',
+        // Attributes for both
+        KEY: 'd-key',
+        // Attributes for Components
+        /*
+        ALIAS: 'd:alias',
+        STORE: 'd:store',
+        LISTENER: 'd:on',
+        ID: 'd:id',
+        */
+        FORCE_UPDATE: 'forceupdate'
+    }
 };
 
 /***/ }),
@@ -759,7 +775,7 @@ module.exports = delay;
 
 
 var delay = __webpack_require__(3);
-var directive = __webpack_require__(1);
+var directive = __webpack_require__(0);
 
 function callBeforeCreate(context) {
     directive.callSystemComponentBeforeCreate(context);
@@ -952,7 +968,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var castStringTo = __webpack_require__(6);
 var dashToCamel = __webpack_require__(11);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
     TAG = _require.TAG,
@@ -1214,7 +1230,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -1248,7 +1264,7 @@ var _require3 = __webpack_require__(13),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
 var DOMManipulation = __webpack_require__(50);
-var directive = __webpack_require__(1);
+var directive = __webpack_require__(0);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -1716,9 +1732,6 @@ function defineProperties(obj, opt) {
         _initialProps: {
             value: cloneObject(obj._rawProps)
         },
-        /*_callback: {
-            value: opt.componentDirectives['callback']
-        },*/
         _isRendered: {
             value: false,
             writable: true
@@ -1826,10 +1839,6 @@ function defineProperties(obj, opt) {
             writable: true,
             enumerable: true
         },
-        /*ref: {
-            value: {},
-            enumerable: true
-        },*/
         children: {
             value: {},
             enumerable: true
@@ -1948,11 +1957,9 @@ var html = __webpack_require__(9);
 var _require = __webpack_require__(27),
     scopedInner = _require.scopedInner;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
-    ATTR = _require2.ATTR,
-    DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(2);
@@ -1970,16 +1977,17 @@ var _require4 = __webpack_require__(7),
 
 var propsInit = __webpack_require__(21);
 var delay = __webpack_require__(3);
-var directive = __webpack_require__(1);
+var directive = __webpack_require__(0);
 
 function getComponentName(child) {
     var cmpName = void 0;
-    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+    /*if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
         cmpName = child.getAttribute(ATTR.IS).toLowerCase();
         child.removeAttribute(ATTR.IS);
         child.dataset.is = cmpName;
         child[DIR_IS] = true;
-    } else cmpName = child.nodeName.toLowerCase();
+    } else*/
+    cmpName = child.nodeName.toLowerCase();
 
     return cmpName;
 }
@@ -2035,7 +2043,7 @@ function get() {
 
         while ($child) {
 
-            //console.log('---', $child.nodeName);
+            directive.callSystemWalkDOM(parent, $child);
 
             var uId = cfg.app.generateUId();
 
@@ -2047,6 +2055,10 @@ function get() {
             }
 
             cmpName = getComponentName($child);
+
+            directive.callSystemComponentAssignName(parent, $child, function (name) {
+                cmpName = name;
+            });
 
             var localComponents = {};
 
@@ -3149,7 +3161,7 @@ var _require = __webpack_require__(40),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     TAG = _require2.TAG,
     NS = _require2.NS,
     COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
@@ -3423,7 +3435,7 @@ module.exports = toLiteralString;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
 var tag = TAG.TEXT_NODE_PLACE;
@@ -3595,7 +3607,7 @@ var collection = __webpack_require__(2);
 var _require = __webpack_require__(22),
     use = _require.use;
 
-var _require2 = __webpack_require__(1),
+var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
 var component = __webpack_require__(51);
@@ -3679,13 +3691,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var bind = __webpack_require__(26);
 var instances = __webpack_require__(8);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
 var toLiteralString = __webpack_require__(18);
 var plugin = __webpack_require__(22);
-var directive = __webpack_require__(1);
+var directive = __webpack_require__(0);
 
 var Doz = function () {
     function Doz() {
@@ -4371,7 +4383,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
@@ -4825,7 +4837,7 @@ var dashToCamel = __webpack_require__(11);
 var castStringTo = __webpack_require__(6);
 var delay = __webpack_require__(3);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
@@ -4835,7 +4847,7 @@ var _require = __webpack_require__(0),
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
 
-var directive = __webpack_require__(1);
+var directive = __webpack_require__(0);
 
 var DOMManipulation = function () {
     function DOMManipulation() {
@@ -4846,7 +4858,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             if (typeof $el.hasAttribute === 'function') {
-                if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
+                if (node.type.indexOf('-') !== -1 /*|| (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS))*/ && !initial) {
                     //console.log('processing', this.tag, $el)
                     this._processing.push({ node: $el, action: 'create' });
                 }
@@ -5116,7 +5128,7 @@ module.exports = DOMManipulation;
 var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     REGEX = _require2.REGEX;
 
 function component(tag) {
@@ -5173,6 +5185,7 @@ __webpack_require__(57);
 __webpack_require__(58);
 
 __webpack_require__(59);
+__webpack_require__(60);
 
 /***/ }),
 /* 54 */
@@ -5181,7 +5194,7 @@ __webpack_require__(59);
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':store', {
@@ -5259,7 +5272,7 @@ directive(':store', {
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':id', {
@@ -5326,7 +5339,7 @@ directive(':id', {
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':alias', {
@@ -5375,7 +5388,7 @@ directive(':alias', {
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':on-$event', {
@@ -5413,7 +5426,7 @@ directive(':on-$event', {
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':onbeforecreate', {
@@ -5527,12 +5540,12 @@ directive(':onloadprops', {
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive('ref', {
     onSystemComponentCreate: function onSystemComponentCreate(instance) {
-        if (instance.ref === undefined) Object.defineProperties(instance, {
+        Object.defineProperties(instance, {
             ref: {
                 value: {},
                 writable: true,
@@ -5542,6 +5555,29 @@ directive('ref', {
     },
     onDOMAttributeCreate: function onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
         instance.ref[value] = $target;
+    }
+});
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var DIR_IS = '__DOZ_D_IS__';
+
+directive('is', {
+    onSystemComponentAssignName: function onSystemComponentAssignName(instance, $child) {
+        if ($child.dataset && $child.dataset.is) return $child.dataset.is;
+    },
+    onDOMAttributeCreate: function onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
+        $target.dataset.is = value;
+        $target[DIR_IS] = true;
+        instance._processing.push({ node: $target, action: 'create' });
     }
 });
 

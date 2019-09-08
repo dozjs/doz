@@ -23,7 +23,7 @@ module.exports = {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
-        IS_REF: /^d-ref$/,
+        //IS_REF: /^d-ref$/,
         IS_IS: /^d-is$/,
         /*
         IS_ON: /^d:on$/,
@@ -51,7 +51,7 @@ module.exports = {
     ATTR: {
         // Attributes for HTMLElement
         BIND: 'd-bind',
-        REF: 'd-ref',
+        //REF: 'd-ref',
         IS: 'd-is',
         // Attributes for both
         KEY: 'd-key',

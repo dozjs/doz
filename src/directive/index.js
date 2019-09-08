@@ -90,10 +90,6 @@ function callMethodNoDirective(...args) {
     }
 }
 
-function callMethodDOM(...args) {
-    console.warn('---------')
-}
-
 // Hooks for DOM element
 function callDOMAttributeCreate(instance, $target, attributeName, attributeValue, nodeProps) {
     let method = 'onDOMAttributeCreate';
@@ -272,6 +268,16 @@ function callSystemComponentAssignIndex(...args) {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemWalkDOM(...args) {
+    args = ['onSystemWalkDOM', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentAssignName(...args) {
+    args = ['onSystemComponentAssignName', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 module.exports = {
     directive,
     callMethod,
@@ -311,5 +317,7 @@ module.exports = {
     callSystemComponentDrawByParent,
     callSystemComponentUpdate,
     callSystemComponentBeforeUpdate,
-    callSystemComponentMountAsync
+    callSystemComponentMountAsync,
+    callSystemWalkDOM,
+    callSystemComponentAssignName
 };

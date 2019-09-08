@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, /*ATTR, DIR_IS,*/ REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -13,12 +13,12 @@ const directive = require('../directive');
 
 function getComponentName(child) {
     let cmpName;
-    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
+    /*if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
         cmpName = child.getAttribute(ATTR.IS).toLowerCase();
         child.removeAttribute(ATTR.IS);
         child.dataset.is = cmpName;
         child[DIR_IS] = true;
-    } else
+    } else*/
         cmpName = child.nodeName.toLowerCase();
 
     return cmpName;
@@ -74,7 +74,7 @@ function get(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
 
-            //console.log('---', $child.nodeName);
+            directive.callSystemWalkDOM(parent, $child);
 
             const uId = cfg.app.generateUId();
 
@@ -86,6 +86,10 @@ function get(cfg = {}) {
             }
 
             cmpName = getComponentName($child);
+
+            directive.callSystemComponentAssignName(parent, $child, (name) => {
+                cmpName = name;
+            });
 
             let localComponents = {};
 

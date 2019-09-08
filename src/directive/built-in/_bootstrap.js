@@ -5,3 +5,4 @@ require('./on');
 require('./hooks');
 
 require('./ref');
+require('./is');

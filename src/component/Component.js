@@ -436,9 +436,6 @@ function defineProperties(obj, opt) {
         _initialProps: {
             value: cloneObject(obj._rawProps)
         },
-        /*_callback: {
-            value: opt.componentDirectives['callback']
-        },*/
         _isRendered: {
             value: false,
             writable: true
@@ -546,10 +543,6 @@ function defineProperties(obj, opt) {
             writable: true,
             enumerable: true
         },
-        /*ref: {
-            value: {},
-            enumerable: true
-        },*/
         children: {
             value: {},
             enumerable: true
