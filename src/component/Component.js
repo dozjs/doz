@@ -487,6 +487,10 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _directiveProps: {
+            value: {},
+            writable: true
+        },
         _computedCache: {
             value: new Map()
         },

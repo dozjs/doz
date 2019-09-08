@@ -187,6 +187,475 @@ module.exports = {
 "use strict";
 
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(2),
+    registerDirective = _require.registerDirective,
+    data = _require.data;
+
+var _require2 = __webpack_require__(0),
+    REGEX = _require2.REGEX;
+
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    var props = void 0;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
+    var _defined
+    /*if (canBeDeleteProps)
+        delete props[key];*/
+    = function _defined(key) {
+        if (REGEX.IS_DIRECTIVE.test(key)) {
+            var keyWithoutD = key.replace(/^d[-:]/, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    };
+
+    var _defined2 = Object.keys(props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+
+    return cmp._directiveProps;
+}
+
+function directive(name) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    registerDirective(name, options);
+}
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args[0];
+    var cmp = args[1];
+
+    // Remove first argument event name
+    args.shift();
+    //console.warn(cmp.tag, method, cmp.props)
+
+    var directivesKeyValue = extractDirectivesFromProps(cmp);
+
+    var _defined3 = function _defined3(key) {
+
+        var keyArgumentsValues = [];
+        var keyArguments = {};
+        var originKey = key;
+
+        if (key.indexOf('-') !== -1) {
+            keyArgumentsValues = key.split('-');
+            key = keyArgumentsValues[0];
+            keyArgumentsValues.shift();
+        }
+
+        var directiveObj = data.directives[key];
+        //console.log(method, directiveObj)
+        //if (directiveObj)
+        //console.warn(method, directiveObj[method])
+        if (directiveObj && typeof directiveObj[method] === 'function') {
+            // Clone args object
+            var outArgs = Object.assign([], args);
+            // Add directive value
+            outArgs.push(directivesKeyValue[originKey]);
+
+            var _defined5 = function _defined5(keyArg, i) {
+                return keyArguments[keyArg] = keyArgumentsValues[i];
+            };
+
+            var _defined6 = directiveObj._keyArguments;
+
+            for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
+                _defined5(_defined6[_i6], _i6, _defined6);
+            }
+
+            outArgs.push(keyArguments);
+            directiveObj[method].apply(directiveObj, outArgs);
+        }
+    };
+
+    var _defined4 = Object.keys(directivesKeyValue);
+
+    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+        _defined3(_defined4[_i4], _i4, _defined4);
+    }
+}
+
+function callMethodNoDirective() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    var method = args.shift();
+    var oKeys = Object.keys(data.directives);
+    var callback = void 0;
+
+    // Search for a possible callback
+    for (var i = 0; i < args.length; i++) {
+        if (typeof args[i] === 'function') {
+            callback = args[i];
+            break;
+        }
+    }
+
+    for (var _i7 = 0; _i7 < oKeys.length; _i7++) {
+        var key = oKeys[_i7];
+        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+            var res = data.directives[key][method].apply(data.directives[key], args);
+            // If res returns something, fire the callback
+            if (res !== undefined && callback) callback(res);
+        }
+    }
+}
+
+function callComponentBeforeCreate() {
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    args = ['onComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentCreate() {
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    args = ['onComponentCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeMount() {
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    args = ['onComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMount() {
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+    }
+
+    args = ['onComponentMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMountAsync() {
+    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+    }
+
+    args = ['onComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentAfterRender() {
+    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+    }
+
+    args = ['onComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUpdate() {
+    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+    }
+
+    args = ['onComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUpdate() {
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+    }
+
+    args = ['onComponentUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUnmount() {
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+    }
+
+    args = ['onComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUnmount() {
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+    }
+
+    args = ['onComponentUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeDestroy() {
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+    }
+
+    args = ['onComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentDestroy() {
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+    }
+
+    args = ['onComponentDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentLoadProps() {
+    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+        args[_key15] = arguments[_key15];
+    }
+
+    args = ['onComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+// All methods that starts with prefix callSystem are considered extra of directives hooks
+// because they don't use any prop but are useful for initializing stuff.
+// For example built-in like d:store and d:id
+
+function callSystemAppInit() {
+    for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
+        args[_key16] = arguments[_key16];
+    }
+
+    args = ['onSystemAppInit'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentCreate() {
+    for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
+        args[_key17] = arguments[_key17];
+    }
+
+    args = ['onSystemComponentCreate'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeCreate() {
+    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
+        args[_key18] = arguments[_key18];
+    }
+
+    args = ['onSystemComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentConfigCreate() {
+    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+        args[_key19] = arguments[_key19];
+    }
+
+    args = ['onSystemComponentConfigCreate'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeMount() {
+    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+        args[_key20] = arguments[_key20];
+    }
+
+    args = ['onSystemComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentMount() {
+    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
+        args[_key21] = arguments[_key21];
+    }
+
+    args = ['onSystemComponentMount'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentMountAsync() {
+    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
+        args[_key22] = arguments[_key22];
+    }
+
+    args = ['onSystemComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeUpdate() {
+    for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
+        args[_key23] = arguments[_key23];
+    }
+
+    args = ['onSystemComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentUpdate() {
+    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
+    }
+
+    args = ['onSystemComponentUpdate'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentDrawByParent() {
+    for (var _len25 = arguments.length, args = Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
+        args[_key25] = arguments[_key25];
+    }
+
+    args = ['onSystemComponentDrawByParent'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentAfterRender() {
+    for (var _len26 = arguments.length, args = Array(_len26), _key26 = 0; _key26 < _len26; _key26++) {
+        args[_key26] = arguments[_key26];
+    }
+
+    args = ['onSystemComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeUnmount() {
+    for (var _len27 = arguments.length, args = Array(_len27), _key27 = 0; _key27 < _len27; _key27++) {
+        args[_key27] = arguments[_key27];
+    }
+
+    args = ['onSystemComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentUnmount() {
+    for (var _len28 = arguments.length, args = Array(_len28), _key28 = 0; _key28 < _len28; _key28++) {
+        args[_key28] = arguments[_key28];
+    }
+
+    args = ['onSystemComponentUnmount'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentBeforeDestroy() {
+    for (var _len29 = arguments.length, args = Array(_len29), _key29 = 0; _key29 < _len29; _key29++) {
+        args[_key29] = arguments[_key29];
+    }
+
+    args = ['onSystemComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentSetConfig() {
+    for (var _len30 = arguments.length, args = Array(_len30), _key30 = 0; _key30 < _len30; _key30++) {
+        args[_key30] = arguments[_key30];
+    }
+
+    args = ['onSystemComponentSetConfig'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentSetProps() {
+    for (var _len31 = arguments.length, args = Array(_len31), _key31 = 0; _key31 < _len31; _key31++) {
+        args[_key31] = arguments[_key31];
+    }
+
+    args = ['onSystemComponentSetProps'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentLoadProps() {
+    for (var _len32 = arguments.length, args = Array(_len32), _key32 = 0; _key32 < _len32; _key32++) {
+        args[_key32] = arguments[_key32];
+    }
+
+    args = ['onSystemComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentDestroy() {
+    for (var _len33 = arguments.length, args = Array(_len33), _key33 = 0; _key33 < _len33; _key33++) {
+        args[_key33] = arguments[_key33];
+    }
+
+    args = ['onSystemComponentDestroy'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+function callSystemComponentAssignIndex() {
+    for (var _len34 = arguments.length, args = Array(_len34), _key34 = 0; _key34 < _len34; _key34++) {
+        args[_key34] = arguments[_key34];
+    }
+
+    args = ['onSystemComponentAssignIndex'].concat(_toConsumableArray(args));
+    callMethodNoDirective.apply(null, args);
+}
+
+module.exports = {
+    directive: directive,
+    callMethod: callMethod,
+    extractDirectivesFromProps: extractDirectivesFromProps,
+
+    callComponentBeforeCreate: callComponentBeforeCreate,
+    callComponentCreate: callComponentCreate,
+    callComponentBeforeMount: callComponentBeforeMount,
+    callComponentMount: callComponentMount,
+    callComponentMountAsync: callComponentMountAsync,
+    callComponentAfterRender: callComponentAfterRender,
+    callComponentBeforeUpdate: callComponentBeforeUpdate,
+    callComponentUpdate: callComponentUpdate,
+    callComponentBeforeUnmount: callComponentBeforeUnmount,
+    callComponentUnmount: callComponentUnmount,
+    callComponentBeforeDestroy: callComponentBeforeDestroy,
+    callComponentDestroy: callComponentDestroy,
+    callComponentLoadProps: callComponentLoadProps,
+
+    callSystemAppInit: callSystemAppInit,
+    callSystemComponentCreate: callSystemComponentCreate,
+    callSystemComponentLoadProps: callSystemComponentLoadProps,
+    callSystemComponentSetConfig: callSystemComponentSetConfig,
+    callSystemComponentSetProps: callSystemComponentSetProps,
+    callSystemComponentDestroy: callSystemComponentDestroy,
+    callSystemComponentAssignIndex: callSystemComponentAssignIndex,
+    callSystemComponentBeforeCreate: callSystemComponentBeforeCreate,
+    callSystemComponentConfigCreate: callSystemComponentConfigCreate,
+    callSystemComponentBeforeMount: callSystemComponentBeforeMount,
+    callSystemComponentMount: callSystemComponentMount,
+    callSystemComponentBeforeDestroy: callSystemComponentBeforeDestroy,
+    callSystemComponentUnmount: callSystemComponentUnmount,
+    callSystemComponentBeforeUnmount: callSystemComponentBeforeUnmount,
+    callSystemComponentAfterRender: callSystemComponentAfterRender,
+    callSystemComponentDrawByParent: callSystemComponentDrawByParent,
+    callSystemComponentUpdate: callSystemComponentUpdate,
+    callSystemComponentBeforeUpdate: callSystemComponentBeforeUpdate,
+    callSystemComponentMountAsync: callSystemComponentMountAsync
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var data = __webpack_require__(29);
@@ -254,7 +723,17 @@ function registerDirective(name) {
     }
 
     name = name.toLowerCase();
+    var namePart = [];
+    if (name.indexOf('-') !== -1) {
+        namePart = name.split('-');
+        name = namePart[0];
+        namePart.shift();
+    }
+
     cfg.name = name;
+    cfg._keyArguments = namePart.map(function (item) {
+        return item.substr(1);
+    }); // remove $
 
     if (Object.prototype.hasOwnProperty.call(data.directives, name)) console.warn('Doz', 'directive ' + name + ' overwritten');
 
@@ -271,7 +750,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -284,34 +763,34 @@ function delay(cb) {
 module.exports = delay;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
+var directive = __webpack_require__(1);
 
 function callBeforeCreate(context) {
+    directive.callSystemComponentBeforeCreate(context);
+    directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeCreate] === 'function') {
-        return context.parent[context.__onBeforeCreate].call(context.parent, context);
     }
 }
 
 function callCreate(context) {
+    directive.callSystemComponentCreate(context);
+    directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
-        context.parent[context.__onCreate].call(context.parent, context);
     }
     context.app.emit('componentCreate', context);
 }
 
 function callConfigCreate(context) {
+    directive.callSystemComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -322,59 +801,57 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
+    directive.callSystemComponentBeforeMount(context);
+    directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeMount] === 'function') {
-        return context.parent[context.__onBeforeMount].call(context.parent, context);
     }
 }
 
 function callMount(context) {
+    directive.callSystemComponentMount(context);
+    directive.callComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onMount] === 'function') {
-        context.parent[context.__onMount].call(context.parent, context);
     }
     context.app.emit('componentMount', context);
 }
 
 function callMountAsync(context) {
+    delay(function () {
+        directive.callSystemComponentMountAsync(context);
+        directive.callComponentMountAsync(context);
+    });
     if (typeof context.onMountAsync === 'function') {
         delay(function () {
-            context.onMountAsync.call(context);
-        });
-    }
-    if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
-        delay(function () {
-            context.parent[context.__onMountAsync].call(context.parent, context);
+            return context.onMountAsync.call(context);
         });
     }
     context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
+    directive.callSystemComponentBeforeUpdate(context, changes);
+    directive.callComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUpdate] === 'function') {
-        return context.parent[context.__onBeforeUpdate].call(context.parent, context, changes);
     }
 }
 
 function callUpdate(context, changes) {
+    directive.callSystemComponentUpdate(context, changes);
+    directive.callComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onUpdate] === 'function') {
-        context.parent[context.__onUpdate].call(context.parent, context, changes);
     }
     context.app.emit('componentUpdate', context, changes);
 }
 
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return;
+
+    directive.callSystemComponentDrawByParent(context, newNode, oldNode);
+
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -385,43 +862,41 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
+    directive.callSystemComponentAfterRender(context, changes);
+    directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onAfterRender] === 'function') {
-        return context.parent[context.__onAfterRender].call(context.parent, context, changes);
     }
 }
 
 function callBeforeUnmount(context) {
+    directive.callSystemComponentBeforeUnmount(context);
+    directive.callComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUnmount] === 'function') {
-        return context.parent[context.__onBeforeUnmount].call(context.parent, context);
     }
 }
 
 function callUnmount(context) {
+    directive.callSystemComponentUnmount(context);
+    directive.callComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onUnmount] === 'function') {
-        context.parent[context.__onUnmount].call(context.parent, context);
     }
     context.app.emit('componentUnmount', context);
 }
 
 function callBeforeDestroy(context) {
+    directive.callSystemComponentBeforeDestroy(context);
+    directive.callComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeDestroy] === 'function') {
-        return context.parent[context.__onBeforeDestroy].call(context.parent, context);
     }
 }
 
 function callDestroy(context) {
+    directive.callSystemComponentDestroy(context);
+    directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
@@ -430,30 +905,28 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
 
-    if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
-
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode) context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
-    if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
+    /*if (context.id && context.app._ids[context.id])
+        delete context.app._ids[context.id];*/
+    /*if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.onDestroy.call(context);
         context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
-    } else if (typeof context.onDestroy === 'function') {
+    } else*/if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
         context = null;
-    } else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
+    } /*else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
         context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
-    }
+      }*/
 }
 
 function callLoadProps(context) {
+    directive.callSystemComponentLoadProps(context);
+    directive.callComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onLoadProps] === 'function') {
-        context.parent[context.__onLoadProps].call(context.parent, context);
     }
     context.app.emit('componentLoadProps', context);
 }
@@ -474,164 +947,6 @@ module.exports = {
     callBeforeDestroy: callBeforeDestroy,
     callDestroy: callDestroy,
     callLoadProps: callLoadProps
-};
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var _require = __webpack_require__(1),
-    registerDirective = _require.registerDirective,
-    data = _require.data;
-
-var _require2 = __webpack_require__(0),
-    REGEX = _require2.REGEX;
-
-function extractDirectivesFromProps(props) {
-    var directives = {};
-
-    var _defined = function _defined(key) {
-        if (REGEX.IS_DIRECTIVE.test(key)) {
-            var keyWithoutD = key.replace(/^d[-:]/, '');
-            directives[keyWithoutD] = props[key];
-        }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-
-    return directives;
-}
-
-function directive(name) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    registerDirective(name, options);
-}
-
-function load(app) {
-    var METHOD = 'onAppInit';
-
-    var _defined3 = function _defined3(key) {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], app);
-        }
-    };
-
-    var _defined4 = Object.keys(data.directives);
-
-    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-        _defined3(_defined4[_i4], _i4, _defined4);
-    }
-}
-
-function callMethod() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    var method = args[0];
-    var cmp = args[1];
-    var directivesKeyValue = extractDirectivesFromProps(cmp.props);
-
-    var _defined5 = function _defined5(key) {
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            args.unshift(directivesKeyValue[key]);
-            args.unshift(cmp);
-            data.directives[key][method].apply(data.directives[key], args);
-        }
-    };
-
-    var _defined6 = Object.keys(directivesKeyValue);
-
-    for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
-        _defined5(_defined6[_i6], _i6, _defined6);
-    }
-}
-
-function callComponentCreate() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-    }
-
-    args = ['onComponentCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentLoadProps() {
-    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-    }
-
-    args = ['onLoadProps'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentCreateWithoutProps(instance) {
-    var METHOD = 'onComponentCreateWithoutProps';
-
-    var _defined7 = function _defined7(key) {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance);
-        }
-    };
-
-    var _defined8 = Object.keys(data.directives);
-
-    for (var _i8 = 0; _i8 <= _defined8.length - 1; _i8++) {
-        _defined7(_defined8[_i8], _i8, _defined8);
-    }
-}
-
-function callComponentSetConfig(instance, obj) {
-    var METHOD = 'onComponentSetConfig';
-
-    var _defined9 = function _defined9(key) {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance, obj);
-        }
-    };
-
-    var _defined10 = Object.keys(data.directives);
-
-    for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
-        _defined9(_defined10[_i10], _i10, _defined10);
-    }
-}
-
-function callComponentSetProps(instance) {
-    var METHOD = 'onComponentSetProps';
-
-    var _defined11 = function _defined11(key) {
-        if (data.directives[key] !== undefined && typeof data.directives[key][METHOD] === 'function') {
-            data.directives[key][METHOD].call(data.directives[key], instance);
-        }
-    };
-
-    var _defined12 = Object.keys(data.directives);
-
-    for (var _i12 = 0; _i12 <= _defined12.length - 1; _i12++) {
-        _defined11(_defined12[_i12], _i12, _defined12);
-    }
-}
-
-module.exports = {
-    directive: directive,
-    callMethod: callMethod,
-    load: load,
-    callComponentCreate: callComponentCreate,
-    callComponentCreateWithoutProps: callComponentCreateWithoutProps,
-    callComponentLoadProps: callComponentLoadProps,
-    callComponentSetConfig: callComponentSetConfig,
-    callComponentSetProps: callComponentSetProps
 };
 
 /***/ }),
@@ -833,25 +1148,26 @@ function serializeProps(node) {
 }
 
 function propsFixer(nName, aName, aValue, props, dIS) {
-    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
+    /*let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
+        if (props[ATTR.LISTENER] === undefined)
+            props[ATTR.LISTENER] = {};
         props[ATTR.LISTENER][isComponentListener[1]] = aValue;
         delete props[aName];
-    } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-        //console.log(aName, REGEX.IS_ON.test(aName))
+    } else {*/
+    if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
+    //console.log(aName, REGEX.IS_ON.test(aName))
 
-        /*
-        if (REGEX.IS_REF.test(aName)) return;
-        if (REGEX.IS_BIND.test(aName)) return;
-        if (REGEX.IS_IS.test(aName)) return;
-        */
+    /*
+    if (REGEX.IS_REF.test(aName)) return;
+    if (REGEX.IS_BIND.test(aName)) return;
+    if (REGEX.IS_IS.test(aName)) return;
+    */
 
-        //if (REGEX.IS_ON.test(aName)) return;
-        //!REGEX.IS_DIRECTIVE.test(nName) &&
-        props[(REGEX.IS_CUSTOM_TAG.test(nName) || dIS) && !REGEX.IS_DIRECTIVE.test(aName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
-    }
+    //if (REGEX.IS_ON.test(aName)) return;
+    //!REGEX.IS_DIRECTIVE.test(nName) &&
+    props[(REGEX.IS_CUSTOM_TAG.test(nName) || dIS) && !REGEX.IS_DIRECTIVE.test(aName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    //}
 }
 
 module.exports = {
@@ -915,22 +1231,22 @@ var _require = __webpack_require__(0),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(37);
-var hooks = __webpack_require__(3);
-var update = __webpack_require__(40).updateElement;
-var store = __webpack_require__(43);
-var ids = __webpack_require__(44);
+var observer = __webpack_require__(36);
+var hooks = __webpack_require__(4);
+var update = __webpack_require__(39).updateElement;
+//const store = require('./store');
+//const ids = require('./ids');
 var proxy = __webpack_require__(12);
-var toInlineStyle = __webpack_require__(45);
-var queueReady = __webpack_require__(46);
-var queueDraw = __webpack_require__(47);
-var extendInstance = __webpack_require__(48);
-var cloneObject = __webpack_require__(49);
+var toInlineStyle = __webpack_require__(42);
+var queueReady = __webpack_require__(43);
+var queueDraw = __webpack_require__(44);
+var extendInstance = __webpack_require__(45);
+var cloneObject = __webpack_require__(46);
 var toLiteralString = __webpack_require__(18);
-var removeAllAttributes = __webpack_require__(50);
+var removeAllAttributes = __webpack_require__(47);
 var h = __webpack_require__(19);
-var loadLocal = __webpack_require__(51);
-var localMixin = __webpack_require__(52);
+var loadLocal = __webpack_require__(48);
+var localMixin = __webpack_require__(49);
 
 var _require2 = __webpack_require__(5),
     compile = _require2.compile;
@@ -942,8 +1258,8 @@ var propsInit = __webpack_require__(21);
 var _require3 = __webpack_require__(13),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var DOMManipulation = __webpack_require__(53);
-var directive = __webpack_require__(4);
+var DOMManipulation = __webpack_require__(50);
+var directive = __webpack_require__(1);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -973,7 +1289,8 @@ var Component = function (_DOMManipulation) {
         defineProperties(_this, opt);
 
         // Assign cfg to instance
-        extendInstance(_this, opt.cmp.cfg, opt.componentDirectives);
+        //extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
+        extendInstance(_this, opt.cmp.cfg);
 
         // Create mixin
         localMixin(_this);
@@ -986,14 +1303,13 @@ var Component = function (_DOMManipulation) {
 
         // Create observer to props
         observer.create(_this, true);
-
-        directive.callComponentCreateWithoutProps(_this);
-        directive.callComponentCreate(_this);
+        //directive.callSystemComponentCreate(this);
+        //directive.callComponentCreate(this);
 
         // Create shared store
         //store.create(this);
         // Create ID
-        ids.create(_this);
+        //ids.create(this);
         // Add callback to ready queue
         queueReady.add(_this);
         // Add callback app draw
@@ -1012,7 +1328,7 @@ var Component = function (_DOMManipulation) {
             propsInit(this);
             updateBoundElementsByPropsIteration(this);
             observer.create(this);
-            directive.callComponentLoadProps(this);
+            //directive.callSystemComponentLoadProps(this);
             //store.sync(this);
             hooks.callLoadProps(this);
         }
@@ -1031,17 +1347,15 @@ var Component = function (_DOMManipulation) {
         value: function endSafeRender() {
             proxy.endRender(this.props);
         }
-    }, {
-        key: 'emit',
-        value: function emit(name) {
-            if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
-                for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                    args[_key - 1] = arguments[_key];
-                }
 
+        /*emit(name, ...args) {
+            if (this._callback && this._callback[name] !== undefined
+                && this.parent[this._callback[name]] !== undefined
+                && typeof this.parent[this._callback[name]] === 'function') {
                 this.parent[this._callback[name]].apply(this.parent, args);
             }
-        }
+        }*/
+
     }, {
         key: 'each',
         value: function each(obj, func) {
@@ -1072,16 +1386,14 @@ var Component = function (_DOMManipulation) {
             return this.app.getStore(storeName);
         }*/
 
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
+        /*
+        getComponentById(id) {
             return this.app.getComponentById(id);
         }
-    }, {
-        key: 'getCmp',
-        value: function getCmp(id) {
+          getCmp(id) {
             return this.app.getComponentById(id);
         }
+           */
 
         // noinspection JSMethodCanBeStatic
 
@@ -1338,7 +1650,7 @@ var Component = function (_DOMManipulation) {
             this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
             observer.create(this);
             //store.sync(this);
-            directive.callComponentSetProps(this);
+            directive.callSystemComponentSetProps(this);
         },
         get: function get() {
             return this._props;
@@ -1352,7 +1664,7 @@ var Component = function (_DOMManipulation) {
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
-            directive.callComponentSetConfig(this, obj);
+            directive.callSystemComponentSetConfig(this, obj);
 
             if (_typeof(obj.mixin) === 'object') {
                 this.mixin = obj.mixin;
@@ -1370,11 +1682,12 @@ var Component = function (_DOMManipulation) {
                 store.create(this);
             }
             */
-
+            /*
             if (typeof obj.id === 'string') {
                 this.id = obj.id;
                 ids.create(this);
             }
+            */
 
             if (typeof obj.autoCreateChildren === 'boolean') {
                 this.autoCreateChildren = obj.autoCreateChildren;
@@ -1414,9 +1727,9 @@ function defineProperties(obj, opt) {
         _initialProps: {
             value: cloneObject(obj._rawProps)
         },
-        _callback: {
+        /*_callback: {
             value: opt.componentDirectives['callback']
-        },
+        },*/
         _isRendered: {
             value: false,
             writable: true
@@ -1465,6 +1778,10 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _directiveProps: {
+            value: {},
+            writable: true
+        },
         _computedCache: {
             value: new Map()
         },
@@ -1492,6 +1809,10 @@ function defineProperties(obj, opt) {
         //Public
         tag: {
             value: opt.cmp.tag,
+            enumerable: true
+        },
+        uId: {
+            value: opt.uId,
             enumerable: true
         },
         app: {
@@ -1645,22 +1966,22 @@ var _require2 = __webpack_require__(0),
     DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
-var collection = __webpack_require__(1);
-var hooks = __webpack_require__(3);
+var collection = __webpack_require__(2);
+var hooks = __webpack_require__(4);
 
 var _require3 = __webpack_require__(5),
     serializeProps = _require3.serializeProps;
+//const {extract} = require('./component-directives');
 
-var _require4 = __webpack_require__(35),
-    extract = _require4.extract;
 
-var hmr = __webpack_require__(36);
+var hmr = __webpack_require__(35);
 
-var _require5 = __webpack_require__(7),
-    Component = _require5.Component;
+var _require4 = __webpack_require__(7),
+    Component = _require4.Component;
 
 var propsInit = __webpack_require__(21);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
+var directive = __webpack_require__(1);
 
 function getComponentName(child) {
     var cmpName = void 0;
@@ -1771,7 +2092,13 @@ function get() {
                     }
 
                     var props = serializeProps($child);
-                    var componentDirectives = extract(props);
+                    //const componentDirectives = extract(props);
+                    //console.log(extract(props))
+                    var componentDirectives = {}; // directive.extractDirectivesFromProps(props);
+
+                    /*console.log('props', props)
+                    console.log('directives', componentDirectives)
+                    console.log('-----')*/
 
                     var newElement = void 0;
 
@@ -1807,7 +2134,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
+                            parentCmp: parent.cmp || cfg.parent,
+                            uId: uId
                         });
                     } else {
                         newElement = new Component({
@@ -1817,7 +2145,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
+                            parentCmp: parent.cmp || cfg.parent,
+                            uId: uId
                         });
                     }
 
@@ -1834,7 +2163,7 @@ function get() {
 
                     propsInit(newElement);
 
-                    Object.defineProperty(newElement, 'uId', { value: uId });
+                    //Object.defineProperty(newElement, 'uId', {value: uId});
                     //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                     newElement.app.emit('componentPropsInit', newElement);
@@ -1873,8 +2202,15 @@ function get() {
                     parentElement = newElement;
 
                     if (parent.cmp) {
-                        var n = Object.keys(parent.cmp.children).length;
-                        parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                        var n = Object.keys(parent.cmp.children).length++;
+                        directive.callSystemComponentAssignIndex(newElement, n, function (index) {
+                            parent.cmp.children[index] = newElement;
+                        });
+
+                        /*
+                        let n = Object.keys(parent.cmp.children).length++;
+                        parent.cmp.children[newElement.alias ? newElement.alias : n] = newElement;
+                         */
                         if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
                             parent.cmp.childrenByTag[newElement.tag] = [newElement];
                         } else {
@@ -2050,7 +2386,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
@@ -2754,7 +3090,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(39);
+var castType = __webpack_require__(38);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2820,7 +3156,7 @@ module.exports = manipulate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(41),
+var _require = __webpack_require__(40),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2832,7 +3168,7 @@ var _require2 = __webpack_require__(0),
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
 var canDecode = __webpack_require__(16);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(4);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -3215,7 +3551,7 @@ module.exports = propsInit;
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerPlugin = _require.registerPlugin,
     data = _require.data;
 
@@ -3265,20 +3601,20 @@ module.exports = __webpack_require__(24);
 
 
 var Doz = __webpack_require__(25);
-var collection = __webpack_require__(1);
+var collection = __webpack_require__(2);
 
 var _require = __webpack_require__(22),
     use = _require.use;
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(1),
     directive = _require2.directive;
 
-var component = __webpack_require__(54);
+var component = __webpack_require__(51);
 
 var _require3 = __webpack_require__(7),
     Component = _require3.Component;
 
-var mixin = __webpack_require__(55);
+var mixin = __webpack_require__(52);
 var h = __webpack_require__(19);
 
 var _require4 = __webpack_require__(5),
@@ -3287,7 +3623,7 @@ var _require4 = __webpack_require__(5),
 var _require5 = __webpack_require__(15),
     update = _require5.update;
 
-__webpack_require__(56);
+__webpack_require__(53);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -3360,7 +3696,7 @@ var _require = __webpack_require__(0),
 
 var toLiteralString = __webpack_require__(18);
 var plugin = __webpack_require__(22);
-var directive = __webpack_require__(4);
+var directive = __webpack_require__(1);
 
 var Doz = function () {
     function Doz() {
@@ -3429,10 +3765,10 @@ var Doz = function () {
             _cache: {
                 value: new Map()
             },
-            _ids: {
+            /*_ids: {
                 value: {},
                 writable: true
-            },
+            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -3561,7 +3897,7 @@ var Doz = function () {
         }
 
         plugin.load(this);
-        directive.load(this);
+        directive.callSystemAppInit(this);
 
         if (this.cfg.autoDraw) this.draw();
 
@@ -3584,22 +3920,24 @@ var Doz = function () {
             return this;
         }
     }, {
-        key: 'getComponent',
-        value: function getComponent(alias) {
-            return this._tree ? this._tree.children[alias] : undefined;
-        }
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
+        key: 'on',
+
+
+        /*
+        getComponent(alias) {
+            return this._tree
+                ? this._tree.children[alias]
+                : undefined;
+        }*/
+        /*
+        getComponentById(id) {
             return this._ids[id];
         }
-
+        */
         /*getStore(store) {
             return this._stores[store];
         }*/
 
-    }, {
-        key: 'on',
         value: function on(event, callback) {
             if (typeof event !== 'string') throw new TypeError('Event must be a string');
 
@@ -3827,129 +4165,6 @@ module.exports = {
 "use strict";
 
 
-var _require = __webpack_require__(0),
-    ATTR = _require.ATTR,
-    DPROPS = _require.DPROPS;
-
-/**
- * Extract directives from props
- * @param props
- */
-
-
-function extract(props) {
-
-    var directives = {};
-
-    if (props[ATTR.ALIAS] !== undefined) {
-        directives[DPROPS.ALIAS] = props[ATTR.ALIAS];
-        delete props[ATTR.ALIAS];
-    }
-
-    if (props[ATTR.STORE] !== undefined) {
-        directives[DPROPS.STORE] = props[ATTR.STORE];
-        delete props[ATTR.STORE];
-    }
-
-    if (props[ATTR.LISTENER] !== undefined) {
-        directives[DPROPS.CALLBACK] = props[ATTR.LISTENER];
-        delete props[ATTR.LISTENER];
-    }
-
-    if (props[ATTR.ID] !== undefined) {
-        directives[DPROPS.ID] = props[ATTR.ID];
-        delete props[ATTR.ID];
-    }
-
-    if (props[ATTR.ON_BEFORE_CREATE] !== undefined) {
-        directives[DPROPS.ON_BEFORE_CREATE] = props[ATTR.ON_BEFORE_CREATE];
-        delete props[ATTR.ON_BEFORE_CREATE];
-    }
-
-    if (props[ATTR.ON_CREATE] !== undefined) {
-        directives[DPROPS.ON_CREATE] = props[ATTR.ON_CREATE];
-        delete props[ATTR.ON_CREATE];
-    }
-
-    if (props[ATTR.ON_CONFIG_CREATE] !== undefined) {
-        directives[DPROPS.ON_CONFIG_CREATE] = props[ATTR.ON_CONFIG_CREATE];
-        delete props[ATTR.ON_CONFIG_CREATE];
-    }
-
-    if (props[ATTR.ON_BEFORE_MOUNT] !== undefined) {
-        directives[DPROPS.ON_BEFORE_MOUNT] = props[ATTR.ON_BEFORE_MOUNT];
-        delete props[ATTR.ON_BEFORE_MOUNT];
-    }
-
-    if (props[ATTR.ON_MOUNT] !== undefined) {
-        directives[DPROPS.ON_MOUNT] = props[ATTR.ON_MOUNT];
-        delete props[ATTR.ON_MOUNT];
-    }
-
-    if (props[ATTR.ON_MOUNT_ASYNC] !== undefined) {
-        directives[DPROPS.ON_MOUNT_ASYNC] = props[ATTR.ON_MOUNT_ASYNC];
-        delete props[ATTR.ON_MOUNT_ASYNC];
-    }
-
-    if (props[ATTR.ON_BEFORE_UPDATE] !== undefined) {
-        directives[DPROPS.ON_BEFORE_UPDATE] = props[ATTR.ON_BEFORE_UPDATE];
-        delete props[ATTR.ON_BEFORE_UPDATE];
-    }
-
-    if (props[ATTR.ON_UPDATE] !== undefined) {
-        directives[DPROPS.ON_UPDATE] = props[ATTR.ON_UPDATE];
-        delete props[ATTR.ON_UPDATE];
-    }
-
-    if (props[ATTR.ON_DRAW_BY_PARENT] !== undefined) {
-        directives[DPROPS.ON_DRAW_BY_PARENT] = props[ATTR.ON_DRAW_BY_PARENT];
-        delete props[ATTR.ON_DRAW_BY_PARENT];
-    }
-
-    if (props[ATTR.ON_AFTER_RENDER] !== undefined) {
-        directives[DPROPS.ON_AFTER_RENDER] = props[ATTR.ON_AFTER_RENDER];
-        delete props[ATTR.ON_AFTER_RENDER];
-    }
-
-    if (props[ATTR.ON_BEFORE_UNMOUNT] !== undefined) {
-        directives[DPROPS.ON_BEFORE_UNMOUNT] = props[ATTR.ON_BEFORE_UNMOUNT];
-        delete props[ATTR.ON_BEFORE_UNMOUNT];
-    }
-
-    if (props[ATTR.ON_UNMOUNT] !== undefined) {
-        directives[DPROPS.ON_UNMOUNT] = props[ATTR.ON_UNMOUNT];
-        delete props[ATTR.ON_UNMOUNT];
-    }
-
-    if (props[ATTR.ON_BEFORE_DESTROY] !== undefined) {
-        directives[DPROPS.ON_BEFORE_DESTROY] = props[ATTR.ON_BEFORE_DESTROY];
-        delete props[ATTR.ON_BEFORE_DESTROY];
-    }
-
-    if (props[ATTR.ON_DESTROY] !== undefined) {
-        directives[DPROPS.ON_DESTROY] = props[ATTR.ON_DESTROY];
-        delete props[ATTR.ON_DESTROY];
-    }
-
-    if (props[ATTR.ON_LOAD_PROPS] !== undefined) {
-        directives[DPROPS.ON_LOAD_PROPS] = props[ATTR.ON_LOAD_PROPS];
-        delete props[ATTR.ON_LOAD_PROPS];
-    }
-
-    return directives;
-}
-
-module.exports = {
-    extract: extract
-};
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 function hmr(instance, _module) {
     if (!_module || !_module.hot) return;
     var NS_PROPS = '__doz_hmr_props_store__';
@@ -3988,19 +4203,19 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var proxy = __webpack_require__(12);
-var events = __webpack_require__(3);
+var events = __webpack_require__(4);
 
 var _require = __webpack_require__(13),
     updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
 
-var propsListener = __webpack_require__(38);
+var propsListener = __webpack_require__(37);
 var manipulate = __webpack_require__(14);
 
 function runUpdate(instance, changes) {
@@ -4052,7 +4267,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4060,7 +4275,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 function propsListener(instance, changes) {
 
@@ -4096,7 +4311,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4142,7 +4357,7 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4155,7 +4370,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4172,7 +4387,7 @@ var _require = __webpack_require__(0),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(6);
-var objectPath = __webpack_require__(42);
+var objectPath = __webpack_require__(41);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -4377,7 +4592,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4402,59 +4617,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function create(instance) {
-    var storeName = instance.store;
-    if (typeof storeName === 'string') {
-        if (instance.app._stores[storeName] !== undefined) {
-            throw new Error('Store already defined: ' + storeName);
-        }
-        instance.app._stores[storeName] = instance.props;
-    }
-}
-
-function sync(instance) {
-    var storeName = instance.store;
-    if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
-        instance.app._stores[storeName] = instance.props;
-    }
-}
-
-module.exports = {
-    create: create,
-    sync: sync
-};
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function create(instance) {
-
-    var id = instance.id;
-
-    if (typeof id === 'string') {
-        if (instance.app._ids[id] !== undefined) {
-            throw new Error('ID already defined: ' + id);
-        }
-        instance.app._ids[id] = instance;
-    }
-}
-
-module.exports = {
-    create: create
-};
-
-/***/ }),
-/* 45 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4491,7 +4654,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 46 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4509,7 +4672,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 47 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4542,7 +4705,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4555,7 +4718,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 49 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4568,7 +4731,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 50 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4588,7 +4751,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4634,7 +4797,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 52 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4650,7 +4813,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 53 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4669,7 +4832,7 @@ var composeStyleInner = __webpack_require__(10);
 var camelToDash = __webpack_require__(17);
 var dashToCamel = __webpack_require__(11);
 var castStringTo = __webpack_require__(6);
-var delay = __webpack_require__(2);
+var delay = __webpack_require__(3);
 
 var _require = __webpack_require__(0),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -4947,13 +5110,13 @@ var DOMManipulation = function () {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 54 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
 var _require2 = __webpack_require__(0),
@@ -4982,7 +5145,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 55 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5000,22 +5163,26 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 56 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+__webpack_require__(54);
+__webpack_require__(55);
+__webpack_require__(56);
 __webpack_require__(57);
+__webpack_require__(58);
 
 /***/ }),
-/* 57 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(4),
+var _require = __webpack_require__(1),
     directive = _require.directive;
 
 directive(':store', {
@@ -5025,6 +5192,7 @@ directive(':store', {
                 throw new Error('Store already defined: ' + storeName);
             }
             instance.app._stores[storeName] = instance.props;
+            instance.store = storeName;
         }
     },
     syncStore: function syncStore(instance, storeName) {
@@ -5032,7 +5200,7 @@ directive(':store', {
             instance.app._stores[storeName] = instance.props;
         }
     },
-    onAppInit: function onAppInit(app) {
+    onSystemAppInit: function onSystemAppInit(app) {
         Object.defineProperties(app, {
             _stores: {
                 value: {},
@@ -5046,7 +5214,10 @@ directive(':store', {
             }
         });
     },
-    onComponentCreateWithoutProps: function onComponentCreateWithoutProps(instance) {
+
+
+    // Create by property defined
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
         Object.defineProperties(instance, {
             getStore: {
                 value: function value(store) {
@@ -5055,23 +5226,297 @@ directive(':store', {
                 enumerable: true
             }
         });
-        if (instance.store !== undefined) {
+
+        if (instance.store !== undefined && instance.props['d:store'] === undefined) {
             this.createStore(instance, instance.store);
         }
     },
+
+
+    // Create by props
     onComponentCreate: function onComponentCreate(instance, directiveValue) {
         this.createStore(instance, directiveValue);
     },
-    onComponentLoadProps: function onComponentLoadProps(instance) {
+    onSystemComponentLoadProps: function onSystemComponentLoadProps(instance) {
         this.syncStore(instance, instance.store);
     },
-    onComponentSetProps: function onComponentSetProps(instance) {
+    onSystemComponentSetProps: function onSystemComponentSetProps(instance) {
         this.syncStore(instance, instance.store);
     },
-    onComponentSetConfig: function onComponentSetConfig(instance, obj) {
+    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
         if (typeof obj.store === 'string') {
-            instance.store = obj.store;
             this.createStore(instance, obj.store);
+        }
+    },
+    onSystemComponentDestroy: function onSystemComponentDestroy(instance) {
+        if (instance.store && instance.app._stores[instance.store]) delete instance.app._stores[instance.store];
+    }
+});
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    directive = _require.directive;
+
+directive(':id', {
+    createId: function createId(instance, id) {
+        if (typeof id === 'string') {
+            if (instance.app._ids[id] !== undefined) {
+                throw new Error('ID already defined: ' + id);
+            }
+            instance.app._ids[id] = instance;
+            instance.id = id;
+        }
+    },
+    onSystemAppInit: function onSystemAppInit(app) {
+        Object.defineProperties(app, {
+            _ids: {
+                value: {},
+                writable: true
+            },
+            getComponentById: {
+                value: function value(id) {
+                    return app._ids[id];
+                },
+                enumerable: true
+            }
+        });
+    },
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getComponentById: {
+                value: function value(id) {
+                    return instance.app._ids[id];
+                },
+                enumerable: true
+            },
+            getCmp: {
+                value: function value(id) {
+                    return instance.app._ids[id];
+                },
+                enumerable: true
+            }
+        });
+
+        if (instance.id !== undefined && instance.props['d:id'] === undefined) {
+            this.createId(instance, instance.id);
+        }
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        this.createId(instance, directiveValue);
+    },
+    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
+        if (typeof obj.id === 'string') {
+            this.createId(instance, obj.id);
+        }
+    },
+    onSystemComponentDestroy: function onSystemComponentDestroy(instance) {
+        if (instance.id && instance.app._ids[instance.id]) delete instance.app._ids[instance.id];
+    }
+});
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    directive = _require.directive;
+
+directive(':alias', {
+    createAlias: function createAlias(instance, alias) {
+        if (typeof alias === 'string') {
+            instance.alias = alias;
+        }
+    },
+    onSystemAppInit: function onSystemAppInit(app) {
+        Object.defineProperties(app, {
+            getComponent: {
+                value: function value(alias) {
+                    return this._tree ? this._tree.children[alias] : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getComponent: {
+                value: function value(alias) {
+                    return this.children ? this.children[alias] : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        this.createAlias(instance, directiveValue);
+    },
+    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
+        if (typeof obj.alias === 'string') {
+            this.createAlias(instance, obj.alias);
+        }
+    },
+    onSystemComponentAssignIndex: function onSystemComponentAssignIndex(instance, n) {
+        return instance.alias ? instance.alias : n;
+    }
+});
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    directive = _require.directive;
+
+directive(':on-$event', {
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _callback: {
+                value: {},
+                writable: true
+            },
+            emit: {
+                value: function value(name) {
+                    if (instance._callback && instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
+                        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                            args[_key - 1] = arguments[_key];
+                        }
+
+                        instance.parent[instance._callback[name]].apply(instance.parent, args);
+                    }
+                },
+                enumerable: true
+            }
+        });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue, keyArguments) {
+        var source = {};
+        source[keyArguments.event] = directiveValue;
+        Object.assign(instance._callback, source);
+    }
+});
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    directive = _require.directive;
+
+directive(':onbeforecreate', {
+    onComponentBeforeCreate: function onComponentBeforeCreate(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':oncreate', {
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onbeforemount', {
+    onComponentBeforeMount: function onComponentBeforeMount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onmount', {
+    onComponentMount: function onComponentMount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onmountasync', {
+    onComponentMountAsync: function onComponentMountAsync(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onafterrender', {
+    onComponentAfterRender: function onComponentAfterRender(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onbeforeupdate', {
+    onComponentBeforeUpdate: function onComponentBeforeUpdate(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onupdate', {
+    onComponentUpdate: function onComponentUpdate(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onbeforeunmount', {
+    onComponentBeforeUnmount: function onComponentBeforeUnmount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onunmount', {
+    onComponentUnmount: function onComponentUnmount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onbeforedestroy', {
+    onComponentBeforeDestroy: function onComponentBeforeDestroy(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':ondestroy', {
+    onComponentDestroy: function onComponentDestroy(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onloadprops', {
+    onComponentLoadProps: function onComponentLoadProps(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
 });

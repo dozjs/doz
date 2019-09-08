@@ -2,7 +2,7 @@ const {registerDirective, data} = require('../collection');
 const {REGEX} = require('../constants.js');
 
 function extractDirectivesFromProps(cmp) {
-    let canBeDeleteProps = false;
+    //let canBeDeleteProps = true;
     let props;
 
     if (!Object.keys(cmp.props).length) {
@@ -12,17 +12,16 @@ function extractDirectivesFromProps(cmp) {
         props = cmp.props;
     }
 
-    let directives = {};
     Object.keys(props).forEach(key => {
         if (REGEX.IS_DIRECTIVE.test(key)) {
             let keyWithoutD = key.replace(/^d[-:]/, '');
-            directives[keyWithoutD] = props[key];
-            if (canBeDeleteProps)
-                delete props[key];
+            cmp._directiveProps[keyWithoutD] = props[key];
+            /*if (canBeDeleteProps)
+                delete props[key];*/
         }
     });
 
-    return directives;
+    return cmp._directiveProps;
 }
 
 function directive(name, options = {}) {
@@ -32,9 +31,10 @@ function directive(name, options = {}) {
 function callMethod(...args) {
     let method = args[0];
     let cmp = args[1];
+
     // Remove first argument event name
     args.shift();
-    console.warn(cmp.tag, method, cmp.props)
+    //console.warn(cmp.tag, method, cmp.props)
 
     let directivesKeyValue = extractDirectivesFromProps(cmp);
 
@@ -52,7 +52,7 @@ function callMethod(...args) {
 
         let directiveObj = data.directives[key];
         //console.log(method, directiveObj)
-        if (directiveObj)
+        //if (directiveObj)
         //console.warn(method, directiveObj[method])
         if (directiveObj && typeof directiveObj[method] === 'function') {
             // Clone args object
@@ -61,7 +61,6 @@ function callMethod(...args) {
             outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
             outArgs.push(keyArguments);
-
             directiveObj[method].apply(directiveObj, outArgs)
         }
     });
@@ -103,6 +102,56 @@ function callComponentCreate(...args) {
 
 function callComponentBeforeMount(...args) {
     args = ['onComponentBeforeMount', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentMount(...args) {
+    args = ['onComponentMount', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentMountAsync(...args) {
+    args = ['onComponentMountAsync', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentAfterRender(...args) {
+    args = ['onComponentAfterRender', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentBeforeUpdate(...args) {
+    args = ['onComponentBeforeUpdate', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentUpdate(...args) {
+    args = ['onComponentUpdate', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentBeforeUnmount(...args) {
+    args = ['onComponentBeforeUnmount', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentUnmount(...args) {
+    args = ['onComponentUnmount', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentBeforeDestroy(...args) {
+    args = ['onComponentBeforeDestroy', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentDestroy(...args) {
+    args = ['onComponentDestroy', ...args];
+    callMethod.apply(null, args)
+}
+
+function callComponentLoadProps(...args) {
+    args = ['onComponentLoadProps', ...args];
     callMethod.apply(null, args)
 }
 
@@ -209,9 +258,21 @@ module.exports = {
     directive,
     callMethod,
     extractDirectivesFromProps,
+
     callComponentBeforeCreate,
     callComponentCreate,
     callComponentBeforeMount,
+    callComponentMount,
+    callComponentMountAsync,
+    callComponentAfterRender,
+    callComponentBeforeUpdate,
+    callComponentUpdate,
+    callComponentBeforeUnmount,
+    callComponentUnmount,
+    callComponentBeforeDestroy,
+    callComponentDestroy,
+    callComponentLoadProps,
+
     callSystemAppInit,
     callSystemComponentCreate,
     callSystemComponentLoadProps,
