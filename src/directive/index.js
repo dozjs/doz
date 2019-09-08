@@ -102,6 +102,9 @@ function callDOMAttributeCreate(instance, $target, attributeName, attributeValue
         }
     }
 }
+function callDOMElementCreate(instance, $target, attributeName, attributeValue, nodeProps) {
+    //todo Dovrebbe risolvere il problema del tag doppio
+}
 
 // Hooks for the component
 function callComponentBeforeCreate(...args) {

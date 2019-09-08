@@ -607,6 +607,7 @@ function drawDynamic(instance) {
             if (dynamicInstance) {
 
                 // Replace with dynamic instance original node
+                //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
                 root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
                 // if original node has children
