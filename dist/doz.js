@@ -108,10 +108,12 @@ module.exports = {
         IS_BIND: /^d-bind$/,
         IS_REF: /^d-ref$/,
         IS_IS: /^d-is$/,
+        /*
         IS_ON: /^d:on$/,
         IS_ALIAS: /^d:alias$/,
         IS_STORE: /^d:store$/,
         IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
+         */
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
@@ -126,7 +128,8 @@ module.exports = {
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
         MATCH_NLS: /\n\s+/gm,
-        REPLACE_QUOT: /"/g
+        REPLACE_QUOT: /"/g,
+        REPLACE_D_DIRECTIVE: /^d[-:]/
     },
     ATTR: {
         // Attributes for HTMLElement
@@ -136,47 +139,13 @@ module.exports = {
         // Attributes for both
         KEY: 'd-key',
         // Attributes for Components
+        /*
         ALIAS: 'd:alias',
         STORE: 'd:store',
         LISTENER: 'd:on',
         ID: 'd:id',
-        ON_BEFORE_CREATE: 'd:onbeforecreate',
-        ON_CREATE: 'd:oncreate',
-        ON_CONFIG_CREATE: 'd:onconfigcreate',
-        ON_BEFORE_MOUNT: 'd:onbeforemount',
-        ON_MOUNT: 'd:onmount',
-        ON_MOUNT_ASYNC: 'd:onmountasync',
-        ON_BEFORE_UPDATE: 'd:onbeforeupdate',
-        ON_UPDATE: 'd:onupdate',
-        ON_DRAW_BY_PARENT: 'd:ondrawbyparent',
-        ON_AFTER_RENDER: 'd:onafterrender',
-        ON_BEFORE_UNMOUNT: 'd:onbeforeunmount',
-        ON_UNMOUNT: 'd:onunmount',
-        ON_BEFORE_DESTROY: 'd:onbeforedestroy',
-        ON_DESTROY: 'd:ondestroy',
-        ON_LOAD_PROPS: 'd:onloadprops',
+        */
         FORCE_UPDATE: 'forceupdate'
-    },
-    DPROPS: {
-        STORE: 'store',
-        ALIAS: 'alias',
-        CALLBACK: 'callback',
-        ID: 'id',
-        ON_BEFORE_CREATE: '__onBeforeCreate',
-        ON_CREATE: '__onCreate',
-        ON_CONFIG_CREATE: '__onConfigCreate',
-        ON_BEFORE_MOUNT: '__onBeforeMount',
-        ON_MOUNT: '__onMount',
-        ON_MOUNT_ASYNC: '__onMountAsync',
-        ON_BEFORE_UPDATE: '__onBeforeUpdate',
-        ON_UPDATE: '__onUpdate',
-        ON_DRAW_BY_PARENT: '__onDrawByParent',
-        ON_AFTER_RENDER: '__onAfterRender',
-        ON_BEFORE_UNMOUNT: '__onBeforeUnmount',
-        ON_UNMOUNT: '__onUnmount',
-        ON_BEFORE_DESTROY: '__onBeforeDestroy',
-        ON_DESTROY: '__onDestroy',
-        ON_LOAD_PROPS: '__onLoadProps'
     }
 };
 
@@ -212,7 +181,7 @@ function extractDirectivesFromProps(cmp) {
         delete props[key];*/
     = function _defined(key) {
         if (REGEX.IS_DIRECTIVE.test(key)) {
-            var keyWithoutD = key.replace(/^d[-:]/, '');
+            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
         }
     };
@@ -317,6 +286,24 @@ function callMethodNoDirective() {
     }
 }
 
+function callMethodDOM() {
+    console.warn('---------');
+}
+
+// Hooks for DOM element
+function callDOMAttributeCreate(instance, $target, attributeName, attributeValue, nodeProps) {
+    var method = 'onDOMAttributeCreate';
+    if (REGEX.IS_DIRECTIVE.test(attributeName)) {
+        var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+        var directiveObj = data.directives[directiveName];
+        if (directiveObj && directiveObj[method]) {
+            $target.removeAttribute(attributeName);
+            directiveObj[method].apply(directiveObj, [instance, $target, attributeName, attributeValue, nodeProps]);
+        }
+    }
+}
+
+// Hooks for the component
 function callComponentBeforeCreate() {
     for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         args[_key3] = arguments[_key3];
@@ -613,6 +600,8 @@ module.exports = {
     directive: directive,
     callMethod: callMethod,
     extractDirectivesFromProps: extractDirectivesFromProps,
+
+    callDOMAttributeCreate: callDOMAttributeCreate,
 
     callComponentBeforeCreate: callComponentBeforeCreate,
     callComponentCreate: callComponentCreate,
@@ -1837,10 +1826,10 @@ function defineProperties(obj, opt) {
             writable: true,
             enumerable: true
         },
-        ref: {
+        /*ref: {
             value: {},
             enumerable: true
-        },
+        },*/
         children: {
             value: {},
             enumerable: true
@@ -4402,7 +4391,7 @@ function setAttribute($target, name, value, cmp) {
     value = _cmp$$$beforeAttribut2[1];
 
 
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name)) {} else if (typeof value === 'boolean') {
+    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) /*|| cmp.constructor._isRefAttribute(name)*/) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
@@ -4415,7 +4404,9 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name) || !$target) {} else {
+    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name)
+    //|| cmp.constructor._isRefAttribute(name)
+    || !$target) {} else {
         $target.removeAttribute(name);
     }
 }
@@ -4843,7 +4834,8 @@ var _require = __webpack_require__(0),
     REGEX = _require.REGEX,
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
-//const Spye = require('../utils/spye');
+
+var directive = __webpack_require__(1);
 
 var DOMManipulation = function () {
     function DOMManipulation() {
@@ -4957,11 +4949,13 @@ var DOMManipulation = function () {
     }, {
         key: '$$afterAttributeCreate',
         value: function $$afterAttributeCreate($target, name, value, nodeProps) {
+            directive.callDOMAttributeCreate(this, $target, name, value, nodeProps);
             var bindValue = void 0;
             if (this._setBind($target, name, value)) {
                 bindValue = this.props[value];
             }
-            if (nodeProps) this._setRef($target, name, nodeProps[name]);
+            /*if (nodeProps)
+                this._setRef($target, name, nodeProps[name]);*/
             return bindValue;
         }
 
@@ -5008,12 +5002,13 @@ var DOMManipulation = function () {
                 }
             }
         }
-    }, {
-        key: '_setRef',
-        value: function _setRef($target, name, value) {
-            if (!this.constructor._isRefAttribute(name)) return;
-            this.ref[value] = $target;
-        }
+        /*
+            _setRef($target, name, value) {
+                if (!this.constructor._isRefAttribute(name)) return;
+                this.ref[value] = $target
+            }
+            */
+
     }, {
         key: '_setBind',
         value: function _setBind($target, name, value) {
@@ -5092,11 +5087,13 @@ var DOMManipulation = function () {
         value: function _isBindAttribute(name) {
             return name === ATTR.BIND;
         }
-    }, {
-        key: '_isRefAttribute',
-        value: function _isRefAttribute(name) {
+
+        /*
+        static _isRefAttribute(name) {
             return name === ATTR.REF;
         }
+         */
+
     }, {
         key: '_canBind',
         value: function _canBind($target) {
@@ -5174,6 +5171,8 @@ __webpack_require__(55);
 __webpack_require__(56);
 __webpack_require__(57);
 __webpack_require__(58);
+
+__webpack_require__(59);
 
 /***/ }),
 /* 54 */
@@ -5518,6 +5517,31 @@ directive(':onloadprops', {
         if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
+    }
+});
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    directive = _require.directive;
+
+directive('ref', {
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+        if (instance.ref === undefined) Object.defineProperties(instance, {
+            ref: {
+                value: {},
+                writable: true,
+                enumerable: true
+            }
+        });
+    },
+    onDOMAttributeCreate: function onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
+        instance.ref[value] = $target;
     }
 });
 

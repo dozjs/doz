@@ -14,7 +14,7 @@ function extractDirectivesFromProps(cmp) {
 
     Object.keys(props).forEach(key => {
         if (REGEX.IS_DIRECTIVE.test(key)) {
-            let keyWithoutD = key.replace(/^d[-:]/, '');
+            let keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
             /*if (canBeDeleteProps)
                 delete props[key];*/
@@ -90,6 +90,24 @@ function callMethodNoDirective(...args) {
     }
 }
 
+function callMethodDOM(...args) {
+    console.warn('---------')
+}
+
+// Hooks for DOM element
+function callDOMAttributeCreate(instance, $target, attributeName, attributeValue, nodeProps) {
+    let method = 'onDOMAttributeCreate';
+    if (REGEX.IS_DIRECTIVE.test(attributeName)) {
+        let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+        let directiveObj = data.directives[directiveName];
+        if (directiveObj && directiveObj[method]) {
+            $target.removeAttribute(attributeName);
+            directiveObj[method].apply(directiveObj, [instance, $target, attributeName, attributeValue, nodeProps])
+        }
+    }
+}
+
+// Hooks for the component
 function callComponentBeforeCreate(...args) {
     args = ['onComponentBeforeCreate', ...args];
     callMethod.apply(null, args)
@@ -259,6 +277,8 @@ module.exports = {
     callMethod,
     extractDirectivesFromProps,
 
+    callDOMAttributeCreate,
+    
     callComponentBeforeCreate,
     callComponentCreate,
     callComponentBeforeMount,

@@ -546,10 +546,10 @@ function defineProperties(obj, opt) {
             writable: true,
             enumerable: true
         },
-        ref: {
+        /*ref: {
             value: {},
             enumerable: true
-        },
+        },*/
         children: {
             value: {},
             enumerable: true

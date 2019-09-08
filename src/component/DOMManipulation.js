@@ -5,7 +5,7 @@ const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
-//const Spye = require('../utils/spye');
+const directive = require('../directive');
 
 class DOMManipulation {
 
@@ -96,12 +96,13 @@ class DOMManipulation {
     }
 
     $$afterAttributeCreate($target, name, value, nodeProps) {
+        directive.callDOMAttributeCreate(this, $target, name, value, nodeProps);
         let bindValue;
         if (this._setBind($target, name, value)) {
             bindValue = this.props[value];
         }
-        if (nodeProps)
-            this._setRef($target, name, nodeProps[name]);
+        /*if (nodeProps)
+            this._setRef($target, name, nodeProps[name]);*/
         return bindValue;
     }
 
@@ -146,11 +147,12 @@ class DOMManipulation {
             }
         }
     }
-
+/*
     _setRef($target, name, value) {
         if (!this.constructor._isRefAttribute(name)) return;
         this.ref[value] = $target
     }
+    */
 
     _setBind($target, name, value) {
         if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
@@ -194,9 +196,11 @@ class DOMManipulation {
         return name === ATTR.BIND;
     }
 
+    /*
     static _isRefAttribute(name) {
         return name === ATTR.REF;
     }
+     */
 
     static _canBind($target) {
         return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1

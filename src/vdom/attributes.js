@@ -10,7 +10,7 @@ function setAttribute($target, name, value, cmp) {
 
     [name, value] = cmp.$$beforeAttributeSet($target, name, value);
 
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name)) {
+    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) /*|| cmp.constructor._isRefAttribute(name)*/) {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
@@ -28,7 +28,7 @@ function setAttribute($target, name, value, cmp) {
 function removeAttribute($target, name, cmp) {
     if (isCustomAttribute(name)
         || cmp.constructor._isBindAttribute(name)
-        || cmp.constructor._isRefAttribute(name)
+        //|| cmp.constructor._isRefAttribute(name)
         || !$target) {
     } else {
         $target.removeAttribute(name);
