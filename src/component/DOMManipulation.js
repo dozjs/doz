@@ -10,6 +10,7 @@ const directive = require('../directive');
 class DOMManipulation {
 
     $$afterNodeElementCreate($el, node, initial) {
+        directive.callSystemDOMElementCreate(this, $el, node, initial);
         if (typeof $el.hasAttribute === 'function') {
             if ((node.type.indexOf('-') !== -1 /*|| (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS))*/)
                 && !initial) {

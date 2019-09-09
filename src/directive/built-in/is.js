@@ -8,10 +8,20 @@ directive('is', {
             return $child.dataset.is;
     },
 
-    onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
+    onSystemDOMElementCreate(instance, $target, node, initial) {
+        if (node && node.props && node.props['d-is']) {
+            //console.log('aaaaaaaaaaaaaaa', node)
+            $target.dataset.is = node.props['d-is'];
+            $target[DIR_IS] = true;
+            if (!initial)
+            instance._processing.push({node: $target, action: 'create'});
+        }
+    }
+
+    /*onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
         $target.dataset.is = value;
         $target[DIR_IS] = true;
         instance._processing.push({node: $target, action: 'create'});
-    }
+    }*/
 
 });

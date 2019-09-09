@@ -102,9 +102,6 @@ function callDOMAttributeCreate(instance, $target, attributeName, attributeValue
         }
     }
 }
-function callDOMElementCreate(instance, $target, attributeName, attributeValue, nodeProps) {
-    //todo Dovrebbe risolvere il problema del tag doppio
-}
 
 // Hooks for the component
 function callComponentBeforeCreate(...args) {
@@ -281,6 +278,12 @@ function callSystemComponentAssignName(...args) {
     callMethodNoDirective.apply(null, args);
 }
 
+function callSystemDOMElementCreate(...args) {
+    //todo Dovrebbe risolvere il problema del tag doppio
+    args = ['onSystemDOMElementCreate', ...args];
+    callMethodNoDirective.apply(null, args);
+}
+
 module.exports = {
     directive,
     callMethod,
@@ -322,5 +325,6 @@ module.exports = {
     callSystemComponentBeforeUpdate,
     callSystemComponentMountAsync,
     callSystemWalkDOM,
-    callSystemComponentAssignName
+    callSystemComponentAssignName,
+    callSystemDOMElementCreate
 };
