@@ -132,6 +132,10 @@ function callSystemComponentAssignName(...args) {
     args = ['onSystemComponentAssignName', ...args];
     callMethod.apply(null, args);
 }
+function callSystemComponentPropsAssignName(...args) {
+    args = ['onSystemComponentPropsAssignName', ...args];
+    callMethod.apply(null, args);
+}
 
 function callSystemDOMElementCreate(...args) {
     //todo Dovrebbe risolvere il problema del tag doppio
@@ -139,10 +143,10 @@ function callSystemDOMElementCreate(...args) {
     callMethod.apply(null, args);
 }
 
-function callSystemDOMAttributeSet(...args) {
+/*function callSystemDOMAttributeSet(...args) {
     args = ['onSystemDOMAttributeSet', ...args];
     callMethod.apply(null, args);
-}
+}*/
 
 module.exports = {
     callSystemAppInit,
@@ -167,5 +171,6 @@ module.exports = {
     callSystemWalkDOM,
     callSystemComponentAssignName,
     callSystemDOMElementCreate,
-    callSystemDOMAttributeSet
+    //callSystemDOMAttributeSet,
+    callSystemComponentPropsAssignName
 };

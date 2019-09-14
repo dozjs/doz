@@ -4,7 +4,7 @@ const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
-const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
+const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directive');
 
 class DOMManipulation {
@@ -88,16 +88,13 @@ class DOMManipulation {
     }
 
     // noinspection JSMethodCanBeStatic
-    $$beforeAttributeSet($target, name, value) {
-        directive.callSystemDOMAttributeSet(this, $target, name, value, (_name) => {
-            name =_name;
-        });
-        if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) /*|| $target[DIR_IS]*/) {
+    /*$$beforeAttributeSet($target, name, value) {
+        if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
             name = camelToDash(name);
         }
 
         return [name, value];
-    }
+    }*/
 
     $$afterAttributeCreate($target, name, value, nodeProps) {
         directive.callDOMAttributeCreate(this, $target, name, value, nodeProps);

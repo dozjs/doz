@@ -16,7 +16,7 @@ describe('Doz.is', function () {
 
             Doz.component('a-component', {
                 template() {
-                    return `<div id="d-is">hello ${this.props['my-title']}</div>`
+                    return `<div id="d-is">hello ${this.props.myTitle}</div>`
                 }
             });
 
@@ -32,7 +32,7 @@ describe('Doz.is', function () {
 
                 onMountAsync() {
                     console.log(document.body.innerHTML);
-                    be.err.equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><span data-is="a-component"><div id="d-is">hello</div></span></salutation-card></dz-app></div>')
+                    be.err.equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><span data-is="a-component"><div id="d-is">hello ciao</div></span></salutation-card></dz-app></div>')
                     done();
                 }
             });

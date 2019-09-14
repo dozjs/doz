@@ -8,7 +8,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
 
-    [name, value] = cmp.$$beforeAttributeSet($target, name, value);
+    //[name, value] = cmp.$$beforeAttributeSet($target, name, value);
 
     if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) /*|| cmp.constructor._isRefAttribute(name)*/) {
     } else if (typeof value === 'boolean') {

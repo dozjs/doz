@@ -1,7 +1,8 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const {REGEX, ATTR, TAG, DIR_IS} = require('../constants');
+const {REGEX, ATTR, TAG} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?${TAG.TEXT_NODE_PLACE}?>$`);
+const directive = require('../directive');
 
 const selfClosingElements = {
     meta: true,
@@ -103,7 +104,7 @@ function compile(data, cmp) {
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
                 propsFixer(
-                    match[0].substring(1, match[0].length-1),
+                    match[0].substring(1, match[0].length - 1),
                     attMatch[2],
                     props[attMatch[2]],
                     props,
@@ -128,7 +129,7 @@ function compile(data, cmp) {
                 currentParent.childrenHasKey = true;
 
             //if (/-/.test(match[2]) && /-/.test(currentParent.type))
-                //cmp._maybeSlot = true;
+            //cmp._maybeSlot = true;
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
@@ -167,15 +168,15 @@ function compile(data, cmp) {
     return root;
 }
 
-function serializeProps(node) {
+function serializeProps($node) {
     const props = {};
 
-    if (node.attributes) {
-        const attributes = Array.from(node.attributes);
+    if ($node.attributes) {
+        const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
 
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
+            propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
             /*if (REGEX.IS_ON.test(attr.name)) {
                 node.removeAttribute(attr.name)
                 console.log(node.hasAttribute(attr.name))
@@ -186,7 +187,7 @@ function serializeProps(node) {
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props, dIS) {
+function propsFixer(nName, aName, aValue, props, $node) {
     /*let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
         if (props[ATTR.LISTENER] === undefined)
@@ -194,25 +195,33 @@ function propsFixer(nName, aName, aValue, props, dIS) {
         props[ATTR.LISTENER][isComponentListener[1]] = aValue;
         delete props[aName];
     } else {*/
-        if (REGEX.IS_STRING_QUOTED.test(aValue))
-            aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-        //console.log(aName, REGEX.IS_ON.test(aName))
+    if (REGEX.IS_STRING_QUOTED.test(aValue))
+        aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
+    //console.log(aName, REGEX.IS_ON.test(aName))
 
-        /*
-        if (REGEX.IS_REF.test(aName)) return;
-        if (REGEX.IS_BIND.test(aName)) return;
-        if (REGEX.IS_IS.test(aName)) return;
-        */
+    /*
+    if (REGEX.IS_REF.test(aName)) return;
+    if (REGEX.IS_BIND.test(aName)) return;
+    if (REGEX.IS_IS.test(aName)) return;
+    */
 
-        //if (REGEX.IS_ON.test(aName)) return;
-        //!REGEX.IS_DIRECTIVE.test(nName) &&
-        props[
-            (REGEX.IS_CUSTOM_TAG.test(nName) || dIS) && !REGEX.IS_DIRECTIVE.test(aName)
-                ? dashToCamel(aName)
-                : aName
-            ] = aName === ATTR.FORCE_UPDATE
-            ? true
-            : castStringTo(aValue);
+    //if (REGEX.IS_ON.test(aName)) return;
+    //!REGEX.IS_DIRECTIVE.test(nName) &&
+
+    let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
+        ? dashToCamel(aName)
+        : aName;
+
+    if (!isDirective && $node)
+        directive.callSystemComponentPropsAssignName($node, aName, newPropsName => {
+            propsName = newPropsName;
+        });
+
+    props[propsName] = aName === ATTR.FORCE_UPDATE
+        ? true
+        : castStringTo(aValue);
     //}
 }
 

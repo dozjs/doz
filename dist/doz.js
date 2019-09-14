@@ -481,15 +481,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var castStringTo = __webpack_require__(6);
-var dashToCamel = __webpack_require__(11);
+var dashToCamel = __webpack_require__(7);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
-    TAG = _require.TAG,
-    DIR_IS = _require.DIR_IS;
+    TAG = _require.TAG;
 
 var regExcludeSpecial = new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$');
+var directive = __webpack_require__(0);
 
 var selfClosingElements = {
     meta: true,
@@ -649,15 +649,15 @@ function compile(data, cmp) {
     return root;
 }
 
-function serializeProps(node) {
+function serializeProps($node) {
     var props = {};
 
-    if (node.attributes) {
-        var attributes = Array.from(node.attributes);
+    if ($node.attributes) {
+        var attributes = Array.from($node.attributes);
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
 
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
+            propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
             /*if (REGEX.IS_ON.test(attr.name)) {
                 node.removeAttribute(attr.name)
                 console.log(node.hasAttribute(attr.name))
@@ -667,7 +667,7 @@ function serializeProps(node) {
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props, dIS) {
+function propsFixer(nName, aName, aValue, props, $node) {
     /*let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
     if (isComponentListener) {
         if (props[ATTR.LISTENER] === undefined)
@@ -686,7 +686,16 @@ function propsFixer(nName, aName, aValue, props, dIS) {
 
     //if (REGEX.IS_ON.test(aName)) return;
     //!REGEX.IS_DIRECTIVE.test(nName) &&
-    props[(REGEX.IS_CUSTOM_TAG.test(nName) || dIS) && !REGEX.IS_DIRECTIVE.test(aName) ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+
+    var isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
+
+    if (!isDirective && $node) directive.callSystemComponentPropsAssignName($node, aName, function (newPropsName) {
+        propsName = newPropsName;
+    });
+
+    props[propsName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
     //}
 }
 
@@ -730,6 +739,21 @@ module.exports = castStringTo;
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function dashToCamel(s) {
+    return s.replace(/(-\w)/g, function (m) {
+        return m[1].toUpperCase();
+    });
+}
+
+module.exports = dashToCamel;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1408,7 +1432,7 @@ function drawDynamic(instance) {
         var root = item.node.parentNode;
 
         //if (!item.node.childNodes.length) {
-        var dynamicInstance = __webpack_require__(8).get({
+        var dynamicInstance = __webpack_require__(9).get({
             root: root,
             template: item.node.outerHTML,
             app: instance.app,
@@ -1454,7 +1478,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1468,7 +1492,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var html = __webpack_require__(9);
+var html = __webpack_require__(10);
 
 var _require = __webpack_require__(27),
     scopedInner = _require.scopedInner;
@@ -1488,7 +1512,7 @@ var _require3 = __webpack_require__(5),
 
 var hmr = __webpack_require__(39);
 
-var _require4 = __webpack_require__(7),
+var _require4 = __webpack_require__(8),
     Component = _require4.Component;
 
 var propsInit = __webpack_require__(21);
@@ -1771,7 +1795,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1816,7 +1840,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1864,21 +1888,6 @@ function composeStyleInner(cssContent, tag) {
 }
 
 module.exports = composeStyleInner;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function dashToCamel(s) {
-    return s.replace(/(-\w)/g, function (m) {
-        return m[1].toUpperCase();
-    });
-}
-
-module.exports = dashToCamel;
 
 /***/ }),
 /* 12 */
@@ -2907,7 +2916,7 @@ module.exports = {
 "use strict";
 
 
-var html = __webpack_require__(9);
+var html = __webpack_require__(10);
 
 function canDecode(str) {
     return (/&\w+;/.test(str) ? html.decode(str) : str
@@ -3128,7 +3137,7 @@ var _require2 = __webpack_require__(0),
 
 var component = __webpack_require__(55);
 
-var _require3 = __webpack_require__(7),
+var _require3 = __webpack_require__(8),
     Component = _require3.Component;
 
 var mixin = __webpack_require__(56);
@@ -3205,7 +3214,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(26);
-var instances = __webpack_require__(8);
+var instances = __webpack_require__(9);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -3547,7 +3556,7 @@ module.exports = bind;
 "use strict";
 
 
-var composeStyleInner = __webpack_require__(10);
+var composeStyleInner = __webpack_require__(11);
 var createStyle = __webpack_require__(28);
 
 function scopedInner(cssContent, uId, tag) {
@@ -3830,10 +3839,18 @@ function callSystemComponentAssignName() {
     args = ['onSystemComponentAssignName'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
-
-function callSystemDOMElementCreate() {
+function callSystemComponentPropsAssignName() {
     for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
         args[_key23] = arguments[_key23];
+    }
+
+    args = ['onSystemComponentPropsAssignName'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemDOMElementCreate() {
+    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
     }
 
     //todo Dovrebbe risolvere il problema del tag doppio
@@ -3841,14 +3858,10 @@ function callSystemDOMElementCreate() {
     callMethod.apply(null, args);
 }
 
-function callSystemDOMAttributeSet() {
-    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
-        args[_key24] = arguments[_key24];
-    }
-
-    args = ['onSystemDOMAttributeSet'].concat(_toConsumableArray(args));
+/*function callSystemDOMAttributeSet(...args) {
+    args = ['onSystemDOMAttributeSet', ...args];
     callMethod.apply(null, args);
-}
+}*/
 
 module.exports = {
     callSystemAppInit: callSystemAppInit,
@@ -3873,7 +3886,8 @@ module.exports = {
     callSystemWalkDOM: callSystemWalkDOM,
     callSystemComponentAssignName: callSystemComponentAssignName,
     callSystemDOMElementCreate: callSystemDOMElementCreate,
-    callSystemDOMAttributeSet: callSystemDOMAttributeSet
+    //callSystemDOMAttributeSet,
+    callSystemComponentPropsAssignName: callSystemComponentPropsAssignName
 };
 
 /***/ }),
@@ -4504,8 +4518,6 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var _require = __webpack_require__(1),
@@ -4520,13 +4532,8 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    var _cmp$$$beforeAttribut = cmp.$$beforeAttributeSet($target, name, value);
 
-    var _cmp$$$beforeAttribut2 = _slicedToArray(_cmp$$$beforeAttribut, 2);
-
-    name = _cmp$$$beforeAttribut2[0];
-    value = _cmp$$$beforeAttribut2[1];
-
+    //[name, value] = cmp.$$beforeAttributeSet($target, name, value);
 
     if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) /*|| cmp.constructor._isRefAttribute(name)*/) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
@@ -4956,9 +4963,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var canDecode = __webpack_require__(16);
-var composeStyleInner = __webpack_require__(10);
+var composeStyleInner = __webpack_require__(11);
 var camelToDash = __webpack_require__(17);
-var dashToCamel = __webpack_require__(11);
+var dashToCamel = __webpack_require__(7);
 var castStringTo = __webpack_require__(6);
 var delay = __webpack_require__(3);
 
@@ -4967,7 +4974,6 @@ var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
     ATTR = _require.ATTR,
-    DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX,
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
@@ -5075,19 +5081,13 @@ var DOMManipulation = function () {
         value: function $$afterNodeWalk() {}
 
         // noinspection JSMethodCanBeStatic
+        /*$$beforeAttributeSet($target, name, value) {
+            if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
+                name = camelToDash(name);
+            }
+              return [name, value];
+        }*/
 
-    }, {
-        key: '$$beforeAttributeSet',
-        value: function $$beforeAttributeSet($target, name, value) {
-            directive.callSystemDOMAttributeSet(this, $target, name, value, function (_name) {
-                name = _name;
-            });
-            if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) /*|| $target[DIR_IS]*/) {
-                    name = camelToDash(name);
-                }
-
-            return [name, value];
-        }
     }, {
         key: '$$afterAttributeCreate',
         value: function $$afterAttributeCreate($target, name, value, nodeProps) {
@@ -5290,7 +5290,7 @@ module.exports = component;
 "use strict";
 
 
-var _require = __webpack_require__(7),
+var _require = __webpack_require__(8),
     Component = _require.Component;
 
 var mixin = __webpack_require__(20);
@@ -5704,37 +5704,20 @@ directive('ref', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
+var dashToCamel = __webpack_require__(7);
 var DIR_IS = '__DOZ_D_IS__';
 
 directive('is', {
     onSystemComponentAssignName: function onSystemComponentAssignName(instance, $child) {
         if ($child.dataset && $child.dataset.is) return $child.dataset.is;
     },
-    onSystemDOMElementCreate: function onSystemDOMElementCreate(instance, $target, node, initial) {
-        if (node && node.props && node.props['d-is']) {
-            $target.dataset.is = node.props['d-is'];
-            $target[DIR_IS] = true;
-            console.log('________', $target.nodeName, $target[DIR_IS]);
-            if (!initial) instance._processing.push({ node: $target, action: 'create' });
-        }
+    onSystemComponentPropsAssignName: function onSystemComponentPropsAssignName($target, propsName) {
+        if ($target[DIR_IS]) return dashToCamel(propsName);
     },
-
-    /*
-        onDOMElementCreate(instance, $target, directiveValue, initial) {
-            $target.dataset.is = directiveValue;
-            $target[DIR_IS] = true;
-            console.log('____', $target.nodeName, $target[DIR_IS]);
-            if (!initial)
-                instance._processing.push({node: $target, action: 'create'});
-        },
-    */
-    onSystemDOMAttributeSet: function onSystemDOMAttributeSet(instance, $target, attributeName, attributeValue) {
-        console.log('xxxxxxxx', $target.nodeName, $target[DIR_IS]);
-        //console.log('bbbbbbbbbbbbbbbbbbbb', attributeName, attributeValue)
-        /*$target.dataset.is = directiveValue;
+    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
+        $target.dataset.is = directiveValue;
         $target[DIR_IS] = true;
-        if (!initial)
-            instance._processing.push({node: $target, action: 'create'});*/
+        if (!initial) instance._processing.push({ node: $target, action: 'create' });
     }
 });
 
