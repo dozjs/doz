@@ -12,16 +12,7 @@ const delay = require('../utils/delay');
 const directive = require('../directive');
 
 function getComponentName(child) {
-    let cmpName;
-    /*if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
-        cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-        child.removeAttribute(ATTR.IS);
-        child.dataset.is = cmpName;
-        child[DIR_IS] = true;
-    } else*/
-        cmpName = child.nodeName.toLowerCase();
-
-    return cmpName;
+    return child.nodeName.toLowerCase();
 }
 
 function transformChildStyle(child, parent) {

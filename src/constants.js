@@ -2,7 +2,6 @@ module.exports = {
     COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    //DIR_IS: '__DOZ_D_IS__',
     DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -23,14 +22,6 @@ module.exports = {
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
-        //IS_REF: /^d-ref$/,
-        //IS_IS: /^d-is$/,
-        /*
-        IS_ON: /^d:on$/,
-        IS_ALIAS: /^d:alias$/,
-        IS_STORE: /^d:store$/,
-        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
-         */
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
@@ -51,17 +42,8 @@ module.exports = {
     ATTR: {
         // Attributes for HTMLElement
         BIND: 'd-bind',
-        //REF: 'd-ref',
-        IS: 'd-is',
         // Attributes for both
         KEY: 'd-key',
-        // Attributes for Components
-        /*
-        ALIAS: 'd:alias',
-        STORE: 'd:store',
-        LISTENER: 'd:on',
-        ID: 'd:id',
-        */
         FORCE_UPDATE: 'forceupdate'
     }
 };
