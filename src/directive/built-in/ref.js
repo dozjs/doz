@@ -12,10 +12,6 @@ directive('ref', {
         });
     },
 
-    /*onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
-        instance.ref[value] = $target;
-    },*/
-
     onDOMElementCreate(instance, $target, directiveValue) {
         instance.ref[directiveValue] = $target;
     }

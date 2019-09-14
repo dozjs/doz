@@ -175,38 +175,16 @@ function serializeProps($node) {
         const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-
             propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
-            /*if (REGEX.IS_ON.test(attr.name)) {
-                node.removeAttribute(attr.name)
-                console.log(node.hasAttribute(attr.name))
-            }*/
-
         }
     }
     return props;
 }
 
 function propsFixer(nName, aName, aValue, props, $node) {
-    /*let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
-    if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined)
-            props[ATTR.LISTENER] = {};
-        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
-        delete props[aName];
-    } else {*/
+
     if (REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-    //console.log(aName, REGEX.IS_ON.test(aName))
-
-    /*
-    if (REGEX.IS_REF.test(aName)) return;
-    if (REGEX.IS_BIND.test(aName)) return;
-    if (REGEX.IS_IS.test(aName)) return;
-    */
-
-    //if (REGEX.IS_ON.test(aName)) return;
-    //!REGEX.IS_DIRECTIVE.test(nName) &&
 
     let isDirective = REGEX.IS_DIRECTIVE.test(aName);
 
@@ -222,7 +200,6 @@ function propsFixer(nName, aName, aValue, props, $node) {
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : castStringTo(aValue);
-    //}
 }
 
 module.exports = {

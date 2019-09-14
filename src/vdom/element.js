@@ -210,8 +210,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         clearDead();
-
-        cmp.$$afterNodeWalk();
     }
 }
 

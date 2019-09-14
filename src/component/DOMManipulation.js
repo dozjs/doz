@@ -1,6 +1,5 @@
 const canDecode = require('../utils/can-decode');
 const composeStyleInner = require('../utils/compose-style-inner');
-const camelToDash = require('../utils/camel-to-dash');
 const dashToCamel = require('../utils/dash-to-camel');
 const castStringTo = require('../utils/cast-string-to');
 const delay = require('../utils/delay');
@@ -12,16 +11,13 @@ class DOMManipulation {
     $$afterNodeElementCreate($el, node, initial) {
         directive.callSystemDOMElementCreate(this, $el, node, initial);
         directive.callDOMElementCreate(this, $el, initial);
+
         if (typeof $el.hasAttribute === 'function') {
-            if ((node.type.indexOf('-') !== -1 /*|| (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS))*/)
-                && !initial) {
-                //console.log('processing', this.tag, $el)
+            if (node.type.indexOf('-') !== -1 && !initial) {
                 this._processing.push({node: $el, action: 'create'});
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                //console.log('ha slot', $el.nodeName);
-                //console.log($el.name, $el.getAttribute('name'));
                 let slotName = $el.getAttribute('name');
 
                 if (!slotName) {
@@ -83,27 +79,12 @@ class DOMManipulation {
         return false;
     }
 
-    $$afterNodeWalk() {
-
-    }
-
     // noinspection JSMethodCanBeStatic
-    /*$$beforeAttributeSet($target, name, value) {
-        if (REGEX.IS_CUSTOM_TAG.test($target.nodeName)) {
-            name = camelToDash(name);
-        }
-
-        return [name, value];
-    }*/
-
     $$afterAttributeCreate($target, name, value, nodeProps) {
-        directive.callDOMAttributeCreate(this, $target, name, value, nodeProps);
         let bindValue;
         if (this._setBind($target, name, value)) {
             bindValue = this.props[value];
         }
-        /*if (nodeProps)
-            this._setRef($target, name, nodeProps[name]);*/
         return bindValue;
     }
 
@@ -148,12 +129,6 @@ class DOMManipulation {
             }
         }
     }
-/*
-    _setRef($target, name, value) {
-        if (!this.constructor._isRefAttribute(name)) return;
-        this.ref[value] = $target
-    }
-    */
 
     _setBind($target, name, value) {
         if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
@@ -196,12 +171,6 @@ class DOMManipulation {
     static _isBindAttribute(name) {
         return name === ATTR.BIND;
     }
-
-    /*
-    static _isRefAttribute(name) {
-        return name === ATTR.REF;
-    }
-     */
 
     static _canBind($target) {
         return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1
