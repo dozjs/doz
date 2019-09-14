@@ -938,7 +938,7 @@ var Component = function (_DOMManipulation) {
 
             if (this._renderPause) return;
             this.beginSafeRender();
-            var template = this.template(h);
+            var template = this.template(h, this.props);
             this.endSafeRender();
             var next = compile(template, this);
             this.app.emit('draw', next, this._prev, this);
