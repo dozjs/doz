@@ -11,6 +11,7 @@ class DOMManipulation {
 
     $$afterNodeElementCreate($el, node, initial) {
         directive.callSystemDOMElementCreate(this, $el, node, initial);
+        directive.callDOMElementCreate(this, $el, initial);
         if (typeof $el.hasAttribute === 'function') {
             if ((node.type.indexOf('-') !== -1 /*|| (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS))*/)
                 && !initial) {
@@ -88,7 +89,10 @@ class DOMManipulation {
 
     // noinspection JSMethodCanBeStatic
     $$beforeAttributeSet($target, name, value) {
-        if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
+        directive.callSystemDOMAttributeSet(this, $target, name, value, (_name) => {
+            name =_name;
+        });
+        if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) /*|| $target[DIR_IS]*/) {
             name = camelToDash(name);
         }
 

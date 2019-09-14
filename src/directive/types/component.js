@@ -1,5 +1,5 @@
-const {data} = require('../collection');
-const {extractDirectivesFromProps} = require('./helpers');
+const {data} = require('../../collection');
+const {extractDirectivesFromProps} = require('../helpers');
 
 // Hooks for the component
 function callMethod(...args) {

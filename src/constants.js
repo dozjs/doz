@@ -2,7 +2,7 @@ module.exports = {
     COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    DIR_IS: '__DOZ_D_IS__',
+    //DIR_IS: '__DOZ_D_IS__',
     DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -24,7 +24,7 @@ module.exports = {
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         //IS_REF: /^d-ref$/,
-        IS_IS: /^d-is$/,
+        //IS_IS: /^d-is$/,
         /*
         IS_ON: /^d:on$/,
         IS_ALIAS: /^d:alias$/,

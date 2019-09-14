@@ -92,7 +92,7 @@ function directive(name) {
 
 module.exports = Object.assign({
     directive: directive
-}, __webpack_require__(61), __webpack_require__(62), __webpack_require__(64));
+}, __webpack_require__(30), __webpack_require__(31), __webpack_require__(33));
 
 /***/ }),
 /* 1 */
@@ -105,7 +105,7 @@ module.exports = {
     COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    DIR_IS: '__DOZ_D_IS__',
+    //DIR_IS: '__DOZ_D_IS__',
     DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -127,7 +127,7 @@ module.exports = {
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
         IS_BIND: /^d-bind$/,
         //IS_REF: /^d-ref$/,
-        IS_IS: /^d-is$/,
+        //IS_IS: /^d-is$/,
         /*
         IS_ON: /^d:on$/,
         IS_ALIAS: /^d:alias$/,
@@ -703,11 +703,11 @@ module.exports = {
 "use strict";
 
 
-var isJSON = __webpack_require__(30);
-var isNumber = __webpack_require__(31);
-var toJSON = __webpack_require__(32);
-var toNumber = __webpack_require__(33);
-var typesMap = __webpack_require__(34);
+var isJSON = __webpack_require__(34);
+var isNumber = __webpack_require__(35);
+var toJSON = __webpack_require__(36);
+var toNumber = __webpack_require__(37);
+var typesMap = __webpack_require__(38);
 
 function castStringTo(obj) {
 
@@ -751,22 +751,22 @@ var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(36);
+var observer = __webpack_require__(40);
 var hooks = __webpack_require__(4);
-var update = __webpack_require__(39).updateElement;
+var update = __webpack_require__(43).updateElement;
 //const store = require('./store');
 //const ids = require('./ids');
 var proxy = __webpack_require__(12);
-var toInlineStyle = __webpack_require__(42);
-var queueReady = __webpack_require__(43);
-var queueDraw = __webpack_require__(44);
-var extendInstance = __webpack_require__(45);
-var cloneObject = __webpack_require__(46);
+var toInlineStyle = __webpack_require__(46);
+var queueReady = __webpack_require__(47);
+var queueDraw = __webpack_require__(48);
+var extendInstance = __webpack_require__(49);
+var cloneObject = __webpack_require__(50);
 var toLiteralString = __webpack_require__(18);
-var removeAllAttributes = __webpack_require__(47);
+var removeAllAttributes = __webpack_require__(51);
 var h = __webpack_require__(19);
-var loadLocal = __webpack_require__(48);
-var localMixin = __webpack_require__(49);
+var loadLocal = __webpack_require__(52);
+var localMixin = __webpack_require__(53);
 
 var _require2 = __webpack_require__(5),
     compile = _require2.compile;
@@ -778,7 +778,7 @@ var propsInit = __webpack_require__(21);
 var _require3 = __webpack_require__(13),
     updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
 
-var DOMManipulation = __webpack_require__(50);
+var DOMManipulation = __webpack_require__(54);
 var directive = __webpack_require__(0);
 
 var Component = function (_DOMManipulation) {
@@ -1486,7 +1486,7 @@ var _require3 = __webpack_require__(5),
 //const {extract} = require('./component-directives');
 
 
-var hmr = __webpack_require__(35);
+var hmr = __webpack_require__(39);
 
 var _require4 = __webpack_require__(7),
     Component = _require4.Component;
@@ -2607,7 +2607,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(38);
+var castType = __webpack_require__(42);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2673,7 +2673,7 @@ module.exports = manipulate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(40),
+var _require = __webpack_require__(44),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -3126,12 +3126,12 @@ var _require = __webpack_require__(22),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(51);
+var component = __webpack_require__(55);
 
 var _require3 = __webpack_require__(7),
     Component = _require3.Component;
 
-var mixin = __webpack_require__(52);
+var mixin = __webpack_require__(56);
 var h = __webpack_require__(19);
 
 var _require4 = __webpack_require__(5),
@@ -3140,7 +3140,7 @@ var _require4 = __webpack_require__(5),
 var _require5 = __webpack_require__(15),
     update = _require5.update;
 
-__webpack_require__(53);
+__webpack_require__(57);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -3606,13 +3606,622 @@ module.exports = {
 "use strict";
 
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(2),
+    data = _require.data;
+
+// All methods that starts with prefix callSystem are considered extra of directives hooks
+// because they don't use any prop but are useful for initializing stuff.
+// For example built-in like d:store and d:id
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args.shift();
+    var oKeys = Object.keys(data.directives);
+    var callback = void 0;
+
+    // Search for a possible callback
+    for (var i = 0; i < args.length; i++) {
+        if (typeof args[i] === 'function') {
+            callback = args[i];
+            break;
+        }
+    }
+
+    for (var _i = 0; _i < oKeys.length; _i++) {
+        var key = oKeys[_i];
+        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+            var res = data.directives[key][method].apply(data.directives[key], args);
+            // If res returns something, fire the callback
+            if (res !== undefined && callback) callback(res);
+        }
+    }
+}
+
+function callSystemAppInit() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    args = ['onSystemAppInit'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentCreate() {
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    args = ['onSystemComponentCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentBeforeCreate() {
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    args = ['onSystemComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentConfigCreate() {
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    args = ['onSystemComponentConfigCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentBeforeMount() {
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+    }
+
+    args = ['onSystemComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentMount() {
+    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+    }
+
+    args = ['onSystemComponentMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentMountAsync() {
+    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+    }
+
+    args = ['onSystemComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentBeforeUpdate() {
+    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+    }
+
+    args = ['onSystemComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentUpdate() {
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+    }
+
+    args = ['onSystemComponentUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentDrawByParent() {
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+    }
+
+    args = ['onSystemComponentDrawByParent'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentAfterRender() {
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+    }
+
+    args = ['onSystemComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentBeforeUnmount() {
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+    }
+
+    args = ['onSystemComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentUnmount() {
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+    }
+
+    args = ['onSystemComponentUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentBeforeDestroy() {
+    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+        args[_key15] = arguments[_key15];
+    }
+
+    args = ['onSystemComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentSetConfig() {
+    for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
+        args[_key16] = arguments[_key16];
+    }
+
+    args = ['onSystemComponentSetConfig'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentSetProps() {
+    for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
+        args[_key17] = arguments[_key17];
+    }
+
+    args = ['onSystemComponentSetProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentLoadProps() {
+    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
+        args[_key18] = arguments[_key18];
+    }
+
+    args = ['onSystemComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentDestroy() {
+    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+        args[_key19] = arguments[_key19];
+    }
+
+    args = ['onSystemComponentDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentAssignIndex() {
+    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+        args[_key20] = arguments[_key20];
+    }
+
+    args = ['onSystemComponentAssignIndex'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemWalkDOM() {
+    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
+        args[_key21] = arguments[_key21];
+    }
+
+    args = ['onSystemWalkDOM'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemComponentAssignName() {
+    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
+        args[_key22] = arguments[_key22];
+    }
+
+    args = ['onSystemComponentAssignName'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemDOMElementCreate() {
+    for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
+        args[_key23] = arguments[_key23];
+    }
+
+    //todo Dovrebbe risolvere il problema del tag doppio
+    args = ['onSystemDOMElementCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callSystemDOMAttributeSet() {
+    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
+    }
+
+    args = ['onSystemDOMAttributeSet'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+module.exports = {
+    callSystemAppInit: callSystemAppInit,
+    callSystemComponentCreate: callSystemComponentCreate,
+    callSystemComponentLoadProps: callSystemComponentLoadProps,
+    callSystemComponentSetConfig: callSystemComponentSetConfig,
+    callSystemComponentSetProps: callSystemComponentSetProps,
+    callSystemComponentDestroy: callSystemComponentDestroy,
+    callSystemComponentAssignIndex: callSystemComponentAssignIndex,
+    callSystemComponentBeforeCreate: callSystemComponentBeforeCreate,
+    callSystemComponentConfigCreate: callSystemComponentConfigCreate,
+    callSystemComponentBeforeMount: callSystemComponentBeforeMount,
+    callSystemComponentMount: callSystemComponentMount,
+    callSystemComponentBeforeDestroy: callSystemComponentBeforeDestroy,
+    callSystemComponentUnmount: callSystemComponentUnmount,
+    callSystemComponentBeforeUnmount: callSystemComponentBeforeUnmount,
+    callSystemComponentAfterRender: callSystemComponentAfterRender,
+    callSystemComponentDrawByParent: callSystemComponentDrawByParent,
+    callSystemComponentUpdate: callSystemComponentUpdate,
+    callSystemComponentBeforeUpdate: callSystemComponentBeforeUpdate,
+    callSystemComponentMountAsync: callSystemComponentMountAsync,
+    callSystemWalkDOM: callSystemWalkDOM,
+    callSystemComponentAssignName: callSystemComponentAssignName,
+    callSystemDOMElementCreate: callSystemDOMElementCreate,
+    callSystemDOMAttributeSet: callSystemDOMAttributeSet
+};
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(2),
+    data = _require.data;
+
+var _require2 = __webpack_require__(32),
+    extractDirectivesFromProps = _require2.extractDirectivesFromProps;
+
+// Hooks for the component
+
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args[0];
+    var cmp = args[1];
+
+    // Remove first argument event name
+    args.shift();
+    //console.warn(cmp.tag, method, cmp.props)
+
+    var directivesKeyValue = extractDirectivesFromProps(cmp);
+
+    var _defined = function _defined(key) {
+
+        var keyArgumentsValues = [];
+        var keyArguments = {};
+        var originKey = key;
+
+        if (key.indexOf('-') !== -1) {
+            keyArgumentsValues = key.split('-');
+            key = keyArgumentsValues[0];
+            keyArgumentsValues.shift();
+        }
+
+        var directiveObj = data.directives[key];
+        //console.log(method, directiveObj)
+        //if (directiveObj)
+        //console.warn(method, directiveObj[method])
+        if (directiveObj && typeof directiveObj[method] === 'function') {
+            // Clone args object
+            var outArgs = Object.assign([], args);
+            // Add directive value
+            outArgs.push(directivesKeyValue[originKey]);
+
+            var _defined3 = function _defined3(keyArg, i) {
+                return keyArguments[keyArg] = keyArgumentsValues[i];
+            };
+
+            var _defined4 = directiveObj._keyArguments;
+
+            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+                _defined3(_defined4[_i4], _i4, _defined4);
+            }
+
+            outArgs.push(keyArguments);
+            directiveObj[method].apply(directiveObj, outArgs);
+        }
+    };
+
+    var _defined2 = Object.keys(directivesKeyValue);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+}
+
+function callComponentBeforeCreate() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    args = ['onComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentCreate() {
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    args = ['onComponentCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeMount() {
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    args = ['onComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMount() {
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    args = ['onComponentMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMountAsync() {
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+    }
+
+    args = ['onComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentAfterRender() {
+    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+    }
+
+    args = ['onComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUpdate() {
+    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+    }
+
+    args = ['onComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUpdate() {
+    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+    }
+
+    args = ['onComponentUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUnmount() {
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+    }
+
+    args = ['onComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUnmount() {
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+    }
+
+    args = ['onComponentUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeDestroy() {
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+    }
+
+    args = ['onComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentDestroy() {
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+    }
+
+    args = ['onComponentDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentLoadProps() {
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+    }
+
+    args = ['onComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+module.exports = {
+    callComponentBeforeCreate: callComponentBeforeCreate,
+    callComponentCreate: callComponentCreate,
+    callComponentBeforeMount: callComponentBeforeMount,
+    callComponentMount: callComponentMount,
+    callComponentMountAsync: callComponentMountAsync,
+    callComponentAfterRender: callComponentAfterRender,
+    callComponentBeforeUpdate: callComponentBeforeUpdate,
+    callComponentUpdate: callComponentUpdate,
+    callComponentBeforeUnmount: callComponentBeforeUnmount,
+    callComponentUnmount: callComponentUnmount,
+    callComponentBeforeDestroy: callComponentBeforeDestroy,
+    callComponentDestroy: callComponentDestroy,
+    callComponentLoadProps: callComponentLoadProps
+};
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX;
+
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    var props = void 0;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
+    var _defined
+    /*if (canBeDeleteProps)
+        delete props[key];*/
+    = function _defined(key) {
+        if (REGEX.IS_DIRECTIVE.test(key)) {
+            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    };
+
+    var _defined2 = Object.keys(props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+
+    return cmp._directiveProps;
+}
+
+module.exports = {
+    extractDirectivesFromProps: extractDirectivesFromProps
+};
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX;
+
+var _require2 = __webpack_require__(2),
+    data = _require2.data;
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args[0];
+    var cmp = args[1];
+
+    // Remove first argument event name
+    args.shift();
+}
+
+// Hooks for DOM element
+function callDOMAttributeCreate(instance, $target, attributeName, attributeValue, nodeProps) {
+    var method = 'onDOMAttributeCreate';
+    if (REGEX.IS_DIRECTIVE.test(attributeName)) {
+        var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+        var directiveObj = data.directives[directiveName];
+        if (directiveObj && directiveObj[method]) {
+            $target.removeAttribute(attributeName);
+            directiveObj[method].apply(directiveObj, [instance, $target, attributeName, attributeValue, nodeProps]);
+        }
+    }
+}
+function callDOMAttributeSet(instance, $target, attributeName, attributeValue, callback) {
+    var method = 'onDOMAttributeSet';
+    if (REGEX.IS_DIRECTIVE.test(attributeName)) {
+        var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+        var directiveObj = data.directives[directiveName];
+        if (directiveObj && directiveObj[method]) {
+            $target.removeAttribute(attributeName);
+            var ret = directiveObj[method].apply(directiveObj, [instance, $target, attributeName, attributeValue]);
+            if (ret !== undefined && typeof callback === 'function') {
+                callback(ret);
+            }
+        }
+    }
+}
+
+function callDOMElementCreate(instance, $target, initial) {
+    var method = 'onDOMElementCreate';
+    var attributes = Array.from($target.attributes);
+
+    var _defined = function _defined(attribute) {
+        if (REGEX.IS_DIRECTIVE.test(attribute.name)) {
+            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attribute.value;
+            var directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                $target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
+            }
+        }
+    };
+
+    for (var _i2 = 0; _i2 <= attributes.length - 1; _i2++) {
+        _defined(attributes[_i2], _i2, attributes);
+    }
+}
+
+module.exports = {
+    callDOMAttributeCreate: callDOMAttributeCreate,
+    callDOMAttributeSet: callDOMAttributeSet,
+    callDOMElementCreate: callDOMElementCreate
+};
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 module.exports = function isJSON(obj) {
     return (/^[{\[]/.test(obj)
     );
 };
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3625,7 +4234,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3640,7 +4249,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3660,7 +4269,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3676,7 +4285,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3720,7 +4329,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3732,7 +4341,7 @@ var events = __webpack_require__(4);
 var _require = __webpack_require__(13),
     updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
 
-var propsListener = __webpack_require__(37);
+var propsListener = __webpack_require__(41);
 var manipulate = __webpack_require__(14);
 
 function runUpdate(instance, changes) {
@@ -3784,7 +4393,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3828,7 +4437,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3874,7 +4483,7 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3887,7 +4496,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3904,7 +4513,7 @@ var _require = __webpack_require__(1),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(6);
-var objectPath = __webpack_require__(41);
+var objectPath = __webpack_require__(45);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -4111,7 +4720,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4136,7 +4745,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 42 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4173,7 +4782,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 43 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4191,7 +4800,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 44 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4224,7 +4833,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 45 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4237,7 +4846,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4250,7 +4859,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 47 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4270,7 +4879,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 48 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4316,7 +4925,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 49 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4332,7 +4941,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 50 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4374,6 +4983,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             directive.callSystemDOMElementCreate(this, $el, node, initial);
+            directive.callDOMElementCreate(this, $el, initial);
             if (typeof $el.hasAttribute === 'function') {
                 if (node.type.indexOf('-') !== -1 /*|| (typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS))*/ && !initial) {
                     //console.log('processing', this.tag, $el)
@@ -4469,9 +5079,12 @@ var DOMManipulation = function () {
     }, {
         key: '$$beforeAttributeSet',
         value: function $$beforeAttributeSet($target, name, value) {
-            if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
-                name = camelToDash(name);
-            }
+            directive.callSystemDOMAttributeSet(this, $target, name, value, function (_name) {
+                name = _name;
+            });
+            if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) /*|| $target[DIR_IS]*/) {
+                    name = camelToDash(name);
+                }
 
             return [name, value];
         }
@@ -4636,7 +5249,7 @@ var DOMManipulation = function () {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 51 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4671,7 +5284,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 52 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4689,23 +5302,23 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 53 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(54);
-__webpack_require__(55);
-__webpack_require__(56);
-__webpack_require__(57);
 __webpack_require__(58);
-
 __webpack_require__(59);
 __webpack_require__(60);
+__webpack_require__(61);
+__webpack_require__(62);
+
+__webpack_require__(63);
+__webpack_require__(64);
 
 /***/ }),
-/* 54 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4783,7 +5396,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 55 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4850,7 +5463,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 56 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4899,7 +5512,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 57 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4937,7 +5550,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 58 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5051,7 +5664,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 59 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5070,13 +5683,19 @@ directive('ref', {
             }
         });
     },
-    onDOMAttributeCreate: function onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
+
+
+    /*onDOMAttributeCreate(instance, $target, name, value, nodeProps) {
         instance.ref[value] = $target;
+    },*/
+
+    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue) {
+        instance.ref[directiveValue] = $target;
     }
 });
 
 /***/ }),
-/* 60 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5095,568 +5714,29 @@ directive('is', {
         if (node && node.props && node.props['d-is']) {
             $target.dataset.is = node.props['d-is'];
             $target[DIR_IS] = true;
+            console.log('________', $target.nodeName, $target[DIR_IS]);
             if (!initial) instance._processing.push({ node: $target, action: 'create' });
         }
+    },
+
+    /*
+        onDOMElementCreate(instance, $target, directiveValue, initial) {
+            $target.dataset.is = directiveValue;
+            $target[DIR_IS] = true;
+            console.log('____', $target.nodeName, $target[DIR_IS]);
+            if (!initial)
+                instance._processing.push({node: $target, action: 'create'});
+        },
+    */
+    onSystemDOMAttributeSet: function onSystemDOMAttributeSet(instance, $target, attributeName, attributeValue) {
+        console.log('xxxxxxxx', $target.nodeName, $target[DIR_IS]);
+        //console.log('bbbbbbbbbbbbbbbbbbbb', attributeName, attributeValue)
+        /*$target.dataset.is = directiveValue;
+        $target[DIR_IS] = true;
+        if (!initial)
+            instance._processing.push({node: $target, action: 'create'});*/
     }
 });
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var _require = __webpack_require__(2),
-    data = _require.data;
-
-// All methods that starts with prefix callSystem are considered extra of directives hooks
-// because they don't use any prop but are useful for initializing stuff.
-// For example built-in like d:store and d:id
-
-function callMethodNoDirective() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    var method = args.shift();
-    var oKeys = Object.keys(data.directives);
-    var callback = void 0;
-
-    // Search for a possible callback
-    for (var i = 0; i < args.length; i++) {
-        if (typeof args[i] === 'function') {
-            callback = args[i];
-            break;
-        }
-    }
-
-    for (var _i = 0; _i < oKeys.length; _i++) {
-        var key = oKeys[_i];
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            var res = data.directives[key][method].apply(data.directives[key], args);
-            // If res returns something, fire the callback
-            if (res !== undefined && callback) callback(res);
-        }
-    }
-}
-
-function callSystemAppInit() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-    }
-
-    args = ['onSystemAppInit'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentCreate() {
-    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-    }
-
-    args = ['onSystemComponentCreate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentBeforeCreate() {
-    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-    }
-
-    args = ['onSystemComponentBeforeCreate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentConfigCreate() {
-    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
-    }
-
-    args = ['onSystemComponentConfigCreate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentBeforeMount() {
-    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-        args[_key6] = arguments[_key6];
-    }
-
-    args = ['onSystemComponentBeforeMount'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentMount() {
-    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-        args[_key7] = arguments[_key7];
-    }
-
-    args = ['onSystemComponentMount'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentMountAsync() {
-    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
-        args[_key8] = arguments[_key8];
-    }
-
-    args = ['onSystemComponentMountAsync'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentBeforeUpdate() {
-    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
-        args[_key9] = arguments[_key9];
-    }
-
-    args = ['onSystemComponentBeforeUpdate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentUpdate() {
-    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
-        args[_key10] = arguments[_key10];
-    }
-
-    args = ['onSystemComponentUpdate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentDrawByParent() {
-    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
-        args[_key11] = arguments[_key11];
-    }
-
-    args = ['onSystemComponentDrawByParent'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentAfterRender() {
-    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
-        args[_key12] = arguments[_key12];
-    }
-
-    args = ['onSystemComponentAfterRender'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentBeforeUnmount() {
-    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
-        args[_key13] = arguments[_key13];
-    }
-
-    args = ['onSystemComponentBeforeUnmount'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentUnmount() {
-    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
-        args[_key14] = arguments[_key14];
-    }
-
-    args = ['onSystemComponentUnmount'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentBeforeDestroy() {
-    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
-        args[_key15] = arguments[_key15];
-    }
-
-    args = ['onSystemComponentBeforeDestroy'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentSetConfig() {
-    for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
-        args[_key16] = arguments[_key16];
-    }
-
-    args = ['onSystemComponentSetConfig'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentSetProps() {
-    for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
-        args[_key17] = arguments[_key17];
-    }
-
-    args = ['onSystemComponentSetProps'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentLoadProps() {
-    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
-        args[_key18] = arguments[_key18];
-    }
-
-    args = ['onSystemComponentLoadProps'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentDestroy() {
-    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
-        args[_key19] = arguments[_key19];
-    }
-
-    args = ['onSystemComponentDestroy'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentAssignIndex() {
-    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
-        args[_key20] = arguments[_key20];
-    }
-
-    args = ['onSystemComponentAssignIndex'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemWalkDOM() {
-    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
-        args[_key21] = arguments[_key21];
-    }
-
-    args = ['onSystemWalkDOM'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemComponentAssignName() {
-    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
-        args[_key22] = arguments[_key22];
-    }
-
-    args = ['onSystemComponentAssignName'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-function callSystemDOMElementCreate() {
-    for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
-        args[_key23] = arguments[_key23];
-    }
-
-    //todo Dovrebbe risolvere il problema del tag doppio
-    args = ['onSystemDOMElementCreate'].concat(_toConsumableArray(args));
-    callMethodNoDirective.apply(null, args);
-}
-
-module.exports = {
-    callSystemAppInit: callSystemAppInit,
-    callSystemComponentCreate: callSystemComponentCreate,
-    callSystemComponentLoadProps: callSystemComponentLoadProps,
-    callSystemComponentSetConfig: callSystemComponentSetConfig,
-    callSystemComponentSetProps: callSystemComponentSetProps,
-    callSystemComponentDestroy: callSystemComponentDestroy,
-    callSystemComponentAssignIndex: callSystemComponentAssignIndex,
-    callSystemComponentBeforeCreate: callSystemComponentBeforeCreate,
-    callSystemComponentConfigCreate: callSystemComponentConfigCreate,
-    callSystemComponentBeforeMount: callSystemComponentBeforeMount,
-    callSystemComponentMount: callSystemComponentMount,
-    callSystemComponentBeforeDestroy: callSystemComponentBeforeDestroy,
-    callSystemComponentUnmount: callSystemComponentUnmount,
-    callSystemComponentBeforeUnmount: callSystemComponentBeforeUnmount,
-    callSystemComponentAfterRender: callSystemComponentAfterRender,
-    callSystemComponentDrawByParent: callSystemComponentDrawByParent,
-    callSystemComponentUpdate: callSystemComponentUpdate,
-    callSystemComponentBeforeUpdate: callSystemComponentBeforeUpdate,
-    callSystemComponentMountAsync: callSystemComponentMountAsync,
-    callSystemWalkDOM: callSystemWalkDOM,
-    callSystemComponentAssignName: callSystemComponentAssignName,
-    callSystemDOMElementCreate: callSystemDOMElementCreate
-};
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var _require = __webpack_require__(2),
-    data = _require.data;
-
-var _require2 = __webpack_require__(63),
-    extractDirectivesFromProps = _require2.extractDirectivesFromProps;
-
-// Hooks for the component
-
-
-function callMethod() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    var method = args[0];
-    var cmp = args[1];
-
-    // Remove first argument event name
-    args.shift();
-    //console.warn(cmp.tag, method, cmp.props)
-
-    var directivesKeyValue = extractDirectivesFromProps(cmp);
-
-    var _defined = function _defined(key) {
-
-        var keyArgumentsValues = [];
-        var keyArguments = {};
-        var originKey = key;
-
-        if (key.indexOf('-') !== -1) {
-            keyArgumentsValues = key.split('-');
-            key = keyArgumentsValues[0];
-            keyArgumentsValues.shift();
-        }
-
-        var directiveObj = data.directives[key];
-        //console.log(method, directiveObj)
-        //if (directiveObj)
-        //console.warn(method, directiveObj[method])
-        if (directiveObj && typeof directiveObj[method] === 'function') {
-            // Clone args object
-            var outArgs = Object.assign([], args);
-            // Add directive value
-            outArgs.push(directivesKeyValue[originKey]);
-
-            var _defined3 = function _defined3(keyArg, i) {
-                return keyArguments[keyArg] = keyArgumentsValues[i];
-            };
-
-            var _defined4 = directiveObj._keyArguments;
-
-            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-                _defined3(_defined4[_i4], _i4, _defined4);
-            }
-
-            outArgs.push(keyArguments);
-            directiveObj[method].apply(directiveObj, outArgs);
-        }
-    };
-
-    var _defined2 = Object.keys(directivesKeyValue);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-}
-
-function callComponentBeforeCreate() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-    }
-
-    args = ['onComponentBeforeCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentCreate() {
-    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-    }
-
-    args = ['onComponentCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentBeforeMount() {
-    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-    }
-
-    args = ['onComponentBeforeMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentMount() {
-    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
-    }
-
-    args = ['onComponentMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentMountAsync() {
-    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-        args[_key6] = arguments[_key6];
-    }
-
-    args = ['onComponentMountAsync'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentAfterRender() {
-    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-        args[_key7] = arguments[_key7];
-    }
-
-    args = ['onComponentAfterRender'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentBeforeUpdate() {
-    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
-        args[_key8] = arguments[_key8];
-    }
-
-    args = ['onComponentBeforeUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentUpdate() {
-    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
-        args[_key9] = arguments[_key9];
-    }
-
-    args = ['onComponentUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentBeforeUnmount() {
-    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
-        args[_key10] = arguments[_key10];
-    }
-
-    args = ['onComponentBeforeUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentUnmount() {
-    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
-        args[_key11] = arguments[_key11];
-    }
-
-    args = ['onComponentUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentBeforeDestroy() {
-    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
-        args[_key12] = arguments[_key12];
-    }
-
-    args = ['onComponentBeforeDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentDestroy() {
-    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
-        args[_key13] = arguments[_key13];
-    }
-
-    args = ['onComponentDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-function callComponentLoadProps() {
-    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
-        args[_key14] = arguments[_key14];
-    }
-
-    args = ['onComponentLoadProps'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
-}
-
-module.exports = {
-    callComponentBeforeCreate: callComponentBeforeCreate,
-    callComponentCreate: callComponentCreate,
-    callComponentBeforeMount: callComponentBeforeMount,
-    callComponentMount: callComponentMount,
-    callComponentMountAsync: callComponentMountAsync,
-    callComponentAfterRender: callComponentAfterRender,
-    callComponentBeforeUpdate: callComponentBeforeUpdate,
-    callComponentUpdate: callComponentUpdate,
-    callComponentBeforeUnmount: callComponentBeforeUnmount,
-    callComponentUnmount: callComponentUnmount,
-    callComponentBeforeDestroy: callComponentBeforeDestroy,
-    callComponentDestroy: callComponentDestroy,
-    callComponentLoadProps: callComponentLoadProps
-};
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(1),
-    REGEX = _require.REGEX;
-
-function extractDirectivesFromProps(cmp) {
-    //let canBeDeleteProps = true;
-    var props = void 0;
-
-    if (!Object.keys(cmp.props).length) {
-        props = cmp._rawProps;
-        //canBeDeleteProps = false;
-    } else {
-        props = cmp.props;
-    }
-
-    var _defined
-    /*if (canBeDeleteProps)
-        delete props[key];*/
-    = function _defined(key) {
-        if (REGEX.IS_DIRECTIVE.test(key)) {
-            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            cmp._directiveProps[keyWithoutD] = props[key];
-        }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-
-    return cmp._directiveProps;
-}
-
-module.exports = {
-    extractDirectivesFromProps: extractDirectivesFromProps
-};
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(1),
-    REGEX = _require.REGEX;
-
-var _require2 = __webpack_require__(2),
-    data = _require2.data;
-
-// Hooks for DOM element
-
-
-function callDOMAttributeCreate(instance, $target, attributeName, attributeValue, nodeProps) {
-    var method = 'onDOMAttributeCreate';
-    if (REGEX.IS_DIRECTIVE.test(attributeName)) {
-        var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-        var directiveObj = data.directives[directiveName];
-        if (directiveObj && directiveObj[method]) {
-            $target.removeAttribute(attributeName);
-            directiveObj[method].apply(directiveObj, [instance, $target, attributeName, attributeValue, nodeProps]);
-        }
-    }
-}
-
-function callDOMElementCreate() {
-    //args = ['onSystemDOMElementCreate', ...args];
-    //callMethodNoDirective.apply(null, args);
-}
-
-module.exports = {
-    callDOMAttributeCreate: callDOMAttributeCreate,
-    callDOMElementCreate: callDOMElementCreate
-};
 
 /***/ })
 /******/ ]);

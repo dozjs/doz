@@ -16,7 +16,7 @@ describe('Doz.is', function () {
 
             Doz.component('a-component', {
                 template() {
-                    return `<div id="d-is">hello</div>`
+                    return `<div id="d-is">hello ${this.props['my-title']}</div>`
                 }
             });
 
@@ -26,7 +26,7 @@ describe('Doz.is', function () {
                 },
                 template(h) {
                     return h`
-                        <span id="d-is" d-is="a-component"></span>
+                        <span id="d-is" d-is="a-component" my-title="ciao"></span>
                     `
                 },
 
