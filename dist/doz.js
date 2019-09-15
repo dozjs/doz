@@ -5580,18 +5580,19 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 var dashToCamel = __webpack_require__(7);
-var DIR_IS = '__DOZ_D_IS__';
 
 directive('is', {
-    onSystemComponentAssignName: function onSystemComponentAssignName(instance, $child) {
-        if ($child.dataset && $child.dataset.is) return $child.dataset.is;
+    hasDataIs: function hasDataIs($target) {
+        return $target.dataset && $target.dataset.is;
+    },
+    onSystemComponentAssignName: function onSystemComponentAssignName(instance, $target) {
+        if (this.hasDataIs($target)) return $target.dataset.is;
     },
     onSystemComponentPropsAssignName: function onSystemComponentPropsAssignName($target, propsName) {
-        if ($target[DIR_IS]) return dashToCamel(propsName);
+        if (this.hasDataIs($target)) return dashToCamel(propsName);
     },
     onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
-        $target[DIR_IS] = true;
         if (!initial) instance._processing.push({ node: $target, action: 'create' });
     }
 });
