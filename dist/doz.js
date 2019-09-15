@@ -458,11 +458,43 @@ module.exports = {
 "use strict";
 
 
+var isJSON = __webpack_require__(33);
+var isNumber = __webpack_require__(34);
+var toJSON = __webpack_require__(35);
+var toNumber = __webpack_require__(36);
+var typesMap = __webpack_require__(37);
+
+function castStringTo(obj) {
+
+    if (typeof obj !== 'string') {
+        return obj;
+    }
+
+    if (typesMap.hasOwnProperty(obj)) {
+        return typesMap[obj];
+    } else if (isJSON(obj)) {
+        return toJSON(obj);
+    } else if (isNumber(obj)) {
+        return toNumber(obj);
+    }
+
+    return obj;
+}
+
+module.exports = castStringTo;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(6);
+var castStringTo = __webpack_require__(5);
 var dashToCamel = __webpack_require__(7);
 
 var _require = __webpack_require__(1),
@@ -666,38 +698,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var isJSON = __webpack_require__(33);
-var isNumber = __webpack_require__(34);
-var toJSON = __webpack_require__(35);
-var toNumber = __webpack_require__(36);
-var typesMap = __webpack_require__(37);
-
-function castStringTo(obj) {
-
-    if (typeof obj !== 'string') {
-        return obj;
-    }
-
-    if (typesMap.hasOwnProperty(obj)) {
-        return typesMap[obj];
-    } else if (isJSON(obj)) {
-        return toJSON(obj);
-    } else if (isNumber(obj)) {
-        return toNumber(obj);
-    }
-
-    return obj;
-}
-
-module.exports = castStringTo;
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -752,7 +752,7 @@ var h = __webpack_require__(18);
 var loadLocal = __webpack_require__(52);
 var localMixin = __webpack_require__(53);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     compile = _require2.compile;
 //const delay = require('../utils/delay');
 
@@ -1247,10 +1247,10 @@ function defineProperties(obj, opt) {
             value: null,
             writable: true
         },
-        _boundElements: {
+        /*_boundElements: {
             value: {},
             writable: true
-        },
+        },*/
         _components: {
             value: {},
             writable: true
@@ -1465,7 +1465,7 @@ var _require2 = __webpack_require__(1),
 var collection = __webpack_require__(2);
 var hooks = __webpack_require__(4);
 
-var _require3 = __webpack_require__(5),
+var _require3 = __webpack_require__(6),
     serializeProps = _require3.serializeProps;
 //const {extract} = require('./component-directives');
 
@@ -3079,7 +3079,7 @@ var _require3 = __webpack_require__(8),
 var mixin = __webpack_require__(56);
 var h = __webpack_require__(18);
 
-var _require4 = __webpack_require__(5),
+var _require4 = __webpack_require__(6),
     compile = _require4.compile;
 
 var _require5 = __webpack_require__(15),
@@ -4421,7 +4421,7 @@ var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
-var castStringTo = __webpack_require__(6);
+var castStringTo = __webpack_require__(5);
 var objectPath = __webpack_require__(44);
 
 function isEventAttribute(name) {
@@ -4864,18 +4864,14 @@ module.exports = localMixin;
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var canDecode = __webpack_require__(16);
 var composeStyleInner = __webpack_require__(11);
 var dashToCamel = __webpack_require__(7);
-var castStringTo = __webpack_require__(6);
+var castStringTo = __webpack_require__(5);
 var delay = __webpack_require__(3);
 
 var _require = __webpack_require__(1),
@@ -4988,42 +4984,43 @@ var DOMManipulation = function () {
 
     }, {
         key: '$$afterAttributeCreate',
-        value: function $$afterAttributeCreate($target, name, value, nodeProps) {
-            var bindValue = void 0;
-            if (this._setBind($target, name, value)) {
-                bindValue = this.props[value];
-            }
-            return bindValue;
+        value: function $$afterAttributeCreate($target, name, value, nodeProps) {}
+        /*let bindValue;
+        if (this._setBind($target, name, value)) {
+            bindValue = this.props[value];
         }
+        return bindValue;*/
+
 
         // noinspection JSMethodCanBeStatic
 
     }, {
         key: '$$afterAttributesCreate',
         value: function $$afterAttributesCreate($target, bindValue) {
-            if (typeof bindValue === 'undefined') return;
-
-            delay(function () {
-                var inputs = void 0;
-                var input = void 0;
+            /*if (typeof bindValue === 'undefined')
+                return;
+              delay(() => {
+                let inputs;
+                let input;
                 if ($target.type === 'radio') {
-                    inputs = document.querySelectorAll('input[name=' + $target.name + '][type=radio]');
-                    for (var i = 0, len = inputs.length; i < len; i++) {
+                    inputs = document.querySelectorAll(`input[name=${$target.name}][type=radio]`);
+                    for(let i = 0, len = inputs.length; i < len; i++) {
                         input = inputs[i];
                         input.checked = bindValue === input.value;
                     }
                 } else if ($target.type === 'checkbox') {
-                    if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
-                        inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
-                        for (var _i5 = 0, _len = inputs.length; _i5 < _len; _i5++) {
-                            input = inputs[_i5];
+                    if(typeof bindValue === 'object') {
+                        inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                        for(let i = 0, len = inputs.length; i < len; i++) {
+                            input = inputs[i];
                             input.checked = Array.from(bindValue).includes(input.value);
                         }
-                    } else $target.checked = bindValue;
+                    } else
+                        $target.checked = bindValue;
                 } else {
                     $target.value = bindValue;
                 }
-            });
+            });*/
         }
     }, {
         key: '$$afterAttributeUpdate',
@@ -5042,85 +5039,47 @@ var DOMManipulation = function () {
     }, {
         key: '_setBind',
         value: function _setBind($target, name, value) {
-            if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
-            var cmp = this;
+            /*if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
+            const cmp = this;
             if (typeof cmp.props[value] !== 'undefined') {
-
-                var events = ['compositionstart', 'compositionend', 'input', 'change'];
-
-                var _defined4 = function _defined4(event) {
+                  let events = ['compositionstart', 'compositionend', 'input', 'change'];
+                  events.forEach(function (event) {
                     $target.addEventListener(event, function (e) {
-                        var _value = void 0;
+                        let _value;
                         if (this.type === 'checkbox') {
-                            if (!this.defaultValue) cmp.props[value] = this.checked;else {
-                                var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
-
-                                var _defined5 = [].concat(_toConsumableArray(inputs));
-
-                                _value = new Array(_defined5.length);
-
-                                var _defined6 = function _defined6(input) {
-                                    return input.value;
-                                };
-
-                                for (var _i9 = 0; _i9 <= _defined5.length - 1; _i9++) {
-                                    _value[_i9] = _defined6(_defined5[_i9], _i9, _defined5);
-                                }
-
+                            if(!this.defaultValue)
+                                cmp.props[value] = this.checked;
+                            else {
+                                const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
+                                _value = [...inputs].map(input => input.value);
                                 cmp.props[value] = castStringTo(_value);
                             }
                         } else {
                             _value = this.value;
                             if (this.multiple) {
-                                var _defined9 = [].concat(_toConsumableArray(this.options));
-
-                                var _defined10 = function _defined10(option) {
-                                    return option.selected;
-                                };
-
-                                var _defined7 = [];
-
-                                for (var _i13 = 0; _i13 <= _defined9.length - 1; _i13++) {
-                                    if (_defined10(_defined9[_i13], _i13, _defined9)) _defined7.push(_defined9[_i13]);
-                                }
-
-                                _value = new Array(_defined7.length);
-
-                                var _defined8 = function _defined8(option) {
-                                    return option.value;
-                                };
-
-                                for (var _i11 = 0; _i11 <= _defined7.length - 1; _i11++) {
-                                    _value[_i11] = _defined8(_defined7[_i11], _i11, _defined7);
-                                }
+                                _value = [...this.options].filter(option => option.selected).map(option => option.value);
                             }
                             cmp.props[value] = castStringTo(_value);
                         }
                     });
-                };
-
-                for (var _i7 = 0; _i7 <= events.length - 1; _i7++) {
-                    _defined4(events[_i7], _i7, events);
-                }
-
-                if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
+                });
+                  if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
                     cmp._boundElements[value].push($target);
                 } else {
                     cmp._boundElements[value] = [$target];
                 }
-
-                return true;
-            }
+                  return true;
+            }*/
         }
     }], [{
         key: '_isBindAttribute',
         value: function _isBindAttribute(name) {
-            return name === ATTR.BIND;
+            //return name === ATTR.BIND;
         }
     }, {
         key: '_canBind',
         value: function _canBind($target) {
-            return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
+            //return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1
         }
     }]);
 
@@ -5197,6 +5156,7 @@ __webpack_require__(62);
 
 __webpack_require__(63);
 __webpack_require__(64);
+__webpack_require__(65);
 
 /***/ }),
 /* 58 */
@@ -5594,6 +5554,109 @@ directive('is', {
     onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
         if (!initial) instance._processing.push({ node: $target, action: 'create' });
+    }
+});
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var castStringTo = __webpack_require__(5);
+
+directive('bind', {
+    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _boundElements: {
+                value: {},
+                writable: true
+            }
+        });
+    },
+    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
+        if (!this._canBind($target)) return;
+        //console.log($target.nodeName, directiveValue);
+        //console.log(instance.props[directiveValue])
+        this._setBind(instance, $target, directiveValue);
+    },
+    _canBind: function _canBind($target) {
+        return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
+    },
+    _setBind: function _setBind(instance, $target, value) {
+        if (instance.props[value] !== undefined) {
+
+            var events = ['compositionstart', 'compositionend', 'input', 'change'];
+
+            var _defined = function _defined(event) {
+                $target.addEventListener(event, function (e) {
+                    var _value = void 0;
+                    if (this.type === 'checkbox') {
+                        if (!this.defaultValue) instance.props[value] = this.checked;else {
+                            var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
+
+                            var _defined2 = [].concat(_toConsumableArray(inputs));
+
+                            _value = new Array(_defined2.length);
+
+                            var _defined3 = function _defined3(input) {
+                                return input.value;
+                            };
+
+                            for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+                                _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+                            }
+
+                            instance.props[value] = castStringTo(_value);
+                        }
+                    } else {
+                        _value = this.value;
+                        if (this.multiple) {
+                            var _defined6 = [].concat(_toConsumableArray(this.options));
+
+                            var _defined7 = function _defined7(option) {
+                                return option.selected;
+                            };
+
+                            var _defined4 = [];
+
+                            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+                                if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
+                            }
+
+                            _value = new Array(_defined4.length);
+
+                            var _defined5 = function _defined5(option) {
+                                return option.value;
+                            };
+
+                            for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+                                _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
+                            }
+                        }
+                        instance.props[value] = castStringTo(_value);
+                    }
+                });
+            };
+
+            for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
+                _defined(events[_i2], _i2, events);
+            }
+
+            if (Object.prototype.hasOwnProperty.call(instance._boundElements, value)) {
+                instance._boundElements[value].push($target);
+            } else {
+                instance._boundElements[value] = [$target];
+            }
+
+            return true;
+        }
     }
 });
 

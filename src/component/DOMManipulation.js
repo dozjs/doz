@@ -81,16 +81,16 @@ class DOMManipulation {
 
     // noinspection JSMethodCanBeStatic
     $$afterAttributeCreate($target, name, value, nodeProps) {
-        let bindValue;
+        /*let bindValue;
         if (this._setBind($target, name, value)) {
             bindValue = this.props[value];
         }
-        return bindValue;
+        return bindValue;*/
     }
 
     // noinspection JSMethodCanBeStatic
     $$afterAttributesCreate($target, bindValue) {
-        if (typeof bindValue === 'undefined')
+        /*if (typeof bindValue === 'undefined')
             return;
 
         delay(() => {
@@ -114,7 +114,7 @@ class DOMManipulation {
             } else {
                 $target.value = bindValue;
             }
-        });
+        });*/
     }
 
     $$afterAttributeUpdate($target, name, value) {
@@ -130,8 +130,9 @@ class DOMManipulation {
         }
     }
 
+
     _setBind($target, name, value) {
-        if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
+        /*if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
         const cmp = this;
         if (typeof cmp.props[value] !== 'undefined') {
 
@@ -165,16 +166,17 @@ class DOMManipulation {
             }
 
             return true;
-        }
+        }*/
     }
 
     static _isBindAttribute(name) {
-        return name === ATTR.BIND;
+        //return name === ATTR.BIND;
     }
 
     static _canBind($target) {
-        return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1
+        //return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1
     }
+
 
 }
 

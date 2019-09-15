@@ -6,3 +6,4 @@ require('./hooks');
 
 require('./ref');
 require('./is');
+require('./bind');

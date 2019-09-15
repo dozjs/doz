@@ -452,10 +452,10 @@ function defineProperties(obj, opt) {
             value: null,
             writable: true
         },
-        _boundElements: {
+        /*_boundElements: {
             value: {},
             writable: true
-        },
+        },*/
         _components: {
             value: {},
             writable: true
