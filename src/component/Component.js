@@ -16,9 +16,7 @@ const h = require('../vdom/h');
 const loadLocal = require('./load-local');
 const localMixin = require('./local-mixin');
 const {compile} = require('../vdom/parser');
-//const delay = require('../utils/delay');
 const propsInit = require('./props-init');
-//const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directive');
 
@@ -48,7 +46,6 @@ class Component extends DOMManipulation {
         defineProperties(this, opt);
 
         // Assign cfg to instance
-        //extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
         extendInstance(this, opt.cmp.cfg);
 
         // Create mixin
@@ -63,13 +60,6 @@ class Component extends DOMManipulation {
 
         // Create observer to props
         observer.create(this, true);
-        //directive.callSystemComponentCreate(this);
-        //directive.callComponentCreate(this);
-
-        // Create shared store
-        //store.create(this);
-        // Create ID
-        //ids.create(this);
         // Add callback to ready queue
         queueReady.add(this);
         // Add callback app draw
@@ -84,7 +74,6 @@ class Component extends DOMManipulation {
 
         this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
-        //store.sync(this);
         directive.callSystemComponentSetProps(this);
     }
 
@@ -98,10 +87,7 @@ class Component extends DOMManipulation {
 
         this._rawProps = Object.assign({}, props);
         propsInit(this);
-        //updateBoundElementsByPropsIteration(this);
         observer.create(this);
-        //directive.callSystemComponentLoadProps(this);
-        //store.sync(this);
         hooks.callLoadProps(this);
     }
 
@@ -126,19 +112,6 @@ class Component extends DOMManipulation {
             this.components = obj.components;
             loadLocal(this);
         }
-
-        /*
-        if (typeof obj.store === 'string') {
-            this.store = obj.store;
-            store.create(this);
-        }
-        */
-        /*
-        if (typeof obj.id === 'string') {
-            this.id = obj.id;
-            ids.create(this);
-        }
-        */
 
         if (typeof obj.autoCreateChildren === 'boolean') {
             this.autoCreateChildren = obj.autoCreateChildren;
@@ -165,14 +138,6 @@ class Component extends DOMManipulation {
         proxy.endRender(this.props)
     }
 
-    /*emit(name, ...args) {
-        if (this._callback && this._callback[name] !== undefined
-            && this.parent[this._callback[name]] !== undefined
-            && typeof this.parent[this._callback[name]] === 'function') {
-            this.parent[this._callback[name]].apply(this.parent, args);
-        }
-    }*/
-
     each(obj, func, safe = false) {
         let res;
         if (Array.isArray(obj)) {
@@ -191,21 +156,6 @@ class Component extends DOMManipulation {
     toStyle(obj) {
         return toInlineStyle(obj)
     }
-
-    /*getStore(storeName) {
-        return this.app.getStore(storeName);
-    }*/
-
-    /*
-    getComponentById(id) {
-        return this.app.getComponentById(id);
-    }
-
-    getCmp(id) {
-        return this.app.getComponentById(id);
-    }
-
-     */
 
     // noinspection JSMethodCanBeStatic
     template() {
@@ -241,7 +191,7 @@ class Component extends DOMManipulation {
             ) {
                 change.previousValue.forEach(item => {
                     if (item && typeof item === 'object' && item.key !== undefined && this._dynamicNodes[item.key] !== undefined) {
-                        if(this._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                        if (this._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
                             this._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
                         } else {
                             this._dynamicNodes[item.key].parentNode.removeChild(this._dynamicNodes[item.key]);
@@ -255,7 +205,7 @@ class Component extends DOMManipulation {
             candidateKeyToRemove = undefined;
 
         if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
-            if(this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+            if (this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                 this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
             } else {
                 this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
@@ -277,11 +227,6 @@ class Component extends DOMManipulation {
             hooks.callAfterRender(this);
 
         drawDynamic(this);
-        /*if (initial) {
-            drawDynamic(this);
-        } else {
-            delay(() => drawDynamic(this));
-        }*/
     }
 
     renderPause() {
@@ -452,10 +397,6 @@ function defineProperties(obj, opt) {
             value: null,
             writable: true
         },
-        /*_boundElements: {
-            value: {},
-            writable: true
-        },*/
         _components: {
             value: {},
             writable: true
@@ -596,43 +537,41 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        //if (!item.node.childNodes.length) {
-            const dynamicInstance = require('./instances').get({
-                root,
-                template: item.node.outerHTML,
-                app: instance.app,
-                parent: instance
-            });
+        const dynamicInstance = require('./instances').get({
+            root,
+            template: item.node.outerHTML,
+            app: instance.app,
+            parent: instance
+        });
 
-            if (dynamicInstance) {
+        if (dynamicInstance) {
 
-                // Replace with dynamic instance original node
-                //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-                root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+            // Replace with dynamic instance original node
+            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
+            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
-                // if original node has children
-                if (item.node.childNodes.length) {
-                    // replace again -.-
-                    root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-                    // and append root element of dynamic instance :D
-                    item.node.appendChild(dynamicInstance._rootElement);
-                }
-
-                dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-                instance._processing.splice(index, 1);
-                let n = Object.keys(instance.children).length;
-                instance.children[n++] = dynamicInstance;
-
-                if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
-                    instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
-                } else {
-                    instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-                }
-
-                if (item.node.dataset.key)
-                    instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+            // if original node has children
+            if (item.node.childNodes.length) {
+                // replace again -.-
+                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
+                // and append root element of dynamic instance :D
+                item.node.appendChild(dynamicInstance._rootElement);
             }
-        //}
+
+            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
+            instance._processing.splice(index, 1);
+            let n = Object.keys(instance.children).length;
+            instance.children[n++] = dynamicInstance;
+
+            if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
+                instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
+            } else {
+                instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
+            }
+
+            if (item.node.dataset.key)
+                instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+        }
         index -= 1;
     }
 }

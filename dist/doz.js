@@ -751,11 +751,8 @@ var localMixin = __webpack_require__(53);
 
 var _require2 = __webpack_require__(6),
     compile = _require2.compile;
-//const delay = require('../utils/delay');
-
 
 var propsInit = __webpack_require__(20);
-//const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 var DOMManipulation = __webpack_require__(54);
 var directive = __webpack_require__(0);
 
@@ -787,7 +784,6 @@ var Component = function (_DOMManipulation) {
         defineProperties(_this, opt);
 
         // Assign cfg to instance
-        //extendInstance(this, opt.cmp.cfg, opt.componentDirectives);
         extendInstance(_this, opt.cmp.cfg);
 
         // Create mixin
@@ -801,13 +797,6 @@ var Component = function (_DOMManipulation) {
 
         // Create observer to props
         observer.create(_this, true);
-        //directive.callSystemComponentCreate(this);
-        //directive.callComponentCreate(this);
-
-        // Create shared store
-        //store.create(this);
-        // Create ID
-        //ids.create(this);
         // Add callback to ready queue
         queueReady.add(_this);
         // Add callback app draw
@@ -824,10 +813,7 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props);
             propsInit(this);
-            //updateBoundElementsByPropsIteration(this);
             observer.create(this);
-            //directive.callSystemComponentLoadProps(this);
-            //store.sync(this);
             hooks.callLoadProps(this);
         }
     }, {
@@ -845,15 +831,6 @@ var Component = function (_DOMManipulation) {
         value: function endSafeRender() {
             proxy.endRender(this.props);
         }
-
-        /*emit(name, ...args) {
-            if (this._callback && this._callback[name] !== undefined
-                && this.parent[this._callback[name]] !== undefined
-                && typeof this.parent[this._callback[name]] === 'function') {
-                this.parent[this._callback[name]].apply(this.parent, args);
-            }
-        }*/
-
     }, {
         key: 'each',
         value: function each(obj, func) {
@@ -879,19 +856,6 @@ var Component = function (_DOMManipulation) {
         value: function toStyle(obj) {
             return toInlineStyle(obj);
         }
-
-        /*getStore(storeName) {
-            return this.app.getStore(storeName);
-        }*/
-
-        /*
-        getComponentById(id) {
-            return this.app.getComponentById(id);
-        }
-          getCmp(id) {
-            return this.app.getComponentById(id);
-        }
-           */
 
         // noinspection JSMethodCanBeStatic
 
@@ -978,11 +942,6 @@ var Component = function (_DOMManipulation) {
             if (!silentAfterRenderEvent) hooks.callAfterRender(this);
 
             drawDynamic(this);
-            /*if (initial) {
-                drawDynamic(this);
-            } else {
-                delay(() => drawDynamic(this));
-            }*/
         }
     }, {
         key: 'renderPause',
@@ -1147,7 +1106,6 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
             observer.create(this);
-            //store.sync(this);
             directive.callSystemComponentSetProps(this);
         },
         get: function get() {
@@ -1173,19 +1131,6 @@ var Component = function (_DOMManipulation) {
                 this.components = obj.components;
                 loadLocal(this);
             }
-
-            /*
-            if (typeof obj.store === 'string') {
-                this.store = obj.store;
-                store.create(this);
-            }
-            */
-            /*
-            if (typeof obj.id === 'string') {
-                this.id = obj.id;
-                ids.create(this);
-            }
-            */
 
             if (typeof obj.autoCreateChildren === 'boolean') {
                 this.autoCreateChildren = obj.autoCreateChildren;
@@ -1241,10 +1186,6 @@ function defineProperties(obj, opt) {
             value: null,
             writable: true
         },
-        /*_boundElements: {
-            value: {},
-            writable: true
-        },*/
         _components: {
             value: {},
             writable: true
@@ -1385,7 +1326,6 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        //if (!item.node.childNodes.length) {
         var dynamicInstance = __webpack_require__(9).get({
             root: root,
             template: item.node.outerHTML,
@@ -1420,7 +1360,6 @@ function drawDynamic(instance) {
 
             if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
         }
-        //}
         index -= 1;
     }
 }
@@ -4776,8 +4715,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var canDecode = __webpack_require__(16);
 var composeStyleInner = __webpack_require__(11);
 var dashToCamel = __webpack_require__(7);
-var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(3);
+//const castStringTo = require('../utils/cast-string-to');
+//const delay = require('../utils/delay');
 
 var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
