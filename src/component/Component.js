@@ -18,7 +18,7 @@ const localMixin = require('./local-mixin');
 const {compile} = require('../vdom/parser');
 //const delay = require('../utils/delay');
 const propsInit = require('./props-init');
-const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
+//const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directive');
 
@@ -98,7 +98,7 @@ class Component extends DOMManipulation {
 
         this._rawProps = Object.assign({}, props);
         propsInit(this);
-        updateBoundElementsByPropsIteration(this);
+        //updateBoundElementsByPropsIteration(this);
         observer.create(this);
         //directive.callSystemComponentLoadProps(this);
         //store.sync(this);

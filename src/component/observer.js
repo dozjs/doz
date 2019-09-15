@@ -1,6 +1,6 @@
 const proxy = require('../proxy');
 const events = require('./hooks');
-const {updateBoundElementsByChanges} = require('./update-bound-element');
+//const {updateBoundElementsByChanges} = require('./update-bound-element');
 const propsListener = require('./props-listener');
 const manipulate = require('./manipulate');
 
@@ -8,7 +8,7 @@ function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
     instance.render(undefined, changes);
-    updateBoundElementsByChanges(instance, changes);
+    //updateBoundElementsByChanges(instance, changes);
 }
 
 function create(instance) {

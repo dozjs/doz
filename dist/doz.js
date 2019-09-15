@@ -124,7 +124,6 @@ module.exports = {
         IS_DIRECTIVE: /^d[-:][\w-]+$/,
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
-        IS_BIND: /^d-bind$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
@@ -143,8 +142,6 @@ module.exports = {
         REPLACE_D_DIRECTIVE: /^d[-:]/
     },
     ATTR: {
-        // Attributes for HTMLElement
-        BIND: 'd-bind',
         // Attributes for both
         KEY: 'd-key',
         FORCE_UPDATE: 'forceupdate'
@@ -758,10 +755,7 @@ var _require2 = __webpack_require__(6),
 
 
 var propsInit = __webpack_require__(20);
-
-var _require3 = __webpack_require__(13),
-    updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
-
+//const {updateBoundElementsByPropsIteration} = require('./update-bound-element');
 var DOMManipulation = __webpack_require__(54);
 var directive = __webpack_require__(0);
 
@@ -830,7 +824,7 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props);
             propsInit(this);
-            updateBoundElementsByPropsIteration(this);
+            //updateBoundElementsByPropsIteration(this);
             observer.create(this);
             //directive.callSystemComponentLoadProps(this);
             //store.sync(this);
@@ -2476,89 +2470,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function updateBoundElementsByChanges(instance, changes) {
-    var _defined = function _defined(item) {
-        var value = item.newValue;
-        var property = item.property;
-        updateBoundElements(instance, value, property);
-    };
-
-    for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-        _defined(changes[_i2], _i2, changes);
-    }
-}
-
-function updateBoundElementsByPropsIteration(instance) {
-    (function iterate(props) {
-        var keys = Object.keys(props);
-        for (var i = 0, l = keys.length; i < l; i++) {
-            var property = keys[i];
-            if (props[property] instanceof Object && props[property] !== null) {
-                iterate(props[property]);
-            } else {
-                updateBoundElements(instance, props[property], property);
-            }
-        }
-    })(instance._rawProps);
-}
-
-function updateBoundElements(instance, value, property) {
-    if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
-        var _defined2 = function _defined2(element) {
-            if (element.type === 'checkbox') {
-                if (!element.defaultValue) element.checked = value;else if (Array.isArray(value)) {
-                    var inputs = document.querySelectorAll('input[name=' + element.name + '][type=checkbox]');
-
-                    var _defined4 = function _defined4(input) {
-                        return input.checked = value.includes(input.value);
-                    };
-
-                    var _defined5 = [].concat(_toConsumableArray(inputs));
-
-                    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                        _defined4(_defined5[_i6], _i6, _defined5);
-                    }
-                }
-            } else if (element.type === 'radio') {
-                element.checked = element.value === value;
-            } else if (element.type === 'select-multiple' && Array.isArray(value)) {
-                var _defined6 = function _defined6(option) {
-                    return option.selected = value.includes(option.value);
-                };
-
-                var _defined7 = [].concat(_toConsumableArray(element.options));
-
-                for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
-                    _defined6(_defined7[_i8], _i8, _defined7);
-                }
-            } else {
-                element.value = value;
-            }
-        };
-
-        var _defined3 = instance._boundElements[property];
-
-        for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-            _defined2(_defined3[_i4], _i4, _defined3);
-        }
-    }
-}
-
-module.exports = {
-    updateBoundElementsByChanges: updateBoundElementsByChanges,
-    updateBoundElementsByPropsIteration: updateBoundElementsByPropsIteration,
-    updateBoundElements: updateBoundElements
-};
-
-/***/ }),
+/* 13 */,
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4248,10 +4160,7 @@ module.exports = hmr;
 
 var proxy = __webpack_require__(12);
 var events = __webpack_require__(4);
-
-var _require = __webpack_require__(13),
-    updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
-
+//const {updateBoundElementsByChanges} = require('./update-bound-element');
 var propsListener = __webpack_require__(40);
 var manipulate = __webpack_require__(14);
 
@@ -4259,7 +4168,7 @@ function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
     instance.render(undefined, changes);
-    updateBoundElementsByChanges(instance, changes);
+    //updateBoundElementsByChanges(instance, changes);
 }
 
 function create(instance) {
@@ -4430,9 +4339,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
 
-    //[name, value] = cmp.$$beforeAttributeSet($target, name, value);
-
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) /*|| cmp.constructor._isRefAttribute(name)*/) {} else if (typeof value === 'boolean') {
+    if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
@@ -4445,9 +4352,7 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name)
-    //|| cmp.constructor._isRefAttribute(name)
-    || !$target) {} else {
+    if (isCustomAttribute(name) || !$target) {} else {
         $target.removeAttribute(name);
     }
 }
@@ -4878,7 +4783,6 @@ var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
-    ATTR = _require.ATTR,
     REGEX = _require.REGEX,
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
@@ -4985,43 +4889,12 @@ var DOMManipulation = function () {
     }, {
         key: '$$afterAttributeCreate',
         value: function $$afterAttributeCreate($target, name, value, nodeProps) {}
-        /*let bindValue;
-        if (this._setBind($target, name, value)) {
-            bindValue = this.props[value];
-        }
-        return bindValue;*/
-
 
         // noinspection JSMethodCanBeStatic
 
     }, {
         key: '$$afterAttributesCreate',
-        value: function $$afterAttributesCreate($target, bindValue) {
-            /*if (typeof bindValue === 'undefined')
-                return;
-              delay(() => {
-                let inputs;
-                let input;
-                if ($target.type === 'radio') {
-                    inputs = document.querySelectorAll(`input[name=${$target.name}][type=radio]`);
-                    for(let i = 0, len = inputs.length; i < len; i++) {
-                        input = inputs[i];
-                        input.checked = bindValue === input.value;
-                    }
-                } else if ($target.type === 'checkbox') {
-                    if(typeof bindValue === 'object') {
-                        inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
-                        for(let i = 0, len = inputs.length; i < len; i++) {
-                            input = inputs[i];
-                            input.checked = Array.from(bindValue).includes(input.value);
-                        }
-                    } else
-                        $target.checked = bindValue;
-                } else {
-                    $target.value = bindValue;
-                }
-            });*/
-        }
+        value: function $$afterAttributesCreate($target, bindValue) {}
     }, {
         key: '$$afterAttributeUpdate',
         value: function $$afterAttributeUpdate($target, name, value) {
@@ -5035,51 +4908,6 @@ var DOMManipulation = function () {
                     $target[COMPONENT_INSTANCE].props[name] = value;
                 }
             }
-        }
-    }, {
-        key: '_setBind',
-        value: function _setBind($target, name, value) {
-            /*if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
-            const cmp = this;
-            if (typeof cmp.props[value] !== 'undefined') {
-                  let events = ['compositionstart', 'compositionend', 'input', 'change'];
-                  events.forEach(function (event) {
-                    $target.addEventListener(event, function (e) {
-                        let _value;
-                        if (this.type === 'checkbox') {
-                            if(!this.defaultValue)
-                                cmp.props[value] = this.checked;
-                            else {
-                                const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
-                                _value = [...inputs].map(input => input.value);
-                                cmp.props[value] = castStringTo(_value);
-                            }
-                        } else {
-                            _value = this.value;
-                            if (this.multiple) {
-                                _value = [...this.options].filter(option => option.selected).map(option => option.value);
-                            }
-                            cmp.props[value] = castStringTo(_value);
-                        }
-                    });
-                });
-                  if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
-                    cmp._boundElements[value].push($target);
-                } else {
-                    cmp._boundElements[value] = [$target];
-                }
-                  return true;
-            }*/
-        }
-    }], [{
-        key: '_isBindAttribute',
-        value: function _isBindAttribute(name) {
-            //return name === ATTR.BIND;
-        }
-    }, {
-        key: '_canBind',
-        value: function _canBind($target) {
-            //return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1
         }
     }]);
 
@@ -5570,8 +5398,12 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 var castStringTo = __webpack_require__(5);
+var delay = __webpack_require__(3);
 
 directive('bind', {
+
+    // Start directive methods
+
     onSystemComponentCreate: function onSystemComponentCreate(instance) {
         Object.defineProperties(instance, {
             _boundElements: {
@@ -5580,82 +5412,173 @@ directive('bind', {
             }
         });
     },
-    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
-        if (!this._canBind($target)) return;
-        //console.log($target.nodeName, directiveValue);
-        //console.log(instance.props[directiveValue])
-        this._setBind(instance, $target, directiveValue);
+    onSystemComponentUpdate: function onSystemComponentUpdate(instance, changes) {
+        this.updateBoundElementsByChanges(instance, changes);
     },
-    _canBind: function _canBind($target) {
+    onSystemComponentLoadProps: function onSystemComponentLoadProps(instance) {
+        this.updateBoundElementsByPropsIteration(instance);
+    },
+    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
+        if (!this.canBind($target)) return;
+        this.setBind(instance, $target, directiveValue);
+    },
+
+
+    // End directive methods
+    // Start custom methods
+
+    canBind: function canBind($target) {
         return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
     },
-    _setBind: function _setBind(instance, $target, value) {
-        if (instance.props[value] !== undefined) {
+    setBind: function setBind(instance, $target, value) {
+        var _this2 = this;
 
-            var events = ['compositionstart', 'compositionend', 'input', 'change'];
+        if (instance.props[value] === undefined) return;
 
-            var _defined = function _defined(event) {
-                $target.addEventListener(event, function (e) {
-                    var _value = void 0;
-                    if (this.type === 'checkbox') {
-                        if (!this.defaultValue) instance.props[value] = this.checked;else {
-                            var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
+        // Add UI events
+        var events = ['compositionstart', 'compositionend', 'input', 'change'];
 
-                            var _defined2 = [].concat(_toConsumableArray(inputs));
+        var _defined = function _defined(event) {
+            $target.addEventListener(event, function (e) {
+                var _value = void 0;
+                if (this.type === 'checkbox') {
+                    if (!this.defaultValue) instance.props[value] = this.checked;else {
+                        var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
 
-                            _value = new Array(_defined2.length);
+                        var _defined2 = [].concat(_toConsumableArray(inputs));
 
-                            var _defined3 = function _defined3(input) {
-                                return input.value;
-                            };
+                        _value = new Array(_defined2.length);
 
-                            for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-                                _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
-                            }
+                        var _defined3 = function _defined3(input) {
+                            return input.value;
+                        };
 
-                            instance.props[value] = castStringTo(_value);
+                        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+                            _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
                         }
-                    } else {
-                        _value = this.value;
-                        if (this.multiple) {
-                            var _defined6 = [].concat(_toConsumableArray(this.options));
 
-                            var _defined7 = function _defined7(option) {
-                                return option.selected;
-                            };
-
-                            var _defined4 = [];
-
-                            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                                if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
-                            }
-
-                            _value = new Array(_defined4.length);
-
-                            var _defined5 = function _defined5(option) {
-                                return option.value;
-                            };
-
-                            for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
-                                _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
-                            }
-                        }
                         instance.props[value] = castStringTo(_value);
                     }
-                });
+                } else {
+                    _value = this.value;
+                    if (this.multiple) {
+                        var _defined6 = [].concat(_toConsumableArray(this.options));
+
+                        var _defined7 = function _defined7(option) {
+                            return option.selected;
+                        };
+
+                        var _defined4 = [];
+
+                        for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+                            if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
+                        }
+
+                        _value = new Array(_defined4.length);
+
+                        var _defined5 = function _defined5(option) {
+                            return option.value;
+                        };
+
+                        for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+                            _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
+                        }
+                    }
+                    instance.props[value] = castStringTo(_value);
+                }
+            });
+        };
+
+        for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
+            _defined(events[_i2], _i2, events);
+        }
+
+        // Map $target element with prop name
+
+
+        if (instance._boundElements[value] !== undefined) {
+            instance._boundElements[value].push($target);
+        } else {
+            instance._boundElements[value] = [$target];
+        }
+
+        // Set first value
+        // Why this delay? because I need to waiting options tag
+        delay(function () {
+            _this2.updateBoundElement($target, instance.props[value]);
+        });
+    },
+    updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
+        var _this3 = this;
+
+        var _defined8 = function _defined8(item) {
+            var value = item.newValue;
+            var property = item.property;
+            _this3.updateBoundElements(instance, value, property);
+        };
+
+        for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
+            _defined8(changes[_i10], _i10, changes);
+        }
+    },
+    updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
+        var _this = this;
+        (function iterate(props) {
+            var keys = Object.keys(props);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var property = keys[i];
+                if (props[property] instanceof Object && props[property] !== null) {
+                    iterate(props[property]);
+                } else {
+                    _this.updateBoundElements(instance, props[property], property);
+                }
+            }
+        })(instance._rawProps);
+    },
+    updateBoundElements: function updateBoundElements(instance, value, property) {
+        var _this4 = this;
+
+        if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
+            var _defined9 = function _defined9($target) {
+                _this4.updateBoundElement($target, value);
             };
 
-            for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
-                _defined(events[_i2], _i2, events);
-            }
+            var _defined10 = instance._boundElements[property];
 
-            if (Object.prototype.hasOwnProperty.call(instance._boundElements, value)) {
-                instance._boundElements[value].push($target);
-            } else {
-                instance._boundElements[value] = [$target];
+            for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
+                _defined9(_defined10[_i12], _i12, _defined10);
             }
+        }
+    },
+    updateBoundElement: function updateBoundElement($target, value) {
+        if ($target.type === 'checkbox') {
+            if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
+                var inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
 
-            return true;
+                var _defined11 = function _defined11(input) {
+                    return input.checked = value.includes(input.value);
+                };
+
+                var _defined12 = [].concat(_toConsumableArray(inputs));
+
+                for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
+                    _defined11(_defined12[_i14], _i14, _defined12);
+                }
+            }
+        } else if ($target.type === 'radio') {
+            $target.checked = $target.value === value;
+        } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
+            var _defined13 = function _defined13(option) {
+                return option.selected = value.includes(option.value);
+            };
+
+            var _defined14 = [].concat(_toConsumableArray($target.options));
+
+            for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
+                _defined13(_defined14[_i16], _i16, _defined14);
+            }
+        } else {
+            $target.value = value;
         }
     }
 });

@@ -21,7 +21,6 @@ module.exports = {
         IS_DIRECTIVE: /^d[-:][\w-]+$/,
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
-        IS_BIND: /^d-bind$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
@@ -40,8 +39,6 @@ module.exports = {
         REPLACE_D_DIRECTIVE: /^d[-:]/
     },
     ATTR: {
-        // Attributes for HTMLElement
-        BIND: 'd-bind',
         // Attributes for both
         KEY: 'd-key',
         FORCE_UPDATE: 'forceupdate'
