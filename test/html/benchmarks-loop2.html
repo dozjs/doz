@@ -140,7 +140,7 @@
                 </div>
                 <table class="table table-hover table-striped test-data">
                     ${this.each(this.props.record, (row, i) => `
-                        <tr>
+                        <tr d-key="${row.id}">
                             <td class="col-md-1">${row.id}</td>
                             <td class="col-md-4">${row.label}</td>
                             <td class="col-md-1">

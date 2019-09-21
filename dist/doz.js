@@ -5518,6 +5518,7 @@ directive('key', {
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
         if (propName === ATTR_KEY) {
             props.dataKey = propValue;
+            delete props[ATTR_KEY];
             return 'data-key';
         }
     },
