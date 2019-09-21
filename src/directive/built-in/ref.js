@@ -12,7 +12,7 @@ directive('ref', {
         });
     },
 
-    onComponentElementCreate(instance, $target, directiveValue) {
+    onComponentDOMElementCreate(instance, $target, directiveValue) {
         instance.ref[directiveValue] = $target;
     }
 

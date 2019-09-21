@@ -868,8 +868,6 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'render',
         value: function render(initial) {
-            var _this2 = this;
-
             var changes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
             var silentAfterRenderEvent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -881,53 +879,12 @@ var Component = function (_DOMManipulation) {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
-            var candidateKeyToRemove = void 0;
-            var thereIsDelete = false;
+            var isOverwritten = false;
+            directive.callAppComponentRenderOverwrite(this, changes, next, this._prev, function (overwrite) {
+                isOverwritten = overwrite;
+            });
 
-            var _defined = function _defined(change) {
-                // Trova la presunta chiave da eliminare
-                if (Array.isArray(change.target)) {
-                    if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
-                        if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
-                            candidateKeyToRemove = change.previousValue.key;
-                        }
-                    }
-                    if (change.type === 'delete') thereIsDelete = true;
-                }
-
-                // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
-                if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
-                    var _defined2 = function _defined2(item) {
-                        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._dynamicNodes[item.key] !== undefined) {
-                            if (_this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
-                                _this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                            } else {
-                                _this2._dynamicNodes[item.key].parentNode.removeChild(_this2._dynamicNodes[item.key]);
-                            }
-                        }
-                    };
-
-                    var _defined3 = change.previousValue;
-
-                    for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                        _defined2(_defined3[_i4], _i4, _defined3);
-                    }
-                }
-            };
-
-            for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-                _defined(changes[_i2], _i2, changes);
-            }
-
-            if (!thereIsDelete) candidateKeyToRemove = undefined;
-
-            if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
-                if (this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
-                    this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                } else {
-                    this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
-                }
-            } else {
+            if (!isOverwritten) {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
                 //Remove attributes from component tag
@@ -960,7 +917,7 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'mount',
         value: function mount(template) {
-            var _this3 = this;
+            var _this2 = this;
 
             var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -976,14 +933,14 @@ var Component = function (_DOMManipulation) {
 
                 hooks.callMount(this);
 
-                var _defined4 = function _defined4(child) {
-                    _this3.children[child].mount();
+                var _defined = function _defined(child) {
+                    _this2.children[child].mount();
                 };
 
-                var _defined5 = Object.keys(this.children);
+                var _defined2 = Object.keys(this.children);
 
-                for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                    _defined4(_defined5[_i6], _i6, _defined5);
+                for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+                    _defined(_defined2[_i2], _i2, _defined2);
                 }
 
                 return this;
@@ -1011,7 +968,7 @@ var Component = function (_DOMManipulation) {
         value: function unmount() {
             var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-            var _this4 = this;
+            var _this3 = this;
 
             var byDestroy = arguments[1];
             var silently = arguments[2];
@@ -1036,14 +993,14 @@ var Component = function (_DOMManipulation) {
 
             if (!silently) hooks.callUnmount(this);
 
-            var _defined6 = function _defined6(child) {
-                _this4.children[child].unmount(onlyInstance, byDestroy, silently);
+            var _defined3 = function _defined3(child) {
+                _this3.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
-            var _defined7 = Object.keys(this.children);
+            var _defined4 = Object.keys(this.children);
 
-            for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
-                _defined6(_defined7[_i8], _i8, _defined7);
+            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+                _defined3(_defined4[_i4], _i4, _defined4);
             }
 
             return this;
@@ -1051,7 +1008,7 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'destroy',
         value: function destroy(onlyInstance) {
-            var _this5 = this;
+            var _this4 = this;
 
             if (this.unmount(onlyInstance, true) === false) return;
 
@@ -1059,14 +1016,14 @@ var Component = function (_DOMManipulation) {
                 return;
             }
 
-            var _defined8 = function _defined8(child) {
-                _this5.children[child].destroy();
+            var _defined5 = function _defined5(child) {
+                _this4.children[child].destroy();
             };
 
-            var _defined9 = Object.keys(this.children);
+            var _defined6 = Object.keys(this.children);
 
-            for (var _i10 = 0; _i10 <= _defined9.length - 1; _i10++) {
-                _defined8(_defined9[_i10], _i10, _defined9);
+            for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
+                _defined5(_defined6[_i6], _i6, _defined6);
             }
 
             hooks.callDestroy(this);
@@ -1226,10 +1183,6 @@ function defineProperties(obj, opt) {
             value: false,
             writable: true
         },
-        _dynamicNodes: {
-            value: {},
-            writable: true
-        },
         _rawHTML: {
             value: '',
             writable: true
@@ -1359,7 +1312,7 @@ function drawDynamic(instance) {
                 instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
             }
 
-            if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+            directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
         }
         index -= 1;
     }
@@ -3626,6 +3579,7 @@ function callAppComponentAssignName() {
     args = ['onAppComponentAssignName'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
+
 function callAppComponentPropsAssignName() {
     for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
         args[_key23] = arguments[_key23];
@@ -3642,6 +3596,24 @@ function callAppDOMElementCreate() {
 
     //todo Dovrebbe risolvere il problema del tag doppio
     args = ['onAppDOMElementCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppDynamicInstanceCreate() {
+    for (var _len25 = arguments.length, args = Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
+        args[_key25] = arguments[_key25];
+    }
+
+    args = ['onAppDynamicInstanceCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentRenderOverwrite() {
+    for (var _len26 = arguments.length, args = Array(_len26), _key26 = 0; _key26 < _len26; _key26++) {
+        args[_key26] = arguments[_key26];
+    }
+
+    args = ['onAppComponentRenderOverwrite'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
@@ -3673,8 +3645,9 @@ module.exports = {
     callAppWalkDOM: callAppWalkDOM,
     callAppComponentAssignName: callAppComponentAssignName,
     callAppDOMElementCreate: callAppDOMElementCreate,
-    //callAppDOMAttributeSet,
-    callAppComponentPropsAssignName: callAppComponentPropsAssignName
+    callAppDynamicInstanceCreate: callAppDynamicInstanceCreate,
+    callAppComponentPropsAssignName: callAppComponentPropsAssignName,
+    callAppComponentRenderOverwrite: callAppComponentRenderOverwrite
 };
 
 /***/ }),
@@ -3874,8 +3847,8 @@ function callComponentLoadProps() {
     callMethod.apply(null, args);
 }
 
-function callComponentElementCreate(instance, $target, initial) {
-    var method = 'onComponentElementCreate';
+function callComponentDOMElementCreate(instance, $target, initial) {
+    var method = 'onComponentDOMElementCreate';
     var attributes = Array.from($target.attributes);
 
     var _defined5 = function _defined5(attribute) {
@@ -3909,7 +3882,7 @@ module.exports = {
     callComponentBeforeDestroy: callComponentBeforeDestroy,
     callComponentDestroy: callComponentDestroy,
     callComponentLoadProps: callComponentLoadProps,
-    callComponentElementCreate: callComponentElementCreate
+    callComponentDOMElementCreate: callComponentDOMElementCreate
 };
 
 /***/ }),
@@ -4729,7 +4702,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             directive.callAppDOMElementCreate(this, $el, node, initial);
-            directive.callComponentElementCreate(this, $el, initial);
+            directive.callComponentDOMElementCreate(this, $el, initial);
 
             if (typeof $el.hasAttribute === 'function') {
                 if (node.type.indexOf('-') !== -1 && !initial) {
@@ -5284,7 +5257,7 @@ directive('ref', {
             }
         });
     },
-    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue) {
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         instance.ref[directiveValue] = $target;
     }
 });
@@ -5313,7 +5286,7 @@ directive('is', {
         /*else
             return propsName;*/
     },
-    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue, initial) {
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
         if (!initial) instance._processing.push({ node: $target, action: 'create' });
     }
@@ -5352,7 +5325,7 @@ directive('bind', {
     onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
         this.updateBoundElementsByPropsIteration(instance);
     },
-    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue, initial) {
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
         if (!this.canBind($target)) return;
         this.setBind(instance, $target, directiveValue);
     },
@@ -5524,35 +5497,86 @@ directive('bind', {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _require = __webpack_require__(0),
     directive = _require.directive;
+
+var _require2 = __webpack_require__(1),
+    COMPONENT_DYNAMIC_INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE;
 
 var ATTR_KEY = 'd-key';
 
 directive('key', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
-        /*Object.defineProperties(instance, {
+        Object.defineProperties(instance, {
             _dynamicNodes: {
                 value: {},
                 writable: true
             }
-        });*/
+        });
     },
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
-        //if (isDirective)
-        //console.log('propsName', propsName)
         if (propName === ATTR_KEY) {
             props.dataKey = propValue;
             return 'data-key';
         }
+    },
+    onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
+        if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+    },
+    onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
+        var candidateKeyToRemove = void 0;
+        var thereIsDelete = false;
+
+        var _defined = function _defined(change) {
+            // Trova la presunta chiave da eliminare
+            if (Array.isArray(change.target)) {
+                if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+                    if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
+                        candidateKeyToRemove = change.previousValue.key;
+                    }
+                }
+                if (change.type === 'delete') thereIsDelete = true;
+            }
+
+            // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+            if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
+                var _defined2 = function _defined2(item) {
+                    if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && instance._dynamicNodes[item.key] !== undefined) {
+                        if (instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                            instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
+                        } else {
+                            instance._dynamicNodes[item.key].parentNode.removeChild(instance._dynamicNodes[item.key]);
+                        }
+                    }
+                };
+
+                var _defined3 = change.previousValue;
+
+                for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+                    _defined2(_defined3[_i4], _i4, _defined3);
+                }
+            }
+        };
+
+        for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+            _defined(changes[_i2], _i2, changes);
+        }
+
+        if (!thereIsDelete) candidateKeyToRemove = undefined;
+
+        if (candidateKeyToRemove !== undefined && instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
+            if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+                instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
+            } else {
+                instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+            }
+
+            return true;
+        }
     }
-}
-
-/*onComponentElementCreate(instance, $target, directiveValue) {
-    instance.ref[directiveValue] = $target;
-}*/
-
-);
+});
 
 /***/ })
 /******/ ]);

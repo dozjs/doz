@@ -106,8 +106,8 @@ function callComponentLoadProps(...args) {
     callMethod.apply(null, args)
 }
 
-function callComponentElementCreate(instance, $target, initial) {
-    let method = 'onComponentElementCreate';
+function callComponentDOMElementCreate(instance, $target, initial) {
+    let method = 'onComponentDOMElementCreate';
     let attributes = Array.from($target.attributes);
     attributes.forEach(attribute => {
         if (isDirective(attribute.name)) {
@@ -136,5 +136,5 @@ module.exports = {
     callComponentBeforeDestroy,
     callComponentDestroy,
     callComponentLoadProps,
-    callComponentElementCreate,
+    callComponentDOMElementCreate,
 };

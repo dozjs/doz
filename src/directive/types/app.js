@@ -132,6 +132,7 @@ function callAppComponentAssignName(...args) {
     args = ['onAppComponentAssignName', ...args];
     callMethod.apply(null, args);
 }
+
 function callAppComponentPropsAssignName(...args) {
     args = ['onAppComponentPropsAssignName', ...args];
     callMethod.apply(null, args);
@@ -140,6 +141,16 @@ function callAppComponentPropsAssignName(...args) {
 function callAppDOMElementCreate(...args) {
     //todo Dovrebbe risolvere il problema del tag doppio
     args = ['onAppDOMElementCreate', ...args];
+    callMethod.apply(null, args);
+}
+
+function callAppDynamicInstanceCreate(...args) {
+    args = ['onAppDynamicInstanceCreate', ...args];
+    callMethod.apply(null, args);
+}
+
+function callAppComponentRenderOverwrite(...args) {
+    args = ['onAppComponentRenderOverwrite', ...args];
     callMethod.apply(null, args);
 }
 
@@ -171,6 +182,7 @@ module.exports = {
     callAppWalkDOM,
     callAppComponentAssignName,
     callAppDOMElementCreate,
-    //callAppDOMAttributeSet,
-    callAppComponentPropsAssignName
+    callAppDynamicInstanceCreate,
+    callAppComponentPropsAssignName,
+    callAppComponentRenderOverwrite
 };

@@ -19,7 +19,7 @@ directive('is', {
             return propsName;*/
     },
 
-    onComponentElementCreate(instance, $target, directiveValue, initial) {
+    onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
         if (!initial)
             instance._processing.push({node: $target, action: 'create'});

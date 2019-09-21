@@ -10,7 +10,7 @@ class DOMManipulation {
 
     $$afterNodeElementCreate($el, node, initial) {
         directive.callAppDOMElementCreate(this, $el, node, initial);
-        directive.callComponentElementCreate(this, $el, initial);
+        directive.callComponentDOMElementCreate(this, $el, initial);
 
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1 && !initial) {

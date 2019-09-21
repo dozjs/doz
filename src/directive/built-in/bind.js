@@ -23,7 +23,7 @@ directive('bind', {
         this.updateBoundElementsByPropsIteration(instance);
     },
 
-    onComponentElementCreate(instance, $target, directiveValue, initial) {
+    onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
         if (!this.canBind($target)) return;
         this.setBind(instance, $target, directiveValue)
     },
