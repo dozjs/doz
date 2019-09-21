@@ -9,5 +9,5 @@ module.exports = Object.assign(
         directive
     },
     require('./types/app'),
-    require('./types/component'),
+    require('./types/component')
 );
