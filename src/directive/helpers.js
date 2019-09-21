@@ -12,7 +12,7 @@ function extractDirectivesFromProps(cmp) {
     }
 
     Object.keys(props).forEach(key => {
-        if (REGEX.IS_DIRECTIVE.test(key)) {
+        if (isDirective(key)) {
             let keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
             /*if (canBeDeleteProps)
@@ -23,6 +23,11 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 
+function isDirective(name) {
+    return REGEX.IS_DIRECTIVE.test(name);
+}
+
 module.exports = {
+    isDirective,
     extractDirectivesFromProps
 };

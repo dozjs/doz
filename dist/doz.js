@@ -92,7 +92,7 @@ function directive(name) {
 
 module.exports = Object.assign({
     directive: directive
-}, __webpack_require__(28), __webpack_require__(29), __webpack_require__(31));
+}, __webpack_require__(28), __webpack_require__(29));
 
 /***/ }),
 /* 1 */
@@ -3689,7 +3689,11 @@ var _require = __webpack_require__(2),
     data = _require.data;
 
 var _require2 = __webpack_require__(30),
-    extractDirectivesFromProps = _require2.extractDirectivesFromProps;
+    extractDirectivesFromProps = _require2.extractDirectivesFromProps,
+    isDirective = _require2.isDirective;
+
+var _require3 = __webpack_require__(1),
+    REGEX = _require3.REGEX;
 
 // Hooks for the component
 
@@ -3869,6 +3873,27 @@ function callComponentLoadProps() {
     callMethod.apply(null, args);
 }
 
+function callComponentElementCreate(instance, $target, initial) {
+    var method = 'onComponentElementCreate';
+    var attributes = Array.from($target.attributes);
+
+    var _defined5 = function _defined5(attribute) {
+        if (isDirective(attribute.name)) {
+            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attribute.value;
+            var directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                $target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
+            }
+        }
+    };
+
+    for (var _i6 = 0; _i6 <= attributes.length - 1; _i6++) {
+        _defined5(attributes[_i6], _i6, attributes);
+    }
+}
+
 module.exports = {
     callComponentBeforeCreate: callComponentBeforeCreate,
     callComponentCreate: callComponentCreate,
@@ -3882,7 +3907,8 @@ module.exports = {
     callComponentUnmount: callComponentUnmount,
     callComponentBeforeDestroy: callComponentBeforeDestroy,
     callComponentDestroy: callComponentDestroy,
-    callComponentLoadProps: callComponentLoadProps
+    callComponentLoadProps: callComponentLoadProps,
+    callComponentElementCreate: callComponentElementCreate
 };
 
 /***/ }),
@@ -3910,7 +3936,7 @@ function extractDirectivesFromProps(cmp) {
     /*if (canBeDeleteProps)
         delete props[key];*/
     = function _defined(key) {
-        if (REGEX.IS_DIRECTIVE.test(key)) {
+        if (isDirective(key)) {
             var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
         }
@@ -3925,51 +3951,17 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 
+function isDirective(name) {
+    return REGEX.IS_DIRECTIVE.test(name);
+}
+
 module.exports = {
+    isDirective: isDirective,
     extractDirectivesFromProps: extractDirectivesFromProps
 };
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(1),
-    REGEX = _require.REGEX;
-
-var _require2 = __webpack_require__(2),
-    data = _require2.data;
-
-// Hooks for DOM element
-
-function callDOMElementCreate(instance, $target, initial) {
-    var method = 'onDOMElementCreate';
-    var attributes = Array.from($target.attributes);
-
-    var _defined = function _defined(attribute) {
-        if (REGEX.IS_DIRECTIVE.test(attribute.name)) {
-            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            var directiveValue = attribute.value;
-            var directiveObj = data.directives[directiveName];
-            if (directiveObj && directiveObj[method]) {
-                $target.removeAttribute(attribute.name);
-                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
-            }
-        }
-    };
-
-    for (var _i2 = 0; _i2 <= attributes.length - 1; _i2++) {
-        _defined(attributes[_i2], _i2, attributes);
-    }
-}
-
-module.exports = {
-    callDOMElementCreate: callDOMElementCreate
-};
-
-/***/ }),
+/* 31 */,
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4737,7 +4729,7 @@ var DOMManipulation = function () {
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
             directive.callAppDOMElementCreate(this, $el, node, initial);
-            directive.callDOMElementCreate(this, $el, initial);
+            directive.callComponentElementCreate(this, $el, initial);
 
             if (typeof $el.hasAttribute === 'function') {
                 if (node.type.indexOf('-') !== -1 && !initial) {
@@ -5291,7 +5283,7 @@ directive('ref', {
             }
         });
     },
-    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue) {
+    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue) {
         instance.ref[directiveValue] = $target;
     }
 });
@@ -5318,7 +5310,7 @@ directive('is', {
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName) {
         if (this.hasDataIs($target)) return dashToCamel(propsName);
     },
-    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
+    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
         if (!initial) instance._processing.push({ node: $target, action: 'create' });
     }
@@ -5357,7 +5349,7 @@ directive('bind', {
     onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
         this.updateBoundElementsByPropsIteration(instance);
     },
-    onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
+    onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue, initial) {
         if (!this.canBind($target)) return;
         this.setBind(instance, $target, directiveValue);
     },

@@ -17,7 +17,7 @@ directive('is', {
             return dashToCamel(propsName)
     },
 
-    onDOMElementCreate(instance, $target, directiveValue, initial) {
+    onComponentElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
         if (!initial)
             instance._processing.push({node: $target, action: 'create'});

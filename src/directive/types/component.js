@@ -1,5 +1,6 @@
 const {data} = require('../../collection');
-const {extractDirectivesFromProps} = require('../helpers');
+const {extractDirectivesFromProps, isDirective} = require('../helpers');
+const {REGEX} = require('../../constants.js');
 
 // Hooks for the component
 function callMethod(...args) {
@@ -105,6 +106,22 @@ function callComponentLoadProps(...args) {
     callMethod.apply(null, args)
 }
 
+function callComponentElementCreate(instance, $target, initial) {
+    let method = 'onComponentElementCreate';
+    let attributes = Array.from($target.attributes);
+    attributes.forEach(attribute => {
+        if (isDirective(attribute.name)) {
+            let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let directiveValue = attribute.value;
+            let directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                $target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial])
+            }
+        }
+    });
+}
+
 module.exports = {
     callComponentBeforeCreate,
     callComponentCreate,
@@ -119,4 +136,5 @@ module.exports = {
     callComponentBeforeDestroy,
     callComponentDestroy,
     callComponentLoadProps,
+    callComponentElementCreate,
 };

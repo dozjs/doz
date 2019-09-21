@@ -10,5 +10,4 @@ module.exports = Object.assign(
     },
     require('./types/app'),
     require('./types/component'),
-    require('./types/dom')
 );
