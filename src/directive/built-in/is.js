@@ -7,12 +7,12 @@ directive('is', {
         return $target.dataset && $target.dataset.is;
     },
 
-    onSystemComponentAssignName(instance, $target) {
+    onAppComponentAssignName(instance, $target) {
         if (this.hasDataIs($target))
             return $target.dataset.is;
     },
 
-    onSystemComponentPropsAssignName($target, propsName) {
+    onAppComponentPropsAssignName($target, propsName) {
         if (this.hasDataIs($target))
             return dashToCamel(propsName)
     },

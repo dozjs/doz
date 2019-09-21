@@ -18,7 +18,7 @@ directive(':store', {
         }
     },
 
-    onSystemAppInit(app) {
+    onAppInit(app) {
         Object.defineProperties(app, {
             _stores: {
                 value: {},
@@ -34,7 +34,7 @@ directive(':store', {
     },
 
     // Create by property defined
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getStore: {
                 value: function (store) {
@@ -54,21 +54,21 @@ directive(':store', {
         this.createStore(instance, directiveValue);
     },
 
-    onSystemComponentLoadProps(instance) {
+    onAppComponentLoadProps(instance) {
         this.syncStore(instance, instance.store);
     },
 
-    onSystemComponentSetProps(instance) {
+    onAppComponentSetProps(instance) {
         this.syncStore(instance, instance.store);
     },
 
-    onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig(instance, obj) {
         if (typeof obj.store === 'string') {
             this.createStore(instance, obj.store);
         }
     },
 
-    onSystemComponentDestroy(instance) {
+    onAppComponentDestroy(instance) {
         if (instance.store && instance.app._stores[instance.store])
             delete instance.app._stores[instance.store];
     },

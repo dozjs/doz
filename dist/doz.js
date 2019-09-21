@@ -272,7 +272,7 @@ var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
 
 function callBeforeCreate(context) {
-    directive.callSystemComponentBeforeCreate(context);
+    directive.callAppComponentBeforeCreate(context);
     directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
@@ -280,7 +280,7 @@ function callBeforeCreate(context) {
 }
 
 function callCreate(context) {
-    directive.callSystemComponentCreate(context);
+    directive.callAppComponentCreate(context);
     directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
@@ -289,7 +289,7 @@ function callCreate(context) {
 }
 
 function callConfigCreate(context) {
-    directive.callSystemComponentConfigCreate(context);
+    directive.callAppComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -300,7 +300,7 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
-    directive.callSystemComponentBeforeMount(context);
+    directive.callAppComponentBeforeMount(context);
     directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
@@ -308,7 +308,7 @@ function callBeforeMount(context) {
 }
 
 function callMount(context) {
-    directive.callSystemComponentMount(context);
+    directive.callAppComponentMount(context);
     directive.callComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
@@ -318,7 +318,7 @@ function callMount(context) {
 
 function callMountAsync(context) {
     delay(function () {
-        directive.callSystemComponentMountAsync(context);
+        directive.callAppComponentMountAsync(context);
         directive.callComponentMountAsync(context);
     });
     if (typeof context.onMountAsync === 'function') {
@@ -330,7 +330,7 @@ function callMountAsync(context) {
 }
 
 function callBeforeUpdate(context, changes) {
-    directive.callSystemComponentBeforeUpdate(context, changes);
+    directive.callAppComponentBeforeUpdate(context, changes);
     directive.callComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
@@ -338,7 +338,7 @@ function callBeforeUpdate(context, changes) {
 }
 
 function callUpdate(context, changes) {
-    directive.callSystemComponentUpdate(context, changes);
+    directive.callAppComponentUpdate(context, changes);
     directive.callComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
@@ -349,7 +349,7 @@ function callUpdate(context, changes) {
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return;
 
-    directive.callSystemComponentDrawByParent(context, newNode, oldNode);
+    directive.callAppComponentDrawByParent(context, newNode, oldNode);
 
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
@@ -361,7 +361,7 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
-    directive.callSystemComponentAfterRender(context, changes);
+    directive.callAppComponentAfterRender(context, changes);
     directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
@@ -369,7 +369,7 @@ function callAfterRender(context, changes) {
 }
 
 function callBeforeUnmount(context) {
-    directive.callSystemComponentBeforeUnmount(context);
+    directive.callAppComponentBeforeUnmount(context);
     directive.callComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
@@ -377,7 +377,7 @@ function callBeforeUnmount(context) {
 }
 
 function callUnmount(context) {
-    directive.callSystemComponentUnmount(context);
+    directive.callAppComponentUnmount(context);
     directive.callComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
@@ -386,7 +386,7 @@ function callUnmount(context) {
 }
 
 function callBeforeDestroy(context) {
-    directive.callSystemComponentBeforeDestroy(context);
+    directive.callAppComponentBeforeDestroy(context);
     directive.callComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
@@ -394,7 +394,7 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
-    directive.callSystemComponentDestroy(context);
+    directive.callAppComponentDestroy(context);
     directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
@@ -422,7 +422,7 @@ function callDestroy(context) {
 }
 
 function callLoadProps(context) {
-    directive.callSystemComponentLoadProps(context);
+    directive.callAppComponentLoadProps(context);
     directive.callComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
@@ -649,7 +649,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
 
-    if (!isDirective && $node) directive.callSystemComponentPropsAssignName($node, aName, function (newPropsName) {
+    if (!isDirective && $node) directive.callAppComponentPropsAssignName($node, aName, function (newPropsName) {
         propsName = newPropsName;
     });
 
@@ -1106,7 +1106,7 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
             observer.create(this);
-            directive.callSystemComponentSetProps(this);
+            directive.callAppComponentSetProps(this);
         },
         get: function get() {
             return this._props;
@@ -1120,7 +1120,7 @@ var Component = function (_DOMManipulation) {
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
-            directive.callSystemComponentSetConfig(this, obj);
+            directive.callAppComponentSetConfig(this, obj);
 
             if (_typeof(obj.mixin) === 'object') {
                 this.mixin = obj.mixin;
@@ -1467,7 +1467,7 @@ function get() {
 
         while ($child) {
 
-            directive.callSystemWalkDOM(parent, $child);
+            directive.callAppWalkDOM(parent, $child);
 
             var uId = cfg.app.generateUId();
 
@@ -1480,7 +1480,7 @@ function get() {
 
             cmpName = getComponentName($child);
 
-            directive.callSystemComponentAssignName(parent, $child, function (name) {
+            directive.callAppComponentAssignName(parent, $child, function (name) {
                 cmpName = name;
             });
 
@@ -1628,7 +1628,7 @@ function get() {
 
                     if (parent.cmp) {
                         var n = Object.keys(parent.cmp.children).length++;
-                        directive.callSystemComponentAssignIndex(newElement, n, function (index) {
+                        directive.callAppComponentAssignIndex(newElement, n, function (index) {
                             parent.cmp.children[index] = newElement;
                         });
 
@@ -3209,7 +3209,7 @@ var Doz = function () {
         }
 
         plugin.load(this);
-        directive.callSystemAppInit(this);
+        directive.callAppInit(this);
 
         if (this.cfg.autoDraw) this.draw();
 
@@ -3406,7 +3406,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(2),
     data = _require.data;
 
-// All methods that starts with prefix callSystem are considered extra of directives hooks
+// All methods that starts with prefix callApp are considered extra of directives hooks
 // because they don't use any prop but are useful for initializing stuff.
 // For example built-in like d:store and d:id
 
@@ -3437,243 +3437,243 @@ function callMethod() {
     }
 }
 
-function callSystemAppInit() {
+function callAppInit() {
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         args[_key2] = arguments[_key2];
     }
 
-    args = ['onSystemAppInit'].concat(_toConsumableArray(args));
+    args = ['onAppInit'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentCreate() {
+function callAppComponentCreate() {
     for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         args[_key3] = arguments[_key3];
     }
 
-    args = ['onSystemComponentCreate'].concat(_toConsumableArray(args));
+    args = ['onAppComponentCreate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentBeforeCreate() {
+function callAppComponentBeforeCreate() {
     for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         args[_key4] = arguments[_key4];
     }
 
-    args = ['onSystemComponentBeforeCreate'].concat(_toConsumableArray(args));
+    args = ['onAppComponentBeforeCreate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentConfigCreate() {
+function callAppComponentConfigCreate() {
     for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
         args[_key5] = arguments[_key5];
     }
 
-    args = ['onSystemComponentConfigCreate'].concat(_toConsumableArray(args));
+    args = ['onAppComponentConfigCreate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentBeforeMount() {
+function callAppComponentBeforeMount() {
     for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
         args[_key6] = arguments[_key6];
     }
 
-    args = ['onSystemComponentBeforeMount'].concat(_toConsumableArray(args));
+    args = ['onAppComponentBeforeMount'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentMount() {
+function callAppComponentMount() {
     for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
         args[_key7] = arguments[_key7];
     }
 
-    args = ['onSystemComponentMount'].concat(_toConsumableArray(args));
+    args = ['onAppComponentMount'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentMountAsync() {
+function callAppComponentMountAsync() {
     for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
         args[_key8] = arguments[_key8];
     }
 
-    args = ['onSystemComponentMountAsync'].concat(_toConsumableArray(args));
+    args = ['onAppComponentMountAsync'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentBeforeUpdate() {
+function callAppComponentBeforeUpdate() {
     for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
         args[_key9] = arguments[_key9];
     }
 
-    args = ['onSystemComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    args = ['onAppComponentBeforeUpdate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentUpdate() {
+function callAppComponentUpdate() {
     for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
         args[_key10] = arguments[_key10];
     }
 
-    args = ['onSystemComponentUpdate'].concat(_toConsumableArray(args));
+    args = ['onAppComponentUpdate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentDrawByParent() {
+function callAppComponentDrawByParent() {
     for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
         args[_key11] = arguments[_key11];
     }
 
-    args = ['onSystemComponentDrawByParent'].concat(_toConsumableArray(args));
+    args = ['onAppComponentDrawByParent'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentAfterRender() {
+function callAppComponentAfterRender() {
     for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
         args[_key12] = arguments[_key12];
     }
 
-    args = ['onSystemComponentAfterRender'].concat(_toConsumableArray(args));
+    args = ['onAppComponentAfterRender'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentBeforeUnmount() {
+function callAppComponentBeforeUnmount() {
     for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
         args[_key13] = arguments[_key13];
     }
 
-    args = ['onSystemComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    args = ['onAppComponentBeforeUnmount'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentUnmount() {
+function callAppComponentUnmount() {
     for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
         args[_key14] = arguments[_key14];
     }
 
-    args = ['onSystemComponentUnmount'].concat(_toConsumableArray(args));
+    args = ['onAppComponentUnmount'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentBeforeDestroy() {
+function callAppComponentBeforeDestroy() {
     for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
         args[_key15] = arguments[_key15];
     }
 
-    args = ['onSystemComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    args = ['onAppComponentBeforeDestroy'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentSetConfig() {
+function callAppComponentSetConfig() {
     for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
         args[_key16] = arguments[_key16];
     }
 
-    args = ['onSystemComponentSetConfig'].concat(_toConsumableArray(args));
+    args = ['onAppComponentSetConfig'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentSetProps() {
+function callAppComponentSetProps() {
     for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
         args[_key17] = arguments[_key17];
     }
 
-    args = ['onSystemComponentSetProps'].concat(_toConsumableArray(args));
+    args = ['onAppComponentSetProps'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentLoadProps() {
+function callAppComponentLoadProps() {
     for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
         args[_key18] = arguments[_key18];
     }
 
-    args = ['onSystemComponentLoadProps'].concat(_toConsumableArray(args));
+    args = ['onAppComponentLoadProps'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentDestroy() {
+function callAppComponentDestroy() {
     for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
         args[_key19] = arguments[_key19];
     }
 
-    args = ['onSystemComponentDestroy'].concat(_toConsumableArray(args));
+    args = ['onAppComponentDestroy'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentAssignIndex() {
+function callAppComponentAssignIndex() {
     for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
         args[_key20] = arguments[_key20];
     }
 
-    args = ['onSystemComponentAssignIndex'].concat(_toConsumableArray(args));
+    args = ['onAppComponentAssignIndex'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemWalkDOM() {
+function callAppWalkDOM() {
     for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
         args[_key21] = arguments[_key21];
     }
 
-    args = ['onSystemWalkDOM'].concat(_toConsumableArray(args));
+    args = ['onAppWalkDOM'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemComponentAssignName() {
+function callAppComponentAssignName() {
     for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
         args[_key22] = arguments[_key22];
     }
 
-    args = ['onSystemComponentAssignName'].concat(_toConsumableArray(args));
+    args = ['onAppComponentAssignName'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
-function callSystemComponentPropsAssignName() {
+function callAppComponentPropsAssignName() {
     for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
         args[_key23] = arguments[_key23];
     }
 
-    args = ['onSystemComponentPropsAssignName'].concat(_toConsumableArray(args));
+    args = ['onAppComponentPropsAssignName'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-function callSystemDOMElementCreate() {
+function callAppDOMElementCreate() {
     for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
         args[_key24] = arguments[_key24];
     }
 
     //todo Dovrebbe risolvere il problema del tag doppio
-    args = ['onSystemDOMElementCreate'].concat(_toConsumableArray(args));
+    args = ['onAppDOMElementCreate'].concat(_toConsumableArray(args));
     callMethod.apply(null, args);
 }
 
-/*function callSystemDOMAttributeSet(...args) {
-    args = ['onSystemDOMAttributeSet', ...args];
+/*function callAppDOMAttributeSet(...args) {
+    args = ['onAppDOMAttributeSet', ...args];
     callMethod.apply(null, args);
 }*/
 
 module.exports = {
-    callSystemAppInit: callSystemAppInit,
-    callSystemComponentCreate: callSystemComponentCreate,
-    callSystemComponentLoadProps: callSystemComponentLoadProps,
-    callSystemComponentSetConfig: callSystemComponentSetConfig,
-    callSystemComponentSetProps: callSystemComponentSetProps,
-    callSystemComponentDestroy: callSystemComponentDestroy,
-    callSystemComponentAssignIndex: callSystemComponentAssignIndex,
-    callSystemComponentBeforeCreate: callSystemComponentBeforeCreate,
-    callSystemComponentConfigCreate: callSystemComponentConfigCreate,
-    callSystemComponentBeforeMount: callSystemComponentBeforeMount,
-    callSystemComponentMount: callSystemComponentMount,
-    callSystemComponentBeforeDestroy: callSystemComponentBeforeDestroy,
-    callSystemComponentUnmount: callSystemComponentUnmount,
-    callSystemComponentBeforeUnmount: callSystemComponentBeforeUnmount,
-    callSystemComponentAfterRender: callSystemComponentAfterRender,
-    callSystemComponentDrawByParent: callSystemComponentDrawByParent,
-    callSystemComponentUpdate: callSystemComponentUpdate,
-    callSystemComponentBeforeUpdate: callSystemComponentBeforeUpdate,
-    callSystemComponentMountAsync: callSystemComponentMountAsync,
-    callSystemWalkDOM: callSystemWalkDOM,
-    callSystemComponentAssignName: callSystemComponentAssignName,
-    callSystemDOMElementCreate: callSystemDOMElementCreate,
-    //callSystemDOMAttributeSet,
-    callSystemComponentPropsAssignName: callSystemComponentPropsAssignName
+    callAppInit: callAppInit,
+    callAppComponentCreate: callAppComponentCreate,
+    callAppComponentLoadProps: callAppComponentLoadProps,
+    callAppComponentSetConfig: callAppComponentSetConfig,
+    callAppComponentSetProps: callAppComponentSetProps,
+    callAppComponentDestroy: callAppComponentDestroy,
+    callAppComponentAssignIndex: callAppComponentAssignIndex,
+    callAppComponentBeforeCreate: callAppComponentBeforeCreate,
+    callAppComponentConfigCreate: callAppComponentConfigCreate,
+    callAppComponentBeforeMount: callAppComponentBeforeMount,
+    callAppComponentMount: callAppComponentMount,
+    callAppComponentBeforeDestroy: callAppComponentBeforeDestroy,
+    callAppComponentUnmount: callAppComponentUnmount,
+    callAppComponentBeforeUnmount: callAppComponentBeforeUnmount,
+    callAppComponentAfterRender: callAppComponentAfterRender,
+    callAppComponentDrawByParent: callAppComponentDrawByParent,
+    callAppComponentUpdate: callAppComponentUpdate,
+    callAppComponentBeforeUpdate: callAppComponentBeforeUpdate,
+    callAppComponentMountAsync: callAppComponentMountAsync,
+    callAppWalkDOM: callAppWalkDOM,
+    callAppComponentAssignName: callAppComponentAssignName,
+    callAppDOMElementCreate: callAppDOMElementCreate,
+    //callAppDOMAttributeSet,
+    callAppComponentPropsAssignName: callAppComponentPropsAssignName
 };
 
 /***/ }),
@@ -4736,7 +4736,7 @@ var DOMManipulation = function () {
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
-            directive.callSystemDOMElementCreate(this, $el, node, initial);
+            directive.callAppDOMElementCreate(this, $el, node, initial);
             directive.callDOMElementCreate(this, $el, initial);
 
             if (typeof $el.hasAttribute === 'function') {
@@ -4950,7 +4950,7 @@ directive(':store', {
             instance.app._stores[storeName] = instance.props;
         }
     },
-    onSystemAppInit: function onSystemAppInit(app) {
+    onAppInit: function onAppInit(app) {
         Object.defineProperties(app, {
             _stores: {
                 value: {},
@@ -4967,7 +4967,7 @@ directive(':store', {
 
 
     // Create by property defined
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getStore: {
                 value: function value(store) {
@@ -4987,18 +4987,18 @@ directive(':store', {
     onComponentCreate: function onComponentCreate(instance, directiveValue) {
         this.createStore(instance, directiveValue);
     },
-    onSystemComponentLoadProps: function onSystemComponentLoadProps(instance) {
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
         this.syncStore(instance, instance.store);
     },
-    onSystemComponentSetProps: function onSystemComponentSetProps(instance) {
+    onAppComponentSetProps: function onAppComponentSetProps(instance) {
         this.syncStore(instance, instance.store);
     },
-    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
         if (typeof obj.store === 'string') {
             this.createStore(instance, obj.store);
         }
     },
-    onSystemComponentDestroy: function onSystemComponentDestroy(instance) {
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
         if (instance.store && instance.app._stores[instance.store]) delete instance.app._stores[instance.store];
     }
 });
@@ -5023,7 +5023,7 @@ directive(':id', {
             instance.id = id;
         }
     },
-    onSystemAppInit: function onSystemAppInit(app) {
+    onAppInit: function onAppInit(app) {
         Object.defineProperties(app, {
             _ids: {
                 value: {},
@@ -5037,7 +5037,7 @@ directive(':id', {
             }
         });
     },
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getComponentById: {
                 value: function value(id) {
@@ -5060,12 +5060,12 @@ directive(':id', {
     onComponentCreate: function onComponentCreate(instance, directiveValue) {
         this.createId(instance, directiveValue);
     },
-    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
         if (typeof obj.id === 'string') {
             this.createId(instance, obj.id);
         }
     },
-    onSystemComponentDestroy: function onSystemComponentDestroy(instance) {
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
         if (instance.id && instance.app._ids[instance.id]) delete instance.app._ids[instance.id];
     }
 });
@@ -5086,7 +5086,7 @@ directive(':alias', {
             instance.alias = alias;
         }
     },
-    onSystemAppInit: function onSystemAppInit(app) {
+    onAppInit: function onAppInit(app) {
         Object.defineProperties(app, {
             getComponent: {
                 value: function value(alias) {
@@ -5096,7 +5096,7 @@ directive(':alias', {
             }
         });
     },
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getComponent: {
                 value: function value(alias) {
@@ -5109,12 +5109,12 @@ directive(':alias', {
     onComponentCreate: function onComponentCreate(instance, directiveValue) {
         this.createAlias(instance, directiveValue);
     },
-    onSystemComponentSetConfig: function onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
         if (typeof obj.alias === 'string') {
             this.createAlias(instance, obj.alias);
         }
     },
-    onSystemComponentAssignIndex: function onSystemComponentAssignIndex(instance, n) {
+    onAppComponentAssignIndex: function onAppComponentAssignIndex(instance, n) {
         return instance.alias ? instance.alias : n;
     }
 });
@@ -5130,7 +5130,7 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive(':on-$event', {
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             _callback: {
                 value: {},
@@ -5282,7 +5282,7 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 directive('ref', {
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             ref: {
                 value: {},
@@ -5312,10 +5312,10 @@ directive('is', {
     hasDataIs: function hasDataIs($target) {
         return $target.dataset && $target.dataset.is;
     },
-    onSystemComponentAssignName: function onSystemComponentAssignName(instance, $target) {
+    onAppComponentAssignName: function onAppComponentAssignName(instance, $target) {
         if (this.hasDataIs($target)) return $target.dataset.is;
     },
-    onSystemComponentPropsAssignName: function onSystemComponentPropsAssignName($target, propsName) {
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName) {
         if (this.hasDataIs($target)) return dashToCamel(propsName);
     },
     onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {
@@ -5343,7 +5343,7 @@ directive('bind', {
 
     // Start directive methods
 
-    onSystemComponentCreate: function onSystemComponentCreate(instance) {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             _boundElements: {
                 value: {},
@@ -5351,10 +5351,10 @@ directive('bind', {
             }
         });
     },
-    onSystemComponentUpdate: function onSystemComponentUpdate(instance, changes) {
+    onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
         this.updateBoundElementsByChanges(instance, changes);
     },
-    onSystemComponentLoadProps: function onSystemComponentLoadProps(instance) {
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
         this.updateBoundElementsByPropsIteration(instance);
     },
     onDOMElementCreate: function onDOMElementCreate(instance, $target, directiveValue, initial) {

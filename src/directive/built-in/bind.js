@@ -6,7 +6,7 @@ directive('bind', {
 
     // Start directive methods
 
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             _boundElements: {
                 value: {},
@@ -15,11 +15,11 @@ directive('bind', {
         });
     },
 
-    onSystemComponentUpdate(instance, changes) {
+    onAppComponentUpdate(instance, changes) {
         this.updateBoundElementsByChanges(instance, changes);
     },
 
-    onSystemComponentLoadProps(instance) {
+    onAppComponentLoadProps(instance) {
         this.updateBoundElementsByPropsIteration(instance);
     },
 

@@ -74,7 +74,7 @@ class Component extends DOMManipulation {
 
         this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
-        directive.callSystemComponentSetProps(this);
+        directive.callAppComponentSetProps(this);
     }
 
     get props() {
@@ -101,7 +101,7 @@ class Component extends DOMManipulation {
         if (typeof obj !== 'object')
             throw new TypeError('Config must be an object');
 
-        directive.callSystemComponentSetConfig(this, obj);
+        directive.callAppComponentSetConfig(this, obj);
 
         if (typeof obj.mixin === 'object') {
             this.mixin = obj.mixin;

@@ -9,7 +9,7 @@ const directive = require('../directive');
 class DOMManipulation {
 
     $$afterNodeElementCreate($el, node, initial) {
-        directive.callSystemDOMElementCreate(this, $el, node, initial);
+        directive.callAppDOMElementCreate(this, $el, node, initial);
         directive.callDOMElementCreate(this, $el, initial);
 
         if (typeof $el.hasAttribute === 'function') {

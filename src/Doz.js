@@ -177,7 +177,7 @@ class Doz {
         });
 
         plugin.load(this);
-        directive.callSystemAppInit(this);
+        directive.callAppInit(this);
 
         if (this.cfg.autoDraw)
             this.draw();

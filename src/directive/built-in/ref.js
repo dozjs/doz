@@ -2,7 +2,7 @@ const {directive} = require('../index');
 
 directive('ref', {
 
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             ref: {
                 value: {},

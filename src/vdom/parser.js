@@ -193,7 +193,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
         : aName;
 
     if (!isDirective && $node)
-        directive.callSystemComponentPropsAssignName($node, aName, newPropsName => {
+        directive.callAppComponentPropsAssignName($node, aName, newPropsName => {
             propsName = newPropsName;
         });
 

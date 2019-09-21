@@ -2,7 +2,7 @@ const delay = require('../utils/delay');
 const directive = require('../directive');
 
 function callBeforeCreate(context) {
-    directive.callSystemComponentBeforeCreate(context);
+    directive.callAppComponentBeforeCreate(context);
     directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
@@ -10,7 +10,7 @@ function callBeforeCreate(context) {
 }
 
 function callCreate(context) {
-    directive.callSystemComponentCreate(context);
+    directive.callAppComponentCreate(context);
     directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
@@ -19,7 +19,7 @@ function callCreate(context) {
 }
 
 function callConfigCreate(context) {
-    directive.callSystemComponentConfigCreate(context);
+    directive.callAppComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -30,7 +30,7 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
-    directive.callSystemComponentBeforeMount(context);
+    directive.callAppComponentBeforeMount(context);
     directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
@@ -38,7 +38,7 @@ function callBeforeMount(context) {
 }
 
 function callMount(context) {
-    directive.callSystemComponentMount(context);
+    directive.callAppComponentMount(context);
     directive.callComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
@@ -48,7 +48,7 @@ function callMount(context) {
 
 function callMountAsync(context) {
     delay(()=> {
-        directive.callSystemComponentMountAsync(context);
+        directive.callAppComponentMountAsync(context);
         directive.callComponentMountAsync(context);
     });
     if (typeof context.onMountAsync === 'function') {
@@ -58,7 +58,7 @@ function callMountAsync(context) {
 }
 
 function callBeforeUpdate(context, changes) {
-    directive.callSystemComponentBeforeUpdate(context, changes);
+    directive.callAppComponentBeforeUpdate(context, changes);
     directive.callComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
@@ -66,7 +66,7 @@ function callBeforeUpdate(context, changes) {
 }
 
 function callUpdate(context, changes) {
-    directive.callSystemComponentUpdate(context, changes);
+    directive.callAppComponentUpdate(context, changes);
     directive.callComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
@@ -77,7 +77,7 @@ function callUpdate(context, changes) {
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return ;
 
-    directive.callSystemComponentDrawByParent(context, newNode, oldNode);
+    directive.callAppComponentDrawByParent(context, newNode, oldNode);
 
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
@@ -89,7 +89,7 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
-    directive.callSystemComponentAfterRender(context, changes);
+    directive.callAppComponentAfterRender(context, changes);
     directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
@@ -97,7 +97,7 @@ function callAfterRender(context, changes) {
 }
 
 function callBeforeUnmount(context) {
-    directive.callSystemComponentBeforeUnmount(context);
+    directive.callAppComponentBeforeUnmount(context);
     directive.callComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
@@ -105,7 +105,7 @@ function callBeforeUnmount(context) {
 }
 
 function callUnmount(context) {
-    directive.callSystemComponentUnmount(context);
+    directive.callAppComponentUnmount(context);
     directive.callComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
@@ -114,7 +114,7 @@ function callUnmount(context) {
 }
 
 function callBeforeDestroy(context) {
-    directive.callSystemComponentBeforeDestroy(context);
+    directive.callAppComponentBeforeDestroy(context);
     directive.callComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
@@ -122,7 +122,7 @@ function callBeforeDestroy(context) {
 }
 
 function callDestroy(context) {
-    directive.callSystemComponentDestroy(context);
+    directive.callAppComponentDestroy(context);
     directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
@@ -152,7 +152,7 @@ function callDestroy(context) {
 }
 
 function callLoadProps(context) {
-    directive.callSystemComponentLoadProps(context);
+    directive.callAppComponentLoadProps(context);
     directive.callComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);

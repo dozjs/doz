@@ -12,7 +12,7 @@ directive(':id', {
         }
     },
 
-    onSystemAppInit(app) {
+    onAppInit(app) {
         Object.defineProperties(app, {
             _ids: {
                 value: {},
@@ -27,7 +27,7 @@ directive(':id', {
         });
     },
 
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getComponentById: {
                 value: function (id) {
@@ -52,13 +52,13 @@ directive(':id', {
         this.createId(instance, directiveValue);
     },
 
-    onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig(instance, obj) {
         if (typeof obj.id === 'string') {
             this.createId(instance, obj.id);
         }
     },
 
-    onSystemComponentDestroy(instance) {
+    onAppComponentDestroy(instance) {
         if (instance.id && instance.app._ids[instance.id])
             delete instance.app._ids[instance.id];
     },

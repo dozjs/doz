@@ -8,7 +8,7 @@ module.exports = Object.assign(
     {
         directive
     },
-    require('./types/system'),
+    require('./types/app'),
     require('./types/component'),
     require('./types/dom')
 );

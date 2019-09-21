@@ -8,7 +8,7 @@ directive(':alias', {
         }
     },
 
-    onSystemAppInit(app) {
+    onAppInit(app) {
         Object.defineProperties(app, {
             getComponent: {
                 value: function (alias) {
@@ -21,7 +21,7 @@ directive(':alias', {
         });
     },
 
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             getComponent: {
                 value: function (alias) {
@@ -38,13 +38,13 @@ directive(':alias', {
         this.createAlias(instance, directiveValue);
     },
 
-    onSystemComponentSetConfig(instance, obj) {
+    onAppComponentSetConfig(instance, obj) {
         if (typeof obj.alias === 'string') {
             this.createAlias(instance, obj.alias);
         }
     },
 
-    onSystemComponentAssignIndex(instance, n) {
+    onAppComponentAssignIndex(instance, n) {
         return instance.alias ? instance.alias : n
     }
 });

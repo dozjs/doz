@@ -2,7 +2,7 @@ const {directive} = require('../index');
 
 directive(':on-$event', {
 
-    onSystemComponentCreate(instance) {
+    onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             _callback: {
                 value: {},

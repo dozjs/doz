@@ -65,7 +65,7 @@ function get(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
 
-            directive.callSystemWalkDOM(parent, $child);
+            directive.callAppWalkDOM(parent, $child);
 
             const uId = cfg.app.generateUId();
 
@@ -78,7 +78,7 @@ function get(cfg = {}) {
 
             cmpName = getComponentName($child);
 
-            directive.callSystemComponentAssignName(parent, $child, (name) => {
+            directive.callAppComponentAssignName(parent, $child, (name) => {
                 cmpName = name;
             });
 
@@ -221,7 +221,7 @@ function get(cfg = {}) {
 
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length++;
-                    directive.callSystemComponentAssignIndex(newElement, n, (index) => {
+                    directive.callAppComponentAssignIndex(newElement, n, (index) => {
                         parent.cmp.children[index] = newElement;
                     });
 
