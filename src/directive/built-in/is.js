@@ -12,9 +12,11 @@ directive('is', {
             return $target.dataset.is;
     },
 
-    onAppComponentPropsAssignName($target, propsName) {
+    onAppComponentPropsAssignName($target, propsName, isDirective) {
         if (this.hasDataIs($target))
-            return dashToCamel(propsName)
+            return dashToCamel(propsName);
+        /*else
+            return propsName;*/
     },
 
     onComponentElementCreate(instance, $target, directiveValue, initial) {

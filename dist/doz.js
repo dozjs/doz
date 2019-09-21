@@ -515,7 +515,7 @@ var Element = function () {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        this.childrenHasKey = false;
+        //this.childrenHasKey = false;
     }
 
     _createClass(Element, [{
@@ -581,12 +581,13 @@ function compile(data, cmp) {
             }
 
             // Replace KEY attribute with a dataset
-            if (props[ATTR.KEY] !== undefined) {
+            /*if (props[ATTR.KEY] !== undefined) {
                 props['data-key'] = props[ATTR.KEY];
                 delete props[ATTR.KEY];
-            }
+            }*/
 
-            if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
+            /*if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
+                currentParent.childrenHasKey = true;*/
 
             //if (/-/.test(match[2]) && /-/.test(currentParent.type))
             //cmp._maybeSlot = true;
@@ -649,7 +650,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
 
-    if (!isDirective && $node) directive.callAppComponentPropsAssignName($node, aName, function (newPropsName) {
+    if ( /*!isDirective && */$node) directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
         propsName = newPropsName;
     });
 
@@ -4915,6 +4916,7 @@ __webpack_require__(60);
 __webpack_require__(61);
 __webpack_require__(62);
 __webpack_require__(63);
+__webpack_require__(64);
 
 /***/ }),
 /* 56 */
@@ -5306,8 +5308,10 @@ directive('is', {
     onAppComponentAssignName: function onAppComponentAssignName(instance, $target) {
         if (this.hasDataIs($target)) return $target.dataset.is;
     },
-    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName) {
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName, isDirective) {
         if (this.hasDataIs($target)) return dashToCamel(propsName);
+        /*else
+            return propsName;*/
     },
     onComponentElementCreate: function onComponentElementCreate(instance, $target, directiveValue, initial) {
         $target.dataset.is = directiveValue;
@@ -5512,6 +5516,43 @@ directive('bind', {
         }
     }
 });
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var ATTR_KEY = 'd-key';
+
+directive('key', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        /*Object.defineProperties(instance, {
+            _dynamicNodes: {
+                value: {},
+                writable: true
+            }
+        });*/
+    },
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        //if (isDirective)
+        //console.log('propsName', propsName)
+        if (propName === ATTR_KEY) {
+            props.dataKey = propValue;
+            return 'data-key';
+        }
+    }
+}
+
+/*onComponentElementCreate(instance, $target, directiveValue) {
+    instance.ref[directiveValue] = $target;
+}*/
+
+);
 
 /***/ })
 /******/ ]);

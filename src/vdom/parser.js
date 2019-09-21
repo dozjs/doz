@@ -50,7 +50,7 @@ class Element {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        this.childrenHasKey = false;
+        //this.childrenHasKey = false;
     }
 
     appendChild(node) {
@@ -120,13 +120,13 @@ function compile(data, cmp) {
             }
 
             // Replace KEY attribute with a dataset
-            if (props[ATTR.KEY] !== undefined) {
+            /*if (props[ATTR.KEY] !== undefined) {
                 props['data-key'] = props[ATTR.KEY];
                 delete props[ATTR.KEY];
-            }
+            }*/
 
-            if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
-                currentParent.childrenHasKey = true;
+            /*if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
+                currentParent.childrenHasKey = true;*/
 
             //if (/-/.test(match[2]) && /-/.test(currentParent.type))
             //cmp._maybeSlot = true;
@@ -192,8 +192,8 @@ function propsFixer(nName, aName, aValue, props, $node) {
         ? dashToCamel(aName)
         : aName;
 
-    if (!isDirective && $node)
-        directive.callAppComponentPropsAssignName($node, aName, newPropsName => {
+    if (/*!isDirective && */$node)
+        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
 
