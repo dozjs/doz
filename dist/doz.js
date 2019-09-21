@@ -143,7 +143,6 @@ module.exports = {
     },
     ATTR: {
         // Attributes for both
-        KEY: 'd-key',
         FORCE_UPDATE: 'forceupdate'
     }
 };
