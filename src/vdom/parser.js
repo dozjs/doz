@@ -108,7 +108,7 @@ function compile(data, cmp) {
                     attMatch[2],
                     props[attMatch[2]],
                     props,
-                    cmp
+                    null
                 )
             }
 
@@ -192,11 +192,12 @@ function propsFixer(nName, aName, aValue, props, $node) {
         ? dashToCamel(aName)
         : aName;
 
-    if (/*!isDirective && */$node)
+    if (/*!isDirective && */$node) {
+        //console.log($node)
         directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
-
+    }
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : castStringTo(aValue);

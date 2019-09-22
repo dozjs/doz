@@ -1,6 +1,6 @@
 const {directive} = require('../index');
 const {COMPONENT_DYNAMIC_INSTANCE} = require('../../constants');
-const ATTR_KEY = 'd-key';
+const ATTR_KEY = 'data-key';
 
 directive('key', {
 
@@ -20,7 +20,13 @@ directive('key', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
-        instance._dynamicNodes[directiveValue] = $target;
+        $target.dataset.key = directiveValue;
+    },
+
+    onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
+        if (item.node.dataset.key) {
+            instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+        }
     },
 
     onAppComponentRenderOverwrite(instance, changes, next, prev) {
@@ -58,12 +64,13 @@ directive('key', {
             candidateKeyToRemove = undefined;
 
         if (candidateKeyToRemove !== undefined && instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
+            console.log(instance._dynamicNodes, candidateKeyToRemove)
             if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                 instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-            } /*else {
+            } else {
                 //console.log(instance._dynamicNodes[candidateKeyToRemove]);
-                //instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
-            }*/
+                instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+            }
 
             return true;
         }

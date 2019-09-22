@@ -569,7 +569,7 @@ function compile(data, cmp) {
             props = {};
             for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, cmp);
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
             }
 
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
@@ -649,10 +649,12 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
 
-    if ( /*!isDirective && */$node) directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
-        propsName = newPropsName;
-    });
-
+    if ( /*!isDirective && */$node) {
+        //console.log($node)
+        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
+            propsName = newPropsName;
+        });
+    }
     props[propsName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
 }
 
@@ -5504,7 +5506,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE;
 
-var ATTR_KEY = 'd-key';
+var ATTR_KEY = 'data-key';
 
 directive('key', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -5521,7 +5523,12 @@ directive('key', {
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        instance._dynamicNodes[directiveValue] = $target;
+        $target.dataset.key = directiveValue;
+    },
+    onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
+        if (item.node.dataset.key) {
+            instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+        }
     },
     onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
         var candidateKeyToRemove = void 0;
@@ -5565,12 +5572,13 @@ directive('key', {
         if (!thereIsDelete) candidateKeyToRemove = undefined;
 
         if (candidateKeyToRemove !== undefined && instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
+            console.log(instance._dynamicNodes, candidateKeyToRemove);
             if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                 instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-            } /*else {
+            } else {
                 //console.log(instance._dynamicNodes[candidateKeyToRemove]);
-                //instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
-              }*/
+                instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+            }
 
             return true;
         }
