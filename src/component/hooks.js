@@ -135,19 +135,10 @@ function callDestroy(context) {
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    /*if (context.id && context.app._ids[context.id])
-        delete context.app._ids[context.id];*/
-    /*if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
-        context.onDestroy.call(context);
-        context.parent[context.__onDestroy].call(context.parent, context);
-        context = null;
-    } else*/ if (typeof context.onDestroy === 'function') {
+    if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
         context = null;
-    } /*else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
-        context.parent[context.__onDestroy].call(context.parent, context);
-        context = null;
-    }*/
+    }
 
 }
 

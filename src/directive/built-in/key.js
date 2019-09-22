@@ -9,6 +9,10 @@ directive('key', {
             _dynamicNodes: {
                 value: {},
                 writable: true
+            },
+            _keyedNodes: {
+                value: {},
+                writable: true
             }
         });
     },
@@ -21,6 +25,7 @@ directive('key', {
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
         $target.dataset.key = directiveValue;
+        instance._keyedNodes[directiveValue] = $target;
     },
 
     onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
@@ -29,13 +34,16 @@ directive('key', {
         }
     },
 
+    //todo bisogna gestire le key anche per i non componenti
     onAppComponentRenderOverwrite(instance, changes, next, prev) {
         let candidateKeyToRemove;
         let thereIsDelete = false;
         changes.forEach((change) => {
+            //console.log(change);
             // Trova la presunta chiave da eliminare
             if (Array.isArray(change.target)) {
                 if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+
                     if (change.previousValue && typeof change.previousValue === 'object' && change.previousValue.key !== undefined) {
                         candidateKeyToRemove = change.previousValue.key;
                     }
@@ -60,19 +68,26 @@ directive('key', {
             }
         });
 
+        //console.log(thereIsDelete, candidateKeyToRemove)
+
         if (!thereIsDelete)
             candidateKeyToRemove = undefined;
 
-        if (candidateKeyToRemove !== undefined && instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
-            console.log(instance._dynamicNodes, candidateKeyToRemove)
-            if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
-                instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-            } else {
-                //console.log(instance._dynamicNodes[candidateKeyToRemove]);
-                instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+        if (candidateKeyToRemove !== undefined) {
+            console.log(instance._keyedNodes, candidateKeyToRemove)
+            if (instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
+                if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+                    instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
+                } else {
+                    //console.log(instance._dynamicNodes[candidateKeyToRemove]);
+                    instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+                }
+                return true;
+            } else if (instance._keyedNodes[candidateKeyToRemove] !== undefined) {
+                console.log('remop')
+                instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
+                return true;
             }
-
-            return true;
         }
     }
 });
