@@ -5517,13 +5517,11 @@ directive('key', {
     },
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
         if (propName === ATTR_KEY) {
-            props.dataKey = propValue;
-            delete props[ATTR_KEY];
-            return 'data-key';
+            props.key = propValue;
         }
     },
-    onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
-        if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        instance._dynamicNodes[directiveValue] = $target;
     },
     onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
         var candidateKeyToRemove = void 0;
@@ -5569,9 +5567,10 @@ directive('key', {
         if (candidateKeyToRemove !== undefined && instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
             if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                 instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-            } else {
-                instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
-            }
+            } /*else {
+                //console.log(instance._dynamicNodes[candidateKeyToRemove]);
+                //instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+              }*/
 
             return true;
         }

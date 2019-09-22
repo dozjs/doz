@@ -164,13 +164,13 @@
                 </style>
                 <div forceupdate class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="console.log(this.uId, this.props.title)" title="HTML">H</button>
-                    <button onclick="this.action.remove(${this.props.dataKey})" title="Delete">&cross;</button>
-                    <button onclick="this.action.done(${this.props.dataKey})" title="Done">&check;</button>
+                    <button onclick="this.action.remove(${this.props.key})" title="Delete">&cross;</button>
+                    <button onclick="this.action.done(${this.props.key})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.dataKey})"
-                            onkeypress="this.action.inputEnterPress(${this.props.dataKey})"
+                            onblur="this.action.hideInput(${this.props.key})"
+                            onkeypress="this.action.inputEnterPress(${this.props.key})"
                             style="display: none"
                             type="text"
                         >
