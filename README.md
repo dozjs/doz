@@ -101,9 +101,9 @@ new Doz({
 [LIVE](https://jsfiddle.net/fabioricali/vsm6ef50/5/)
 
 ## Doz ecosystem
-- 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provide a boilerplate to creating app and component
+- 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provides a boilerplate to creating app and component
 - 👨🏼‍🎨 [doz-ssr](https://github.com/dozjs/doz-ssr) server side rendering
-- 🤳🏼 [doz-snap](https://github.com/dozjs/doz-snap) transform app to static HTML
+- 🤳🏼 [doz-snap](https://github.com/dozjs/doz-snap) transforms app to static HTML
 - 👩🏼‍🚀 [doz-router](https://github.com/dozjs-cmp/doz-router) a complete component for routing
 - ✍🏼 [doz-metatag](https://github.com/dozjs/doz-metatag) a plugin for managing basic OG meta tag in your HTML document
 
