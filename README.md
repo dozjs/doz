@@ -105,7 +105,7 @@ new Doz({
 - 👨🏼‍🎨 [doz-ssr](https://github.com/dozjs/doz-ssr) server side rendering
 - 🤳🏼 [doz-snap](https://github.com/dozjs/doz-snap) transforms app to static HTML
 - 👩🏼‍🚀 [doz-router](https://github.com/dozjs-cmp/doz-router) a complete component for routing
-- ✍🏼 [doz-metatag](https://github.com/dozjs/doz-metatag) a plugin for managing basic OG meta tag in your HTML document
+- ✍🏼 [doz-metatag](https://github.com/dozjs/doz-metatag) a plugin for managing basic OG meta tag in your app (perfect with doz-ssr)
 
 #### CDN unpkg
 ```html
