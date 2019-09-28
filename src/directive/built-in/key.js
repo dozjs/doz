@@ -38,8 +38,40 @@ directive('key', {
     onAppComponentRenderOverwrite(instance, changes, next, prev) {
         let candidateKeyToRemove;
         let thereIsDelete = false;
+        let noCmpKeyRemoved = false;
         changes.forEach((change) => {
-            //console.log(change);
+
+            if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
+                if (change.target && typeof change.target === 'object') {
+                    let oK = Object.keys(change.target);
+                    if (oK.length && Array.isArray(change.target[oK])) {
+                        if (change.target[oK].length
+                            && change.target[oK][0]
+                            && typeof change.target[oK][0] === 'object'
+                            && change.target[oK][0].key !== undefined) {
+
+                            // Just if deleted keys
+                            if (change.previousValue.length > change.newValue.length) {
+                                //console.log('ci sono key, posso fare qualcosa', typeof change.previousValue);
+                                let prevKeys = change.previousValue.map(item => item.key);
+                                let newKeys = change.newValue.map(item => item.key);
+
+                                let doRemoveKeys = prevKeys.filter(function(n) {
+                                    return newKeys.indexOf(n) === -1;
+                                });
+
+                                noCmpKeyRemoved = !!doRemoveKeys.length;
+
+                                doRemoveKeys.forEach(item => {
+                                    if(instance._keyedNodes[item])
+                                        instance._keyedNodes[item].parentNode.removeChild(instance._keyedNodes[item])
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
             // Trova la presunta chiave da eliminare
             if (Array.isArray(change.target)) {
                 if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
@@ -68,13 +100,15 @@ directive('key', {
             }
         });
 
-        //console.log(thereIsDelete, candidateKeyToRemove)
+        if (noCmpKeyRemoved)
+            return true;
 
+        //console.log(thereIsDelete, candidateKeyToRemove)
+        //console.log(instance._keyedNodes, candidateKeyToRemove)
         if (!thereIsDelete)
             candidateKeyToRemove = undefined;
 
         if (candidateKeyToRemove !== undefined) {
-            console.log(instance._keyedNodes, candidateKeyToRemove)
             if (instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
                 if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                     instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
@@ -84,7 +118,6 @@ directive('key', {
                 }
                 return true;
             } else if (instance._keyedNodes[candidateKeyToRemove] !== undefined) {
-                console.log('remop')
                 instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
                 return true;
             }
