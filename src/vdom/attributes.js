@@ -31,7 +31,8 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    //if (REGEX.IS_DIRECTIVE.test(name)) return;
+    //TODO move to other position
+    if (REGEX.IS_DIRECTIVE.test(name)) return;
     if (newVal === '') {
         removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
