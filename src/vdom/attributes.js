@@ -31,7 +31,7 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if (REGEX.IS_DIRECTIVE.test(name)) return;
+    //if (REGEX.IS_DIRECTIVE.test(name)) return;
     if (newVal === '') {
         removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
@@ -58,7 +58,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
+    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;// || REGEX.IS_DIRECTIVE.test(name);
 }
 
 function setBooleanAttribute($target, name, value) {
