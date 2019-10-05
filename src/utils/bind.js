@@ -1,10 +1,9 @@
 function bind(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
-        throw new TypeError('expected an object');
+        throw new TypeError('expected an object!');
     }
 
     let target = Object.assign({}, obj);
-
     let keys = Object.keys(obj);
 
     for (let i = keys.length - 1; i >= 0; --i) {

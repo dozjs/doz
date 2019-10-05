@@ -3260,11 +3260,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function bind(obj, context) {
     if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' || obj == null) {
-        throw new TypeError('expected an object');
+        throw new TypeError('expected an object!');
     }
 
     var target = Object.assign({}, obj);
-
     var keys = Object.keys(obj);
 
     for (var i = keys.length - 1; i >= 0; --i) {
