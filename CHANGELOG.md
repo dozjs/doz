@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Added** 'props' as second argument to template function
 - **Improved** directive 'd-key', now works also with no component elements
 - **Improved** directives organization
+- **Fixed** issue with comments into scoped style [#9](https://github.com/dozjs/doz/issues/9)
 
 ## [1.24.0] - 2019-08-24
 - **Changed** attributes "style" and "class" will not be removed from the component tag during render
