@@ -24,6 +24,8 @@ function composeStyleInner(cssContent, tag) {
         .replace(/:(component|wrapper|root)/g, '')
         .replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, `$1 ${sanitizeTagForAnimation}-$2`)
         .replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, `$1 ${sanitizeTagForAnimation}-$2`)
+        // Remove comments
+        .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '')
         .replace(/[^\s].*{/gm, match => {
 
             if (/^(@|(from|to|\d+%)[^-_])/.test(match))
