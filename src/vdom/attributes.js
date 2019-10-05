@@ -52,12 +52,11 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
             updated.push(obj);
         }
     });
-
     return updated;
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;// || REGEX.IS_DIRECTIVE.test(name);
+    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
 }
 
 function setBooleanAttribute($target, name, value) {

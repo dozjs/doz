@@ -4312,7 +4312,7 @@ function updateAttributes($target, newProps) {
 }
 
 function isCustomAttribute(name) {
-    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE; // || REGEX.IS_DIRECTIVE.test(name);
+    return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
 }
 
 function setBooleanAttribute($target, name, value) {
