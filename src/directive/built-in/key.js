@@ -34,7 +34,6 @@ directive('key', {
         }
     },
 
-    //todo bisogna gestire le key anche per i non componenti
     onAppComponentRenderOverwrite(instance, changes, next, prev) {
         let candidateKeyToRemove;
         let thereIsDelete = false;

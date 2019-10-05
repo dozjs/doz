@@ -31,8 +31,6 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    //TODO move to other position
-    if (REGEX.IS_DIRECTIVE.test(name)) return;
     if (newVal === '') {
         removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
@@ -175,8 +173,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-        let canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
-        if (canBindValue !== undefined) bindValue = canBindValue;
+        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     const datasetArray = Object.keys($target.dataset);
@@ -185,7 +182,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
             addEventListener($target, i, $target.dataset[datasetArray[i]], cmp, cmpParent);
     }
 
-    cmp.$$afterAttributesCreate($target, bindValue);
+    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {

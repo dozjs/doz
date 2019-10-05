@@ -98,6 +98,11 @@ class DOMManipulation {
                 $target[COMPONENT_INSTANCE].props[name] = value;
             }
         }
+
+        directive.callComponentDOMElementUpdate(this, $target);
+        if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+            $target.removeAttribute(name);
+        }
     }
 
 }

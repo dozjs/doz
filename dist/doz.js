@@ -3860,6 +3860,27 @@ function callComponentDOMElementCreate(instance, $target, initial) {
     }
 }
 
+function callComponentDOMElementUpdate(instance, $target) {
+    var method = 'onComponentDOMElementUpdate';
+    var attributes = Array.from($target.attributes);
+
+    var _defined6 = function _defined6(attribute) {
+        if (isDirective(attribute.name)) {
+            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attribute.value;
+            var directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                //$target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue]);
+            }
+        }
+    };
+
+    for (var _i8 = 0; _i8 <= attributes.length - 1; _i8++) {
+        _defined6(attributes[_i8], _i8, attributes);
+    }
+}
+
 module.exports = {
     callComponentBeforeCreate: callComponentBeforeCreate,
     callComponentCreate: callComponentCreate,
@@ -3874,7 +3895,8 @@ module.exports = {
     callComponentBeforeDestroy: callComponentBeforeDestroy,
     callComponentDestroy: callComponentDestroy,
     callComponentLoadProps: callComponentLoadProps,
-    callComponentDOMElementCreate: callComponentDOMElementCreate
+    callComponentDOMElementCreate: callComponentDOMElementCreate,
+    callComponentDOMElementUpdate: callComponentDOMElementUpdate
 };
 
 /***/ }),
@@ -4253,8 +4275,6 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    //TODO move to other position
-    if (REGEX.IS_DIRECTIVE.test(name)) return;
     if (newVal === '') {
         removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
@@ -4408,8 +4428,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-        var canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
-        if (canBindValue !== undefined) bindValue = canBindValue;
+        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     var datasetArray = Object.keys($target.dataset);
@@ -4417,7 +4436,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         if (REGEX.IS_LISTENER.test(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
     }
 
-    cmp.$$afterAttributesCreate($target, bindValue);
+    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
@@ -4806,6 +4825,11 @@ var DOMManipulation = function () {
                     $target[COMPONENT_INSTANCE].props[name] = value;
                 }
             }
+
+            directive.callComponentDOMElementUpdate(this, $target);
+            if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+                $target.removeAttribute(name);
+            }
         }
     }]);
 
@@ -4884,6 +4908,7 @@ __webpack_require__(61);
 __webpack_require__(62);
 __webpack_require__(63);
 __webpack_require__(64);
+__webpack_require__(65);
 
 /***/ }),
 /* 56 */
@@ -5528,9 +5553,6 @@ directive('key', {
             instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
         }
     },
-
-
-    //todo bisogna gestire le key anche per i non componenti
     onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
         var candidateKeyToRemove = void 0;
         var thereIsDelete = false;
@@ -5651,6 +5673,28 @@ directive('key', {
                 return true;
             }
         }
+    }
+});
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive('show', {
+    setVisible: function setVisible($target, value) {
+        $target.style.display = value === 'false' ? 'none' : 'initial';
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
+    },
+    onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
     }
 });
 

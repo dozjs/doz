@@ -122,6 +122,22 @@ function callComponentDOMElementCreate(instance, $target, initial) {
     });
 }
 
+function callComponentDOMElementUpdate(instance, $target) {
+    let method = 'onComponentDOMElementUpdate';
+    let attributes = Array.from($target.attributes);
+    attributes.forEach(attribute => {
+        if (isDirective(attribute.name)) {
+            let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let directiveValue = attribute.value;
+            let directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                //$target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue])
+            }
+        }
+    });
+}
+
 module.exports = {
     callComponentBeforeCreate,
     callComponentCreate,
@@ -137,4 +153,5 @@ module.exports = {
     callComponentDestroy,
     callComponentLoadProps,
     callComponentDOMElementCreate,
+    callComponentDOMElementUpdate
 };
