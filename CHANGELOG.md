@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** directive 'd-show'
+- **Improved** directive 'd-key', now works also with no component elements
+- **Improved** directives organization
+
 ## [1.24.0] - 2019-08-24
 - **Changed** attributes "style" and "class" will not be removed from the component tag during render
 

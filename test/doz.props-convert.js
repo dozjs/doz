@@ -85,7 +85,7 @@ describe('Doz.props-convert', function () {
 
             setTimeout(() => {
                 be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
-            }, 500);
+            }, 100);
 
         });
 
@@ -170,7 +170,7 @@ describe('Doz.props-convert', function () {
 
             setTimeout(() => {
                 be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
-            }, 500);
+            }, 100);
 
         });
     });

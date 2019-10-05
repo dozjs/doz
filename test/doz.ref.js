@@ -17,7 +17,7 @@ describe('Doz.ref', function () {
             Doz.component('salutation-card', {
                 template() {
                     return `
-                        <div d-ref="myDiv">Hello</div>
+                        <div d-ref="myDiv" title="hello">Hello</div>
                     `
                 },
                 onMount() {

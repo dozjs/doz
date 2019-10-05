@@ -53,7 +53,7 @@ describe('Doz.renderpause', function () {
                 be.err.equal('<div id="app"><dz-app><div><x-parent><div>Ciao Mondo</div></x-parent></div></dz-app></div>', html);
                 be.err.false(app.getComponentById('x-parent').isRenderPause);
                 done();
-            },500);
+            },100);
 
 
         });

@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -81,11 +81,30 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
+var _require = __webpack_require__(2),
+    registerDirective = _require.registerDirective;
+
+function directive(name) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    registerDirective(name, options);
+}
+
+module.exports = Object.assign({
+    directive: directive
+}, __webpack_require__(28), __webpack_require__(29));
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 module.exports = {
     COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
     COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
     COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    DIR_IS: '__DOZ_D_IS__',
     DEFAULT_SLOT_KEY: '__DEFAULT__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -102,15 +121,9 @@ module.exports = {
         TEXT_NODE_PLACE: 'dz-text-node'
     },
     REGEX: {
+        IS_DIRECTIVE: /^d[-:][\w-]+$/,
         IS_CUSTOM_TAG: /^\w+-[\w-]+$/,
         IS_CUSTOM_TAG_STRING: /<\w+-[\w-]+/,
-        IS_BIND: /^d-bind$/,
-        IS_REF: /^d-ref$/,
-        IS_IS: /^d-is$/,
-        IS_ON: /^d:on$/,
-        IS_ALIAS: /^d:alias$/,
-        IS_STORE: /^d:store$/,
-        IS_COMPONENT_LISTENER: /^d:on-(\w+)$/,
         IS_LISTENER: /^on/,
         IS_ID_SELECTOR: /^#[\w-_:.]+$/,
         IS_PARENT_METHOD: /^parent.(.*)/,
@@ -125,72 +138,14 @@ module.exports = {
         HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
         MATCH_NLS: /\n\s+/gm,
-        REPLACE_QUOT: /"/g
+        REPLACE_QUOT: /"/g,
+        REPLACE_D_DIRECTIVE: /^d[-:]/
     },
     ATTR: {
-        // Attributes for HTMLElement
-        BIND: 'd-bind',
-        REF: 'd-ref',
-        IS: 'd-is',
         // Attributes for both
-        KEY: 'd-key',
-        // Attributes for Components
-        ALIAS: 'd:alias',
-        STORE: 'd:store',
-        LISTENER: 'd:on',
-        ID: 'd:id',
-        ON_BEFORE_CREATE: 'd:onbeforecreate',
-        ON_CREATE: 'd:oncreate',
-        ON_CONFIG_CREATE: 'd:onconfigcreate',
-        ON_BEFORE_MOUNT: 'd:onbeforemount',
-        ON_MOUNT: 'd:onmount',
-        ON_MOUNT_ASYNC: 'd:onmountasync',
-        ON_BEFORE_UPDATE: 'd:onbeforeupdate',
-        ON_UPDATE: 'd:onupdate',
-        ON_DRAW_BY_PARENT: 'd:ondrawbyparent',
-        ON_AFTER_RENDER: 'd:onafterrender',
-        ON_BEFORE_UNMOUNT: 'd:onbeforeunmount',
-        ON_UNMOUNT: 'd:onunmount',
-        ON_BEFORE_DESTROY: 'd:onbeforedestroy',
-        ON_DESTROY: 'd:ondestroy',
-        ON_LOAD_PROPS: 'd:onloadprops',
         FORCE_UPDATE: 'forceupdate'
-    },
-    DPROPS: {
-        STORE: 'store',
-        ALIAS: 'alias',
-        CALLBACK: 'callback',
-        ID: 'id',
-        ON_BEFORE_CREATE: '__onBeforeCreate',
-        ON_CREATE: '__onCreate',
-        ON_CONFIG_CREATE: '__onConfigCreate',
-        ON_BEFORE_MOUNT: '__onBeforeMount',
-        ON_MOUNT: '__onMount',
-        ON_MOUNT_ASYNC: '__onMountAsync',
-        ON_BEFORE_UPDATE: '__onBeforeUpdate',
-        ON_UPDATE: '__onUpdate',
-        ON_DRAW_BY_PARENT: '__onDrawByParent',
-        ON_AFTER_RENDER: '__onAfterRender',
-        ON_BEFORE_UNMOUNT: '__onBeforeUnmount',
-        ON_UNMOUNT: '__onUnmount',
-        ON_BEFORE_DESTROY: '__onBeforeDestroy',
-        ON_DESTROY: '__onDestroy',
-        ON_LOAD_PROPS: '__onLoadProps'
     }
 };
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
 
 /***/ }),
 /* 2 */
@@ -199,7 +154,9 @@ module.exports = delay;
 "use strict";
 
 
-var data = __webpack_require__(28);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var data = __webpack_require__(27);
 
 /**
  * Register a component to global
@@ -220,6 +177,7 @@ function registerComponent(cmp) {
 function removeAll() {
     data.components = {};
     data.plugins = [];
+    //data.directives = {};
 }
 
 /**
@@ -240,10 +198,51 @@ function registerPlugin(plugin) {
     data.plugins.push(plugin);
 }
 
+/**
+ * Register a directive to global
+ * @param name
+ * @param cfg
+ */
+function registerDirective(name) {
+    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+    if (typeof name !== 'string') {
+        throw new TypeError('Doz directive name must be a string');
+    }
+
+    if ((typeof cfg === 'undefined' ? 'undefined' : _typeof(cfg)) !== 'object' || !cfg) {
+        throw new TypeError('Doz directive config must be an object');
+    }
+
+    if (name[0] === ':') {
+        cfg._onlyDozComponent = true;
+        name = name.substr(1);
+    }
+
+    name = name.toLowerCase();
+    var namePart = [];
+    if (name.indexOf('-') !== -1) {
+        namePart = name.split('-');
+        name = namePart[0];
+        namePart.shift();
+    }
+
+    cfg.name = name;
+    cfg._keyArguments = namePart.map(function (item) {
+        return item.substr(1);
+    }); // remove $
+
+    if (Object.prototype.hasOwnProperty.call(data.directives, name)) console.warn('Doz', 'directive ' + name + ' overwritten');
+
+    data.directives[name] = cfg;
+}
+
 module.exports = {
     registerComponent: registerComponent,
     registerPlugin: registerPlugin,
     getComponent: getComponent,
+    registerDirective: registerDirective,
     removeAll: removeAll,
     data: data
 };
@@ -255,28 +254,41 @@ module.exports = {
 "use strict";
 
 
-var delay = __webpack_require__(1);
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var delay = __webpack_require__(3);
+var directive = __webpack_require__(0);
 
 function callBeforeCreate(context) {
+    directive.callAppComponentBeforeCreate(context);
+    directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeCreate] === 'function') {
-        return context.parent[context.__onBeforeCreate].call(context.parent, context);
     }
 }
 
 function callCreate(context) {
+    directive.callAppComponentCreate(context);
+    directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
-        context.parent[context.__onCreate].call(context.parent, context);
     }
     context.app.emit('componentCreate', context);
 }
 
 function callConfigCreate(context) {
+    directive.callAppComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -287,59 +299,57 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
+    directive.callAppComponentBeforeMount(context);
+    directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeMount] === 'function') {
-        return context.parent[context.__onBeforeMount].call(context.parent, context);
     }
 }
 
 function callMount(context) {
+    directive.callAppComponentMount(context);
+    directive.callComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onMount] === 'function') {
-        context.parent[context.__onMount].call(context.parent, context);
     }
     context.app.emit('componentMount', context);
 }
 
 function callMountAsync(context) {
+    delay(function () {
+        directive.callAppComponentMountAsync(context);
+        directive.callComponentMountAsync(context);
+    });
     if (typeof context.onMountAsync === 'function') {
         delay(function () {
-            context.onMountAsync.call(context);
-        });
-    }
-    if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
-        delay(function () {
-            context.parent[context.__onMountAsync].call(context.parent, context);
+            return context.onMountAsync.call(context);
         });
     }
     context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
+    directive.callAppComponentBeforeUpdate(context, changes);
+    directive.callComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUpdate] === 'function') {
-        return context.parent[context.__onBeforeUpdate].call(context.parent, context, changes);
     }
 }
 
 function callUpdate(context, changes) {
+    directive.callAppComponentUpdate(context, changes);
+    directive.callComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onUpdate] === 'function') {
-        context.parent[context.__onUpdate].call(context.parent, context, changes);
     }
     context.app.emit('componentUpdate', context, changes);
 }
 
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return;
+
+    directive.callAppComponentDrawByParent(context, newNode, oldNode);
+
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -350,43 +360,41 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
+    directive.callAppComponentAfterRender(context, changes);
+    directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onAfterRender] === 'function') {
-        return context.parent[context.__onAfterRender].call(context.parent, context, changes);
     }
 }
 
 function callBeforeUnmount(context) {
+    directive.callAppComponentBeforeUnmount(context);
+    directive.callComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUnmount] === 'function') {
-        return context.parent[context.__onBeforeUnmount].call(context.parent, context);
     }
 }
 
 function callUnmount(context) {
+    directive.callAppComponentUnmount(context);
+    directive.callComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onUnmount] === 'function') {
-        context.parent[context.__onUnmount].call(context.parent, context);
     }
     context.app.emit('componentUnmount', context);
 }
 
 function callBeforeDestroy(context) {
+    directive.callAppComponentBeforeDestroy(context);
+    directive.callComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeDestroy] === 'function') {
-        return context.parent[context.__onBeforeDestroy].call(context.parent, context);
     }
 }
 
 function callDestroy(context) {
+    directive.callAppComponentDestroy(context);
+    directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
@@ -395,30 +403,19 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
 
-    if (context.store && context.app._stores[context.store]) delete context.app._stores[context.store];
-
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode) context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    if (context.id && context.app._ids[context.id]) delete context.app._ids[context.id];
-    if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
+    if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
-        context.parent[context.__onDestroy].call(context.parent, context);
-        context = null;
-    } else if (typeof context.onDestroy === 'function') {
-        context.onDestroy.call(context);
-        context = null;
-    } else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
-        context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
     }
 }
 
 function callLoadProps(context) {
+    directive.callAppComponentLoadProps(context);
+    directive.callComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onLoadProps] === 'function') {
-        context.parent[context.__onLoadProps].call(context.parent, context);
     }
     context.app.emit('componentLoadProps', context);
 }
@@ -442,7 +439,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -452,16 +449,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(5);
-var dashToCamel = __webpack_require__(10);
+var castStringTo = __webpack_require__(6);
+var dashToCamel = __webpack_require__(7);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR,
-    TAG = _require.TAG,
-    DIR_IS = _require.DIR_IS;
+    TAG = _require.TAG;
 
 var regExcludeSpecial = new RegExp('</?' + TAG.TEXT_NODE_PLACE + '?>$');
+var directive = __webpack_require__(0);
 
 var selfClosingElements = {
     meta: true,
@@ -508,7 +505,7 @@ var Element = function () {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        this.childrenHasKey = false;
+        //this.childrenHasKey = false;
     }
 
     _createClass(Element, [{
@@ -563,7 +560,7 @@ function compile(data, cmp) {
             props = {};
             for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, cmp);
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
             }
 
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
@@ -574,12 +571,13 @@ function compile(data, cmp) {
             }
 
             // Replace KEY attribute with a dataset
-            if (props[ATTR.KEY] !== undefined) {
+            /*if (props[ATTR.KEY] !== undefined) {
                 props['data-key'] = props[ATTR.KEY];
                 delete props[ATTR.KEY];
-            }
+            }*/
 
-            if (props['data-key'] !== undefined && !currentParent.childrenHasKey) currentParent.childrenHasKey = true;
+            /*if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
+                currentParent.childrenHasKey = true;*/
 
             //if (/-/.test(match[2]) && /-/.test(currentParent.type))
             //cmp._maybeSlot = true;
@@ -621,41 +619,34 @@ function compile(data, cmp) {
     return root;
 }
 
-function serializeProps(node) {
+function serializeProps($node) {
     var props = {};
 
-    if (node.attributes) {
-        var attributes = Array.from(node.attributes);
+    if ($node.attributes) {
+        var attributes = Array.from($node.attributes);
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
-
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
-            /*if (REGEX.IS_ON.test(attr.name)) {
-                node.removeAttribute(attr.name)
-                console.log(node.hasAttribute(attr.name))
-            }*/
+            propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props, dIS) {
-    var isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
-    if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined) props[ATTR.LISTENER] = {};
-        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
-        delete props[aName];
-    } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-        //console.log(aName, REGEX.IS_ON.test(aName))
+function propsFixer(nName, aName, aValue, props, $node) {
 
-        if (REGEX.IS_REF.test(aName)) return;
-        if (REGEX.IS_BIND.test(aName)) return;
-        if (REGEX.IS_IS.test(aName)) return;
-        //if (REGEX.IS_ON.test(aName)) return;
+    if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-        props[REGEX.IS_CUSTOM_TAG.test(nName) || dIS ? dashToCamel(aName) : aName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    var isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
+
+    if ( /*!isDirective && */$node) {
+        //console.log($node)
+        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
+            propsName = newPropsName;
+        });
     }
+    props[propsName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
 }
 
 module.exports = {
@@ -665,17 +656,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var isJSON = __webpack_require__(29);
-var isNumber = __webpack_require__(30);
-var toJSON = __webpack_require__(31);
-var toNumber = __webpack_require__(32);
-var typesMap = __webpack_require__(33);
+var isJSON = __webpack_require__(31);
+var isNumber = __webpack_require__(32);
+var toJSON = __webpack_require__(33);
+var toNumber = __webpack_require__(34);
+var typesMap = __webpack_require__(35);
 
 function castStringTo(obj) {
 
@@ -697,7 +688,22 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function dashToCamel(s) {
+    return s.replace(/(-\w)/g, function (m) {
+        return m[1].toUpperCase();
+    });
+}
+
+module.exports = dashToCamel;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -713,40 +719,35 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(36);
-var hooks = __webpack_require__(3);
-var update = __webpack_require__(39).updateElement;
-var store = __webpack_require__(42);
-var ids = __webpack_require__(43);
-var proxy = __webpack_require__(11);
-var toInlineStyle = __webpack_require__(44);
+var observer = __webpack_require__(37);
+var hooks = __webpack_require__(4);
+var update = __webpack_require__(40).updateElement;
+//const store = require('./store');
+//const ids = require('./ids');
+var proxy = __webpack_require__(12);
+var toInlineStyle = __webpack_require__(43);
 var queueReady = __webpack_require__(45);
 var queueDraw = __webpack_require__(46);
 var extendInstance = __webpack_require__(47);
 var cloneObject = __webpack_require__(48);
-var toLiteralString = __webpack_require__(17);
+var toLiteralString = __webpack_require__(16);
 var removeAllAttributes = __webpack_require__(49);
-var h = __webpack_require__(18);
+var h = __webpack_require__(17);
 var loadLocal = __webpack_require__(50);
 var localMixin = __webpack_require__(51);
 
-var _require2 = __webpack_require__(4),
+var _require2 = __webpack_require__(5),
     compile = _require2.compile;
-//const delay = require('../utils/delay');
 
-
-var propsInit = __webpack_require__(20);
-
-var _require3 = __webpack_require__(12),
-    updateBoundElementsByPropsIteration = _require3.updateBoundElementsByPropsIteration;
-
+var propsInit = __webpack_require__(19);
 var DOMManipulation = __webpack_require__(52);
+var directive = __webpack_require__(0);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -776,7 +777,7 @@ var Component = function (_DOMManipulation) {
         defineProperties(_this, opt);
 
         // Assign cfg to instance
-        extendInstance(_this, opt.cmp.cfg, opt.componentDirectives);
+        extendInstance(_this, opt.cmp.cfg);
 
         // Create mixin
         localMixin(_this);
@@ -789,10 +790,6 @@ var Component = function (_DOMManipulation) {
 
         // Create observer to props
         observer.create(_this, true);
-        // Create shared store
-        store.create(_this);
-        // Create ID
-        ids.create(_this);
         // Add callback to ready queue
         queueReady.add(_this);
         // Add callback app draw
@@ -809,9 +806,7 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props);
             propsInit(this);
-            updateBoundElementsByPropsIteration(this);
             observer.create(this);
-            store.sync(this);
             hooks.callLoadProps(this);
         }
     }, {
@@ -828,17 +823,6 @@ var Component = function (_DOMManipulation) {
         key: 'endSafeRender',
         value: function endSafeRender() {
             proxy.endRender(this.props);
-        }
-    }, {
-        key: 'emit',
-        value: function emit(name) {
-            if (this._callback && this._callback[name] !== undefined && this.parent[this._callback[name]] !== undefined && typeof this.parent[this._callback[name]] === 'function') {
-                for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                    args[_key - 1] = arguments[_key];
-                }
-
-                this.parent[this._callback[name]].apply(this.parent, args);
-            }
         }
     }, {
         key: 'each',
@@ -865,21 +849,6 @@ var Component = function (_DOMManipulation) {
         value: function toStyle(obj) {
             return toInlineStyle(obj);
         }
-    }, {
-        key: 'getStore',
-        value: function getStore(storeName) {
-            return this.app.getStore(storeName);
-        }
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
-            return this.app.getComponentById(id);
-        }
-    }, {
-        key: 'getCmp',
-        value: function getCmp(id) {
-            return this.app.getComponentById(id);
-        }
 
         // noinspection JSMethodCanBeStatic
 
@@ -891,70 +860,27 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'render',
         value: function render(initial) {
-            var _this2 = this;
-
             var changes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
             var silentAfterRenderEvent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
             if (this._renderPause) return;
             this.beginSafeRender();
-            var template = this.template(h);
+            var template = this.template(h, this.props);
             this.endSafeRender();
             var next = compile(template, this);
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
-            var candidateKeyToRemove = void 0;
-            var thereIsDelete = false;
+            var isOverwritten = false;
+            directive.callAppComponentRenderOverwrite(this, changes, next, this._prev, function (overwrite) {
+                isOverwritten = overwrite;
+            });
 
-            var _defined = function _defined(change) {
-                // Trova la presunta chiave da eliminare
-                if (Array.isArray(change.target)) {
-                    if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
-                        if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
-                            candidateKeyToRemove = change.previousValue.key;
-                        }
-                    }
-                    if (change.type === 'delete') thereIsDelete = true;
-                }
-
-                // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
-                if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
-                    var _defined2 = function _defined2(item) {
-                        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && _this2._dynamicNodes[item.key] !== undefined) {
-                            if (_this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
-                                _this2._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                            } else {
-                                _this2._dynamicNodes[item.key].parentNode.removeChild(_this2._dynamicNodes[item.key]);
-                            }
-                        }
-                    };
-
-                    var _defined3 = change.previousValue;
-
-                    for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                        _defined2(_defined3[_i4], _i4, _defined3);
-                    }
-                }
-            };
-
-            for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-                _defined(changes[_i2], _i2, changes);
-            }
-
-            if (!thereIsDelete) candidateKeyToRemove = undefined;
-
-            if (candidateKeyToRemove !== undefined && this._dynamicNodes[candidateKeyToRemove] !== undefined) {
-                if (this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
-                    this._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                } else {
-                    this._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(this._dynamicNodes[candidateKeyToRemove]);
-                }
-            } else {
+            if (!isOverwritten) {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
                 //Remove attributes from component tag
-                removeAllAttributes(this._cfgRoot, ['data-is', 'data-uid', 'data-key', 'style', 'class']);
+                removeAllAttributes(this._cfgRoot, ['style', 'class']);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -966,11 +892,6 @@ var Component = function (_DOMManipulation) {
             if (!silentAfterRenderEvent) hooks.callAfterRender(this);
 
             drawDynamic(this);
-            /*if (initial) {
-                drawDynamic(this);
-            } else {
-                delay(() => drawDynamic(this));
-            }*/
         }
     }, {
         key: 'renderPause',
@@ -988,7 +909,7 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'mount',
         value: function mount(template) {
-            var _this3 = this;
+            var _this2 = this;
 
             var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1004,14 +925,14 @@ var Component = function (_DOMManipulation) {
 
                 hooks.callMount(this);
 
-                var _defined4 = function _defined4(child) {
-                    _this3.children[child].mount();
+                var _defined = function _defined(child) {
+                    _this2.children[child].mount();
                 };
 
-                var _defined5 = Object.keys(this.children);
+                var _defined2 = Object.keys(this.children);
 
-                for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                    _defined4(_defined5[_i6], _i6, _defined5);
+                for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+                    _defined(_defined2[_i2], _i2, _defined2);
                 }
 
                 return this;
@@ -1039,7 +960,7 @@ var Component = function (_DOMManipulation) {
         value: function unmount() {
             var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-            var _this4 = this;
+            var _this3 = this;
 
             var byDestroy = arguments[1];
             var silently = arguments[2];
@@ -1064,14 +985,14 @@ var Component = function (_DOMManipulation) {
 
             if (!silently) hooks.callUnmount(this);
 
-            var _defined6 = function _defined6(child) {
-                _this4.children[child].unmount(onlyInstance, byDestroy, silently);
+            var _defined3 = function _defined3(child) {
+                _this3.children[child].unmount(onlyInstance, byDestroy, silently);
             };
 
-            var _defined7 = Object.keys(this.children);
+            var _defined4 = Object.keys(this.children);
 
-            for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
-                _defined6(_defined7[_i8], _i8, _defined7);
+            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+                _defined3(_defined4[_i4], _i4, _defined4);
             }
 
             return this;
@@ -1079,7 +1000,7 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'destroy',
         value: function destroy(onlyInstance) {
-            var _this5 = this;
+            var _this4 = this;
 
             if (this.unmount(onlyInstance, true) === false) return;
 
@@ -1087,14 +1008,14 @@ var Component = function (_DOMManipulation) {
                 return;
             }
 
-            var _defined8 = function _defined8(child) {
-                _this5.children[child].destroy();
+            var _defined5 = function _defined5(child) {
+                _this4.children[child].destroy();
             };
 
-            var _defined9 = Object.keys(this.children);
+            var _defined6 = Object.keys(this.children);
 
-            for (var _i10 = 0; _i10 <= _defined9.length - 1; _i10++) {
-                _defined8(_defined9[_i10], _i10, _defined9);
+            for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
+                _defined5(_defined6[_i6], _i6, _defined6);
             }
 
             hooks.callDestroy(this);
@@ -1135,7 +1056,7 @@ var Component = function (_DOMManipulation) {
 
             this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
             observer.create(this);
-            store.sync(this);
+            directive.callAppComponentSetProps(this);
         },
         get: function get() {
             return this._props;
@@ -1149,6 +1070,8 @@ var Component = function (_DOMManipulation) {
 
             if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') throw new TypeError('Config must be an object');
 
+            directive.callAppComponentSetConfig(this, obj);
+
             if (_typeof(obj.mixin) === 'object') {
                 this.mixin = obj.mixin;
                 localMixin(this);
@@ -1157,16 +1080,6 @@ var Component = function (_DOMManipulation) {
             if (_typeof(obj.components) === 'object') {
                 this.components = obj.components;
                 loadLocal(this);
-            }
-
-            if (typeof obj.store === 'string') {
-                this.store = obj.store;
-                store.create(this);
-            }
-
-            if (typeof obj.id === 'string') {
-                this.id = obj.id;
-                ids.create(this);
             }
 
             if (typeof obj.autoCreateChildren === 'boolean') {
@@ -1207,9 +1120,6 @@ function defineProperties(obj, opt) {
         _initialProps: {
             value: cloneObject(obj._rawProps)
         },
-        _callback: {
-            value: opt.componentDirectives['callback']
-        },
         _isRendered: {
             value: false,
             writable: true
@@ -1224,10 +1134,6 @@ function defineProperties(obj, opt) {
         },
         _parentElement: {
             value: null,
-            writable: true
-        },
-        _boundElements: {
-            value: {},
             writable: true
         },
         _components: {
@@ -1258,15 +1164,15 @@ function defineProperties(obj, opt) {
             value: {},
             writable: true
         },
+        _directiveProps: {
+            value: {},
+            writable: true
+        },
         _computedCache: {
             value: new Map()
         },
         _renderPause: {
             value: false,
-            writable: true
-        },
-        _dynamicNodes: {
-            value: {},
             writable: true
         },
         _rawHTML: {
@@ -1285,6 +1191,10 @@ function defineProperties(obj, opt) {
         //Public
         tag: {
             value: opt.cmp.tag,
+            enumerable: true
+        },
+        uId: {
+            value: opt.uId,
             enumerable: true
         },
         app: {
@@ -1307,10 +1217,6 @@ function defineProperties(obj, opt) {
         shared: {
             value: opt.app.shared,
             writable: true,
-            enumerable: true
-        },
-        ref: {
-            value: {},
             enumerable: true
         },
         children: {
@@ -1366,8 +1272,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        //if (!item.node.childNodes.length) {
-        var dynamicInstance = __webpack_require__(7).get({
+        var dynamicInstance = __webpack_require__(9).get({
             root: root,
             template: item.node.outerHTML,
             app: instance.app,
@@ -1377,6 +1282,7 @@ function drawDynamic(instance) {
         if (dynamicInstance) {
 
             // Replace with dynamic instance original node
+            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
             // if original node has children
@@ -1398,9 +1304,8 @@ function drawDynamic(instance) {
                 instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
             }
 
-            if (item.node.dataset.key) instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+            directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
         }
-        //}
         index -= 1;
     }
 }
@@ -1412,7 +1317,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1426,45 +1331,35 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var html = __webpack_require__(8);
+var html = __webpack_require__(10);
 
-var _require = __webpack_require__(26),
+var _require = __webpack_require__(25),
     scopedInner = _require.scopedInner;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
-    ATTR = _require2.ATTR,
-    DIR_IS = _require2.DIR_IS,
     REGEX = _require2.REGEX;
 
 var collection = __webpack_require__(2);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(4);
 
-var _require3 = __webpack_require__(4),
+var _require3 = __webpack_require__(5),
     serializeProps = _require3.serializeProps;
+//const {extract} = require('./component-directives');
 
-var _require4 = __webpack_require__(34),
-    extract = _require4.extract;
 
-var hmr = __webpack_require__(35);
+var hmr = __webpack_require__(36);
 
-var _require5 = __webpack_require__(6),
-    Component = _require5.Component;
+var _require4 = __webpack_require__(8),
+    Component = _require4.Component;
 
-var propsInit = __webpack_require__(20);
-var delay = __webpack_require__(1);
+var propsInit = __webpack_require__(19);
+var delay = __webpack_require__(3);
+var directive = __webpack_require__(0);
 
 function getComponentName(child) {
-    var cmpName = void 0;
-    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
-        cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-        child.removeAttribute(ATTR.IS);
-        child.dataset.is = cmpName;
-        child[DIR_IS] = true;
-    } else cmpName = child.nodeName.toLowerCase();
-
-    return cmpName;
+    return child.nodeName.toLowerCase();
 }
 
 function transformChildStyle(child, parent) {
@@ -1518,7 +1413,7 @@ function get() {
 
         while ($child) {
 
-            //console.log('---', $child.nodeName);
+            directive.callAppWalkDOM(parent, $child);
 
             var uId = cfg.app.generateUId();
 
@@ -1530,6 +1425,10 @@ function get() {
             }
 
             cmpName = getComponentName($child);
+
+            directive.callAppComponentAssignName(parent, $child, function (name) {
+                cmpName = name;
+            });
 
             var localComponents = {};
 
@@ -1564,7 +1463,13 @@ function get() {
                     }
 
                     var props = serializeProps($child);
-                    var componentDirectives = extract(props);
+                    //const componentDirectives = extract(props);
+                    //console.log(extract(props))
+                    var componentDirectives = {}; // directive.extractDirectivesFromProps(props);
+
+                    /*console.log('props', props)
+                    console.log('directives', componentDirectives)
+                    console.log('-----')*/
 
                     var newElement = void 0;
 
@@ -1600,7 +1505,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
+                            parentCmp: parent.cmp || cfg.parent,
+                            uId: uId
                         });
                     } else {
                         newElement = new Component({
@@ -1610,7 +1516,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
+                            parentCmp: parent.cmp || cfg.parent,
+                            uId: uId
                         });
                     }
 
@@ -1627,7 +1534,7 @@ function get() {
 
                     propsInit(newElement);
 
-                    Object.defineProperty(newElement, 'uId', { value: uId });
+                    //Object.defineProperty(newElement, 'uId', {value: uId});
                     //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                     newElement.app.emit('componentPropsInit', newElement);
@@ -1666,8 +1573,15 @@ function get() {
                     parentElement = newElement;
 
                     if (parent.cmp) {
-                        var n = Object.keys(parent.cmp.children).length;
-                        parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                        var n = Object.keys(parent.cmp.children).length++;
+                        directive.callAppComponentAssignIndex(newElement, n, function (index) {
+                            parent.cmp.children[index] = newElement;
+                        });
+
+                        /*
+                        let n = Object.keys(parent.cmp.children).length++;
+                        parent.cmp.children[newElement.alias ? newElement.alias : n] = newElement;
+                         */
                         if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
                             parent.cmp.childrenByTag[newElement.tag] = [newElement];
                         } else {
@@ -1711,7 +1625,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1756,7 +1670,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1806,22 +1720,7 @@ function composeStyleInner(cssContent, tag) {
 module.exports = composeStyleInner;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function dashToCamel(s) {
-    return s.replace(/(-\w)/g, function (m) {
-        return m[1].toUpperCase();
-    });
-}
-
-module.exports = dashToCamel;
-
-/***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1843,7 +1742,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(3);
 
 function sanitize(str) {
     return typeof str === 'string' ? str.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : str;
@@ -2456,89 +2355,6 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function updateBoundElementsByChanges(instance, changes) {
-    var _defined = function _defined(item) {
-        var value = item.newValue;
-        var property = item.property;
-        updateBoundElements(instance, value, property);
-    };
-
-    for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-        _defined(changes[_i2], _i2, changes);
-    }
-}
-
-function updateBoundElementsByPropsIteration(instance) {
-    (function iterate(props) {
-        var keys = Object.keys(props);
-        for (var i = 0, l = keys.length; i < l; i++) {
-            var property = keys[i];
-            if (props[property] instanceof Object && props[property] !== null) {
-                iterate(props[property]);
-            } else {
-                updateBoundElements(instance, props[property], property);
-            }
-        }
-    })(instance._rawProps);
-}
-
-function updateBoundElements(instance, value, property) {
-    if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
-        var _defined2 = function _defined2(element) {
-            if (element.type === 'checkbox') {
-                if (!element.defaultValue) element.checked = value;else if (Array.isArray(value)) {
-                    var inputs = document.querySelectorAll('input[name=' + element.name + '][type=checkbox]');
-
-                    var _defined4 = function _defined4(input) {
-                        return input.checked = value.includes(input.value);
-                    };
-
-                    var _defined5 = [].concat(_toConsumableArray(inputs));
-
-                    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                        _defined4(_defined5[_i6], _i6, _defined5);
-                    }
-                }
-            } else if (element.type === 'radio') {
-                element.checked = element.value === value;
-            } else if (element.type === 'select-multiple' && Array.isArray(value)) {
-                var _defined6 = function _defined6(option) {
-                    return option.selected = value.includes(option.value);
-                };
-
-                var _defined7 = [].concat(_toConsumableArray(element.options));
-
-                for (var _i8 = 0; _i8 <= _defined7.length - 1; _i8++) {
-                    _defined6(_defined7[_i8], _i8, _defined7);
-                }
-            } else {
-                element.value = value;
-            }
-        };
-
-        var _defined3 = instance._boundElements[property];
-
-        for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-            _defined2(_defined3[_i4], _i4, _defined3);
-        }
-    }
-}
-
-module.exports = {
-    updateBoundElementsByChanges: updateBoundElementsByChanges,
-    updateBoundElementsByPropsIteration: updateBoundElementsByPropsIteration,
-    updateBoundElements: updateBoundElements
-};
-
-/***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2547,7 +2363,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(38);
+var castType = __webpack_require__(39);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2613,11 +2429,11 @@ module.exports = manipulate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(40),
+var _require = __webpack_require__(41),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     TAG = _require2.TAG,
     NS = _require2.NS,
     COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
@@ -2625,7 +2441,7 @@ var _require2 = __webpack_require__(0),
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
 var canDecode = __webpack_require__(15);
-var hooks = __webpack_require__(3);
+var hooks = __webpack_require__(4);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2821,8 +2637,6 @@ function update($parent, newNode, oldNode) {
         }
 
         clearDead();
-
-        cmp.$$afterNodeWalk();
     }
 }
 
@@ -2847,7 +2661,7 @@ module.exports = {
 "use strict";
 
 
-var html = __webpack_require__(8);
+var html = __webpack_require__(10);
 
 function canDecode(str) {
     return (/&\w+;/.test(str) ? html.decode(str) : str
@@ -2863,11 +2677,11 @@ module.exports = canDecode;
 "use strict";
 
 
-function camelToDash(s) {
-    return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+function toLiteralString(str) {
+    return str.replace(/{{/gm, '${').replace(/}}/gm, '}');
 }
 
-module.exports = camelToDash;
+module.exports = toLiteralString;
 
 /***/ }),
 /* 17 */
@@ -2876,22 +2690,9 @@ module.exports = camelToDash;
 "use strict";
 
 
-function toLiteralString(str) {
-    return str.replace(/{{/gm, '${').replace(/}}/gm, '}');
-}
-
-module.exports = toLiteralString;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
 var tag = TAG.TEXT_NODE_PLACE;
@@ -2938,7 +2739,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2976,7 +2777,7 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3002,7 +2803,7 @@ function propsInit(instance) {
 module.exports = propsInit;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3042,40 +2843,45 @@ module.exports = {
 };
 
 /***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(22);
+
+/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(23);
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Doz = __webpack_require__(24);
+var Doz = __webpack_require__(23);
 var collection = __webpack_require__(2);
 
-var _require = __webpack_require__(21),
+var _require = __webpack_require__(20),
     use = _require.use;
+
+var _require2 = __webpack_require__(0),
+    directive = _require2.directive;
 
 var component = __webpack_require__(53);
 
-var _require2 = __webpack_require__(6),
-    Component = _require2.Component;
+var _require3 = __webpack_require__(8),
+    Component = _require3.Component;
 
 var mixin = __webpack_require__(54);
-var h = __webpack_require__(18);
+var h = __webpack_require__(17);
 
-var _require3 = __webpack_require__(4),
-    compile = _require3.compile;
+var _require4 = __webpack_require__(5),
+    compile = _require4.compile;
 
-var _require4 = __webpack_require__(14),
-    update = _require4.update;
+var _require5 = __webpack_require__(14),
+    update = _require5.update;
+
+__webpack_require__(55);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -3114,6 +2920,10 @@ Object.defineProperties(Doz, {
         value: use,
         enumerable: true
     },
+    directive: {
+        value: directive,
+        enumerable: true
+    },
     version: {
         value: '1.24.0',
         enumerable: true
@@ -3123,7 +2933,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3135,15 +2945,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var bind = __webpack_require__(25);
-var instances = __webpack_require__(7);
+var bind = __webpack_require__(24);
+var instances = __webpack_require__(9);
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(17);
-var plugin = __webpack_require__(21);
+var toLiteralString = __webpack_require__(16);
+var plugin = __webpack_require__(20);
+var directive = __webpack_require__(0);
 
 var Doz = function () {
     function Doz() {
@@ -3205,17 +3016,17 @@ var Doz = function () {
                 value: {},
                 writable: true
             },
-            _stores: {
+            /*_stores: {
                 value: {},
                 writable: true
-            },
+            },*/
             _cache: {
                 value: new Map()
             },
-            _ids: {
+            /*_ids: {
                 value: {},
                 writable: true
-            },
+            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -3344,6 +3155,7 @@ var Doz = function () {
         }
 
         plugin.load(this);
+        directive.callAppInit(this);
 
         if (this.cfg.autoDraw) this.draw();
 
@@ -3366,22 +3178,24 @@ var Doz = function () {
             return this;
         }
     }, {
-        key: 'getComponent',
-        value: function getComponent(alias) {
-            return this._tree ? this._tree.children[alias] : undefined;
-        }
-    }, {
-        key: 'getComponentById',
-        value: function getComponentById(id) {
+        key: 'on',
+
+
+        /*
+        getComponent(alias) {
+            return this._tree
+                ? this._tree.children[alias]
+                : undefined;
+        }*/
+        /*
+        getComponentById(id) {
             return this._ids[id];
         }
-    }, {
-        key: 'getStore',
-        value: function getStore(store) {
+        */
+        /*getStore(store) {
             return this._stores[store];
-        }
-    }, {
-        key: 'on',
+        }*/
+
         value: function on(event, callback) {
             if (typeof event !== 'string') throw new TypeError('Event must be a string');
 
@@ -3436,7 +3250,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3468,14 +3282,14 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var composeStyleInner = __webpack_require__(9);
-var createStyle = __webpack_require__(27);
+var composeStyleInner = __webpack_require__(11);
+var createStyle = __webpack_require__(26);
 
 function scopedInner(cssContent, uId, tag) {
     if (typeof cssContent !== 'string') return;
@@ -3488,7 +3302,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3514,7 +3328,7 @@ function createStyle(cssContent, uId) {
 module.exports = createStyle;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3522,11 +3336,620 @@ module.exports = createStyle;
 
 module.exports = {
     components: {},
-    plugins: []
+    plugins: [],
+    directives: {}
+};
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(2),
+    data = _require.data;
+
+// All methods that starts with prefix callApp are considered extra of directives hooks
+// because they don't use any prop but are useful for initializing stuff.
+// For example built-in like d:store and d:id
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args.shift();
+    var oKeys = Object.keys(data.directives);
+    var callback = void 0;
+
+    // Search for a possible callback
+    for (var i = 0; i < args.length; i++) {
+        if (typeof args[i] === 'function') {
+            callback = args[i];
+            break;
+        }
+    }
+
+    for (var _i = 0; _i < oKeys.length; _i++) {
+        var key = oKeys[_i];
+        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
+            var res = data.directives[key][method].apply(data.directives[key], args);
+            // If res returns something, fire the callback
+            if (res !== undefined && callback) callback(res);
+        }
+    }
+}
+
+function callAppInit() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    args = ['onAppInit'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentCreate() {
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    args = ['onAppComponentCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentBeforeCreate() {
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    args = ['onAppComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentConfigCreate() {
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    args = ['onAppComponentConfigCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentBeforeMount() {
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+    }
+
+    args = ['onAppComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentMount() {
+    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+    }
+
+    args = ['onAppComponentMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentMountAsync() {
+    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+    }
+
+    args = ['onAppComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentBeforeUpdate() {
+    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+    }
+
+    args = ['onAppComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentUpdate() {
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+    }
+
+    args = ['onAppComponentUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentDrawByParent() {
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+    }
+
+    args = ['onAppComponentDrawByParent'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentAfterRender() {
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+    }
+
+    args = ['onAppComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentBeforeUnmount() {
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+    }
+
+    args = ['onAppComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentUnmount() {
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+    }
+
+    args = ['onAppComponentUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentBeforeDestroy() {
+    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+        args[_key15] = arguments[_key15];
+    }
+
+    args = ['onAppComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentSetConfig() {
+    for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
+        args[_key16] = arguments[_key16];
+    }
+
+    args = ['onAppComponentSetConfig'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentSetProps() {
+    for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
+        args[_key17] = arguments[_key17];
+    }
+
+    args = ['onAppComponentSetProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentLoadProps() {
+    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
+        args[_key18] = arguments[_key18];
+    }
+
+    args = ['onAppComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentDestroy() {
+    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+        args[_key19] = arguments[_key19];
+    }
+
+    args = ['onAppComponentDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentAssignIndex() {
+    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+        args[_key20] = arguments[_key20];
+    }
+
+    args = ['onAppComponentAssignIndex'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppWalkDOM() {
+    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
+        args[_key21] = arguments[_key21];
+    }
+
+    args = ['onAppWalkDOM'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentAssignName() {
+    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
+        args[_key22] = arguments[_key22];
+    }
+
+    args = ['onAppComponentAssignName'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentPropsAssignName() {
+    for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
+        args[_key23] = arguments[_key23];
+    }
+
+    args = ['onAppComponentPropsAssignName'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppDOMElementCreate() {
+    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
+    }
+
+    //todo Dovrebbe risolvere il problema del tag doppio
+    args = ['onAppDOMElementCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppDynamicInstanceCreate() {
+    for (var _len25 = arguments.length, args = Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
+        args[_key25] = arguments[_key25];
+    }
+
+    args = ['onAppDynamicInstanceCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callAppComponentRenderOverwrite() {
+    for (var _len26 = arguments.length, args = Array(_len26), _key26 = 0; _key26 < _len26; _key26++) {
+        args[_key26] = arguments[_key26];
+    }
+
+    args = ['onAppComponentRenderOverwrite'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+/*function callAppDOMAttributeSet(...args) {
+    args = ['onAppDOMAttributeSet', ...args];
+    callMethod.apply(null, args);
+}*/
+
+module.exports = {
+    callAppInit: callAppInit,
+    callAppComponentCreate: callAppComponentCreate,
+    callAppComponentLoadProps: callAppComponentLoadProps,
+    callAppComponentSetConfig: callAppComponentSetConfig,
+    callAppComponentSetProps: callAppComponentSetProps,
+    callAppComponentDestroy: callAppComponentDestroy,
+    callAppComponentAssignIndex: callAppComponentAssignIndex,
+    callAppComponentBeforeCreate: callAppComponentBeforeCreate,
+    callAppComponentConfigCreate: callAppComponentConfigCreate,
+    callAppComponentBeforeMount: callAppComponentBeforeMount,
+    callAppComponentMount: callAppComponentMount,
+    callAppComponentBeforeDestroy: callAppComponentBeforeDestroy,
+    callAppComponentUnmount: callAppComponentUnmount,
+    callAppComponentBeforeUnmount: callAppComponentBeforeUnmount,
+    callAppComponentAfterRender: callAppComponentAfterRender,
+    callAppComponentDrawByParent: callAppComponentDrawByParent,
+    callAppComponentUpdate: callAppComponentUpdate,
+    callAppComponentBeforeUpdate: callAppComponentBeforeUpdate,
+    callAppComponentMountAsync: callAppComponentMountAsync,
+    callAppWalkDOM: callAppWalkDOM,
+    callAppComponentAssignName: callAppComponentAssignName,
+    callAppDOMElementCreate: callAppDOMElementCreate,
+    callAppDynamicInstanceCreate: callAppDynamicInstanceCreate,
+    callAppComponentPropsAssignName: callAppComponentPropsAssignName,
+    callAppComponentRenderOverwrite: callAppComponentRenderOverwrite
 };
 
 /***/ }),
 /* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(2),
+    data = _require.data;
+
+var _require2 = __webpack_require__(30),
+    extractDirectivesFromProps = _require2.extractDirectivesFromProps,
+    isDirective = _require2.isDirective;
+
+var _require3 = __webpack_require__(1),
+    REGEX = _require3.REGEX;
+
+// Hooks for the component
+
+
+function callMethod() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    var method = args[0];
+    var cmp = args[1];
+
+    // Remove first argument event name
+    args.shift();
+    //console.warn(cmp.tag, method, cmp.props)
+
+    var directivesKeyValue = extractDirectivesFromProps(cmp);
+
+    var _defined = function _defined(key) {
+
+        var keyArgumentsValues = [];
+        var keyArguments = {};
+        var originKey = key;
+
+        if (key.indexOf('-') !== -1) {
+            keyArgumentsValues = key.split('-');
+            key = keyArgumentsValues[0];
+            keyArgumentsValues.shift();
+        }
+
+        var directiveObj = data.directives[key];
+        //console.log(method, directiveObj)
+        //if (directiveObj)
+        //console.warn(method, directiveObj[method])
+        if (directiveObj && typeof directiveObj[method] === 'function') {
+            // Clone args object
+            var outArgs = Object.assign([], args);
+            // Add directive value
+            outArgs.push(directivesKeyValue[originKey]);
+
+            var _defined3 = function _defined3(keyArg, i) {
+                return keyArguments[keyArg] = keyArgumentsValues[i];
+            };
+
+            var _defined4 = directiveObj._keyArguments;
+
+            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+                _defined3(_defined4[_i4], _i4, _defined4);
+            }
+
+            outArgs.push(keyArguments);
+            directiveObj[method].apply(directiveObj, outArgs);
+        }
+    };
+
+    var _defined2 = Object.keys(directivesKeyValue);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+}
+
+function callComponentBeforeCreate() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    args = ['onComponentBeforeCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentCreate() {
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    args = ['onComponentCreate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeMount() {
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    args = ['onComponentBeforeMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMount() {
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    args = ['onComponentMount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentMountAsync() {
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+    }
+
+    args = ['onComponentMountAsync'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentAfterRender() {
+    for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+    }
+
+    args = ['onComponentAfterRender'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUpdate() {
+    for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+    }
+
+    args = ['onComponentBeforeUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUpdate() {
+    for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+    }
+
+    args = ['onComponentUpdate'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeUnmount() {
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+    }
+
+    args = ['onComponentBeforeUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentUnmount() {
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+    }
+
+    args = ['onComponentUnmount'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentBeforeDestroy() {
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+    }
+
+    args = ['onComponentBeforeDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentDestroy() {
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+    }
+
+    args = ['onComponentDestroy'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentLoadProps() {
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+    }
+
+    args = ['onComponentLoadProps'].concat(_toConsumableArray(args));
+    callMethod.apply(null, args);
+}
+
+function callComponentDOMElementCreate(instance, $target, initial) {
+    var method = 'onComponentDOMElementCreate';
+    var attributes = Array.from($target.attributes);
+
+    var _defined5 = function _defined5(attribute) {
+        if (isDirective(attribute.name)) {
+            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attribute.value;
+            var directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                $target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
+            }
+        }
+    };
+
+    for (var _i6 = 0; _i6 <= attributes.length - 1; _i6++) {
+        _defined5(attributes[_i6], _i6, attributes);
+    }
+}
+
+function callComponentDOMElementUpdate(instance, $target) {
+    var method = 'onComponentDOMElementUpdate';
+    var attributes = Array.from($target.attributes);
+
+    var _defined6 = function _defined6(attribute) {
+        if (isDirective(attribute.name)) {
+            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attribute.value;
+            var directiveObj = data.directives[directiveName];
+            if (directiveObj && directiveObj[method]) {
+                //$target.removeAttribute(attribute.name);
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue]);
+            }
+        }
+    };
+
+    for (var _i8 = 0; _i8 <= attributes.length - 1; _i8++) {
+        _defined6(attributes[_i8], _i8, attributes);
+    }
+}
+
+module.exports = {
+    callComponentBeforeCreate: callComponentBeforeCreate,
+    callComponentCreate: callComponentCreate,
+    callComponentBeforeMount: callComponentBeforeMount,
+    callComponentMount: callComponentMount,
+    callComponentMountAsync: callComponentMountAsync,
+    callComponentAfterRender: callComponentAfterRender,
+    callComponentBeforeUpdate: callComponentBeforeUpdate,
+    callComponentUpdate: callComponentUpdate,
+    callComponentBeforeUnmount: callComponentBeforeUnmount,
+    callComponentUnmount: callComponentUnmount,
+    callComponentBeforeDestroy: callComponentBeforeDestroy,
+    callComponentDestroy: callComponentDestroy,
+    callComponentLoadProps: callComponentLoadProps,
+    callComponentDOMElementCreate: callComponentDOMElementCreate,
+    callComponentDOMElementUpdate: callComponentDOMElementUpdate
+};
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX;
+
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    var props = void 0;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
+    var _defined
+    /*if (canBeDeleteProps)
+        delete props[key];*/
+    = function _defined(key) {
+        if (isDirective(key)) {
+            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    };
+
+    var _defined2 = Object.keys(props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+
+    return cmp._directiveProps;
+}
+
+function isDirective(name) {
+    return REGEX.IS_DIRECTIVE.test(name);
+}
+
+module.exports = {
+    isDirective: isDirective,
+    extractDirectivesFromProps: extractDirectivesFromProps
+};
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3538,7 +3961,7 @@ module.exports = function isJSON(obj) {
 };
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3551,7 +3974,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3566,7 +3989,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3586,7 +4009,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3602,130 +4025,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(0),
-    ATTR = _require.ATTR,
-    DPROPS = _require.DPROPS;
-
-/**
- * Extract directives from props
- * @param props
- */
-
-
-function extract(props) {
-
-    var directives = {};
-
-    if (props[ATTR.ALIAS] !== undefined) {
-        directives[DPROPS.ALIAS] = props[ATTR.ALIAS];
-        delete props[ATTR.ALIAS];
-    }
-
-    if (props[ATTR.STORE] !== undefined) {
-        directives[DPROPS.STORE] = props[ATTR.STORE];
-        delete props[ATTR.STORE];
-    }
-
-    if (props[ATTR.LISTENER] !== undefined) {
-        directives[DPROPS.CALLBACK] = props[ATTR.LISTENER];
-        delete props[ATTR.LISTENER];
-    }
-
-    if (props[ATTR.ID] !== undefined) {
-        directives[DPROPS.ID] = props[ATTR.ID];
-        delete props[ATTR.ID];
-    }
-
-    if (props[ATTR.ON_BEFORE_CREATE] !== undefined) {
-        directives[DPROPS.ON_BEFORE_CREATE] = props[ATTR.ON_BEFORE_CREATE];
-        delete props[ATTR.ON_BEFORE_CREATE];
-    }
-
-    if (props[ATTR.ON_CREATE] !== undefined) {
-        directives[DPROPS.ON_CREATE] = props[ATTR.ON_CREATE];
-        delete props[ATTR.ON_CREATE];
-    }
-
-    if (props[ATTR.ON_CONFIG_CREATE] !== undefined) {
-        directives[DPROPS.ON_CONFIG_CREATE] = props[ATTR.ON_CONFIG_CREATE];
-        delete props[ATTR.ON_CONFIG_CREATE];
-    }
-
-    if (props[ATTR.ON_BEFORE_MOUNT] !== undefined) {
-        directives[DPROPS.ON_BEFORE_MOUNT] = props[ATTR.ON_BEFORE_MOUNT];
-        delete props[ATTR.ON_BEFORE_MOUNT];
-    }
-
-    if (props[ATTR.ON_MOUNT] !== undefined) {
-        directives[DPROPS.ON_MOUNT] = props[ATTR.ON_MOUNT];
-        delete props[ATTR.ON_MOUNT];
-    }
-
-    if (props[ATTR.ON_MOUNT_ASYNC] !== undefined) {
-        directives[DPROPS.ON_MOUNT_ASYNC] = props[ATTR.ON_MOUNT_ASYNC];
-        delete props[ATTR.ON_MOUNT_ASYNC];
-    }
-
-    if (props[ATTR.ON_BEFORE_UPDATE] !== undefined) {
-        directives[DPROPS.ON_BEFORE_UPDATE] = props[ATTR.ON_BEFORE_UPDATE];
-        delete props[ATTR.ON_BEFORE_UPDATE];
-    }
-
-    if (props[ATTR.ON_UPDATE] !== undefined) {
-        directives[DPROPS.ON_UPDATE] = props[ATTR.ON_UPDATE];
-        delete props[ATTR.ON_UPDATE];
-    }
-
-    if (props[ATTR.ON_DRAW_BY_PARENT] !== undefined) {
-        directives[DPROPS.ON_DRAW_BY_PARENT] = props[ATTR.ON_DRAW_BY_PARENT];
-        delete props[ATTR.ON_DRAW_BY_PARENT];
-    }
-
-    if (props[ATTR.ON_AFTER_RENDER] !== undefined) {
-        directives[DPROPS.ON_AFTER_RENDER] = props[ATTR.ON_AFTER_RENDER];
-        delete props[ATTR.ON_AFTER_RENDER];
-    }
-
-    if (props[ATTR.ON_BEFORE_UNMOUNT] !== undefined) {
-        directives[DPROPS.ON_BEFORE_UNMOUNT] = props[ATTR.ON_BEFORE_UNMOUNT];
-        delete props[ATTR.ON_BEFORE_UNMOUNT];
-    }
-
-    if (props[ATTR.ON_UNMOUNT] !== undefined) {
-        directives[DPROPS.ON_UNMOUNT] = props[ATTR.ON_UNMOUNT];
-        delete props[ATTR.ON_UNMOUNT];
-    }
-
-    if (props[ATTR.ON_BEFORE_DESTROY] !== undefined) {
-        directives[DPROPS.ON_BEFORE_DESTROY] = props[ATTR.ON_BEFORE_DESTROY];
-        delete props[ATTR.ON_BEFORE_DESTROY];
-    }
-
-    if (props[ATTR.ON_DESTROY] !== undefined) {
-        directives[DPROPS.ON_DESTROY] = props[ATTR.ON_DESTROY];
-        delete props[ATTR.ON_DESTROY];
-    }
-
-    if (props[ATTR.ON_LOAD_PROPS] !== undefined) {
-        directives[DPROPS.ON_LOAD_PROPS] = props[ATTR.ON_LOAD_PROPS];
-        delete props[ATTR.ON_LOAD_PROPS];
-    }
-
-    return directives;
-}
-
-module.exports = {
-    extract: extract
-};
-
-/***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3769,26 +4069,23 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var proxy = __webpack_require__(11);
-var events = __webpack_require__(3);
-
-var _require = __webpack_require__(12),
-    updateBoundElementsByChanges = _require.updateBoundElementsByChanges;
-
-var propsListener = __webpack_require__(37);
+var proxy = __webpack_require__(12);
+var events = __webpack_require__(4);
+//const {updateBoundElementsByChanges} = require('./update-bound-element');
+var propsListener = __webpack_require__(38);
 var manipulate = __webpack_require__(13);
 
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
     instance.render(undefined, changes);
-    updateBoundElementsByChanges(instance, changes);
+    //updateBoundElementsByChanges(instance, changes);
 }
 
 function create(instance) {
@@ -3833,7 +4130,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3841,7 +4138,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(1);
+var delay = __webpack_require__(3);
 
 function propsListener(instance, changes) {
 
@@ -3877,7 +4174,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3923,7 +4220,7 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3936,7 +4233,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3944,31 +4241,22 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
     ATTR = _require.ATTR;
 
-var castStringTo = __webpack_require__(5);
-var objectPath = __webpack_require__(41);
+var castStringTo = __webpack_require__(6);
+var objectPath = __webpack_require__(42);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
 }
 
 function setAttribute($target, name, value, cmp) {
-    var _cmp$$$beforeAttribut = cmp.$$beforeAttributeSet($target, name, value);
 
-    var _cmp$$$beforeAttribut2 = _slicedToArray(_cmp$$$beforeAttribut, 2);
-
-    name = _cmp$$$beforeAttribut2[0];
-    value = _cmp$$$beforeAttribut2[1];
-
-
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name)) {} else if (typeof value === 'boolean') {
+    if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
@@ -3981,7 +4269,7 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name) || !$target) {} else {
+    if (isCustomAttribute(name) || !$target) {} else {
         $target.removeAttribute(name);
     }
 }
@@ -4140,8 +4428,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-        var canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
-        if (canBindValue !== undefined) bindValue = canBindValue;
+        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     var datasetArray = Object.keys($target.dataset);
@@ -4149,7 +4436,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         if (REGEX.IS_LISTENER.test(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
     }
 
-    cmp.$$afterAttributesCreate($target, bindValue);
+    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
@@ -4158,7 +4445,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4183,59 +4470,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function create(instance) {
-    var storeName = instance.store;
-    if (typeof storeName === 'string') {
-        if (instance.app._stores[storeName] !== undefined) {
-            throw new Error('Store already defined: ' + storeName);
-        }
-        instance.app._stores[storeName] = instance.props;
-    }
-}
-
-function sync(instance) {
-    var storeName = instance.store;
-    if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
-        instance.app._stores[storeName] = instance.props;
-    }
-}
-
-module.exports = {
-    create: create,
-    sync: sync
-};
-
-/***/ }),
 /* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function create(instance) {
-
-    var id = instance.id;
-
-    if (typeof id === 'string') {
-        if (instance.app._ids[id] !== undefined) {
-            throw new Error('ID already defined: ' + id);
-        }
-        instance.app._ids[id] = instance;
-    }
-}
-
-module.exports = {
-    create: create
-};
-
-/***/ }),
-/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4243,7 +4478,7 @@ module.exports = {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(16);
+var camelToDash = __webpack_require__(44);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4270,6 +4505,19 @@ function toInlineStyle(obj) {
 }
 
 module.exports = toInlineStyle;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function camelToDash(s) {
+    return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+}
+
+module.exports = camelToDash;
 
 /***/ }),
 /* 45 */
@@ -4361,7 +4609,8 @@ function removeAllAttributes(el) {
     var attributeName = void 0;
     for (var i = el.attributes.length - 1; i >= 0; i--) {
         attributeName = el.attributes[i].name;
-        if (exclude.includes(attributeName)) continue;
+        // exclude anyway data attributes
+        if (exclude.includes(attributeName) || attributeName.split('-')[0] === 'data') continue;
         el.removeAttribute(attributeName);
     }
 }
@@ -4421,7 +4670,7 @@ module.exports = loadLocal;
 "use strict";
 
 
-var mixin = __webpack_require__(19);
+var mixin = __webpack_require__(18);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -4437,31 +4686,25 @@ module.exports = localMixin;
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var canDecode = __webpack_require__(15);
-var composeStyleInner = __webpack_require__(9);
-var camelToDash = __webpack_require__(16);
-var dashToCamel = __webpack_require__(10);
-var castStringTo = __webpack_require__(5);
-var delay = __webpack_require__(1);
+var composeStyleInner = __webpack_require__(11);
+var dashToCamel = __webpack_require__(7);
+//const castStringTo = require('../utils/cast-string-to');
+//const delay = require('../utils/delay');
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
-    ATTR = _require.ATTR,
-    DIR_IS = _require.DIR_IS,
     REGEX = _require.REGEX,
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
-//const Spye = require('../utils/spye');
+
+var directive = __webpack_require__(0);
 
 var DOMManipulation = function () {
     function DOMManipulation() {
@@ -4471,15 +4714,15 @@ var DOMManipulation = function () {
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
+            directive.callAppDOMElementCreate(this, $el, node, initial);
+            directive.callComponentDOMElementCreate(this, $el, initial);
+
             if (typeof $el.hasAttribute === 'function') {
-                if ((node.type.indexOf('-') !== -1 || typeof $el.hasAttribute === 'function' && $el.hasAttribute(ATTR.IS)) && !initial) {
-                    //console.log('processing', this.tag, $el)
+                if (node.type.indexOf('-') !== -1 && !initial) {
                     this._processing.push({ node: $el, action: 'create' });
                 }
 
                 if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                    //console.log('ha slot', $el.nodeName);
-                    //console.log($el.name, $el.getAttribute('name'));
                     var slotName = $el.getAttribute('name');
 
                     if (!slotName) {
@@ -4557,66 +4800,23 @@ var DOMManipulation = function () {
 
             return false;
         }
-    }, {
-        key: '$$afterNodeWalk',
-        value: function $$afterNodeWalk() {}
 
         // noinspection JSMethodCanBeStatic
 
     }, {
-        key: '$$beforeAttributeSet',
-        value: function $$beforeAttributeSet($target, name, value) {
-            if (REGEX.IS_CUSTOM_TAG.test($target.nodeName) || $target[DIR_IS]) {
-                name = camelToDash(name);
-            }
-
-            return [name, value];
-        }
-    }, {
         key: '$$afterAttributeCreate',
-        value: function $$afterAttributeCreate($target, name, value, nodeProps) {
-            var bindValue = void 0;
-            if (this._setBind($target, name, value)) {
-                bindValue = this.props[value];
-            }
-            if (nodeProps) this._setRef($target, name, nodeProps[name]);
-            return bindValue;
-        }
+        value: function $$afterAttributeCreate($target, name, value, nodeProps) {}
 
         // noinspection JSMethodCanBeStatic
 
     }, {
         key: '$$afterAttributesCreate',
-        value: function $$afterAttributesCreate($target, bindValue) {
-            if (typeof bindValue === 'undefined') return;
-
-            delay(function () {
-                var inputs = void 0;
-                var input = void 0;
-                if ($target.type === 'radio') {
-                    inputs = document.querySelectorAll('input[name=' + $target.name + '][type=radio]');
-                    for (var i = 0, len = inputs.length; i < len; i++) {
-                        input = inputs[i];
-                        input.checked = bindValue === input.value;
-                    }
-                } else if ($target.type === 'checkbox') {
-                    if ((typeof bindValue === 'undefined' ? 'undefined' : _typeof(bindValue)) === 'object') {
-                        inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
-                        for (var _i5 = 0, _len = inputs.length; _i5 < _len; _i5++) {
-                            input = inputs[_i5];
-                            input.checked = Array.from(bindValue).includes(input.value);
-                        }
-                    } else $target.checked = bindValue;
-                } else {
-                    $target.value = bindValue;
-                }
-            });
-        }
+        value: function $$afterAttributesCreate($target, bindValue) {}
     }, {
         key: '$$afterAttributeUpdate',
         value: function $$afterAttributeUpdate($target, name, value) {
             if (this.updateChildrenProps && $target) {
-                name = dashToCamel(name);
+                name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
                 var firstChild = $target.firstChild;
 
                 if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
@@ -4625,100 +4825,11 @@ var DOMManipulation = function () {
                     $target[COMPONENT_INSTANCE].props[name] = value;
                 }
             }
-        }
-    }, {
-        key: '_setRef',
-        value: function _setRef($target, name, value) {
-            if (!this.constructor._isRefAttribute(name)) return;
-            this.ref[value] = $target;
-        }
-    }, {
-        key: '_setBind',
-        value: function _setBind($target, name, value) {
-            if (!this.constructor._isBindAttribute(name) || !this.constructor._canBind($target)) return;
-            var cmp = this;
-            if (typeof cmp.props[value] !== 'undefined') {
 
-                var events = ['compositionstart', 'compositionend', 'input', 'change'];
-
-                var _defined4 = function _defined4(event) {
-                    $target.addEventListener(event, function (e) {
-                        var _value = void 0;
-                        if (this.type === 'checkbox') {
-                            if (!this.defaultValue) cmp.props[value] = this.checked;else {
-                                var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
-
-                                var _defined5 = [].concat(_toConsumableArray(inputs));
-
-                                _value = new Array(_defined5.length);
-
-                                var _defined6 = function _defined6(input) {
-                                    return input.value;
-                                };
-
-                                for (var _i9 = 0; _i9 <= _defined5.length - 1; _i9++) {
-                                    _value[_i9] = _defined6(_defined5[_i9], _i9, _defined5);
-                                }
-
-                                cmp.props[value] = castStringTo(_value);
-                            }
-                        } else {
-                            _value = this.value;
-                            if (this.multiple) {
-                                var _defined9 = [].concat(_toConsumableArray(this.options));
-
-                                var _defined10 = function _defined10(option) {
-                                    return option.selected;
-                                };
-
-                                var _defined7 = [];
-
-                                for (var _i13 = 0; _i13 <= _defined9.length - 1; _i13++) {
-                                    if (_defined10(_defined9[_i13], _i13, _defined9)) _defined7.push(_defined9[_i13]);
-                                }
-
-                                _value = new Array(_defined7.length);
-
-                                var _defined8 = function _defined8(option) {
-                                    return option.value;
-                                };
-
-                                for (var _i11 = 0; _i11 <= _defined7.length - 1; _i11++) {
-                                    _value[_i11] = _defined8(_defined7[_i11], _i11, _defined7);
-                                }
-                            }
-                            cmp.props[value] = castStringTo(_value);
-                        }
-                    });
-                };
-
-                for (var _i7 = 0; _i7 <= events.length - 1; _i7++) {
-                    _defined4(events[_i7], _i7, events);
-                }
-
-                if (Object.prototype.hasOwnProperty.call(cmp._boundElements, value)) {
-                    cmp._boundElements[value].push($target);
-                } else {
-                    cmp._boundElements[value] = [$target];
-                }
-
-                return true;
+            directive.callComponentDOMElementUpdate(this, $target);
+            if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+                $target.removeAttribute(name);
             }
-        }
-    }], [{
-        key: '_isBindAttribute',
-        value: function _isBindAttribute(name) {
-            return name === ATTR.BIND;
-        }
-    }, {
-        key: '_isRefAttribute',
-        value: function _isRefAttribute(name) {
-            return name === ATTR.REF;
-        }
-    }, {
-        key: '_canBind',
-        value: function _canBind($target) {
-            return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
         }
     }]);
 
@@ -4737,7 +4848,7 @@ module.exports = DOMManipulation;
 var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
-var _require2 = __webpack_require__(0),
+var _require2 = __webpack_require__(1),
     REGEX = _require2.REGEX;
 
 function component(tag) {
@@ -4769,16 +4880,823 @@ module.exports = component;
 "use strict";
 
 
-var _require = __webpack_require__(6),
+var _require = __webpack_require__(8),
     Component = _require.Component;
 
-var mixin = __webpack_require__(19);
+var mixin = __webpack_require__(18);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
 }
 
 module.exports = globalMixin;
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(56);
+__webpack_require__(57);
+__webpack_require__(58);
+__webpack_require__(59);
+__webpack_require__(60);
+
+__webpack_require__(61);
+__webpack_require__(62);
+__webpack_require__(63);
+__webpack_require__(64);
+__webpack_require__(65);
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive(':store', {
+    createStore: function createStore(instance, storeName) {
+        if (typeof storeName === 'string') {
+            if (instance.app._stores[storeName] !== undefined) {
+                throw new Error('Store already defined: ' + storeName);
+            }
+            instance.app._stores[storeName] = instance.props;
+            instance.store = storeName;
+        }
+    },
+    syncStore: function syncStore(instance, storeName) {
+        if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
+            instance.app._stores[storeName] = instance.props;
+        }
+    },
+    onAppInit: function onAppInit(app) {
+        Object.defineProperties(app, {
+            _stores: {
+                value: {},
+                writable: true
+            },
+            getStore: {
+                value: function value(store) {
+                    return app._stores[store];
+                },
+                enumerable: true
+            }
+        });
+    },
+
+
+    // Create by property defined
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getStore: {
+                value: function value(store) {
+                    return instance.app._stores[store];
+                },
+                enumerable: true
+            }
+        });
+
+        if (instance.store !== undefined && instance.props['d:store'] === undefined) {
+            this.createStore(instance, instance.store);
+        }
+    },
+
+
+    // Create by props
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        this.createStore(instance, directiveValue);
+    },
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
+        this.syncStore(instance, instance.store);
+    },
+    onAppComponentSetProps: function onAppComponentSetProps(instance) {
+        this.syncStore(instance, instance.store);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+        if (typeof obj.store === 'string') {
+            this.createStore(instance, obj.store);
+        }
+    },
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
+        if (instance.store && instance.app._stores[instance.store]) delete instance.app._stores[instance.store];
+    }
+});
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive(':id', {
+    createId: function createId(instance, id) {
+        if (typeof id === 'string') {
+            if (instance.app._ids[id] !== undefined) {
+                throw new Error('ID already defined: ' + id);
+            }
+            instance.app._ids[id] = instance;
+            instance.id = id;
+        }
+    },
+    onAppInit: function onAppInit(app) {
+        Object.defineProperties(app, {
+            _ids: {
+                value: {},
+                writable: true
+            },
+            getComponentById: {
+                value: function value(id) {
+                    return app._ids[id];
+                },
+                enumerable: true
+            }
+        });
+    },
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getComponentById: {
+                value: function value(id) {
+                    return instance.app._ids[id];
+                },
+                enumerable: true
+            },
+            getCmp: {
+                value: function value(id) {
+                    return instance.app._ids[id];
+                },
+                enumerable: true
+            }
+        });
+
+        if (instance.id !== undefined && instance.props['d:id'] === undefined) {
+            this.createId(instance, instance.id);
+        }
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        this.createId(instance, directiveValue);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+        if (typeof obj.id === 'string') {
+            this.createId(instance, obj.id);
+        }
+    },
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
+        if (instance.id && instance.app._ids[instance.id]) delete instance.app._ids[instance.id];
+    }
+});
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive(':alias', {
+    createAlias: function createAlias(instance, alias) {
+        if (typeof alias === 'string') {
+            instance.alias = alias;
+        }
+    },
+    onAppInit: function onAppInit(app) {
+        Object.defineProperties(app, {
+            getComponent: {
+                value: function value(alias) {
+                    return this._tree ? this._tree.children[alias] : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getComponent: {
+                value: function value(alias) {
+                    return this.children ? this.children[alias] : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        this.createAlias(instance, directiveValue);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+        if (typeof obj.alias === 'string') {
+            this.createAlias(instance, obj.alias);
+        }
+    },
+    onAppComponentAssignIndex: function onAppComponentAssignIndex(instance, n) {
+        return instance.alias ? instance.alias : n;
+    }
+});
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive(':on-$event', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _callback: {
+                value: {},
+                writable: true
+            },
+            emit: {
+                value: function value(name) {
+                    if (instance._callback && instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
+                        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                            args[_key - 1] = arguments[_key];
+                        }
+
+                        instance.parent[instance._callback[name]].apply(instance.parent, args);
+                    }
+                },
+                enumerable: true
+            }
+        });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue, keyArguments) {
+        var source = {};
+        source[keyArguments.event] = directiveValue;
+        Object.assign(instance._callback, source);
+    }
+});
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive(':onbeforecreate', {
+    onComponentBeforeCreate: function onComponentBeforeCreate(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':oncreate', {
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onbeforemount', {
+    onComponentBeforeMount: function onComponentBeforeMount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onmount', {
+    onComponentMount: function onComponentMount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onmountasync', {
+    onComponentMountAsync: function onComponentMountAsync(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onafterrender', {
+    onComponentAfterRender: function onComponentAfterRender(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onbeforeupdate', {
+    onComponentBeforeUpdate: function onComponentBeforeUpdate(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onupdate', {
+    onComponentUpdate: function onComponentUpdate(instance, changes, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+
+directive(':onbeforeunmount', {
+    onComponentBeforeUnmount: function onComponentBeforeUnmount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onunmount', {
+    onComponentUnmount: function onComponentUnmount(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onbeforedestroy', {
+    onComponentBeforeDestroy: function onComponentBeforeDestroy(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':ondestroy', {
+    onComponentDestroy: function onComponentDestroy(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+directive(':onloadprops', {
+    onComponentLoadProps: function onComponentLoadProps(instance, directiveValue) {
+        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive('ref', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            ref: {
+                value: {},
+                writable: true,
+                enumerable: true
+            }
+        });
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        instance.ref[directiveValue] = $target;
+    }
+});
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var dashToCamel = __webpack_require__(7);
+
+directive('is', {
+    hasDataIs: function hasDataIs($target) {
+        return $target.dataset && $target.dataset.is;
+    },
+    onAppComponentAssignName: function onAppComponentAssignName(instance, $target) {
+        if (this.hasDataIs($target)) return $target.dataset.is;
+    },
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName, isDirective) {
+        if (this.hasDataIs($target)) return dashToCamel(propsName);
+        /*else
+            return propsName;*/
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
+        $target.dataset.is = directiveValue;
+        if (!initial) instance._processing.push({ node: $target, action: 'create' });
+    }
+});
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var castStringTo = __webpack_require__(6);
+var delay = __webpack_require__(3);
+
+directive('bind', {
+
+    // Start directive methods
+
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _boundElements: {
+                value: {},
+                writable: true
+            }
+        });
+    },
+    onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
+        this.updateBoundElementsByChanges(instance, changes);
+    },
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
+        this.updateBoundElementsByPropsIteration(instance);
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
+        if (!this.canBind($target)) return;
+        this.setBind(instance, $target, directiveValue);
+    },
+
+
+    // End directive methods
+    // Start custom methods
+
+    canBind: function canBind($target) {
+        return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
+    },
+    setBind: function setBind(instance, $target, value) {
+        var _this2 = this;
+
+        if (instance.props[value] === undefined) return;
+
+        // Add UI events
+        var events = ['compositionstart', 'compositionend', 'input', 'change'];
+
+        var _defined = function _defined(event) {
+            $target.addEventListener(event, function (e) {
+                var _value = void 0;
+                if (this.type === 'checkbox') {
+                    if (!this.defaultValue) instance.props[value] = this.checked;else {
+                        var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
+
+                        var _defined2 = [].concat(_toConsumableArray(inputs));
+
+                        _value = new Array(_defined2.length);
+
+                        var _defined3 = function _defined3(input) {
+                            return input.value;
+                        };
+
+                        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+                            _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+                        }
+
+                        instance.props[value] = castStringTo(_value);
+                    }
+                } else {
+                    _value = this.value;
+                    if (this.multiple) {
+                        var _defined6 = [].concat(_toConsumableArray(this.options));
+
+                        var _defined7 = function _defined7(option) {
+                            return option.selected;
+                        };
+
+                        var _defined4 = [];
+
+                        for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+                            if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
+                        }
+
+                        _value = new Array(_defined4.length);
+
+                        var _defined5 = function _defined5(option) {
+                            return option.value;
+                        };
+
+                        for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+                            _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
+                        }
+                    }
+                    instance.props[value] = castStringTo(_value);
+                }
+            });
+        };
+
+        for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
+            _defined(events[_i2], _i2, events);
+        }
+
+        // Map $target element with prop name
+
+
+        if (instance._boundElements[value] !== undefined) {
+            instance._boundElements[value].push($target);
+        } else {
+            instance._boundElements[value] = [$target];
+        }
+
+        // Set first value
+        // Why this delay? because I need to waiting options tag
+        delay(function () {
+            _this2.updateBoundElement($target, instance.props[value]);
+        });
+    },
+    updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
+        var _this3 = this;
+
+        var _defined8 = function _defined8(item) {
+            var value = item.newValue;
+            var property = item.property;
+            _this3.updateBoundElements(instance, value, property);
+        };
+
+        for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
+            _defined8(changes[_i10], _i10, changes);
+        }
+    },
+    updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
+        var _this = this;
+        (function iterate(props) {
+            var keys = Object.keys(props);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var property = keys[i];
+                if (props[property] instanceof Object && props[property] !== null) {
+                    iterate(props[property]);
+                } else {
+                    _this.updateBoundElements(instance, props[property], property);
+                }
+            }
+        })(instance._rawProps);
+    },
+    updateBoundElements: function updateBoundElements(instance, value, property) {
+        var _this4 = this;
+
+        if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
+            var _defined9 = function _defined9($target) {
+                _this4.updateBoundElement($target, value);
+            };
+
+            var _defined10 = instance._boundElements[property];
+
+            for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
+                _defined9(_defined10[_i12], _i12, _defined10);
+            }
+        }
+    },
+    updateBoundElement: function updateBoundElement($target, value) {
+        if ($target.type === 'checkbox') {
+            if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
+                var inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
+
+                var _defined11 = function _defined11(input) {
+                    return input.checked = value.includes(input.value);
+                };
+
+                var _defined12 = [].concat(_toConsumableArray(inputs));
+
+                for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
+                    _defined11(_defined12[_i14], _i14, _defined12);
+                }
+            }
+        } else if ($target.type === 'radio') {
+            $target.checked = $target.value === value;
+        } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
+            var _defined13 = function _defined13(option) {
+                return option.selected = value.includes(option.value);
+            };
+
+            var _defined14 = [].concat(_toConsumableArray($target.options));
+
+            for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
+                _defined13(_defined14[_i16], _i16, _defined14);
+            }
+        } else {
+            $target.value = value;
+        }
+    }
+});
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+var _require2 = __webpack_require__(1),
+    COMPONENT_DYNAMIC_INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE;
+
+var ATTR_KEY = 'data-key';
+
+directive('key', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _dynamicNodes: {
+                value: {},
+                writable: true
+            },
+            _keyedNodes: {
+                value: {},
+                writable: true
+            }
+        });
+    },
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        if (propName === ATTR_KEY) {
+            props.key = propValue;
+        }
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        $target.dataset.key = directiveValue;
+        instance._keyedNodes[directiveValue] = $target;
+    },
+    onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
+        if (item.node.dataset.key) {
+            instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
+        }
+    },
+    onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
+        var candidateKeyToRemove = void 0;
+        var thereIsDelete = false;
+        var noCmpKeyRemoved = false;
+
+        var _defined = function _defined(change) {
+
+            if (change.previousValue && _typeof(change.previousValue) === 'object' && Object.keys(change.previousValue).length) {
+                if (change.target && _typeof(change.target) === 'object') {
+                    var oK = Object.keys(change.target);
+                    if (oK.length && Array.isArray(change.target[oK])) {
+                        if (change.target[oK].length && change.target[oK][0] && _typeof(change.target[oK][0]) === 'object' && change.target[oK][0].key !== undefined) {
+
+                            // Just if deleted keys
+                            if (change.previousValue.length > change.newValue.length) {
+                                var _defined2 = change.previousValue;
+
+                                var _defined3 = function _defined3(item) {
+                                    return item.key;
+                                };
+
+                                //console.log('ci sono key, posso fare qualcosa', typeof change.previousValue);
+                                var prevKeys = new Array(_defined2.length);
+
+                                for (var _i8 = 0; _i8 <= _defined2.length - 1; _i8++) {
+                                    prevKeys[_i8] = _defined3(_defined2[_i8], _i8, _defined2);
+                                }
+
+                                var _defined4 = change.newValue;
+
+                                var _defined5 = function _defined5(item) {
+                                    return item.key;
+                                };
+
+                                var newKeys = new Array(_defined4.length);
+
+                                for (var _i9 = 0; _i9 <= _defined4.length - 1; _i9++) {
+                                    newKeys[_i9] = _defined5(_defined4[_i9], _i9, _defined4);
+                                }
+
+                                var _defined6 = function _defined6(n) {
+                                    return newKeys.indexOf(n) === -1;
+                                };
+
+                                var doRemoveKeys = [];
+
+                                for (var _i10 = 0; _i10 <= prevKeys.length - 1; _i10++) {
+                                    if (_defined6(prevKeys[_i10], _i10, prevKeys)) doRemoveKeys.push(prevKeys[_i10]);
+                                }
+
+                                noCmpKeyRemoved = !!doRemoveKeys.length;
+
+                                var _defined7 = function _defined7(item) {
+                                    if (instance._keyedNodes[item]) instance._keyedNodes[item].parentNode.removeChild(instance._keyedNodes[item]);
+                                };
+
+                                for (var _i7 = 0; _i7 <= doRemoveKeys.length - 1; _i7++) {
+                                    _defined7(doRemoveKeys[_i7], _i7, doRemoveKeys);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Trova la presunta chiave da eliminare
+            if (Array.isArray(change.target)) {
+                if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+
+                    if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
+                        candidateKeyToRemove = change.previousValue.key;
+                    }
+                }
+                if (change.type === 'delete') thereIsDelete = true;
+            }
+
+            // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+            if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
+                var _defined8 = function _defined8(item) {
+                    if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && instance._dynamicNodes[item.key] !== undefined) {
+                        if (instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                            instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
+                        } else {
+                            instance._dynamicNodes[item.key].parentNode.removeChild(instance._dynamicNodes[item.key]);
+                        }
+                    }
+                };
+
+                var _defined9 = change.previousValue;
+
+                for (var _i12 = 0; _i12 <= _defined9.length - 1; _i12++) {
+                    _defined8(_defined9[_i12], _i12, _defined9);
+                }
+            }
+        };
+
+        for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+            _defined(changes[_i2], _i2, changes);
+        }
+
+        if (noCmpKeyRemoved) return true;
+
+        //console.log(thereIsDelete, candidateKeyToRemove)
+        //console.log(instance._keyedNodes, candidateKeyToRemove)
+        if (!thereIsDelete) candidateKeyToRemove = undefined;
+
+        if (candidateKeyToRemove !== undefined) {
+            if (instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
+                if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
+                    instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
+                } else {
+                    //console.log(instance._dynamicNodes[candidateKeyToRemove]);
+                    instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
+                }
+                return true;
+            } else if (instance._keyedNodes[candidateKeyToRemove] !== undefined) {
+                instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
+                return true;
+            }
+        }
+    }
+});
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+directive('show', {
+    setVisible: function setVisible($target, value) {
+        $target.style.display = value === 'false' ? 'none' : '';
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
+    },
+    onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
+    }
+});
 
 /***/ })
 /******/ ]);

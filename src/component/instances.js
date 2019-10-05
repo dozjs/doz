@@ -1,26 +1,18 @@
 const html = require('../utils/html');
 const {scopedInner} = require('./style');
-const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ATTR, DIR_IS, REGEX} = require('../constants');
+const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, /*ATTR, DIR_IS,*/ REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
-const {extract} = require('./component-directives');
+//const {extract} = require('./component-directives');
 const hmr = require('./hmr');
 const {Component} = require('./Component');
 const propsInit = require('./props-init');
 const delay = require('../utils/delay');
+const directive = require('../directive');
 
 function getComponentName(child) {
-    let cmpName;
-    if (typeof child.getAttribute === 'function' && child.hasAttribute(ATTR.IS)) {
-        cmpName = child.getAttribute(ATTR.IS).toLowerCase();
-        child.removeAttribute(ATTR.IS);
-        child.dataset.is = cmpName;
-        child[DIR_IS] = true;
-    } else
-        cmpName = child.nodeName.toLowerCase();
-
-    return cmpName;
+    return child.nodeName.toLowerCase();
 }
 
 function transformChildStyle(child, parent) {
@@ -73,7 +65,7 @@ function get(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
 
-            //console.log('---', $child.nodeName);
+            directive.callAppWalkDOM(parent, $child);
 
             const uId = cfg.app.generateUId();
 
@@ -85,6 +77,10 @@ function get(cfg = {}) {
             }
 
             cmpName = getComponentName($child);
+
+            directive.callAppComponentAssignName(parent, $child, (name) => {
+                cmpName = name;
+            });
 
             let localComponents = {};
 
@@ -121,7 +117,13 @@ function get(cfg = {}) {
                 }
 
                 const props = serializeProps($child);
-                const componentDirectives = extract(props);
+                //const componentDirectives = extract(props);
+                //console.log(extract(props))
+                const componentDirectives = {};// directive.extractDirectivesFromProps(props);
+
+                /*console.log('props', props)
+                console.log('directives', componentDirectives)
+                console.log('-----')*/
 
                 let newElement;
 
@@ -148,7 +150,8 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
+                        parentCmp: parent.cmp || cfg.parent,
+                        uId
                     });
                 } else {
                     newElement = new Component({
@@ -158,7 +161,8 @@ function get(cfg = {}) {
                         app: cfg.app,
                         props,
                         componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
+                        parentCmp: parent.cmp || cfg.parent,
+                        uId
                     });
                 }
 
@@ -175,7 +179,7 @@ function get(cfg = {}) {
 
                 propsInit(newElement);
 
-                Object.defineProperty(newElement, 'uId', {value: uId});
+                //Object.defineProperty(newElement, 'uId', {value: uId});
                 //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                 newElement.app.emit('componentPropsInit', newElement);
@@ -216,8 +220,15 @@ function get(cfg = {}) {
                 parentElement = newElement;
 
                 if (parent.cmp) {
-                    let n = Object.keys(parent.cmp.children).length;
-                    parent.cmp.children[newElement.alias ? newElement.alias : n++] = newElement;
+                    let n = Object.keys(parent.cmp.children).length++;
+                    directive.callAppComponentAssignIndex(newElement, n, (index) => {
+                        parent.cmp.children[index] = newElement;
+                    });
+
+                    /*
+                    let n = Object.keys(parent.cmp.children).length++;
+                    parent.cmp.children[newElement.alias ? newElement.alias : n] = newElement;
+                     */
                     if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
                         parent.cmp.childrenByTag[newElement.tag] = [newElement];
                     } else {

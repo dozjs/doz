@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - model</title>
     <title>Title</title>
-    <script src="../dist/doz.js?58965495847525622"></script>
+    <script src="../dist/doz.js?5896549508326520475265622"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -98,6 +98,7 @@
                         <option value="Milk">Milk</option>
                         <option value="Tomato">Tomato</option>
                         <option value="Chicken">Chicken</option>
+                        <option value="Fish">Fish</option>
                     </select>
                     <p>Value: ${this.props.item}</p>
                     <button onclick="this.setNew()">Set to Chicken, Milk</button>
@@ -105,7 +106,7 @@
             `
         },
         props: {
-            item: 'Tomato'
+            item: ['Tomato', 'Fish']
         },
         setNew() {
             this.props.item = ['Chicken', 'Milk']

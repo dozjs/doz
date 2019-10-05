@@ -38,7 +38,7 @@ describe('Doz.class.observer.create', function () {
 
             setTimeout(() => {
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><div>hello suffix3</div></dz-app></div>')
-            }, 500);
+            }, 100);
 
         });
 
@@ -92,7 +92,7 @@ describe('Doz.class.observer.create', function () {
             setTimeout(() => {
                 console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div>hello suffix3</div></cmp-x></dz-app></div>')
-            }, 500);
+            }, 100);
 
         });
 

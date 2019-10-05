@@ -1,12 +1,14 @@
 const Doz = require('./Doz');
 const collection = require('./collection');
 const {use} = require('./plugin');
+const {directive} = require('./directive');
 const component = require('./component');
 const {Component} = require('./component/Component');
 const mixin = require('./component/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
 const {update} = require('./vdom/element');
+require('./directive/built-in/_bootstrap');
 
 Object.defineProperties(Doz, {
     collection: {
@@ -43,6 +45,10 @@ Object.defineProperties(Doz, {
     },
     use: {
         value: use,
+        enumerable: true
+    },
+    directive: {
+        value: directive,
         enumerable: true
     },
     version: {

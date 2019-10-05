@@ -1,25 +1,25 @@
 const delay = require('../utils/delay');
+const directive = require('../directive');
 
 function callBeforeCreate(context) {
+    directive.callAppComponentBeforeCreate(context);
+    directive.callComponentBeforeCreate(context);
     if (typeof context.onBeforeCreate === 'function') {
         return context.onBeforeCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeCreate] === 'function') {
-        return context.parent[context.__onBeforeCreate].call(context.parent, context);
     }
 }
 
 function callCreate(context) {
+    directive.callAppComponentCreate(context);
+    directive.callComponentCreate(context);
     if (typeof context.onCreate === 'function') {
         context.onCreate.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onCreate] === 'function') {
-        context.parent[context.__onCreate].call(context.parent, context);
     }
     context.app.emit('componentCreate', context);
 }
 
 function callConfigCreate(context) {
+    directive.callAppComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
         context.onConfigCreate.call(context);
     }
@@ -30,59 +30,55 @@ function callConfigCreate(context) {
 }
 
 function callBeforeMount(context) {
+    directive.callAppComponentBeforeMount(context);
+    directive.callComponentBeforeMount(context);
     if (typeof context.onBeforeMount === 'function') {
         return context.onBeforeMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeMount] === 'function') {
-        return context.parent[context.__onBeforeMount].call(context.parent, context);
     }
 }
 
 function callMount(context) {
+    directive.callAppComponentMount(context);
+    directive.callComponentMount(context);
     if (typeof context.onMount === 'function') {
         context.onMount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onMount] === 'function') {
-        context.parent[context.__onMount].call(context.parent, context);
     }
     context.app.emit('componentMount', context);
 }
 
 function callMountAsync(context) {
+    delay(()=> {
+        directive.callAppComponentMountAsync(context);
+        directive.callComponentMountAsync(context);
+    });
     if (typeof context.onMountAsync === 'function') {
-        delay(() => {
-            context.onMountAsync.call(context);
-        });
-    }
-    if (context.parent && typeof context.parent[context.__onMountAsync] === 'function') {
-        delay(() => {
-            context.parent[context.__onMountAsync].call(context.parent, context);
-        });
+        delay(() => context.onMountAsync.call(context));
     }
     context.app.emit('componentMountAsync', context);
 }
 
 function callBeforeUpdate(context, changes) {
+    directive.callAppComponentBeforeUpdate(context, changes);
+    directive.callComponentBeforeUpdate(context, changes);
     if (typeof context.onBeforeUpdate === 'function') {
         return context.onBeforeUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUpdate] === 'function') {
-        return context.parent[context.__onBeforeUpdate].call(context.parent, context, changes);
     }
 }
 
 function callUpdate(context, changes) {
+    directive.callAppComponentUpdate(context, changes);
+    directive.callComponentUpdate(context, changes);
     if (typeof context.onUpdate === 'function') {
         context.onUpdate.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onUpdate] === 'function') {
-        context.parent[context.__onUpdate].call(context.parent, context, changes);
     }
     context.app.emit('componentUpdate', context, changes);
 }
 
 function callDrawByParent(context, newNode, oldNode) {
     if (!context) return ;
+
+    directive.callAppComponentDrawByParent(context, newNode, oldNode);
+
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -93,43 +89,41 @@ function callDrawByParent(context, newNode, oldNode) {
 }
 
 function callAfterRender(context, changes) {
+    directive.callAppComponentAfterRender(context, changes);
+    directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
-    }
-    if (context.parent && typeof context.parent[context.__onAfterRender] === 'function') {
-        return context.parent[context.__onAfterRender].call(context.parent, context, changes);
     }
 }
 
 function callBeforeUnmount(context) {
+    directive.callAppComponentBeforeUnmount(context);
+    directive.callComponentBeforeUnmount(context);
     if (typeof context.onBeforeUnmount === 'function') {
         return context.onBeforeUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeUnmount] === 'function') {
-        return context.parent[context.__onBeforeUnmount].call(context.parent, context);
     }
 }
 
 function callUnmount(context) {
+    directive.callAppComponentUnmount(context);
+    directive.callComponentUnmount(context);
     if (typeof context.onUnmount === 'function') {
         context.onUnmount.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onUnmount] === 'function') {
-        context.parent[context.__onUnmount].call(context.parent, context);
     }
     context.app.emit('componentUnmount', context);
 }
 
 function callBeforeDestroy(context) {
+    directive.callAppComponentBeforeDestroy(context);
+    directive.callComponentBeforeDestroy(context);
     if (typeof context.onBeforeDestroy === 'function') {
         return context.onBeforeDestroy.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onBeforeDestroy] === 'function') {
-        return context.parent[context.__onBeforeDestroy].call(context.parent, context);
     }
 }
 
 function callDestroy(context) {
+    directive.callAppComponentDestroy(context);
+    directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
     //delete context.app._componentsByUId[context.uId];
@@ -138,34 +132,21 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
 
-    if (context.store && context.app._stores[context.store])
-        delete context.app._stores[context.store];
-
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
 
-    if (context.id && context.app._ids[context.id])
-        delete context.app._ids[context.id];
-    if (typeof context.onDestroy === 'function' && context.parent && typeof context.parent[context.__onDestroy] === 'function') {
+    if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
-        context.parent[context.__onDestroy].call(context.parent, context);
-        context = null;
-    } else if (typeof context.onDestroy === 'function') {
-        context.onDestroy.call(context);
-        context = null;
-    } else if (context.parent && typeof context.parent[context.__onDestroy] === 'function') {
-        context.parent[context.__onDestroy].call(context.parent, context);
         context = null;
     }
 
 }
 
 function callLoadProps(context) {
+    directive.callAppComponentLoadProps(context);
+    directive.callComponentLoadProps(context);
     if (typeof context.onLoadProps === 'function') {
         context.onLoadProps.call(context);
-    }
-    if (context.parent && typeof context.parent[context.__onLoadProps] === 'function') {
-        context.parent[context.__onLoadProps].call(context.parent, context);
     }
     context.app.emit('componentLoadProps', context);
 }

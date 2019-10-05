@@ -3,6 +3,7 @@ const instances = require('./component/instances');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
+const directive = require('./directive');
 
 class Doz {
 
@@ -59,17 +60,17 @@ class Doz {
                 value: {},
                 writable: true
             },
-            _stores: {
+            /*_stores: {
                 value: {},
                 writable: true
-            },
+            },*/
             _cache: {
                 value: new Map()
             },
-            _ids: {
+            /*_ids: {
                 value: {},
                 writable: true
-            },
+            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -176,6 +177,7 @@ class Doz {
         });
 
         plugin.load(this);
+        directive.callAppInit(this);
 
         if (this.cfg.autoDraw)
             this.draw();
@@ -202,19 +204,20 @@ class Doz {
         return this._tree;
     }
 
+    /*
     getComponent(alias) {
         return this._tree
             ? this._tree.children[alias]
             : undefined;
-    }
-
+    }*/
+    /*
     getComponentById(id) {
         return this._ids[id];
     }
-
-    getStore(store) {
+    */
+    /*getStore(store) {
         return this._stores[store];
-    }
+    }*/
 
     on(event, callback) {
         if (typeof event !== 'string')

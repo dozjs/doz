@@ -63,7 +63,7 @@ describe('Doz.shared', function () {
                 console.log(html);
                 console.log(app.shared);
                 be.err(done).object(app.shared);
-            },500);
+            },100);
 
 
         });

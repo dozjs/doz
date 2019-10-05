@@ -1,7 +1,8 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const {REGEX, ATTR, TAG, DIR_IS} = require('../constants');
+const {REGEX, ATTR, TAG} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?${TAG.TEXT_NODE_PLACE}?>$`);
+const directive = require('../directive');
 
 const selfClosingElements = {
     meta: true,
@@ -49,7 +50,7 @@ class Element {
         this.props = Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        this.childrenHasKey = false;
+        //this.childrenHasKey = false;
     }
 
     appendChild(node) {
@@ -103,11 +104,11 @@ function compile(data, cmp) {
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
                 propsFixer(
-                    match[0].substring(1, match[0].length-1),
+                    match[0].substring(1, match[0].length - 1),
                     attMatch[2],
                     props[attMatch[2]],
                     props,
-                    cmp
+                    null
                 )
             }
 
@@ -119,16 +120,16 @@ function compile(data, cmp) {
             }
 
             // Replace KEY attribute with a dataset
-            if (props[ATTR.KEY] !== undefined) {
+            /*if (props[ATTR.KEY] !== undefined) {
                 props['data-key'] = props[ATTR.KEY];
                 delete props[ATTR.KEY];
-            }
+            }*/
 
-            if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
-                currentParent.childrenHasKey = true;
+            /*if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
+                currentParent.childrenHasKey = true;*/
 
             //if (/-/.test(match[2]) && /-/.test(currentParent.type))
-                //cmp._maybeSlot = true;
+            //cmp._maybeSlot = true;
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
@@ -167,50 +168,39 @@ function compile(data, cmp) {
     return root;
 }
 
-function serializeProps(node) {
+function serializeProps($node) {
     const props = {};
 
-    if (node.attributes) {
-        const attributes = Array.from(node.attributes);
+    if ($node.attributes) {
+        const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-
-            propsFixer(node.nodeName, attr.name, attr.nodeValue, props, node[DIR_IS]);
-            /*if (REGEX.IS_ON.test(attr.name)) {
-                node.removeAttribute(attr.name)
-                console.log(node.hasAttribute(attr.name))
-            }*/
-
+            propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
     return props;
 }
 
-function propsFixer(nName, aName, aValue, props, dIS) {
-    let isComponentListener = aName.match(REGEX.IS_COMPONENT_LISTENER);
-    if (isComponentListener) {
-        if (props[ATTR.LISTENER] === undefined)
-            props[ATTR.LISTENER] = {};
-        props[ATTR.LISTENER][isComponentListener[1]] = aValue;
-        delete props[aName];
-    } else {
-        if (REGEX.IS_STRING_QUOTED.test(aValue))
-            aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
-        //console.log(aName, REGEX.IS_ON.test(aName))
+function propsFixer(nName, aName, aValue, props, $node) {
 
-        if (REGEX.IS_REF.test(aName)) return;
-        if (REGEX.IS_BIND.test(aName)) return;
-        if (REGEX.IS_IS.test(aName)) return;
-        //if (REGEX.IS_ON.test(aName)) return;
+    if (REGEX.IS_STRING_QUOTED.test(aValue))
+        aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-        props[
-            REGEX.IS_CUSTOM_TAG.test(nName) || dIS
-                ? dashToCamel(aName)
-                : aName
-            ] = aName === ATTR.FORCE_UPDATE
-            ? true
-            : castStringTo(aValue);
+    let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
+        ? dashToCamel(aName)
+        : aName;
+
+    if (/*!isDirective && */$node) {
+        //console.log($node)
+        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
+            propsName = newPropsName;
+        });
     }
+    props[propsName] = aName === ATTR.FORCE_UPDATE
+        ? true
+        : castStringTo(aValue);
 }
 
 module.exports = {

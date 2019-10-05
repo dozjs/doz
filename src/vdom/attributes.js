@@ -8,9 +8,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
 
-    [name, value] = cmp.$$beforeAttributeSet($target, name, value);
-
-    if (isCustomAttribute(name) || cmp.constructor._isBindAttribute(name) || cmp.constructor._isRefAttribute(name)) {
+    if (isCustomAttribute(name)) {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
@@ -26,10 +24,7 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name)
-        || cmp.constructor._isBindAttribute(name)
-        || cmp.constructor._isRefAttribute(name)
-        || !$target) {
+    if (isCustomAttribute(name) || !$target) {
     } else {
         $target.removeAttribute(name);
     }
@@ -57,7 +52,6 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
             updated.push(obj);
         }
     });
-
     return updated;
 }
 
@@ -178,8 +172,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-        let canBindValue = cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
-        if (canBindValue !== undefined) bindValue = canBindValue;
+        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     const datasetArray = Object.keys($target.dataset);
@@ -188,7 +181,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
             addEventListener($target, i, $target.dataset[datasetArray[i]], cmp, cmpParent);
     }
 
-    cmp.$$afterAttributesCreate($target, bindValue);
+    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
