@@ -5688,7 +5688,7 @@ var _require = __webpack_require__(0),
 
 directive('show', {
     setVisible: function setVisible($target, value) {
-        $target.style.display = value === 'false' ? 'none' : 'initial';
+        $target.style.display = value === 'false' ? 'none' : '';
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);

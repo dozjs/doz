@@ -29,7 +29,7 @@ describe('Doz.show', function () {
                         this.props.show = true;
                     }, 50);
                     setTimeout(() => {
-                        be.err.equal(this.ref.myDiv.style.display, 'initial');
+                        be.err.equal(this.ref.myDiv.style.display, '');
                         this.props.show = false;
                     }, 70);
                     setTimeout(() => {
