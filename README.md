@@ -18,12 +18,12 @@ Almost like writing in VanillaJS. For modern browser.
 
 ## Why
 - 🎼 Works with tagged template literals
+- 🎳 Component based
 - 🏪 Global stores
 - 😆 Global components
 - 🔫 Fast performance
 - 💅 Scoped style
 - 📡 Uses ES6 proxy to observe changes
-- 🎳 Component based
 - 😁 Simple and familiar API
 - 😱‍ No extra syntax like JSX
 - 💣 No confusion with props and state
