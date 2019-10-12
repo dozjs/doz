@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Improved** directive 'd-key', now works also with no component elements
 - **Improved** directives organization
 - **Fixed** issue with comments into scoped style [#9](https://github.com/dozjs/doz/issues/9)
-- **Fixed** attributes with dash (-) are "duplicated" without dash [#9](https://github.com/dozjs/doz/issues/13)
+- **Fixed** data-uid is undefined [#10](https://github.com/dozjs/doz/issues/10)
+- **Fixed** attributes with dash (-) are "duplicated" without dash [#13](https://github.com/dozjs/doz/issues/13)
 
 ## [1.24.0] - 2019-08-24
 - **Changed** attributes "style" and "class" will not be removed from the component tag during render
