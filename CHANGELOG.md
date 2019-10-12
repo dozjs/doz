@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.25.0] - 2019-10-12
 - **Added** directive 'd-show'
 - **Added** 'props' as second argument to template function
 - **Improved** directive 'd-key', now works also with no component elements
