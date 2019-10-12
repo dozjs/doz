@@ -18,6 +18,8 @@ Almost like writing in VanillaJS. For modern browser.
 
 ## Why
 - 🎼 Works with tagged template literals
+- 🏪 Global stores
+- 😆 Global components
 - 🔫 Fast performance
 - 💅 Scoped style
 - 📡 Uses ES6 proxy to observe changes
@@ -28,7 +30,10 @@ Almost like writing in VanillaJS. For modern browser.
 - ⛏ Extensible through: plugins, mixin, components
 
 ## Another framework?
-In the web there are many frameworks that do all the same things. But a lot of them are complex, we need to know a lot of directives and they make confusion for example with the context of "this".
+In the web there are many frameworks that do all the same things. But a lot of them are complex,
+we need to know a lot of directives and they make confusion for example with the context of "this".
+Doz was created to make the development of web applications easy, by reading this simple documentation
+you will be able to immediately start creating something without getting lost in words and multiple import of functions.
 
 ## Installation
 ```

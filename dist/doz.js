@@ -4766,7 +4766,7 @@ var DOMManipulation = function () {
             if ($oldElement[COMPONENT_ROOT_INSTANCE]) {
                 $newElement[COMPONENT_ROOT_INSTANCE] = $oldElement[COMPONENT_ROOT_INSTANCE];
                 $newElement[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
-                $newElement[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[COMPONENT_ROOT_INSTANCE].internalId;
+                $newElement[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[COMPONENT_ROOT_INSTANCE].uId;
             }
         }
     }, {
