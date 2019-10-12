@@ -93,7 +93,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/rx9ps5s4/)
+[FIDDLE](https://jsfiddle.net/rx9ps5s4/)
 
 ---
 
@@ -121,7 +121,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/ut18kyy1/)
+[FIDDLE](https://jsfiddle.net/ut18kyy1/)
 
 > How define a component with [ES6 class](#es6-class)?
 
@@ -157,7 +157,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/8qp9co1o/3)
+[FIDDLE](https://jsfiddle.net/8qp9co1o/3)
 
 ---
 
@@ -278,7 +278,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/ak0nzfbc/)
+[FIDDLE](https://jsfiddle.net/ak0nzfbc/)
 
 ---
 
@@ -319,7 +319,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/t3qapk7r/)
+[FIDDLE](https://jsfiddle.net/t3qapk7r/)
 
 ---
 
@@ -507,7 +507,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/v0ejbsLs/)
+[FIDDLE](https://jsfiddle.net/v0ejbsLs/)
 
 ---
 
@@ -569,7 +569,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/1wj852pd/)
+[FIDDLE](https://jsfiddle.net/1wj852pd/)
 
 > If you want the HTMLElement reference inside the handler you can use `$this`.
 
@@ -604,7 +604,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/2spdq60k/)
+[FIDDLE](https://jsfiddle.net/2spdq60k/)
 
 ---
 
@@ -755,7 +755,7 @@ new Doz({
         }
     });
     ```
-    [FIDDLE](https://jsfiddle.net/fabioricali/5j24sxzb/)
+    [FIDDLE](https://jsfiddle.net/5j24sxzb/)
     
 - `onDrawByParent`: called every time that component is drawn by the parent for example in a slot scenario
 
@@ -817,7 +817,7 @@ new Doz({
     
     `scope` refers to `this` of user-card component.
     
-    [FIDDLE](https://jsfiddle.net/fabioricali/42dp1tnL/)
+    [FIDDLE](https://jsfiddle.net/42dp1tnL/)
 
 ---
 
@@ -926,7 +926,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/Lkeonppk/)
+[FIDDLE](https://jsfiddle.net/Lkeonppk/)
 
 ---
 
@@ -969,7 +969,7 @@ new Doz({
 
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/uz5sv1gr/2/)
+[FIDDLE](https://jsfiddle.net/uz5sv1gr/2/)
 
 ---
 
@@ -1009,7 +1009,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/uLb9nw2d/)
+[FIDDLE](https://jsfiddle.net/uLb9nw2d/)
 
 ---
 
@@ -1039,7 +1039,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/3eb8v19r/8/)
+[FIDDLE](https://jsfiddle.net/3eb8v19r/8/)
 
 ---
 
@@ -1099,7 +1099,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/2eeop7c5/)
+[FIDDLE](https://jsfiddle.net/2eeop7c5/)
 
 ---
 
@@ -1130,7 +1130,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/2kk0L1r8/)
+[FIDDLE](https://jsfiddle.net/2kk0L1r8/)
 
 ---
 
@@ -1260,7 +1260,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/w3dmq43a/)
+[FIDDLE](https://jsfiddle.net/w3dmq43a/)
 
 ---
 
@@ -1302,7 +1302,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/yo6xeoc2/)
+[FIDDLE](https://jsfiddle.net/yo6xeoc2/)
 
 ---
 
@@ -1345,7 +1345,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/tkzv5obd/)
+[FIDDLE](https://jsfiddle.net/tkzv5obd/)
 
 ---
 
@@ -1462,7 +1462,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/sevzodnu/)
+[FIDDLE](https://jsfiddle.net/sevzodnu/)
 
 ---
 
@@ -1513,7 +1513,7 @@ new Doz({
 
 **Important**: Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
 
-[FIDDLE](https://jsfiddle.net/fabioricali/Lgm7437o/)
+[FIDDLE](https://jsfiddle.net/Lgm7437o/)
 
 ---
 
@@ -1565,7 +1565,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/un7qye53/)
+[FIDDLE](https://jsfiddle.net/un7qye53/)
 
 Named:
 
@@ -1609,7 +1609,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/ky9Ln7w4/)
+[FIDDLE](https://jsfiddle.net/ky9Ln7w4/)
 
 ---
 
@@ -1756,7 +1756,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/fabioricali/je6ggukd/)
+[FIDDLE](https://jsfiddle.net/je6ggukd/)
 
 ---
 

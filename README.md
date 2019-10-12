@@ -103,7 +103,7 @@ new Doz({
 });
 ```
 
-[LIVE](https://jsfiddle.net/fabioricali/vsm6ef50/5/)
+[LIVE](https://jsfiddle.net/vsm6ef50/)
 
 ## Doz ecosystem
 - 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provides a boilerplate to creating app and component
