@@ -137,11 +137,6 @@ class Component extends DOMManipulation {
         return toInlineStyle(obj)
     }
 
-    // noinspection JSMethodCanBeStatic
-    template() {
-        return '';
-    }
-
     render(initial, changes = [], silentAfterRenderEvent = false) {
         if (this._renderPause) return;
         this.beginSafeRender();

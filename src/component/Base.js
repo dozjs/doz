@@ -183,6 +183,11 @@ class Base {
         defineProperties(this, opt)
     }
 
+    // noinspection JSMethodCanBeStatic
+    template() {
+        return '';
+    }
+
     _initTemplate(opt) {
         if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
             let contentTpl = opt.cmp.cfg.template;
