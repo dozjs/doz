@@ -43,9 +43,7 @@ function removeNLS(str) {
 class Element {
 
     constructor(name, props, isSVG) {
-
         //if(name === 'slot') name = 'dzslot';
-
         this.type = name;
         this.props = Object.assign({}, props);
         this.children = [];

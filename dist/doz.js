@@ -499,7 +499,6 @@ var Element = function () {
         _classCallCheck(this, Element);
 
         //if(name === 'slot') name = 'dzslot';
-
         this.type = name;
         this.props = Object.assign({}, props);
         this.children = [];

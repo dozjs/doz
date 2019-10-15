@@ -25,11 +25,11 @@ class Component extends DOMManipulation {
         super(opt);
 
         Object.defineProperty(this, '_isSubclass', {
-           value: this.__proto__.constructor !== Component
+            value: this.__proto__.constructor !== Component
         });
 
         Object.defineProperty(this, 'uId', {
-           value: this.app.generateUId(),
+            value: this.app.generateUId(),
             enumerable: true
         });
 
