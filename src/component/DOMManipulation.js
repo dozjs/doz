@@ -1,12 +1,14 @@
 const canDecode = require('../utils/can-decode');
 const composeStyleInner = require('../utils/compose-style-inner');
 const dashToCamel = require('../utils/dash-to-camel');
-//const castStringTo = require('../utils/cast-string-to');
-//const delay = require('../utils/delay');
+const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directive');
 
-class DOMManipulation {
+class DOMManipulation extends Base {
+    constructor(opt) {
+        super(opt);
+    }
 
     $$afterNodeElementCreate($el, node, initial) {
         directive.callAppDOMElementCreate(this, $el, node, initial);

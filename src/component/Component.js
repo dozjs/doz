@@ -1,16 +1,13 @@
-const {TAG, COMPONENT_ROOT_INSTANCE, COMPONENT_DYNAMIC_INSTANCE, REGEX} = require('../constants');
+const {TAG, COMPONENT_ROOT_INSTANCE, REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
-//const store = require('./store');
-//const ids = require('./ids');
+const drawDynamic = require('./draw-dynamic');
 const proxy = require('../proxy');
 const toInlineStyle = require('../utils/to-inline-style');
 const queueReady = require('./queue-ready');
 const queueDraw = require('./queue-draw');
 const extendInstance = require('./extend-instance');
-const cloneObject = require('../utils/clone-object');
-const toLiteralString = require('../utils/to-literal-string');
 const removeAllAttributes = require('../utils/remove-all-attributes');
 const h = require('../vdom/h');
 const loadLocal = require('./load-local');
@@ -24,26 +21,9 @@ class Component extends DOMManipulation {
 
     constructor(opt) {
 
-        super();
+        super(opt);
 
-        Object.defineProperties(this, {
-            _isSubclass: {
-                value: this.__proto__.constructor !== Component
-            },
-            _rawProps: {
-                value: {},
-                writable: true
-            }
-        });
-
-        opt.cmp = opt.cmp || {
-            tag: opt.tag,
-            cfg: {}
-        };
-
-        this._initRawProps(opt);
-
-        defineProperties(this, opt);
+        //defineProperties(this, opt);
 
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -297,248 +277,9 @@ class Component extends DOMManipulation {
         hooks.callDestroy(this);
     }
 
-    _initTemplate(opt) {
-        if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
-            let contentTpl = opt.cmp.cfg.template;
-            if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
-                opt.cmp.cfg.template = function () {
-                    let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                    return eval('`' + contentStr + '`')
-                }
-            } else {
-                opt.cmp.cfg.template = function () {
-                    contentTpl = toLiteralString(contentTpl);
-                    return eval('`' + contentTpl + '`');
-                }
-            }
-        }
-    }
-
-    _initRawProps(opt) {
-        if (!this._isSubclass) {
-            this._rawProps = Object.assign({},
-                typeof opt.cmp.cfg.props === 'function'
-                    ? opt.cmp.cfg.props()
-                    : opt.cmp.cfg.props,
-                opt.props
-            );
-
-            this._initTemplate(opt);
-
-        } else {
-            this._rawProps = Object.assign({}, opt.props);
-        }
-    }
 }
 
-function defineProperties(obj, opt) {
-
-    Object.defineProperties(obj, {
-        //Private
-        _opt: {
-            value: opt
-        },
-        _cfgRoot: {
-            value: opt.root
-        },
-        _publicProps: {
-            value: Object.assign({}, opt.props)
-        },
-        _initialProps: {
-            value: cloneObject(obj._rawProps)
-        },
-        _isRendered: {
-            value: false,
-            writable: true
-        },
-        _prev: {
-            value: null,
-            writable: true
-        },
-        _rootElement: {
-            value: null,
-            writable: true
-        },
-        _parentElement: {
-            value: null,
-            writable: true
-        },
-        _components: {
-            value: {},
-            writable: true
-        },
-        _processing: {
-            value: [],
-            writable: true
-        },
-        _dynamicChildren: {
-            value: [],
-            writable: true
-        },
-        _unmounted: {
-            value: false,
-            writable: true
-        },
-        _unmountedParentNode: {
-            value: null,
-            writable: true
-        },
-        _configured: {
-            value: false,
-            writable: true
-        },
-        _props: {
-            value: {},
-            writable: true
-        },
-        _directiveProps: {
-            value: {},
-            writable: true
-        },
-        _computedCache: {
-            value: new Map()
-        },
-        _renderPause: {
-            value: false,
-            writable: true
-        },
-        _rawHTML: {
-            value: '',
-            writable: true
-        },
-        _slots: {
-            value: {},
-            writable: true
-        },
-        _defaultSlot: {
-            value: null,
-            writable: true
-        },
-
-        //Public
-        tag: {
-            value: opt.cmp.tag,
-            enumerable: true
-        },
-        uId: {
-            value: opt.uId,
-            enumerable: true
-        },
-        app: {
-            value: opt.app,
-            enumerable: true
-        },
-        parent: {
-            value: opt.parentCmp,
-            enumerable: true,
-            configurable: true
-        },
-        appRoot: {
-            value: opt.app._root,
-            enumerable: true
-        },
-        action: {
-            value: opt.app.action,
-            enumerable: true
-        },
-        shared: {
-            value: opt.app.shared,
-            writable: true,
-            enumerable: true
-        },
-        children: {
-            value: {},
-            enumerable: true
-        },
-        childrenByTag: {
-            value: {},
-            enumerable: true
-        },
-        rawChildren: {
-            value: [],
-            enumerable: true
-        },
-        autoCreateChildren: {
-            value: true,
-            enumerable: true,
-            writable: true
-        },
-        updateChildrenProps: {
-            value: true,
-            enumerable: true,
-            writable: true
-        },
-        mixin: {
-            value: [],
-            enumerable: true,
-            writable: true
-        },
-        propsConvertOnFly: {
-            value: false,
-            enumerable: true,
-            writable: true
-        },
-        propsComputedOnFly: {
-            value: false,
-            enumerable: true,
-            writable: true
-        },
-        delayUpdate: {
-            value: 0,
-            enumerable: true,
-            writable: true
-        }
-    });
-}
-
-function drawDynamic(instance) {
-
-    let index = instance._processing.length - 1;
-
-    while (index >= 0) {
-        let item = instance._processing[index];
-        let root = item.node.parentNode;
-
-        const dynamicInstance = require('./instances').get({
-            root,
-            template: item.node.outerHTML,
-            app: instance.app,
-            parent: instance
-        });
-
-        if (dynamicInstance) {
-
-            // Replace with dynamic instance original node
-            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-
-            // if original node has children
-            if (item.node.childNodes.length) {
-                // replace again -.-
-                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-                // and append root element of dynamic instance :D
-                item.node.appendChild(dynamicInstance._rootElement);
-            }
-
-            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-            instance._processing.splice(index, 1);
-            let n = Object.keys(instance.children).length;
-            instance.children[n++] = dynamicInstance;
-
-            if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
-                instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
-            } else {
-                instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-            }
-
-            directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
-        }
-        index -= 1;
-    }
-}
 
 module.exports = {
-    Component,
-    defineProperties,
-    drawDynamic
+    Component
 };
