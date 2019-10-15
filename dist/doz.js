@@ -397,7 +397,6 @@ function callDestroy(context) {
     directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
-    //delete context.app._componentsByUId[context.uId];
     var style = document.getElementById(context.uId + '--style');
     if (style) {
         style.parentNode.removeChild(style);
@@ -722,32 +721,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
-    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(37);
 var hooks = __webpack_require__(4);
 var update = __webpack_require__(40).updateElement;
-//const store = require('./store');
-//const ids = require('./ids');
+var drawDynamic = __webpack_require__(43);
 var proxy = __webpack_require__(12);
-var toInlineStyle = __webpack_require__(43);
-var queueReady = __webpack_require__(45);
-var queueDraw = __webpack_require__(46);
-var extendInstance = __webpack_require__(47);
-var cloneObject = __webpack_require__(48);
-var toLiteralString = __webpack_require__(16);
+var toInlineStyle = __webpack_require__(44);
+var queueReady = __webpack_require__(46);
+var queueDraw = __webpack_require__(47);
+var extendInstance = __webpack_require__(48);
 var removeAllAttributes = __webpack_require__(49);
-var h = __webpack_require__(17);
+var h = __webpack_require__(16);
 var loadLocal = __webpack_require__(50);
 var localMixin = __webpack_require__(51);
 
 var _require2 = __webpack_require__(5),
     compile = _require2.compile;
 
-var propsInit = __webpack_require__(19);
+var propsInit = __webpack_require__(18);
 var DOMManipulation = __webpack_require__(52);
 var directive = __webpack_require__(0);
+var cloneObject = __webpack_require__(54);
+var toLiteralString = __webpack_require__(19);
 
 var Component = function (_DOMManipulation) {
     _inherits(Component, _DOMManipulation);
@@ -755,26 +752,13 @@ var Component = function (_DOMManipulation) {
     function Component(opt) {
         _classCallCheck(this, Component);
 
-        var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+        var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, opt));
 
-        Object.defineProperties(_this, {
-            _isSubclass: {
-                value: _this.__proto__.constructor !== Component
-            },
-            _rawProps: {
-                value: {},
-                writable: true
-            }
+        Object.defineProperty(_this, '_isSubclass', {
+            value: _this.__proto__.constructor !== Component
         });
 
-        opt.cmp = opt.cmp || {
-            tag: opt.tag,
-            cfg: {}
-        };
-
         _this._initRawProps(opt);
-
-        defineProperties(_this, opt);
 
         // Assign cfg to instance
         extendInstance(_this, opt.cmp.cfg);
@@ -848,14 +832,6 @@ var Component = function (_DOMManipulation) {
         key: 'toStyle',
         value: function toStyle(obj) {
             return toInlineStyle(obj);
-        }
-
-        // noinspection JSMethodCanBeStatic
-
-    }, {
-        key: 'template',
-        value: function template() {
-            return '';
         }
     }, {
         key: 'render',
@@ -1020,6 +996,14 @@ var Component = function (_DOMManipulation) {
 
             hooks.callDestroy(this);
         }
+
+        // noinspection JSMethodCanBeStatic
+
+    }, {
+        key: 'template',
+        value: function template() {
+            return '';
+        }
     }, {
         key: '_initTemplate',
         value: function _initTemplate(opt) {
@@ -1041,6 +1025,7 @@ var Component = function (_DOMManipulation) {
     }, {
         key: '_initRawProps',
         value: function _initRawProps(opt) {
+            //console.log(this._isSubclass)
             if (!this._isSubclass) {
                 this._rawProps = Object.assign({}, typeof opt.cmp.cfg.props === 'function' ? opt.cmp.cfg.props() : opt.cmp.cfg.props, opt.props);
 
@@ -1048,6 +1033,10 @@ var Component = function (_DOMManipulation) {
             } else {
                 this._rawProps = Object.assign({}, opt.props);
             }
+
+            Object.defineProperty(this, '_initialProps', {
+                value: cloneObject(this._rawProps)
+            });
         }
     }, {
         key: 'props',
@@ -1104,217 +1093,7 @@ var Component = function (_DOMManipulation) {
     return Component;
 }(DOMManipulation);
 
-function defineProperties(obj, opt) {
-
-    Object.defineProperties(obj, {
-        //Private
-        _opt: {
-            value: opt
-        },
-        _cfgRoot: {
-            value: opt.root
-        },
-        _publicProps: {
-            value: Object.assign({}, opt.props)
-        },
-        _initialProps: {
-            value: cloneObject(obj._rawProps)
-        },
-        _isRendered: {
-            value: false,
-            writable: true
-        },
-        _prev: {
-            value: null,
-            writable: true
-        },
-        _rootElement: {
-            value: null,
-            writable: true
-        },
-        _parentElement: {
-            value: null,
-            writable: true
-        },
-        _components: {
-            value: {},
-            writable: true
-        },
-        _processing: {
-            value: [],
-            writable: true
-        },
-        _dynamicChildren: {
-            value: [],
-            writable: true
-        },
-        _unmounted: {
-            value: false,
-            writable: true
-        },
-        _unmountedParentNode: {
-            value: null,
-            writable: true
-        },
-        _configured: {
-            value: false,
-            writable: true
-        },
-        _props: {
-            value: {},
-            writable: true
-        },
-        _directiveProps: {
-            value: {},
-            writable: true
-        },
-        _computedCache: {
-            value: new Map()
-        },
-        _renderPause: {
-            value: false,
-            writable: true
-        },
-        _rawHTML: {
-            value: '',
-            writable: true
-        },
-        _slots: {
-            value: {},
-            writable: true
-        },
-        _defaultSlot: {
-            value: null,
-            writable: true
-        },
-
-        //Public
-        tag: {
-            value: opt.cmp.tag,
-            enumerable: true
-        },
-        uId: {
-            value: opt.uId,
-            enumerable: true
-        },
-        app: {
-            value: opt.app,
-            enumerable: true
-        },
-        parent: {
-            value: opt.parentCmp,
-            enumerable: true,
-            configurable: true
-        },
-        appRoot: {
-            value: opt.app._root,
-            enumerable: true
-        },
-        action: {
-            value: opt.app.action,
-            enumerable: true
-        },
-        shared: {
-            value: opt.app.shared,
-            writable: true,
-            enumerable: true
-        },
-        children: {
-            value: {},
-            enumerable: true
-        },
-        childrenByTag: {
-            value: {},
-            enumerable: true
-        },
-        rawChildren: {
-            value: [],
-            enumerable: true
-        },
-        autoCreateChildren: {
-            value: true,
-            enumerable: true,
-            writable: true
-        },
-        updateChildrenProps: {
-            value: true,
-            enumerable: true,
-            writable: true
-        },
-        mixin: {
-            value: [],
-            enumerable: true,
-            writable: true
-        },
-        propsConvertOnFly: {
-            value: false,
-            enumerable: true,
-            writable: true
-        },
-        propsComputedOnFly: {
-            value: false,
-            enumerable: true,
-            writable: true
-        },
-        delayUpdate: {
-            value: 0,
-            enumerable: true,
-            writable: true
-        }
-    });
-}
-
-function drawDynamic(instance) {
-
-    var index = instance._processing.length - 1;
-
-    while (index >= 0) {
-        var item = instance._processing[index];
-        var root = item.node.parentNode;
-
-        var dynamicInstance = __webpack_require__(9).get({
-            root: root,
-            template: item.node.outerHTML,
-            app: instance.app,
-            parent: instance
-        });
-
-        if (dynamicInstance) {
-
-            // Replace with dynamic instance original node
-            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
-
-            // if original node has children
-            if (item.node.childNodes.length) {
-                // replace again -.-
-                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-                // and append root element of dynamic instance :D
-                item.node.appendChild(dynamicInstance._rootElement);
-            }
-
-            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-            instance._processing.splice(index, 1);
-            var n = Object.keys(instance.children).length;
-            instance.children[n++] = dynamicInstance;
-
-            if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
-                instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
-            } else {
-                instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-            }
-
-            directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
-        }
-        index -= 1;
-    }
-}
-
-module.exports = {
-    Component: Component,
-    defineProperties: defineProperties,
-    drawDynamic: drawDynamic
-};
+module.exports = Component;
 
 /***/ }),
 /* 9 */
@@ -1346,15 +1125,10 @@ var hooks = __webpack_require__(4);
 
 var _require3 = __webpack_require__(5),
     serializeProps = _require3.serializeProps;
-//const {extract} = require('./component-directives');
-
 
 var hmr = __webpack_require__(36);
-
-var _require4 = __webpack_require__(8),
-    Component = _require4.Component;
-
-var propsInit = __webpack_require__(19);
+var Component = __webpack_require__(8);
+var propsInit = __webpack_require__(18);
 var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
 
@@ -1365,23 +1139,18 @@ function getComponentName(child) {
 function transformChildStyle(child, parent) {
     if (child.nodeName !== 'STYLE') return;
 
-    //const dataSetId = parent.cmp._rootElement.parentNode.dataset.is;
     var dataSetUId = parent.cmp.uId;
-    //const dataSetUId = parent.cmp._rootElement.parentNode.dataset.uid;
     parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
-    //console.log(dataSetUId)
 
     var tagByData = '[data-uid="' + dataSetUId + '"]';
 
-    //scopedInner(child.textContent, parent.cmp.tag, tagByData);
     scopedInner(child.textContent, dataSetUId, tagByData);
 
     var emptyStyle = document.createElement('script');
     emptyStyle.type = 'text/style';
     emptyStyle.textContent = ' ';
-    //emptyStyle.dataset.id = parent.cmp.tag + '--style';
     emptyStyle.dataset.id = dataSetUId + '--style';
-    emptyStyle.dataset.owner = dataSetUId; //parent.cmp.tag;
+    emptyStyle.dataset.owner = dataSetUId;
 
     emptyStyle.dataset.ownerByData = tagByData;
 
@@ -1438,8 +1207,6 @@ function get() {
 
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
-            //console.log('-----', !!cmp);
-
             var parentElement = void 0;
 
             if (cmp) {
@@ -1463,23 +1230,10 @@ function get() {
                     }
 
                     var props = serializeProps($child);
-                    //const componentDirectives = extract(props);
-                    //console.log(extract(props))
-                    var componentDirectives = {}; // directive.extractDirectivesFromProps(props);
 
-                    /*console.log('props', props)
-                    console.log('directives', componentDirectives)
-                    console.log('-----')*/
+                    var componentDirectives = {};
 
                     var newElement = void 0;
-
-                    /*
-                    if(parent.cmp) {
-                        console.log('parent.cmp', parent.cmp.tag);
-                    }
-                    if(cfg.parent)
-                        console.log('cfg.parent', cfg.parent.tag);
-                     */
 
                     if (typeof cmp.cfg === 'function') {
                         // This implements single function component
@@ -1521,8 +1275,6 @@ function get() {
                         });
                     }
 
-                    //console.log($child.nodeName, $child.childNodes.length);
-
                     if (!newElement) {
                         $child = $child.nextSibling;
                         return 'continue';
@@ -1533,9 +1285,6 @@ function get() {
                     }
 
                     propsInit(newElement);
-
-                    //Object.defineProperty(newElement, 'uId', {value: uId});
-                    //Object.defineProperty(newElement, 'originalChildNodesLength', {value: $child.childNodes.length});
 
                     newElement.app.emit('componentPropsInit', newElement);
 
@@ -1578,10 +1327,6 @@ function get() {
                             parent.cmp.children[index] = newElement;
                         });
 
-                        /*
-                        let n = Object.keys(parent.cmp.children).length++;
-                        parent.cmp.children[newElement.alias ? newElement.alias : n] = newElement;
-                         */
                         if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
                             parent.cmp.childrenByTag[newElement.tag] = [newElement];
                         } else {
@@ -2679,19 +2424,6 @@ module.exports = canDecode;
 "use strict";
 
 
-function toLiteralString(str) {
-    return str.replace(/{{/gm, '${').replace(/}}/gm, '}');
-}
-
-module.exports = toLiteralString;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var _require = __webpack_require__(1),
@@ -2741,7 +2473,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2779,7 +2511,7 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2803,6 +2535,19 @@ function propsInit(instance) {
 }
 
 module.exports = propsInit;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function toLiteralString(str) {
+    return str.replace(/{{/gm, '${').replace(/}}/gm, '}');
+}
+
+module.exports = toLiteralString;
 
 /***/ }),
 /* 20 */
@@ -2869,21 +2614,18 @@ var _require = __webpack_require__(20),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(53);
+var component = __webpack_require__(55);
+var Component = __webpack_require__(8);
+var mixin = __webpack_require__(56);
+var h = __webpack_require__(16);
 
-var _require3 = __webpack_require__(8),
-    Component = _require3.Component;
+var _require3 = __webpack_require__(5),
+    compile = _require3.compile;
 
-var mixin = __webpack_require__(54);
-var h = __webpack_require__(17);
+var _require4 = __webpack_require__(14),
+    update = _require4.update;
 
-var _require4 = __webpack_require__(5),
-    compile = _require4.compile;
-
-var _require5 = __webpack_require__(14),
-    update = _require5.update;
-
-__webpack_require__(55);
+__webpack_require__(57);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -2954,7 +2696,7 @@ var _require = __webpack_require__(1),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(16);
+var toLiteralString = __webpack_require__(19);
 var plugin = __webpack_require__(20);
 var directive = __webpack_require__(0);
 
@@ -4477,9 +4219,69 @@ module.exports.getLast = getLast;
 "use strict";
 
 
+var _require = __webpack_require__(1),
+    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE;
+
+var directive = __webpack_require__(0);
+
+function drawDynamic(instance) {
+
+    var index = instance._processing.length - 1;
+
+    while (index >= 0) {
+        var item = instance._processing[index];
+        var root = item.node.parentNode;
+
+        var dynamicInstance = __webpack_require__(9).get({
+            root: root,
+            template: item.node.outerHTML,
+            app: instance.app,
+            parent: instance
+        });
+
+        if (dynamicInstance) {
+
+            // Replace with dynamic instance original node
+            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
+            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+
+            // if original node has children
+            if (item.node.childNodes.length) {
+                // replace again -.-
+                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
+                // and append root element of dynamic instance :D
+                item.node.appendChild(dynamicInstance._rootElement);
+            }
+
+            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
+            instance._processing.splice(index, 1);
+            var n = Object.keys(instance.children).length;
+            instance.children[n++] = dynamicInstance;
+
+            if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
+                instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
+            } else {
+                instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
+            }
+
+            directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
+        }
+        index -= 1;
+    }
+}
+
+module.exports = drawDynamic;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(44);
+var camelToDash = __webpack_require__(45);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4508,7 +4310,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4521,7 +4323,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4539,7 +4341,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4572,7 +4374,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4583,19 +4385,6 @@ function extendInstance(instance, cfg, dProps) {
 }
 
 module.exports = extendInstance;
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function cloneObject(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-
-module.exports = cloneObject;
 
 /***/ }),
 /* 49 */
@@ -4671,7 +4460,7 @@ module.exports = loadLocal;
 "use strict";
 
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(17);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -4691,11 +4480,14 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var canDecode = __webpack_require__(15);
 var composeStyleInner = __webpack_require__(11);
 var dashToCamel = __webpack_require__(7);
-//const castStringTo = require('../utils/cast-string-to');
-//const delay = require('../utils/delay');
+var Base = __webpack_require__(53);
 
 var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -4707,9 +4499,13 @@ var _require = __webpack_require__(1),
 
 var directive = __webpack_require__(0);
 
-var DOMManipulation = function () {
-    function DOMManipulation() {
+var DOMManipulation = function (_Base) {
+    _inherits(DOMManipulation, _Base);
+
+    function DOMManipulation(opt) {
         _classCallCheck(this, DOMManipulation);
+
+        return _possibleConstructorReturn(this, (DOMManipulation.__proto__ || Object.getPrototypeOf(DOMManipulation)).call(this, opt));
     }
 
     _createClass(DOMManipulation, [{
@@ -4835,12 +4631,203 @@ var DOMManipulation = function () {
     }]);
 
     return DOMManipulation;
-}();
+}(Base);
 
 module.exports = DOMManipulation;
 
 /***/ }),
 /* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Base = function Base() {
+    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Base);
+
+    opt.cmp = opt.cmp || {
+        tag: opt.tag,
+        cfg: {}
+    };
+
+    opt.app = opt.app || {};
+
+    Object.defineProperties(this, {
+        //Private
+        _opt: {
+            value: opt
+        },
+        _cfgRoot: {
+            value: opt.root
+        },
+        _publicProps: {
+            value: Object.assign({}, opt.props)
+        },
+        _isRendered: {
+            value: false,
+            writable: true
+        },
+        _prev: {
+            value: null,
+            writable: true
+        },
+        _rootElement: {
+            value: null,
+            writable: true
+        },
+        _parentElement: {
+            value: null,
+            writable: true
+        },
+        _components: {
+            value: {},
+            writable: true
+        },
+        _processing: {
+            value: [],
+            writable: true
+        },
+        _dynamicChildren: {
+            value: [],
+            writable: true
+        },
+        _unmounted: {
+            value: false,
+            writable: true
+        },
+        _unmountedParentNode: {
+            value: null,
+            writable: true
+        },
+        _configured: {
+            value: false,
+            writable: true
+        },
+        _props: {
+            value: {},
+            writable: true
+        },
+        _directiveProps: {
+            value: {},
+            writable: true
+        },
+        _computedCache: {
+            value: new Map()
+        },
+        _renderPause: {
+            value: false,
+            writable: true
+        },
+        _rawHTML: {
+            value: '',
+            writable: true
+        },
+        _slots: {
+            value: {},
+            writable: true
+        },
+        _defaultSlot: {
+            value: null,
+            writable: true
+        },
+
+        //Public
+        tag: {
+            value: opt.cmp.tag,
+            enumerable: true
+        },
+        uId: {
+            value: opt.uId,
+            enumerable: true
+        },
+        app: {
+            value: opt.app,
+            enumerable: true
+        },
+        parent: {
+            value: opt.parentCmp,
+            enumerable: true,
+            configurable: true
+        },
+        appRoot: {
+            value: opt.app._root,
+            enumerable: true
+        },
+        action: {
+            value: opt.app.action,
+            enumerable: true
+        },
+        shared: {
+            value: opt.app.shared,
+            writable: true,
+            enumerable: true
+        },
+        children: {
+            value: {},
+            enumerable: true
+        },
+        childrenByTag: {
+            value: {},
+            enumerable: true
+        },
+        rawChildren: {
+            value: [],
+            enumerable: true
+        },
+        autoCreateChildren: {
+            value: true,
+            enumerable: true,
+            writable: true
+        },
+        updateChildrenProps: {
+            value: true,
+            enumerable: true,
+            writable: true
+        },
+        mixin: {
+            value: [],
+            enumerable: true,
+            writable: true
+        },
+        propsConvertOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
+        },
+        propsComputedOnFly: {
+            value: false,
+            enumerable: true,
+            writable: true
+        },
+        delayUpdate: {
+            value: 0,
+            enumerable: true,
+            writable: true
+        }
+    });
+};
+
+module.exports = Base;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function cloneObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+module.exports = cloneObject;
+
+/***/ }),
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4875,16 +4862,14 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 54 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(8),
-    Component = _require.Component;
-
-var mixin = __webpack_require__(18);
+var Component = __webpack_require__(8);
+var mixin = __webpack_require__(17);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
@@ -4893,26 +4878,26 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 55 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(56);
-__webpack_require__(57);
 __webpack_require__(58);
 __webpack_require__(59);
 __webpack_require__(60);
-
 __webpack_require__(61);
 __webpack_require__(62);
+
 __webpack_require__(63);
 __webpack_require__(64);
 __webpack_require__(65);
+__webpack_require__(66);
+__webpack_require__(67);
 
 /***/ }),
-/* 56 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4990,7 +4975,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 57 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5057,7 +5042,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 58 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5106,7 +5091,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 59 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5144,7 +5129,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 60 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5258,7 +5243,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 61 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5283,7 +5268,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 62 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5313,7 +5298,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 63 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5511,7 +5496,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 64 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5678,7 +5663,7 @@ directive('key', {
 });
 
 /***/ }),
-/* 65 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
