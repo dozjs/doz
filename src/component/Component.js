@@ -28,6 +28,11 @@ class Component extends DOMManipulation {
            value: this.__proto__.constructor !== Component
         });
 
+        Object.defineProperty(this, 'uId', {
+           value: this.app.generateUId(),
+            enumerable: true
+        });
+
         this._initRawProps(opt);
 
         // Assign cfg to instance

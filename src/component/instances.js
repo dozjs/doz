@@ -61,8 +61,6 @@ function get(cfg = {}) {
 
             directive.callAppWalkDOM(parent, $child);
 
-            const uId = cfg.app.generateUId();
-
             isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {
@@ -113,6 +111,7 @@ function get(cfg = {}) {
                 const componentDirectives = {};
 
                 let newElement;
+                //const uId = cfg.app.generateUId();
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -130,7 +129,7 @@ function get(cfg = {}) {
                         props,
                         componentDirectives,
                         parentCmp: parent.cmp || cfg.parent,
-                        uId
+                        //uId
                     });
                 } else {
                     newElement = new Component({
@@ -141,7 +140,7 @@ function get(cfg = {}) {
                         props,
                         componentDirectives,
                         parentCmp: parent.cmp || cfg.parent,
-                        uId
+                        //uId
                     });
                 }
 

@@ -758,6 +758,11 @@ var Component = function (_DOMManipulation) {
             value: _this.__proto__.constructor !== Component
         });
 
+        Object.defineProperty(_this, 'uId', {
+            value: _this.app.generateUId(),
+            enumerable: true
+        });
+
         _this._initRawProps(opt);
 
         // Assign cfg to instance
@@ -1184,8 +1189,6 @@ function get() {
 
             directive.callAppWalkDOM(parent, $child);
 
-            var uId = cfg.app.generateUId();
-
             isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {
@@ -1234,6 +1237,7 @@ function get() {
                     var componentDirectives = {};
 
                     var newElement = void 0;
+                    //const uId = cfg.app.generateUId();
 
                     if (typeof cmp.cfg === 'function') {
                         // This implements single function component
@@ -1259,8 +1263,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent,
-                            uId: uId
+                            parentCmp: parent.cmp || cfg.parent
+                            //uId
                         });
                     } else {
                         newElement = new Component({
@@ -1270,8 +1274,8 @@ function get() {
                             app: cfg.app,
                             props: props,
                             componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent,
-                            uId: uId
+                            parentCmp: parent.cmp || cfg.parent
+                            //uId
                         });
                     }
 
@@ -4740,10 +4744,10 @@ var Base = function Base() {
             value: opt.cmp.tag,
             enumerable: true
         },
-        uId: {
+        /*uId: {
             value: opt.uId,
             enumerable: true
-        },
+        },*/
         app: {
             value: opt.app,
             enumerable: true
