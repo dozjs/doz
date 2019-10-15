@@ -1,5 +1,5 @@
-const {COMPONENT_DYNAMIC_INSTANCE} = require('../constants');
-const directive = require('../directive');
+const {COMPONENT_DYNAMIC_INSTANCE} = require('../../constants');
+const directive = require('../../directive');
 
 function drawDynamic(instance) {
 
@@ -9,7 +9,7 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        const dynamicInstance = require('./instances').get({
+        const dynamicInstance = require('../instances').get({
             root,
             template: item.node.outerHTML,
             app: instance.app,

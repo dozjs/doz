@@ -1,4 +1,4 @@
-const delay = require('../utils/delay');
+const delay = require('../../utils/delay');
 
 function propsListener(instance, changes) {
 

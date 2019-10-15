@@ -1,4 +1,4 @@
-const mixin = require('../utils/mixin');
+const mixin = require('../../utils/mixin');
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);

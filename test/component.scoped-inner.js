@@ -1,4 +1,4 @@
-const {scopedInner} = require('../src/component/style');
+const {scopedInner} = require('../src/component/helpers/style');
 const be = require('bejs');
 
 describe('Component.scoped-inner', function () {
