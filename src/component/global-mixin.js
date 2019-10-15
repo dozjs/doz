@@ -1,4 +1,4 @@
-const {Component} = require('./Component');
+const Component = require('./Component');
 const mixin = require('../utils/mixin');
 
 function globalMixin(obj) {

@@ -324,6 +324,4 @@ class Component extends DOMManipulation {
 }
 
 
-module.exports = {
-    Component
-};
+module.exports = Component;

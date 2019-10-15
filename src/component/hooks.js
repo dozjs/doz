@@ -126,7 +126,6 @@ function callDestroy(context) {
     directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
 
-    //delete context.app._componentsByUId[context.uId];
     const style = document.getElementById(context.uId + '--style');
     if (style) {
         style.parentNode.removeChild(style);
