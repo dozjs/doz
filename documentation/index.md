@@ -93,16 +93,16 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/rx9ps5s4/)
+[LIVE](https://codepen.io/pen/KKKzQJK)
 
 ---
 
 ## Component definition
-The method `component` defines an component globally that can be added to any other component of the project.
+The method `define` defines an component globally that can be added to any other component of the project.
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
 
 ```javascript
-Doz.component('hello-world', {
+Doz.define('hello-world', class extends Doz.Component {
     template(h) {
         return h`
             <h2>Hello World</h2>
@@ -121,9 +121,7 @@ new Doz({
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/ut18kyy1/)
-
-> How define a component with [ES6 class](#es6-class)?
+[LIVE](https://codepen.io/pen/vYYGdPj/)
 
 ---
 
@@ -132,15 +130,18 @@ All props are stored into `props` (your component data) property of the componen
 Doz uses [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to build the component UI then the props are injected inside the string.
 
 ```javascript
-Doz.component('my-clock', {
-    props: {
-        time: '--:--:--'
-    },
+Doz.define('my-clock', class extends Doz.Component {
+    constructor(o) {
+        super(o);
+        this.props = {
+            time: '--:--:--'
+        }
+    }
     template(h) {
         return h`
             <h2>${this.props.title} <span>${this.props.time}</span></h2>
         `
-    },
+    }
     onMount() {
         setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
     }
@@ -151,13 +152,13 @@ new Doz({
     template(h) {
         return h`
             <h1>Welcome to my app:</h1>
-            <my-clock title="it's"></my-clock>
+            <my-clock title="it's"/>
         `
     }
 });
 ```
 
-[FIDDLE](https://jsfiddle.net/8qp9co1o/3)
+[LIVE](https://codepen.io/pen/eYYZVwz)
 
 ---
 
