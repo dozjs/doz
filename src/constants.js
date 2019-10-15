@@ -1,8 +1,8 @@
 module.exports = {
-    COMPONENT_DYNAMIC_INSTANCE: '__DOZ_COMPONENT_DYNAMIC_INSTANCE__',
-    COMPONENT_INSTANCE: '__DOZ_COMPONENT_INSTANCE__',
-    COMPONENT_ROOT_INSTANCE: '__DOZ_COMPONENT_ROOT_INSTANCE__',
-    DEFAULT_SLOT_KEY: '__DEFAULT__',
+    COMPONENT_DYNAMIC_INSTANCE: '__dozComponentDynamicInstance',
+    COMPONENT_INSTANCE: '__dozComponentInstance',
+    COMPONENT_ROOT_INSTANCE: '__dozComponentRootInstance',
+    DEFAULT_SLOT_KEY: '__default__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
     },
