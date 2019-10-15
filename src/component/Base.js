@@ -3,7 +3,7 @@ const toLiteralString = require('../utils/to-literal-string');
 const {REGEX} = require('../constants');
 
 function defineProperties(obj, opt) {
-
+console.log(opt);
     Object.defineProperties(obj, {
         //Private
         _opt: {
