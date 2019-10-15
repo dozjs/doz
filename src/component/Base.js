@@ -2,14 +2,15 @@ const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 const detectInheritance = require('../utils/detect-inheritance');
 const {REGEX} = require('../constants');
+const {Component} = require('./Component')
 
 class Base {
     constructor(opt = {}) {
-        console.log(this.__proto__.constructor)
+        console.log(this.__proto__.constructor !== Component)
         Object.defineProperties(this, {
             _isSubclass: {
                 //value: detectInheritance(this.__proto__, Base)
-                value: this.__proto__.constructor !== Base
+                value: this.__proto__.constructor !== Component
             },
             _rawProps: {
                 value: {},
