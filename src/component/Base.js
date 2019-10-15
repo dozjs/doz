@@ -7,7 +7,8 @@ class Base {
     constructor(opt = {}) {
         Object.defineProperties(this, {
             _isSubclass: {
-                value: detectInheritance(this.__proto__, Base)
+                //value: detectInheritance(this.__proto__, Base)
+                value: this.__proto__.constructor !== Base
             },
             _rawProps: {
                 value: {},
@@ -205,7 +206,7 @@ class Base {
     }
 
     _initRawProps(opt) {
-        console.log(this._isSubclass)
+        //console.log(this._isSubclass)
         if (!this._isSubclass) {
             this._rawProps = Object.assign({},
                 typeof opt.cmp.cfg.props === 'function'
