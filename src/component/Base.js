@@ -1,31 +1,12 @@
-const cloneObject = require('../utils/clone-object');
-const toLiteralString = require('../utils/to-literal-string');
-const detectInheritance = require('../utils/detect-inheritance');
-const {REGEX} = require('../constants');
-const {Component} = require('./Component')
-
 class Base {
-    constructor(opt = {}) {
-        console.log(this.__proto__.constructor !== Component)
-        Object.defineProperties(this, {
-            _isSubclass: {
-                //value: detectInheritance(this.__proto__, Base)
-                value: this.__proto__.constructor !== Component
-            },
-            _rawProps: {
-                value: {},
-                writable: true
-            }
-        });
 
+    constructor(opt = {}) {
         opt.cmp = opt.cmp || {
             tag: opt.tag,
             cfg: {}
         };
 
         opt.app = opt.app || {};
-
-        this._initRawProps(opt);
 
         Object.defineProperties(this, {
             //Private
@@ -37,9 +18,6 @@ class Base {
             },
             _publicProps: {
                 value: Object.assign({}, opt.props)
-            },
-            _initialProps: {
-                value: cloneObject(this._rawProps)
             },
             _isRendered: {
                 value: false,
@@ -183,45 +161,6 @@ class Base {
                 writable: true
             }
         });
-    }
-
-    // noinspection JSMethodCanBeStatic
-    template() {
-        return '';
-    }
-
-    _initTemplate(opt) {
-        if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
-            let contentTpl = opt.cmp.cfg.template;
-            if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
-                opt.cmp.cfg.template = function () {
-                    let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                    return eval('`' + contentStr + '`')
-                }
-            } else {
-                opt.cmp.cfg.template = function () {
-                    contentTpl = toLiteralString(contentTpl);
-                    return eval('`' + contentTpl + '`');
-                }
-            }
-        }
-    }
-
-    _initRawProps(opt) {
-        //console.log(this._isSubclass)
-        if (!this._isSubclass) {
-            this._rawProps = Object.assign({},
-                typeof opt.cmp.cfg.props === 'function'
-                    ? opt.cmp.cfg.props()
-                    : opt.cmp.cfg.props,
-                opt.props
-            );
-
-            this._initTemplate(opt);
-
-        } else {
-            this._rawProps = Object.assign({}, opt.props);
-        }
     }
 }
 

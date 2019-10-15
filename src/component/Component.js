@@ -16,14 +16,19 @@ const {compile} = require('../vdom/parser');
 const propsInit = require('./props-init');
 const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directive');
+const cloneObject = require('../utils/clone-object');
+const toLiteralString = require('../utils/to-literal-string');
 
 class Component extends DOMManipulation {
 
     constructor(opt) {
-
         super(opt);
 
-        //defineProperties(this, opt);
+        Object.defineProperty(this, '_isSubclass', {
+           value: this.__proto__.constructor !== Component
+        });
+
+        this._initRawProps(opt);
 
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -270,6 +275,50 @@ class Component extends DOMManipulation {
         });
 
         hooks.callDestroy(this);
+    }
+
+    // noinspection JSMethodCanBeStatic
+    template() {
+        return '';
+    }
+
+    _initTemplate(opt) {
+        if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
+            let contentTpl = opt.cmp.cfg.template;
+            if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
+                opt.cmp.cfg.template = function () {
+                    let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
+                    return eval('`' + contentStr + '`')
+                }
+            } else {
+                opt.cmp.cfg.template = function () {
+                    contentTpl = toLiteralString(contentTpl);
+                    return eval('`' + contentTpl + '`');
+                }
+            }
+        }
+    }
+
+    _initRawProps(opt) {
+        //console.log(this._isSubclass)
+        if (!this._isSubclass) {
+            this._rawProps = Object.assign({},
+                typeof opt.cmp.cfg.props === 'function'
+                    ? opt.cmp.cfg.props()
+                    : opt.cmp.cfg.props,
+                opt.props
+            );
+
+            this._initTemplate(opt);
+
+        } else {
+            this._rawProps = Object.assign({}, opt.props);
+        }
+
+        Object.defineProperty(this, '_initialProps', {
+            value: cloneObject(this._rawProps)
+        });
+
     }
 
 }
