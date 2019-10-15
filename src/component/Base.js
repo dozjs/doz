@@ -5,6 +5,7 @@ const {REGEX} = require('../constants');
 
 class Base {
     constructor(opt = {}) {
+        console.log(this.__proto__.constructor)
         Object.defineProperties(this, {
             _isSubclass: {
                 //value: detectInheritance(this.__proto__, Base)
