@@ -41,12 +41,13 @@ class DOMManipulation extends Base {
     // noinspection JSMethodCanBeStatic
     $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
-            $oldElement.textContent = canDecode(newNode);
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
                 if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner($oldElement.textContent, $parent.dataset.ownerByData);
+                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
                 }
+            } else {
+                $oldElement.textContent = canDecode(newNode);
             }
             return $oldElement;
         }

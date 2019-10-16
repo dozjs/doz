@@ -127,8 +127,13 @@ function callDestroy(context) {
     context.app.emit('componentDestroy', context);
 
     const style = document.getElementById(context.uId + '--style');
+    const styleReset = document.getElementById(context.uId + '--style-reset');
+
     if (style) {
         style.parentNode.removeChild(style);
+    }
+    if (styleReset) {
+        style.parentNode.removeChild(styleReset);
     }
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
