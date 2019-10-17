@@ -13,16 +13,8 @@
  */
 
 const delay = require('./utils/delay');
+const stringDecoder = require('./utils/string-decoder');
 
-function sanitize(str) {
-    return typeof str === 'string'
-        ? str
-            .replace(/&(?!\w+;)/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-        : str;
-}
 
 /**
  * ObservableSlim
@@ -160,7 +152,7 @@ const ObservableSlim = (function () {
 
                     return _create(targetProp, domDelay, observable, newPath);
                 } else {
-                    let value = observable.renderMode ? sanitize(targetProp) : targetProp;
+                    let value = observable.renderMode ? stringDecoder.encode(targetProp) : targetProp;
 
                     let manipulate = observable.manipulate;
                     if (typeof manipulate === 'function') {
