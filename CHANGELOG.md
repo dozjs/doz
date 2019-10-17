@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.26.0] - 2019-10-17
+- **Added** attribute `scoped` to tag style
+- **Improved** sanitization input values
+
 ## [1.25.0] - 2019-10-12
 - **Added** directive 'd-show'
 - **Added** 'props' as second argument to template function

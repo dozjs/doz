@@ -15,7 +15,6 @@
 const delay = require('./utils/delay');
 const stringDecoder = require('./utils/string-decoder');
 
-
 /**
  * ObservableSlim
  * @type {{create, observe, remove, beforeChange, beginRender, endRender}}
