@@ -5498,10 +5498,7 @@ var Component = __webpack_require__(8);
 var propsInit = __webpack_require__(18);
 var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
-
-function getComponentName(child) {
-    return child.nodeName.toLowerCase();
-}
+var getComponentName = __webpack_require__(71);
 
 function createInstance() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -5705,6 +5702,19 @@ function createInstance() {
 }
 
 module.exports = createInstance;
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function getComponentName(child) {
+    return child.nodeName.toLowerCase();
+}
+
+module.exports = getComponentName;
 
 /***/ })
 /******/ ]);

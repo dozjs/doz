@@ -9,10 +9,7 @@ const Component = require('./Component');
 const propsInit = require('./helpers/props-init');
 const delay = require('../utils/delay');
 const directive = require('../directive');
-
-function getComponentName(child) {
-    return child.nodeName.toLowerCase();
-}
+const getComponentName = require('./helpers/get-component-name');
 
 function createInstance(cfg = {}) {
 
