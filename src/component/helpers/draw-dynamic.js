@@ -9,7 +9,7 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        const dynamicInstance = require('../instances').get({
+        const dynamicInstance = require('../create-instance')({
             root,
             template: item.node.outerHTML,
             app: instance.app,

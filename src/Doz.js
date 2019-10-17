@@ -1,5 +1,5 @@
 const bind = require('./utils/bind');
-const instances = require('./component/instances');
+const createInstance = require('./component/create-instance');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
@@ -48,10 +48,6 @@ class Doz {
                 value: 0,
                 writable: true
             },
-            /*_componentsByUId: {
-                value: {},
-                writable: true
-            },*/
             _components: {
                 value: {},
                 writable: true
@@ -60,17 +56,9 @@ class Doz {
                 value: {},
                 writable: true
             },
-            /*_stores: {
-                value: {},
-                writable: true
-            },*/
             _cache: {
                 value: new Map()
             },
-            /*_ids: {
-                value: {},
-                writable: true
-            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -130,7 +118,7 @@ class Doz {
                         }
                     };
 
-                    return instances.get({
+                    return createInstance({
                         root,
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
@@ -191,7 +179,7 @@ class Doz {
         if (!this.cfg.autoDraw)
             this.cfg.root.innerHTML = '';
 
-        this._tree = instances.get({
+        this._tree = createInstance({
             root: this.cfg.root,
             template: this.baseTemplate,
             app: this
@@ -203,21 +191,6 @@ class Doz {
     get mainComponent() {
         return this._tree;
     }
-
-    /*
-    getComponent(alias) {
-        return this._tree
-            ? this._tree.children[alias]
-            : undefined;
-    }*/
-    /*
-    getComponentById(id) {
-        return this._ids[id];
-    }
-    */
-    /*getStore(store) {
-        return this._stores[store];
-    }*/
 
     on(event, callback) {
         if (typeof event !== 'string')

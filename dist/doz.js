@@ -92,7 +92,7 @@ function directive(name) {
 
 module.exports = Object.assign({
     directive: directive
-}, __webpack_require__(29), __webpack_require__(30));
+}, __webpack_require__(30), __webpack_require__(31));
 
 /***/ }),
 /* 1 */
@@ -156,7 +156,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var data = __webpack_require__(28);
+var data = __webpack_require__(29);
 
 /**
  * Register a component to global
@@ -665,11 +665,11 @@ module.exports = {
 "use strict";
 
 
-var isJSON = __webpack_require__(32);
-var isNumber = __webpack_require__(33);
-var toJSON = __webpack_require__(34);
-var toNumber = __webpack_require__(35);
-var typesMap = __webpack_require__(36);
+var isJSON = __webpack_require__(33);
+var isNumber = __webpack_require__(34);
+var toJSON = __webpack_require__(35);
+var toNumber = __webpack_require__(36);
+var typesMap = __webpack_require__(37);
 
 function castStringTo(obj) {
 
@@ -727,27 +727,27 @@ var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(38);
+var observer = __webpack_require__(39);
 var hooks = __webpack_require__(4);
-var update = __webpack_require__(41).updateElement;
-var drawDynamic = __webpack_require__(44);
+var update = __webpack_require__(42).updateElement;
+var drawDynamic = __webpack_require__(45);
 var proxy = __webpack_require__(12);
-var toInlineStyle = __webpack_require__(45);
-var queueReady = __webpack_require__(47);
-var queueDraw = __webpack_require__(48);
-var extendInstance = __webpack_require__(49);
-var removeAllAttributes = __webpack_require__(50);
+var toInlineStyle = __webpack_require__(46);
+var queueReady = __webpack_require__(48);
+var queueDraw = __webpack_require__(49);
+var extendInstance = __webpack_require__(50);
+var removeAllAttributes = __webpack_require__(51);
 var h = __webpack_require__(16);
-var loadLocal = __webpack_require__(51);
-var localMixin = __webpack_require__(52);
+var loadLocal = __webpack_require__(52);
+var localMixin = __webpack_require__(53);
 
 var _require2 = __webpack_require__(5),
     compile = _require2.compile;
 
 var propsInit = __webpack_require__(18);
-var DOMManipulation = __webpack_require__(53);
+var DOMManipulation = __webpack_require__(54);
 var directive = __webpack_require__(0);
-var cloneObject = __webpack_require__(55);
+var cloneObject = __webpack_require__(56);
 var toLiteralString = __webpack_require__(19);
 
 var Component = function (_DOMManipulation) {
@@ -1105,284 +1105,7 @@ var Component = function (_DOMManipulation) {
 module.exports = Component;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var html = __webpack_require__(10);
-
-var _require = __webpack_require__(25),
-    scopedInner = _require.scopedInner;
-
-var _require2 = __webpack_require__(1),
-    COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
-    COMPONENT_INSTANCE = _require2.COMPONENT_INSTANCE,
-    REGEX = _require2.REGEX;
-
-var collection = __webpack_require__(2);
-var hooks = __webpack_require__(4);
-
-var _require3 = __webpack_require__(5),
-    serializeProps = _require3.serializeProps;
-
-var hmr = __webpack_require__(37);
-var Component = __webpack_require__(8);
-var propsInit = __webpack_require__(18);
-var delay = __webpack_require__(3);
-var directive = __webpack_require__(0);
-
-function getComponentName(child) {
-    return child.nodeName.toLowerCase();
-}
-
-function transformChildStyle(child, parent) {
-    if (child.nodeName !== 'STYLE') return;
-
-    var dataSetUId = parent.cmp.uId;
-    parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
-    //child.removeAttribute('scoped');
-    var tagByData = '[data-uid="' + dataSetUId + '"]';
-    var isScoped = child.hasAttribute('scoped');
-
-    scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
-
-    var emptyStyle = document.createElement('script');
-    emptyStyle.type = 'text/style';
-    emptyStyle.textContent = ' ';
-    emptyStyle.dataset.id = dataSetUId + '--style';
-    emptyStyle.dataset.owner = dataSetUId;
-    emptyStyle.dataset.ownerByData = tagByData;
-
-    if (isScoped) {
-        emptyStyle.dataset.scoped = 'true';
-    }
-    //console.log(emptyStyle);
-
-    child.parentNode.replaceChild(emptyStyle, child);
-    child = emptyStyle.nextSibling;
-
-    return child;
-}
-
-function get() {
-    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-
-    if (!cfg.root) return;
-
-    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
-
-    cfg.root.appendChild(cfg.template);
-
-    var componentInstance = null;
-    var cmpName = void 0;
-    var isChildStyle = void 0;
-    var trash = [];
-
-    //console.log(cfg.template);
-
-    function walk($child) {
-        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-        while ($child) {
-
-            directive.callAppWalkDOM(parent, $child);
-
-            isChildStyle = transformChildStyle($child, parent);
-
-            if (isChildStyle) {
-                $child = isChildStyle;
-                continue;
-            }
-
-            cmpName = getComponentName($child);
-
-            directive.callAppComponentAssignName(parent, $child, function (name) {
-                cmpName = name;
-            });
-
-            var localComponents = {};
-
-            if (parent.cmp && parent.cmp._components) {
-                localComponents = parent.cmp._components;
-            }
-
-            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
-
-            var parentElement = void 0;
-
-            if (cmp) {
-                var _ret = function () {
-
-                    if (parent.cmp) {
-                        var rawChild = $child.outerHTML;
-                        parent.cmp.rawChildren.push(rawChild);
-                    }
-
-                    // For node created by mount method
-                    if (parent.cmp && parent.cmp.mounted) {
-                        $child = $child.nextSibling;
-                        return 'continue';
-                    }
-
-                    if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                        trash.push($child);
-                        $child = $child.nextSibling;
-                        return 'continue';
-                    }
-
-                    var props = serializeProps($child);
-
-                    var componentDirectives = {};
-
-                    var newElement = void 0;
-                    //const uId = cfg.app.generateUId();
-
-                    if (typeof cmp.cfg === 'function') {
-                        // This implements single function component
-                        if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
-                            var func = cmp.cfg;
-                            cmp.cfg = function (_Component) {
-                                _inherits(_class, _Component);
-
-                                function _class() {
-                                    _classCallCheck(this, _class);
-
-                                    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
-                                }
-
-                                return _class;
-                            }(Component);
-                            cmp.cfg.prototype.template = func;
-                        }
-
-                        newElement = new cmp.cfg({
-                            tag: cmpName,
-                            root: $child,
-                            app: cfg.app,
-                            props: props,
-                            componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
-                            //uId
-                        });
-                    } else {
-                        newElement = new Component({
-                            tag: cmpName,
-                            cmp: cmp,
-                            root: $child,
-                            app: cfg.app,
-                            props: props,
-                            componentDirectives: componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
-                            //uId
-                        });
-                    }
-
-                    if (!newElement) {
-                        $child = $child.nextSibling;
-                        return 'continue';
-                    }
-
-                    if (_typeof(newElement.module) === 'object') {
-                        hmr(newElement, newElement.module);
-                    }
-
-                    propsInit(newElement);
-
-                    newElement.app.emit('componentPropsInit', newElement);
-
-                    if (hooks.callBeforeMount(newElement) !== false) {
-
-                        newElement._isRendered = true;
-                        newElement.render(true);
-
-                        if (!componentInstance) {
-                            componentInstance = newElement;
-                        }
-
-                        newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
-                        newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
-
-                        // Replace first child if defaultSlot exists with a slot comment
-                        if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
-                            var slotPlaceholder = document.createComment('slot');
-                            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
-                        }
-
-                        //$child.insertBefore(newElement._rootElement, $child.firstChild);
-
-                        // This is an hack for call render a second time so the
-                        // event onAppDraw and onDrawByParent are fired after
-                        // that the component is mounted
-                        delay(function () {
-                            newElement.render(false, [], true);
-                        });
-
-                        hooks.callMount(newElement);
-                        hooks.callMountAsync(newElement);
-                    }
-
-                    parentElement = newElement;
-
-                    if (parent.cmp) {
-                        var n = Object.keys(parent.cmp.children).length++;
-                        directive.callAppComponentAssignIndex(newElement, n, function (index) {
-                            parent.cmp.children[index] = newElement;
-                        });
-
-                        if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-                            parent.cmp.childrenByTag[newElement.tag] = [newElement];
-                        } else {
-                            parent.cmp.childrenByTag[newElement.tag].push(newElement);
-                        }
-                    }
-
-                    cfg.autoCmp = null;
-                }();
-
-                if (_ret === 'continue') continue;
-            }
-
-            if ($child.hasChildNodes()) {
-                if (parentElement) {
-                    walk($child.firstChild, { cmp: parentElement });
-                } else {
-                    walk($child.firstChild, { cmp: parent.cmp });
-                }
-            }
-
-            $child = $child.nextSibling;
-        }
-    }
-
-    walk(cfg.template);
-
-    var _defined = function _defined($child) {
-        return $child.remove();
-    };
-
-    for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
-        _defined(trash[_i2], _i2, trash);
-    }
-
-    return componentInstance;
-}
-
-module.exports = {
-    get: get
-};
-
-/***/ }),
+/* 9 */,
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2123,7 +1846,7 @@ module.exports = ObservableSlim;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(40);
+var castType = __webpack_require__(41);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2189,7 +1912,7 @@ module.exports = manipulate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(42),
+var _require = __webpack_require__(43),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2630,9 +2353,9 @@ var _require = __webpack_require__(20),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(56);
+var component = __webpack_require__(57);
 var Component = __webpack_require__(8);
-var mixin = __webpack_require__(57);
+var mixin = __webpack_require__(58);
 var h = __webpack_require__(16);
 
 var _require3 = __webpack_require__(5),
@@ -2641,7 +2364,7 @@ var _require3 = __webpack_require__(5),
 var _require4 = __webpack_require__(14),
     update = _require4.update;
 
-__webpack_require__(58);
+__webpack_require__(59);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -2706,7 +2429,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(24);
-var instances = __webpack_require__(9);
+var createInstance = __webpack_require__(70);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -2764,10 +2487,6 @@ var Doz = function () {
                 value: 0,
                 writable: true
             },
-            /*_componentsByUId: {
-                value: {},
-                writable: true
-            },*/
             _components: {
                 value: {},
                 writable: true
@@ -2776,17 +2495,9 @@ var Doz = function () {
                 value: {},
                 writable: true
             },
-            /*_stores: {
-                value: {},
-                writable: true
-            },*/
             _cache: {
                 value: new Map()
             },
-            /*_ids: {
-                value: {},
-                writable: true
-            },*/
             _onAppReadyCB: {
                 value: [],
                 writable: true
@@ -2854,7 +2565,7 @@ var Doz = function () {
                         }
                     };
 
-                    return instances.get({
+                    return createInstance({
                         root: root,
                         template: '<' + TAG.MOUNT + '></' + TAG.MOUNT + '>',
                         app: this,
@@ -2929,7 +2640,7 @@ var Doz = function () {
 
             if (!this.cfg.autoDraw) this.cfg.root.innerHTML = '';
 
-            this._tree = instances.get({
+            this._tree = createInstance({
                 root: this.cfg.root,
                 template: this.baseTemplate,
                 app: this
@@ -2939,23 +2650,6 @@ var Doz = function () {
         }
     }, {
         key: 'on',
-
-
-        /*
-        getComponent(alias) {
-            return this._tree
-                ? this._tree.children[alias]
-                : undefined;
-        }*/
-        /*
-        getComponentById(id) {
-            return this._ids[id];
-        }
-        */
-        /*getStore(store) {
-            return this._stores[store];
-        }*/
-
         value: function on(event, callback) {
             if (typeof event !== 'string') throw new TypeError('Event must be a string');
 
@@ -3047,8 +2741,49 @@ module.exports = bind;
 "use strict";
 
 
+var _require = __webpack_require__(26),
+    scopedInner = _require.scopedInner;
+
+function transformChildStyle(child, parent) {
+    if (child.nodeName !== 'STYLE') return;
+
+    var dataSetUId = parent.cmp.uId;
+    parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
+    //child.removeAttribute('scoped');
+    var tagByData = '[data-uid="' + dataSetUId + '"]';
+    var isScoped = child.hasAttribute('scoped');
+
+    scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
+
+    var emptyStyle = document.createElement('script');
+    emptyStyle.type = 'text/style';
+    emptyStyle.textContent = ' ';
+    emptyStyle.dataset.id = dataSetUId + '--style';
+    emptyStyle.dataset.owner = dataSetUId;
+    emptyStyle.dataset.ownerByData = tagByData;
+
+    if (isScoped) {
+        emptyStyle.dataset.scoped = 'true';
+    }
+    //console.log(emptyStyle);
+
+    child.parentNode.replaceChild(emptyStyle, child);
+    child = emptyStyle.nextSibling;
+
+    return child;
+}
+
+module.exports = transformChildStyle;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var composeStyleInner = __webpack_require__(11);
-var createStyle = __webpack_require__(26);
+var createStyle = __webpack_require__(27);
 
 function scopedInner(cssContent, uId, tag, scoped) {
     if (typeof cssContent !== 'string') return;
@@ -3061,13 +2796,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var tagList = __webpack_require__(27);
+var tagList = __webpack_require__(28);
 
 function createStyle(cssContent, uId, tag, scoped) {
     var result = void 0;
@@ -3102,7 +2837,7 @@ function createStyle(cssContent, uId, tag, scoped) {
 module.exports = createStyle;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3115,7 +2850,7 @@ module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', '
 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'main', 'map', 'mark', 'menu', 'meter', 'nav', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'small', 'source', 'span', 'strong', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3128,7 +2863,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3430,7 +3165,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3441,7 +3176,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(2),
     data = _require.data;
 
-var _require2 = __webpack_require__(31),
+var _require2 = __webpack_require__(32),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
     isDirective = _require2.isDirective;
 
@@ -3687,7 +3422,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3736,7 +3471,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3748,7 +3483,7 @@ module.exports = function isJSON(obj) {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3761,7 +3496,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3776,7 +3511,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3796,7 +3531,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3812,7 +3547,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3856,7 +3591,7 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3865,7 +3600,7 @@ module.exports = hmr;
 var proxy = __webpack_require__(12);
 var events = __webpack_require__(4);
 //const {updateBoundElementsByChanges} = require('./update-bound-element');
-var propsListener = __webpack_require__(39);
+var propsListener = __webpack_require__(40);
 var manipulate = __webpack_require__(13);
 
 function runUpdate(instance, changes) {
@@ -3917,7 +3652,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3961,7 +3696,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4007,7 +3742,7 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4020,7 +3755,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4035,7 +3770,7 @@ var _require = __webpack_require__(1),
     ATTR = _require.ATTR;
 
 var castStringTo = __webpack_require__(6);
-var objectPath = __webpack_require__(43);
+var objectPath = __webpack_require__(44);
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
@@ -4232,7 +3967,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4257,7 +3992,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4276,7 +4011,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        var dynamicInstance = __webpack_require__(9).get({
+        var dynamicInstance = __webpack_require__(70)({
             root: root,
             template: item.node.outerHTML,
             app: instance.app,
@@ -4317,7 +4052,7 @@ function drawDynamic(instance) {
 module.exports = drawDynamic;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4325,7 +4060,7 @@ module.exports = drawDynamic;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(46);
+var camelToDash = __webpack_require__(47);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4354,7 +4089,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4367,7 +4102,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4385,7 +4120,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4418,7 +4153,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4431,7 +4166,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4452,7 +4187,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4498,7 +4233,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4514,7 +4249,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4531,7 +4266,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var canDecode = __webpack_require__(15);
 var composeStyleInner = __webpack_require__(11);
 var dashToCamel = __webpack_require__(7);
-var Base = __webpack_require__(54);
+var Base = __webpack_require__(55);
 
 var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -4681,7 +4416,7 @@ var DOMManipulation = function (_Base) {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4859,7 +4594,7 @@ var Base = function Base() {
 module.exports = Base;
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4872,7 +4607,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4907,7 +4642,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4923,26 +4658,26 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(59);
 __webpack_require__(60);
 __webpack_require__(61);
 __webpack_require__(62);
 __webpack_require__(63);
-
 __webpack_require__(64);
+
 __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(67);
 __webpack_require__(68);
+__webpack_require__(69);
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5020,7 +4755,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5087,7 +4822,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5136,7 +4871,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5174,7 +4909,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5288,7 +5023,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5313,7 +5048,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5343,7 +5078,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5541,7 +5276,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5708,7 +5443,7 @@ directive('key', {
 });
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5728,6 +5463,248 @@ directive('show', {
         this.setVisible($target, directiveValue);
     }
 });
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var html = __webpack_require__(10);
+var transformChildStyle = __webpack_require__(25);
+
+var _require = __webpack_require__(1),
+    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
+    COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
+    REGEX = _require.REGEX;
+
+var collection = __webpack_require__(2);
+var hooks = __webpack_require__(4);
+
+var _require2 = __webpack_require__(5),
+    serializeProps = _require2.serializeProps;
+
+var hmr = __webpack_require__(38);
+var Component = __webpack_require__(8);
+var propsInit = __webpack_require__(18);
+var delay = __webpack_require__(3);
+var directive = __webpack_require__(0);
+
+function getComponentName(child) {
+    return child.nodeName.toLowerCase();
+}
+
+function createInstance() {
+    var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+
+    if (!cfg.root) return;
+
+    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+
+    cfg.root.appendChild(cfg.template);
+
+    var componentInstance = null;
+    var cmpName = void 0;
+    var isChildStyle = void 0;
+    var trash = [];
+
+    //console.log(cfg.template);
+
+    function walk($child) {
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        while ($child) {
+
+            directive.callAppWalkDOM(parent, $child);
+
+            isChildStyle = transformChildStyle($child, parent);
+
+            if (isChildStyle) {
+                $child = isChildStyle;
+                continue;
+            }
+
+            cmpName = getComponentName($child);
+
+            directive.callAppComponentAssignName(parent, $child, function (name) {
+                cmpName = name;
+            });
+
+            var localComponents = {};
+
+            if (parent.cmp && parent.cmp._components) {
+                localComponents = parent.cmp._components;
+            }
+
+            var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
+
+            var parentElement = void 0;
+
+            if (cmp) {
+                var _ret = function () {
+
+                    if (parent.cmp) {
+                        var rawChild = $child.outerHTML;
+                        parent.cmp.rawChildren.push(rawChild);
+                    }
+
+                    // For node created by mount method
+                    if (parent.cmp && parent.cmp.mounted) {
+                        $child = $child.nextSibling;
+                        return 'continue';
+                    }
+
+                    if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                        trash.push($child);
+                        $child = $child.nextSibling;
+                        return 'continue';
+                    }
+
+                    var props = serializeProps($child);
+
+                    var componentDirectives = {};
+
+                    var newElement = void 0;
+
+                    if (typeof cmp.cfg === 'function') {
+                        // This implements single function component
+                        if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+                            var func = cmp.cfg;
+                            cmp.cfg = function (_Component) {
+                                _inherits(_class, _Component);
+
+                                function _class() {
+                                    _classCallCheck(this, _class);
+
+                                    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+                                }
+
+                                return _class;
+                            }(Component);
+                            cmp.cfg.prototype.template = func;
+                        }
+
+                        newElement = new cmp.cfg({
+                            tag: cmpName,
+                            root: $child,
+                            app: cfg.app,
+                            props: props,
+                            componentDirectives: componentDirectives,
+                            parentCmp: parent.cmp || cfg.parent
+                        });
+                    } else {
+                        newElement = new Component({
+                            tag: cmpName,
+                            cmp: cmp,
+                            root: $child,
+                            app: cfg.app,
+                            props: props,
+                            componentDirectives: componentDirectives,
+                            parentCmp: parent.cmp || cfg.parent
+                        });
+                    }
+
+                    if (!newElement) {
+                        $child = $child.nextSibling;
+                        return 'continue';
+                    }
+
+                    if (_typeof(newElement.module) === 'object') {
+                        hmr(newElement, newElement.module);
+                    }
+
+                    propsInit(newElement);
+
+                    newElement.app.emit('componentPropsInit', newElement);
+
+                    if (hooks.callBeforeMount(newElement) !== false) {
+
+                        newElement._isRendered = true;
+                        newElement.render(true);
+
+                        if (!componentInstance) {
+                            componentInstance = newElement;
+                        }
+
+                        newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
+                        newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+
+                        // Replace first child if defaultSlot exists with a slot comment
+                        if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                            var slotPlaceholder = document.createComment('slot');
+                            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                        }
+
+                        //$child.insertBefore(newElement._rootElement, $child.firstChild);
+
+                        // This is an hack for call render a second time so the
+                        // event onAppDraw and onDrawByParent are fired after
+                        // that the component is mounted
+                        delay(function () {
+                            newElement.render(false, [], true);
+                        });
+
+                        hooks.callMount(newElement);
+                        hooks.callMountAsync(newElement);
+                    }
+
+                    parentElement = newElement;
+
+                    if (parent.cmp) {
+                        var n = Object.keys(parent.cmp.children).length++;
+                        directive.callAppComponentAssignIndex(newElement, n, function (index) {
+                            parent.cmp.children[index] = newElement;
+                        });
+
+                        if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                            parent.cmp.childrenByTag[newElement.tag] = [newElement];
+                        } else {
+                            parent.cmp.childrenByTag[newElement.tag].push(newElement);
+                        }
+                    }
+
+                    cfg.autoCmp = null;
+                }();
+
+                if (_ret === 'continue') continue;
+            }
+
+            if ($child.hasChildNodes()) {
+                if (parentElement) {
+                    walk($child.firstChild, { cmp: parentElement });
+                } else {
+                    walk($child.firstChild, { cmp: parent.cmp });
+                }
+            }
+
+            $child = $child.nextSibling;
+        }
+    }
+
+    walk(cfg.template);
+
+    var _defined = function _defined($child) {
+        return $child.remove();
+    };
+
+    for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
+        _defined(trash[_i2], _i2, trash);
+    }
+
+    return componentInstance;
+}
+
+module.exports = createInstance;
 
 /***/ })
 /******/ ]);
