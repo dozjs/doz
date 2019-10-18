@@ -154,10 +154,15 @@ class Component extends DOMManipulation {
 
     render(initial, changes = [], silentAfterRenderEvent = false) {
         if (this._renderPause) return;
+
         this.beginSafeRender();
         const template = this.template(this._h, this.props);
         this.endSafeRender();
-        let next = compile(template, this);
+
+        let next = template && typeof template === 'object'
+            ? template
+            : compile(template, this);
+
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 

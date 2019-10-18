@@ -29,19 +29,22 @@ module.exports = function (strings, ...value) {
             allowTag = false;
         }
 
-        if(typeof value[i] === 'function' && this._components) {
-            let cmp = value[i];
-            let tag = camelToDash(cmp.name);
-            if (tag.indexOf('-') === -1) {
-                tag += '-' + tag;
+        if (this._components) {
+            if (typeof value[i] === 'function') {
+                //console.log('open tag', strings[i].indexOf('<'))
+                let cmp = value[i];
+                let tag = camelToDash(cmp.name);
+                if (tag.indexOf('-') === -1) {
+                    tag += '-' + tag;
+                }
+                if (this._components[tag] === undefined) {
+                    this._components[tag] = {
+                        tag,
+                        cfg: cmp
+                    };
+                }
+                value[i] = tag;
             }
-            if (this._components[tag] === undefined) {
-                this._components[tag] = {
-                    tag,
-                    cfg: cmp
-                };
-            }
-            value[i] = tag;
         }
 
         if(allowTag)

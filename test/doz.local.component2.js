@@ -119,7 +119,7 @@ describe('Doz.local.component2', function () {
                 },
                 template(h) {
                     return h`
-                        <${GridComponent}/>
+                        <${GridComponent} data="${this.props.records}"/>
                     `
                 }
             });
