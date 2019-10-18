@@ -1,4 +1,5 @@
 const {TAG} = require('../constants');
+const camelToDash = require('../utils/camel-to-dash');
 const tag = TAG.TEXT_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
@@ -25,8 +26,22 @@ module.exports = function (strings, ...value) {
         });
 
         if(/<\/?style( scoped)?>/ig.test(strings[i])) {
-            //console.log('allowTag', strings[i]);
             allowTag = false;
+        }
+
+        if(typeof value[i] === 'function' && this._components) {
+            let cmp = value[i];
+            let tag = camelToDash(cmp.name);
+            if (tag.indexOf('-') === -1) {
+                tag += '-' + tag;
+            }
+            if (this._components[tag] === undefined) {
+                this._components[tag] = {
+                    tag,
+                    cfg: cmp
+                };
+            }
+            value[i] = tag;
         }
 
         if(allowTag)

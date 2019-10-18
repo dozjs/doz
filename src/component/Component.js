@@ -33,6 +33,11 @@ class Component extends DOMManipulation {
             enumerable: true
         });
 
+        Object.defineProperty(this, '_h', {
+            value: h.bind(this),
+            enumerable: false
+        });
+
         this._initRawProps(opt);
 
         // Assign cfg to instance
@@ -150,7 +155,7 @@ class Component extends DOMManipulation {
     render(initial, changes = [], silentAfterRenderEvent = false) {
         if (this._renderPause) return;
         this.beginSafeRender();
-        const template = this.template(h, this.props);
+        const template = this.template(this._h, this.props);
         this.endSafeRender();
         let next = compile(template, this);
         this.app.emit('draw', next, this._prev, this);
