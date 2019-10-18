@@ -19,6 +19,38 @@ class WrapperComponent extends Doz.Component {
     }
 }
 
+class GridComponent extends Doz.Component {
+    constructor(o) {
+        super(o);
+        this.props = {
+            records: [
+                {name: 'Joy'},
+                {name: 'Mike'},
+                {name: 'Paul'},
+                {name: 'Fred'},
+                {name: 'Ted'},
+            ]
+        };
+    }
+    template(h) {
+        return h`
+            <div>
+                ${this.each(this.props.records, item => h`
+                    <${RowComponent} name="${item.name}"/>
+                `)}
+            </div>
+        `
+    }
+}
+
+class RowComponent extends Doz.Component {
+    template(h) {
+        return h`
+            <div>my name is ${this.props.name}</div>
+        `
+    }
+}
+
 describe('Doz.local.component2', function () {
 
     beforeEach(function () {
@@ -28,13 +60,13 @@ describe('Doz.local.component2', function () {
 
     describe('create app with local component', function () {
 
-        it('should be ok with a nested component', function (done) {
+        it('should be ok', function (done) {
 
             document.body.innerHTML = `
                 <div id="app"></div>
             `;
 
-            const view = new Doz({
+            new Doz({
                 root: '#app',
                 template(h) {
                     return h`
@@ -64,7 +96,46 @@ describe('Doz.local.component2', function () {
             }, 100);
 
         });
+    });
 
+    describe('create app with local component inside a loop', function () {
+
+        it('should be ok', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            new Doz({
+                root: '#app',
+                props: {
+                    records: [
+                        {name: 'Joy'},
+                        {name: 'Mike'},
+                        {name: 'Paul'},
+                        {name: 'Fred'},
+                        {name: 'Ted'},
+                    ]
+                },
+                template(h) {
+                    return h`
+                        <${GridComponent}/>
+                    `
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML;
+                console.log(html);
+                be.err.true(/my name is Joy/g.test(html));
+                be.err.true(/my name is Mike/g.test(html));
+                be.err.true(/my name is Paul/g.test(html));
+                be.err.true(/my name is Fred/g.test(html));
+                be.err.true(/my name is Ted/g.test(html));
+                done();
+            }, 100);
+
+        });
     });
 
 });
