@@ -1,5 +1,6 @@
 const {TAG} = require('../constants');
 const camelToDash = require('../utils/camel-to-dash');
+//const {compile} = require('../vdom/parser');
 const tag = TAG.TEXT_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
@@ -29,14 +30,19 @@ module.exports = function (strings, ...value) {
             allowTag = false;
         }
 
+        // if this function is bound to Doz component
         if (this._components) {
-            if (typeof value[i] === 'function') {
-                //console.log('open tag', strings[i].indexOf('<'))
+            // if before is a <
+            if (typeof value[i] === 'function' && strings[i].indexOf(LESSER) > -1) {
                 let cmp = value[i];
                 let tag = camelToDash(cmp.name);
+
+                // if is a single word, rename with double word
                 if (tag.indexOf('-') === -1) {
-                    tag += '-' + tag;
+                    tag = `${tag}-${tag}`;
                 }
+
+                // add to local components
                 if (this._components[tag] === undefined) {
                     this._components[tag] = {
                         tag,
@@ -45,6 +51,13 @@ module.exports = function (strings, ...value) {
                 }
                 value[i] = tag;
             }
+
+            /*if (typeof value[i] === 'object') {
+                let property = strings[i];
+                property = property.replace(/[='"]/g, '');
+                this.propsData[property] = value[i];
+                //console.log(i, property, value[i]);
+            }*/
         }
 
         if(allowTag)

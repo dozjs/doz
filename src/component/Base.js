@@ -159,6 +159,11 @@ class Base {
                 value: 0,
                 enumerable: true,
                 writable: true
+            },
+            propsData: {
+                value: {},
+                enumerable: true,
+                writable: true
             }
         });
     }
