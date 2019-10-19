@@ -18,6 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directive');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
+const mapCompiled = require('../vdom/map-compiled');
 
 class Component extends DOMManipulation {
 
@@ -190,6 +191,7 @@ class Component extends DOMManipulation {
             hooks.callAfterRender(this);
 
         drawDynamic(this);
+        //mapCompiled.flush();
     }
 
     renderPause() {

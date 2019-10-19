@@ -23,19 +23,16 @@ class GridComponent extends Doz.Component {
     constructor(o) {
         super(o);
         this.props = {
-            records: [
-                {name: 'Joy'},
-                {name: 'Mike'},
-                {name: 'Paul'},
-                {name: 'Fred'},
-                {name: 'Ted'},
-            ]
+            data: [],
+            dateObj: null
         };
     }
     template(h) {
+        //console.log(this.props.dateObj.getDate())
         return h`
             <div>
-                ${this.each(this.props.records, item => h`
+                ${this.props.dateObj instanceof Date}
+                ${this.each(this.props.data, item => h`
                     <${RowComponent} name="${item.name}"/>
                 `)}
             </div>
@@ -88,7 +85,6 @@ describe('Doz.local.component2', function () {
             setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
-                //console.log(view);
                 be.err.true(/Doz component/g.test(html));
                 be.err.true(/my button by wrapper component/g.test(html));
                 be.err.true(/my button by Doz/g.test(html));
@@ -118,14 +114,17 @@ describe('Doz.local.component2', function () {
                     ]
                 },
                 template(h) {
-                    return h`
-                        <${GridComponent} data="${this.props.records}"/>
-                    `
+                    let o = h`
+                        <${GridComponent} date-obj="${new Date()}" name="${'boom'}" data="${this.props.records}" />
+                    `;
+                    console.log(JSON.stringify(o, null, 4))
+                    return o;
                 }
             });
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
+                //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
                 be.err.true(/my name is Joy/g.test(html));
                 be.err.true(/my name is Mike/g.test(html));

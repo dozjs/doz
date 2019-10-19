@@ -46,7 +46,7 @@ class Element {
     constructor(name, props, isSVG) {
         //if(name === 'slot') name = 'dzslot';
         this.type = name;
-        this.props = Object.assign({}, props);
+        this.props = props;//Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
         //this.childrenHasKey = false;
@@ -186,9 +186,15 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
+
+    //console.log(typeof aValue)
+    let objValue = mapCompiled.get(aValue);
+    aValue = objValue ? objValue : aValue;
+
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : castStringTo(aValue);
+        //: mapCompiled.get(aValue);
 }
 
 module.exports = {

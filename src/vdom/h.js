@@ -71,12 +71,18 @@ module.exports = function (strings, ...value) {
                 value[i] = tagCmp;
             }
 
-            /*if (typeof value[i] === 'object') {
+            if (typeof value[i] === 'object' || typeof value[i] === 'function') {
+
                 let property = strings[i];
-                property = property.replace(/[='"]/g, '');
-                this.propsData[property] = value[i];
-                //console.log(i, property, value[i]);
-            }*/
+                if (!/</.test(property)) {
+                    property = property.replace(/["'\s]+/g, '');
+                    //console.log(property)
+                    // Check if is an attribute
+                    if (/^[\w-:]+=/.test(property)) {
+                        value[i] = mapCompiled.set(value[i]);
+                    }
+                }
+            }
         }
 
         if(allowTag)

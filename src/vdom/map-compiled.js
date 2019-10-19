@@ -15,5 +15,8 @@ module.exports = {
     },
     isValidId(id) {
         return /=%{\d+}%;/.test(id)
+    },
+    flush() {
+        this.data = {};
     }
 };
