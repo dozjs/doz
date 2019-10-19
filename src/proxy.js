@@ -121,14 +121,16 @@ const ObservableSlim = (function () {
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 let targetProp = target[property];
 
-                if (target instanceof Date && targetProp instanceof Function && targetProp !== null) {
+                //console.log('èèèèèèèèèèèèèèèèèèèè', targetProp instanceof Date)
+
+                if (target instanceof Date && targetProp instanceof Function) {
                     return targetProp.bind(target);
                 }
 
                 // if we are traversing into a new object, then we want to record path to that object and return a new observable.
                 // recursively returning a new observable allows us a single Observable.observe() to monitor all changes on
                 // the target object and any objects nested within.
-                if (targetProp instanceof Object && targetProp !== null && target.hasOwnProperty(property)) {
+                if ((targetProp instanceof Object) && target.hasOwnProperty(property)) {
 
                     // if we've found a proxy nested on the object, then we want to retrieve the original object behind that proxy
                     if (targetProp.__isProxy === true) targetProp = targetProp.__getTarget;

@@ -52,7 +52,9 @@ module.exports = function (strings, ...value) {
         // if this function is bound to Doz component
         if (this._components) {
             // if before is a <
-            if (typeof value[i] === 'function' && strings[i].indexOf(LESSER) > -1) {
+            //console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', value[i])
+            if (typeof value[i] === 'function' && value[i].__proto__.name === 'Component' && strings[i].indexOf(LESSER) > -1) {
+                //console.log('---------------')
                 let cmp = value[i];
                 let tagCmp = camelToDash(cmp.name);
 
@@ -76,7 +78,6 @@ module.exports = function (strings, ...value) {
                 let property = strings[i];
                 if (!/</.test(property)) {
                     property = property.replace(/["'\s]+/g, '');
-                    //console.log(property)
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
                         value[i] = mapCompiled.set(value[i]);

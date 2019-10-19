@@ -24,14 +24,14 @@ class GridComponent extends Doz.Component {
         super(o);
         this.props = {
             data: [],
-            dateObj: null
+            myFunc: null
         };
     }
     template(h) {
         //console.log(this.props.dateObj.getDate())
         return h`
             <div>
-                ${this.props.dateObj instanceof Date}
+                _______________________${this.props.myFunc}
                 ${this.each(this.props.data, item => h`
                     <${RowComponent} name="${item.name}"/>
                 `)}
@@ -115,7 +115,7 @@ describe('Doz.local.component2', function () {
                 },
                 template(h) {
                     let o = h`
-                        <${GridComponent} date-obj="${new Date()}" name="${'boom'}" data="${this.props.records}" />
+                        <${GridComponent} my-func="${new Date()}" name="${'boom'}" data="${this.props.records}" />
                     `;
                     console.log(JSON.stringify(o, null, 4))
                     return o;

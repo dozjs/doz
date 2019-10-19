@@ -6,6 +6,8 @@ const typesMap = require('./types-map');
 
 function castStringTo(obj) {
 
+    //console.log('==>', typeof obj)
+
     if (typeof obj !== 'string') {
         return obj;
     }

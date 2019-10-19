@@ -189,12 +189,15 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     //console.log(typeof aValue)
     let objValue = mapCompiled.get(aValue);
+    //console.log('......', objValue);
     aValue = objValue ? objValue : aValue;
 
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : castStringTo(aValue);
         //: mapCompiled.get(aValue);
+
+    //console.log('@@@@@@@@',props[propsName], propsName)
 }
 
 module.exports = {
