@@ -15,7 +15,8 @@ module.exports = {
         SLOT: 'dz-slot',
         SLOT_UPPERCASE: 'DZ-SLOT',
         SUFFIX_ROOT: '-root',
-        TEXT_NODE_PLACE: 'dz-text-node'
+        TEXT_NODE_PLACE: 'dz-text-node',
+        ITERATE_NODE_PLACE: 'dz-iterate-node',
     },
     REGEX: {
         IS_DIRECTIVE: /^d[-:][\w-]+$/,

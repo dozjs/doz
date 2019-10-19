@@ -134,14 +134,16 @@ class Component extends DOMManipulation {
     }
 
     each(obj, func, safe = false) {
+        //return obj.map(func);
         let res;
         if (Array.isArray(obj)) {
             if (safe) this.beginSafeRender();
-            res = obj.map(func).map((stringEl, i) => {
+            /*res = obj.map(func).map((stringEl, i) => {
                 if (typeof stringEl === 'string') {
                     return stringEl.trim()
                 }
-            }).join('');
+            }).join('');*/
+            res = obj.map(func);
             if (safe) this.endSafeRender();
         }
         return res;

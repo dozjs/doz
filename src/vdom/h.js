@@ -1,12 +1,14 @@
 const {TAG} = require('../constants');
+const mapCompiled = require('./map-compiled');
 const camelToDash = require('../utils/camel-to-dash');
-//const {compile} = require('../vdom/parser');
-const tag = TAG.TEXT_NODE_PLACE;
+const {compile} = require('../vdom/parser');
+const tagText = TAG.TEXT_NODE_PLACE;
+const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
 
-const regOpen = new RegExp(`<${tag}>(\\s+)?<`, 'gi');
-const regClose = new RegExp(`>(\\s+)?<\/${tag}>`, 'gi');
+const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
+const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
 
 /**
  * This method add special tag to value placeholder
@@ -19,6 +21,23 @@ module.exports = function (strings, ...value) {
     let allowTag = false;
 
     for (let i = 0; i < value.length; ++i) {
+
+        if (Array.isArray(value[i])) {
+            let newValueString = '';
+            for (let j = 0; j < value[i].length; j++) {
+                let obj = value[i][j];
+                if(typeof obj === 'object' && obj.constructor && obj.constructor.name === 'Element') {
+                    newValueString += `<${tagIterate}>${mapCompiled.set(obj)}</${tagIterate}>`;
+                }
+            }
+            if (newValueString)
+                value[i] = newValueString;
+        }
+
+        if(typeof value[i] === 'object' && value[i].constructor && value[i].constructor.name === 'Element') {
+            value[i] = mapCompiled.set(value[i]);
+        }
+
         [...strings[i]].forEach(char => {
             if (char === LESSER)
                 allowTag = false;
@@ -35,21 +54,21 @@ module.exports = function (strings, ...value) {
             // if before is a <
             if (typeof value[i] === 'function' && strings[i].indexOf(LESSER) > -1) {
                 let cmp = value[i];
-                let tag = camelToDash(cmp.name);
+                let tagCmp = camelToDash(cmp.name);
 
                 // if is a single word, rename with double word
-                if (tag.indexOf('-') === -1) {
-                    tag = `${tag}-${tag}`;
+                if (tagCmp.indexOf('-') === -1) {
+                    tagCmp = `${tagCmp}-${tagCmp}`;
                 }
 
                 // add to local components
-                if (this._components[tag] === undefined) {
-                    this._components[tag] = {
-                        tag,
+                if (this._components[tagCmp] === undefined) {
+                    this._components[tagCmp] = {
+                        tagCmp,
                         cfg: cmp
                     };
                 }
-                value[i] = tag;
+                value[i] = tagCmp;
             }
 
             /*if (typeof value[i] === 'object') {
@@ -61,7 +80,7 @@ module.exports = function (strings, ...value) {
         }
 
         if(allowTag)
-            result += `<${tag}>${value[i]}</${tag}>${strings[i + 1]}`;
+            result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else
             result += `${value[i]}${strings[i + 1]}`;
     }
@@ -69,6 +88,8 @@ module.exports = function (strings, ...value) {
     result = result
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
+
+    result = compile(result);
 
     return result;
 };

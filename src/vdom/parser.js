@@ -1,8 +1,9 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const {REGEX, ATTR, TAG} = require('../constants');
-const regExcludeSpecial = new RegExp(`<\/?${TAG.TEXT_NODE_PLACE}?>$`);
+const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directive');
+const mapCompiled = require('./map-compiled');
 
 const selfClosingElements = {
     meta: true,
@@ -76,8 +77,10 @@ function compile(data, cmp) {
                 // remove new line space
                 const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
-                if (text)
-                    currentParent.appendChild(text);
+                if (text) {
+                    let possibleCompiled = mapCompiled.get(text);
+                    currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                }
             }
         }
 
@@ -116,18 +119,6 @@ function compile(data, cmp) {
                     currentParent = last(stack);
                 }
             }
-
-            // Replace KEY attribute with a dataset
-            /*if (props[ATTR.KEY] !== undefined) {
-                props['data-key'] = props[ATTR.KEY];
-                delete props[ATTR.KEY];
-            }*/
-
-            /*if (props['data-key'] !== undefined && !currentParent.childrenHasKey)
-                currentParent.childrenHasKey = true;*/
-
-            //if (/-/.test(match[2]) && /-/.test(currentParent.type))
-            //cmp._maybeSlot = true;
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
 
@@ -190,8 +181,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
         ? dashToCamel(aName)
         : aName;
 
-    if (/*!isDirective && */$node) {
-        //console.log($node)
+    if ($node) {
         directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
             propsName = newPropsName;
         });

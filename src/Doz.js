@@ -96,7 +96,7 @@ class Doz {
             },
             mount: {
                 value: function (template, root, parent = this._tree) {
-
+console.log(template)
                     if (typeof root === 'string') {
                         root = document.querySelector(root);
                     }
