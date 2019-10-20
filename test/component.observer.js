@@ -246,4 +246,71 @@ describe('observable-slim.js', _ => {
         expect(test.hello).to.equal("hello");
         expect(callbackTriggered).to.equal(false);
     });
+
+    it('35. JSON.stringify does not fail on proxied date.', () => {
+        var test = {d: new Date()};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        JSON.stringify(p);
+    });
+
+    it('36. valueOf does not fail on proxied date.', () => {
+        var test = {d: new Date()};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        p.d.valueOf();
+    });
+
+    it('37. Delete property after calling ObservableSlim.remove does not fail.', () => {
+        var test = {foo: 'foo'};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        ObservableSlim.remove(p);
+        delete p.foo;
+    });
+
+    it('38. Proxied Date.toString outputs the pristine Date.toString.', () => {
+        var test = {d: new Date()};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        expect(p.d.toString()).to.equal(test.d.toString());
+    });
+
+    it('39. Proxied Date.getTime outputs the pristine Date.getTime.', () => {
+        var test = {d: new Date()};
+        var p = ObservableSlim.create(test, false, function () {});
+        p.d = new Date();
+
+        expect(p.d.getTime()).to.equal(test.d.getTime());
+    });
+
+    it('40. __targetPosition helper is non-enumerable.', () => {
+
+        var found = false;
+
+        var test = {d: new Date()};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        for (var prop in test) {
+            if (prop === "__targetPosition") found = true;
+        }
+
+        var keys = Object.keys(test);
+        var i = keys.length;
+        while (i--) {
+            if (keys[i] === "__targetPosition") found = true;
+        }
+
+        expect(found).to.equal(false);
+
+    });
+
+    it('41. Proxied function', () => {
+        var test = {d: function () {
+                return 1
+            }};
+        var p = ObservableSlim.create(test, false, function () {});
+
+        expect(p.d()).to.equal(test.d());
+    });
 });

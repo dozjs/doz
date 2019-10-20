@@ -1581,7 +1581,7 @@ var ObservableSlim = function () {
                 });
             }
 
-            //domDelay = true;
+            //domDelay = false;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -1620,6 +1620,12 @@ var ObservableSlim = function () {
                         return _getProperty(observable.parentProxy, parentPath.join('.'));
                     };
                 }
+                // return the full path of the current object relative to the parent observable
+                else if (property === '__getPath') {
+                        // strip off the 12 characters for ".__getParent"
+                        var parentPath = _getPath(target, '__getParent');
+                        return parentPath.slice(0, -12);
+                    }
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 var targetProp = target[property];
@@ -1709,7 +1715,7 @@ var ObservableSlim = function () {
                     for (a = 0, l = targets.length; a < l; a++) {
                         if (target === targets[a]) break;
                     } // loop over each proxy and see if the target for this change has any other proxies
-                    var currentTargetProxy = targetsProxy[a];
+                    var currentTargetProxy = targetsProxy[a] || [];
 
                     var b = currentTargetProxy.length;
                     while (b--) {
@@ -1829,6 +1835,32 @@ var ObservableSlim = function () {
                                     }
                                 }
 
+                                var stillExists = false;
+
+                                // now we perform the more expensive search recursively through the target object.
+                                // if we find the targetProp (that was just overwritten) still exists somewhere else
+                                // further down in the object, then we still need to observe the targetProp on this observable.
+                                (function iterate(target) {
+                                    var keys = Object.keys(target);
+                                    var i = 0,
+                                        l = keys.length;
+                                    for (; i < l; i++) {
+
+                                        var _property = keys[i];
+                                        var nestedTarget = target[_property];
+
+                                        if (nestedTarget instanceof Object) iterate(nestedTarget);
+                                        if (nestedTarget === targetProp) {
+                                            stillExists = true;
+                                            return;
+                                        }
+                                    }
+                                })(target);
+
+                                // even though targetProp was overwritten, if it still exists somewhere else on the object,
+                                // then we don't want to remove the observable for that object (targetProp)
+                                if (stillExists === true) return;
+
                                 // loop over each property and recursively invoke the `iterate` function for any
                                 // objects nested on targetProp
                                 (function iterate(obj) {
@@ -1836,7 +1868,7 @@ var ObservableSlim = function () {
                                     var keys = Object.keys(obj);
                                     for (var _i = 0, _l3 = keys.length; _i < _l3; _i++) {
                                         var objProp = obj[keys[_i]];
-                                        if (objProp instanceof Object && objProp !== null) iterate(objProp);
+                                        if (objProp instanceof Object) iterate(objProp);
                                     }
 
                                     // if there are any existing target objects (objects that we're already observing)...
@@ -1866,8 +1898,9 @@ var ObservableSlim = function () {
                                         // if there are no more observables assigned to the target object, then we can remove
                                         // the target object altogether. this is necessary to prevent growing memory consumption particularly with large data sets
                                         if (_currentTargetProxy.length === 0) {
-                                            targetsProxy.splice(c, 1);
-                                            targets.splice(c, 1);
+                                            targets[c] = null;
+                                            //targetsProxy.splice(c, 1);
+                                            //targets.splice(c, 1);
                                         }
                                     }
                                 })(targetProp);
@@ -1887,8 +1920,8 @@ var ObservableSlim = function () {
                                 var target = proxy.__getTarget;
                                 var keys = Object.keys(target);
                                 for (var i = 0, _l5 = keys.length; i < _l5; i++) {
-                                    var _property = keys[i];
-                                    if (target[_property] instanceof Object && target[_property] !== null) iterate(proxy[_property]);
+                                    var _property2 = keys[i];
+                                    if (target[_property2] instanceof Object && target[_property2] !== null) iterate(proxy[_property2]);
                                 }
                             })(proxy[property]);
                         }
@@ -2032,8 +2065,14 @@ var ObservableSlim = function () {
                     if (targetsProxy[a][b].observable === matchedObservable) {
                         targetsProxy[a].splice(b, 1);
                         if (targetsProxy[a].length === 0) {
-                            targetsProxy.splice(a, 1);
-                            targets.splice(a, 1);
+                            // if there are no more proxies for this target object
+                            // then we null out the position for this object on the targets array
+                            // since we are essentially no longer observing this object.
+                            // we do not splice it off the targets array, because if we re-observe the same
+                            // object at a later time, the property __targetPosition cannot be redefined.
+                            targets[a] = null;
+                            /*targetsProxy.splice(a, 1);
+                            targets.splice(a, 1);*/
                         }
                     }
                 }
@@ -3963,7 +4002,6 @@ module.exports = hmr;
 
 var proxy = __webpack_require__(13);
 var events = __webpack_require__(4);
-//const {updateBoundElementsByChanges} = require('./update-bound-element');
 var propsListener = __webpack_require__(43);
 var manipulate = __webpack_require__(14);
 
@@ -3971,7 +4009,6 @@ function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
     propsListener(instance, changes);
     instance.render(undefined, changes);
-    //updateBoundElementsByChanges(instance, changes);
 }
 
 function create(instance) {

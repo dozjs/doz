@@ -79,7 +79,7 @@ const ObservableSlim = (function () {
                 });
             }
 
-            //domDelay = true;
+            //domDelay = false;
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
@@ -116,6 +116,12 @@ const ObservableSlim = (function () {
                         parentPath.splice(-(i + 1), (i + 1));
                         return _getProperty(observable.parentProxy, parentPath.join('.'));
                     }
+                }
+                // return the full path of the current object relative to the parent observable
+                else if (property === '__getPath') {
+                    // strip off the 12 characters for ".__getParent"
+                    let parentPath = _getPath(target, '__getParent');
+                    return parentPath.slice(0, -12);
                 }
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
@@ -205,7 +211,7 @@ const ObservableSlim = (function () {
                     for (a = 0, l = targets.length; a < l; a++) if (target === targets[a]) break;
 
                     // loop over each proxy and see if the target for this change has any other proxies
-                    let currentTargetProxy = targetsProxy[a];
+                    let currentTargetProxy = targetsProxy[a] || [];
 
                     let b = currentTargetProxy.length;
                     while (b--) {
@@ -328,6 +334,32 @@ const ObservableSlim = (function () {
                                     }
                                 }
 
+
+                                let stillExists = false;
+
+                                // now we perform the more expensive search recursively through the target object.
+                                // if we find the targetProp (that was just overwritten) still exists somewhere else
+                                // further down in the object, then we still need to observe the targetProp on this observable.
+                                (function iterate(target) {
+                                    const keys = Object.keys(target);
+                                    let i = 0, l = keys.length;
+                                    for (; i < l; i++) {
+
+                                        const property = keys[i];
+                                        const nestedTarget = target[property];
+
+                                        if (nestedTarget instanceof Object) iterate(nestedTarget);
+                                        if (nestedTarget === targetProp) {
+                                            stillExists = true;
+                                            return;
+                                        }
+                                    }
+                                })(target);
+
+                                // even though targetProp was overwritten, if it still exists somewhere else on the object,
+                                // then we don't want to remove the observable for that object (targetProp)
+                                if (stillExists === true) return;
+
                                 // loop over each property and recursively invoke the `iterate` function for any
                                 // objects nested on targetProp
                                 (function iterate(obj) {
@@ -335,7 +367,7 @@ const ObservableSlim = (function () {
                                     let keys = Object.keys(obj);
                                     for (let i = 0, l = keys.length; i < l; i++) {
                                         let objProp = obj[keys[i]];
-                                        if (objProp instanceof Object && objProp !== null) iterate(objProp);
+                                        if (objProp instanceof Object) iterate(objProp);
                                     }
 
                                     // if there are any existing target objects (objects that we're already observing)...
@@ -365,8 +397,9 @@ const ObservableSlim = (function () {
                                         // if there are no more observables assigned to the target object, then we can remove
                                         // the target object altogether. this is necessary to prevent growing memory consumption particularly with large data sets
                                         if (currentTargetProxy.length === 0) {
-                                            targetsProxy.splice(c, 1);
-                                            targets.splice(c, 1);
+                                            targets[c] = null;
+                                            //targetsProxy.splice(c, 1);
+                                            //targets.splice(c, 1);
                                         }
                                     }
 
@@ -535,8 +568,14 @@ const ObservableSlim = (function () {
                     if (targetsProxy[a][b].observable === matchedObservable) {
                         targetsProxy[a].splice(b, 1);
                         if (targetsProxy[a].length === 0) {
-                            targetsProxy.splice(a, 1);
-                            targets.splice(a, 1);
+                            // if there are no more proxies for this target object
+                            // then we null out the position for this object on the targets array
+                            // since we are essentially no longer observing this object.
+                            // we do not splice it off the targets array, because if we re-observe the same
+                            // object at a later time, the property __targetPosition cannot be redefined.
+                            targets[a] = null;
+                            /*targetsProxy.splice(a, 1);
+                            targets.splice(a, 1);*/
                         }
                     }
                 }

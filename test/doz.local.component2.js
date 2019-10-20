@@ -22,16 +22,22 @@ class WrapperComponent extends Doz.Component {
 class GridComponent extends Doz.Component {
     constructor(o) {
         super(o);
+        this.myFunc = new Date();
         this.props = {
             data: [],
-            myFunc: null
+            myFunc: {a: function () {}},
+            myFunc2: function () {}
         };
     }
     template(h) {
         //console.log(this.props.dateObj.getDate())
+        console.log('myFunc', typeof this.props.myFunc === 'object')
+        console.log('myFunc.a', typeof this.props.myFunc.a === 'function')
+        console.log('myFunc2', typeof this.props.myFunc2 === 'function')
+        console.log('data', this.props.data)
         return h`
             <div>
-                _______________________${this.props.myFunc}
+                _______________________${typeof this.props.myFunc.a === 'function' ? this.props.myFunc.a() : 'NO FUNC'}
                 ${this.each(this.props.data, item => h`
                     <${RowComponent} name="${item.name}"/>
                 `)}
@@ -115,9 +121,9 @@ describe('Doz.local.component2', function () {
                 },
                 template(h) {
                     let o = h`
-                        <${GridComponent} my-func="${new Date()}" name="${'boom'}" data="${this.props.records}" />
+                        <${GridComponent} my-func="${{a: function(){return 1}}}" name="${'boom'}" data="${this.props.records}" />
                     `;
-                    console.log(JSON.stringify(o, null, 4))
+                    //console.log(JSON.stringify(o, null, 4))
                     return o;
                 }
             });
