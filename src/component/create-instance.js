@@ -19,7 +19,7 @@ function createInstance(cfg = {}) {
         ? html.create(cfg.template)
         : cfg.template;
 
-    console.log('HTML, ', cfg.template)
+    //console.log('HTML, ', cfg.template)
 
     cfg.root.appendChild(cfg.template);
 
@@ -32,10 +32,10 @@ function createInstance(cfg = {}) {
 
     function walk($child, parent = {}) {
         while ($child) {
-            console.log('-------------------');
-            console.log($child.nodeName);
-            console.log($child.outerHTML);
-            console.log('-------------------');
+            //console.log('-------------------');
+            //console.log($child.nodeName);
+            //console.log($child.outerHTML);
+            //console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -57,7 +57,7 @@ function createInstance(cfg = {}) {
                 localComponents = parent.cmp._components;
             }
 
-            console.log('---->', cmpName)
+            //console.log('---->', cmpName)
 
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
@@ -85,7 +85,7 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
-                console.log('BEFORE SERIALIZE', $child.nodeName)
+                //console.log('BEFORE SERIALIZE', $child.nodeName)
                 const props = serializeProps($child);
 
                 //console.log('serialized', props)
@@ -148,8 +148,8 @@ function createInstance(cfg = {}) {
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                    console.log('??????????????????????');
-                    console.log(newElement.getHTMLElement().outerHTML);
+                    console.log('??????????????????????', cmpName);
+                    console.log(newElement.getHTMLElement()._props);
 
                     // Replace first child if defaultSlot exists with a slot comment
                     if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {

@@ -622,6 +622,7 @@ function serializeProps($node) {
         var attributes = Array.from($node.attributes);
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
+            //console.log('=======>', attr.nodeValue)
             propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
@@ -642,15 +643,17 @@ function propsFixer(nName, aName, aValue, props, $node) {
         });
     }
 
-    //console.log(typeof aValue)
     var objValue = mapCompiled.get(aValue);
-    //console.log('......', objValue);
-    aValue = objValue ? objValue : aValue;
 
-    props[propsName] = aName === ATTR.FORCE_UPDATE ? true : castStringTo(aValue);
+    if (objValue === undefined) {
+        aValue = castStringTo(aValue);
+    } else {
+        //console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', objValue)
+        aValue = objValue;
+    }
+
+    props[propsName] = aName === ATTR.FORCE_UPDATE ? true : aValue;
     //: mapCompiled.get(aValue);
-
-    //console.log('@@@@@@@@',props[propsName], propsName)
 }
 
 module.exports = {
@@ -674,8 +677,11 @@ var typesMap = __webpack_require__(39);
 
 function castStringTo(obj) {
 
-    //console.log('==>', typeof obj, obj)
+    //console.log('++++++>', typeof obj, obj)
 
+    /*if (typeof obj === 'function') {
+        return 'NO';
+    }*/
     if (typeof obj !== 'string') {
         return obj;
     }
@@ -1198,11 +1204,9 @@ function createInstance() {
 
     if (!cfg.root) return;
 
-    /*console.log('-------------------')
-    console.log(cfg.template)
-    console.log('-------------------')*/
-
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+
+    //console.log('HTML, ', cfg.template)
 
     cfg.root.appendChild(cfg.template);
 
@@ -1217,10 +1221,10 @@ function createInstance() {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
-            console.log('-------------------');
-            console.log($child.nodeName);
-            console.log($child.outerHTML);
-            console.log('-------------------');
+            //console.log('-------------------');
+            //console.log($child.nodeName);
+            //console.log($child.outerHTML);
+            //console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -1241,6 +1245,8 @@ function createInstance() {
             if (parent.cmp && parent.cmp._components) {
                 localComponents = parent.cmp._components;
             }
+
+            //console.log('---->', cmpName)
 
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
@@ -1266,6 +1272,7 @@ function createInstance() {
                         return 'continue';
                     }
 
+                    //console.log('BEFORE SERIALIZE', $child.nodeName)
                     var props = serializeProps($child);
 
                     //console.log('serialized', props)
@@ -1336,6 +1343,9 @@ function createInstance() {
 
                         newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                         newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+
+                        console.log('??????????????????????', cmpName);
+                        console.log(newElement.getHTMLElement()._props);
 
                         // Replace first child if defaultSlot exists with a slot comment
                         if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
@@ -2546,7 +2556,7 @@ module.exports = function (strings) {
     }
 
     for (var i = 0; i < value.length; ++i) {
-
+        var dFunctionPlaceholder = '';
         if (Array.isArray(value[i])) {
             var newValueString = '';
             for (var j = 0; j < value[i].length; j++) {
@@ -2580,7 +2590,6 @@ module.exports = function (strings) {
         // if this function is bound to Doz component
         if (this._components) {
             // if before is a <
-            //console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', value[i])
             if (typeof value[i] === 'function' && value[i].__proto__.name === 'Component' && strings[i].indexOf(LESSER) > -1) {
                 //console.log('---------------')
                 var cmp = value[i];
@@ -2608,14 +2617,17 @@ module.exports = function (strings) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
-                        //console.log('-->', property, typeof value[i], value[i])
+                        var isFunction = typeof value[i] === 'function' || value[i] instanceof Date;
                         value[i] = mapCompiled.set(value[i]);
+                        if (isFunction) {
+                            //dFunctionPlaceholder += `" d-function-${property}"${value[i]}`;
+                        }
                     }
                 }
             }
         }
 
-        if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
+        if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + dFunctionPlaceholder + strings[i + 1];else result += '' + value[i] + dFunctionPlaceholder + strings[i + 1];
     }
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
@@ -4206,13 +4218,19 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
-
+    if (!$target._props) {
+        $target._props = {};
+    }
     if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
-            $target.setAttribute(name, JSON.stringify(value));
+            //$target.setAttribute(name, JSON.stringify(value));
+            $target._props[name] = value;
         } catch (e) {}
+    } else if (typeof value === 'function') {
+        //console.log($target)
+        $target._props[name] = value;
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);

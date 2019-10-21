@@ -7,16 +7,22 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
-
+    if (!$target._props) {
+        $target._props = {};
+    }
     if (isCustomAttribute(name)) {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
         try {
-            $target.setAttribute(name, JSON.stringify(value));
+            //$target.setAttribute(name, JSON.stringify(value));
+            $target._props[name] = value;
         } catch (e) {
 
         }
+    } else if (typeof value === 'function'){
+        //console.log($target)
+        $target._props[name] = value;
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);

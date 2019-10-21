@@ -138,9 +138,10 @@ describe('Doz.local.component2', function () {
 
             const GridComponent = class extends Doz.Component {
                 template(h) {
+                    console.log('ééééééé', this.props.myFunc, typeof this.props.myFunc)
                     return h`
                         <div>
-                            ${this.props.myFunc()}
+                        ${this.props.myFunc()}
                         </div>
                     `
                 }
@@ -164,7 +165,7 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                //console.log(require('../src/vdom/map-compiled').data);
+                console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
                 done();
             }, 100);

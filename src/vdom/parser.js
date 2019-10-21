@@ -164,7 +164,7 @@ function serializeProps($node) {
         const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-            console.log('=======>', attr.nodeValue)
+            //console.log('=======>', attr.nodeValue)
             propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
@@ -189,11 +189,17 @@ function propsFixer(nName, aName, aValue, props, $node) {
     }
 
     let objValue = mapCompiled.get(aValue);
-    aValue = objValue ? objValue : aValue;
+
+    if (objValue === undefined) {
+        aValue = castStringTo(aValue);
+    }  else {
+        //console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', objValue)
+        aValue = objValue;
+    }
 
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
-        : castStringTo(aValue);
+        : aValue;
         //: mapCompiled.get(aValue);
 }
 
