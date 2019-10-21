@@ -1,58 +1,6 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-class buttonComponent extends Doz.Component {
-    template(h) {
-        return h`
-            <button>my button ${this.props.name}</button>
-        `
-    }
-}
-
-class WrapperComponent extends Doz.Component {
-    template(h) {
-        return h`
-            <div>
-                <span>hello I'm ${this.props.name} component </span> <${buttonComponent} name="by wrapper component"/>
-            </div>
-        `
-    }
-}
-
-class GridComponent extends Doz.Component {
-    constructor(o) {
-        super(o);
-        this.myFunc = new Date();
-        this.props = {
-            data: [],
-            myFunc: function () {},
-            myFunc2: function () {}
-        };
-    }
-    template(h) {
-        //console.log(this.props.dateObj.getDate())
-        console.log('myFunc', typeof this.props.myFunc, this.props.myFunc)
-        //console.log('myFunc2', typeof this.props.myFunc2 )
-        //console.log('data', this.props.data)
-        return h`
-            <div>
-                _______________________${typeof this.props.myFunc === 'function' ? this.props.myFunc() : 'NO FUNC'}
-                ${this.each(this.props.data, item => h`
-                    <${RowComponent} name="${item.name}"/>
-                `)}
-            </div>
-        `
-    }
-}
-
-class RowComponent extends Doz.Component {
-    template(h) {
-        return h`
-            <div>my name is ${this.props.name}</div>
-        `
-    }
-}
-
 describe('Doz.local.component2', function () {
 
     beforeEach(function () {
@@ -68,6 +16,23 @@ describe('Doz.local.component2', function () {
                 <div id="app"></div>
             `;
 
+            class buttonComponent extends Doz.Component {
+                template(h) {
+                    return h`
+                        <button>my button ${this.props.name}</button>
+                    `
+                }
+            }
+
+            class WrapperComponent extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>
+                            <span>hello I'm ${this.props.name} component </span> <${buttonComponent} name="by wrapper component"/>
+                        </div>
+                    `
+                }
+            }
             new Doz({
                 root: '#app',
                 template(h) {
@@ -107,10 +72,31 @@ describe('Doz.local.component2', function () {
                 <div id="app"></div>
             `;
 
-            function aFunction() {
-                console.log('aaaaa')
-                return 1
-            }
+            const GridComponent = class extends Doz.Component {
+                constructor(o) {
+                    super(o);
+                    this.props = {
+                        data: []
+                    };
+                }
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.each(this.props.data, item => h`
+                                <${RowComponent} name="${item.name}"/>
+                            `)}
+                        </div>
+                    `
+                }
+            };
+
+            const RowComponent = class extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>my name is ${this.props.name}</div>
+                    `
+                }
+            };
 
             new Doz({
                 root: '#app',
@@ -124,11 +110,9 @@ describe('Doz.local.component2', function () {
                     ]
                 },
                 template(h) {
-                    let o = h`
-                        <${GridComponent} my-func="${aFunction}" name="${'boom'}" data="${this.props.records}" />
+                    return h`
+                        <${GridComponent} name="${'boom'}" data="${this.props.records}" />
                     `;
-                    //console.log(JSON.stringify(o, null, 4))
-                    return o;
                 }
             });
 
@@ -145,27 +129,36 @@ describe('Doz.local.component2', function () {
             }, 100);
 
         });
+
         it('should be ok 2', function (done) {
 
             document.body.innerHTML = `
                 <div id="app"></div>
             `;
+
+            const GridComponent = class extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.myFunc()}
+                        </div>
+                    `
+                }
+            };
+
             function aFunction() {
-                console.log('bbbbb', 1 > 2);
                 return 1
             }
+
             new Doz({
                 root: '#app',
                 props: {
                     records: []
                 },
                 template(h) {
-                    let o = h`
+                    return  h`
                         <${GridComponent} my-func="${aFunction}" name="${'boom'}"  />
                     `;
-                    //console.log(require('../src/vdom/map-compiled').data);
-                    //console.log(JSON.stringify(o, null, 4))
-                    return o;
                 }
             });
 
@@ -173,6 +166,80 @@ describe('Doz.local.component2', function () {
                 const html = document.body.innerHTML;
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
+                done();
+            }, 100);
+
+        });
+
+        it('should be ok 3', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            const GridComponent = class extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.myFunc.getTime()}
+                        </div>
+                    `
+                }
+            };
+
+            new Doz({
+                root: '#app',
+                props: {
+                    records: []
+                },
+                template(h) {
+                    return  h`
+                        <${GridComponent} my-func="${new Date()}" name="${'boom'}"/>
+                    `;
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML;
+                //console.log(require('../src/vdom/map-compiled').data);
+                console.log(html);
+                done();
+            }, 100);
+
+        });
+
+        it('should be ok 4', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+            const GridComponent = class extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.name.a[1]}
+                        </div>
+                    `
+                }
+            };
+
+            new Doz({
+                root: '#app',
+                props: {
+                    records: []
+                },
+                template(h) {
+                    return  h`
+                        <${GridComponent} name="${{a:['boom','foo']}}"  />
+                    `;
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML.trim();
+                //console.log(require('../src/vdom/map-compiled').data);
+                console.log(html);
+                be.err.equal(html, '<div id="app"><dz-app><grid-component><div>foo</div></grid-component></dz-app></div>');
                 done();
             }, 100);
 

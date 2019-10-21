@@ -21,7 +21,7 @@ module.exports = function (strings, ...value) {
     let allowTag = false;
 
     for (let i = 0; i < value.length; ++i) {
-
+        let dFunctionPlaceholder = '';
         if (Array.isArray(value[i])) {
             let newValueString = '';
             for (let j = 0; j < value[i].length; j++) {
@@ -52,7 +52,6 @@ module.exports = function (strings, ...value) {
         // if this function is bound to Doz component
         if (this._components) {
             // if before is a <
-            //console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', value[i])
             if (typeof value[i] === 'function' && value[i].__proto__.name === 'Component' && strings[i].indexOf(LESSER) > -1) {
                 //console.log('---------------')
                 let cmp = value[i];
@@ -80,17 +79,20 @@ module.exports = function (strings, ...value) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
-                        //console.log('-->', property, typeof value[i], value[i])
+                        let isFunction = (typeof value[i] === 'function' || value[i] instanceof Date);
                         value[i] = mapCompiled.set(value[i]);
+                        if (isFunction) {
+                            //dFunctionPlaceholder += `" d-function-${property}"${value[i]}`;
+                        }
                     }
                 }
             }
         }
 
         if(allowTag)
-            result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
+            result += `<${tagText}>${value[i]}</${tagText}>${dFunctionPlaceholder}${strings[i + 1]}`;
         else
-            result += `${value[i]}${strings[i + 1]}`;
+            result += `${value[i]}${dFunctionPlaceholder}${strings[i + 1]}`;
     }
 
     result = result
