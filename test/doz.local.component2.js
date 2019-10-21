@@ -25,19 +25,18 @@ class GridComponent extends Doz.Component {
         this.myFunc = new Date();
         this.props = {
             data: [],
-            myFunc: {a: function () {}},
+            myFunc: function () {},
             myFunc2: function () {}
         };
     }
     template(h) {
         //console.log(this.props.dateObj.getDate())
-        console.log('myFunc', typeof this.props.myFunc === 'object')
-        console.log('myFunc.a', typeof this.props.myFunc.a === 'function')
-        console.log('myFunc2', typeof this.props.myFunc2 === 'function')
-        console.log('data', this.props.data)
+        console.log('myFunc', typeof this.props.myFunc, this.props.myFunc)
+        //console.log('myFunc2', typeof this.props.myFunc2 )
+        //console.log('data', this.props.data)
         return h`
             <div>
-                _______________________${typeof this.props.myFunc.a === 'function' ? this.props.myFunc.a() : 'NO FUNC'}
+                _______________________${typeof this.props.myFunc === 'function' ? this.props.myFunc() : 'NO FUNC'}
                 ${this.each(this.props.data, item => h`
                     <${RowComponent} name="${item.name}"/>
                 `)}
@@ -108,6 +107,11 @@ describe('Doz.local.component2', function () {
                 <div id="app"></div>
             `;
 
+            function aFunction() {
+                console.log('aaaaa')
+                return 1
+            }
+
             new Doz({
                 root: '#app',
                 props: {
@@ -121,7 +125,7 @@ describe('Doz.local.component2', function () {
                 },
                 template(h) {
                     let o = h`
-                        <${GridComponent} my-func="${{a: function(){return 1}}}" name="${'boom'}" data="${this.props.records}" />
+                        <${GridComponent} my-func="${aFunction}" name="${'boom'}" data="${this.props.records}" />
                     `;
                     //console.log(JSON.stringify(o, null, 4))
                     return o;
@@ -137,6 +141,38 @@ describe('Doz.local.component2', function () {
                 be.err.true(/my name is Paul/g.test(html));
                 be.err.true(/my name is Fred/g.test(html));
                 be.err.true(/my name is Ted/g.test(html));
+                done();
+            }, 100);
+
+        });
+        it('should be ok 2', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+            function aFunction() {
+                console.log('bbbbb', 1 > 2);
+                return 1
+            }
+            new Doz({
+                root: '#app',
+                props: {
+                    records: []
+                },
+                template(h) {
+                    let o = h`
+                        <${GridComponent} my-func="${aFunction}" name="${'boom'}"  />
+                    `;
+                    //console.log(require('../src/vdom/map-compiled').data);
+                    //console.log(JSON.stringify(o, null, 4))
+                    return o;
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML;
+                //console.log(require('../src/vdom/map-compiled').data);
+                console.log(html);
                 done();
             }, 100);
 

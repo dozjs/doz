@@ -96,7 +96,7 @@ class Doz {
             },
             mount: {
                 value: function (template, root, parent = this._tree) {
-console.log(template)
+
                     if (typeof root === 'string') {
                         root = document.querySelector(root);
                     }
@@ -178,7 +178,6 @@ console.log(template)
 
         if (!this.cfg.autoDraw)
             this.cfg.root.innerHTML = '';
-
         this._tree = createInstance({
             root: this.cfg.root,
             template: this.baseTemplate,

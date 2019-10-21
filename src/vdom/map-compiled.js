@@ -4,13 +4,14 @@ module.exports = {
     set(value) {
         let id = ++this.lastId;
         id = `=%{${id}}%;`;
+        //console.log('--->', value)
         this.data[id] = value;
         return id;
     },
     get(id) {
         if (!this.isValidId(id)) return;
         let res = this.data[id];
-        delete this.data[id];
+        //delete this.data[id];
         return res;
     },
     isValidId(id) {

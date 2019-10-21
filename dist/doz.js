@@ -674,7 +674,7 @@ var typesMap = __webpack_require__(39);
 
 function castStringTo(obj) {
 
-    //console.log('==>', typeof obj)
+    //console.log('==>', typeof obj, obj)
 
     if (typeof obj !== 'string') {
         return obj;
@@ -721,13 +721,14 @@ module.exports = {
     set: function set(value) {
         var id = ++this.lastId;
         id = "=%{" + id + "}%;";
+        //console.log('--->', value)
         this.data[id] = value;
         return id;
     },
     get: function get(id) {
         if (!this.isValidId(id)) return;
         var res = this.data[id];
-        delete this.data[id];
+        //delete this.data[id];
         return res;
     },
     isValidId: function isValidId(id) {
@@ -1197,6 +1198,10 @@ function createInstance() {
 
     if (!cfg.root) return;
 
+    /*console.log('-------------------')
+    console.log(cfg.template)
+    console.log('-------------------')*/
+
     cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
 
     cfg.root.appendChild(cfg.template);
@@ -1206,13 +1211,16 @@ function createInstance() {
     var isChildStyle = void 0;
     var trash = [];
 
-    //console.log(cfg.template);
+    //console.log(cfg.root.outerHTML)
 
     function walk($child) {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
-
+            console.log('-------------------');
+            console.log($child.nodeName);
+            console.log($child.outerHTML);
+            console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -1259,6 +1267,8 @@ function createInstance() {
                     }
 
                     var props = serializeProps($child);
+
+                    //console.log('serialized', props)
 
                     var componentDirectives = {};
 
@@ -2598,6 +2608,7 @@ module.exports = function (strings) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
+                        //console.log('-->', property, typeof value[i], value[i])
                         value[i] = mapCompiled.set(value[i]);
                     }
                 }
@@ -2608,6 +2619,8 @@ module.exports = function (strings) {
     }
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
+
+    console.log(result);
 
     result = compile(result);
 
@@ -2946,7 +2959,7 @@ var Doz = function () {
                 value: function value(template, root) {
                     var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._tree;
 
-                    console.log(template);
+
                     if (typeof root === 'string') {
                         root = document.querySelector(root);
                     }
@@ -3042,7 +3055,6 @@ var Doz = function () {
         value: function draw() {
 
             if (!this.cfg.autoDraw) this.cfg.root.innerHTML = '';
-
             this._tree = createInstance({
                 root: this.cfg.root,
                 template: this.baseTemplate,

@@ -15,6 +15,10 @@ function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
 
+    /*console.log('-------------------')
+    console.log(cfg.template)
+    console.log('-------------------')*/
+
     cfg.template = typeof cfg.template === 'string'
         ? html.create(cfg.template)
         : cfg.template;
@@ -26,11 +30,14 @@ function createInstance(cfg = {}) {
     let isChildStyle;
     const trash = [];
 
-    //console.log(cfg.template);
+    //console.log(cfg.root.outerHTML)
 
     function walk($child, parent = {}) {
         while ($child) {
-
+            console.log('-------------------')
+            console.log($child.nodeName)
+            console.log($child.outerHTML)
+            console.log('-------------------')
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -79,6 +86,8 @@ function createInstance(cfg = {}) {
                 }
 
                 const props = serializeProps($child);
+
+                //console.log('serialized', props)
 
                 const componentDirectives = {};
 

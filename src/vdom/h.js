@@ -80,6 +80,7 @@ module.exports = function (strings, ...value) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
+                        //console.log('-->', property, typeof value[i], value[i])
                         value[i] = mapCompiled.set(value[i]);
                     }
                 }
@@ -95,6 +96,8 @@ module.exports = function (strings, ...value) {
     result = result
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
+
+    console.log(result)
 
     result = compile(result);
 
