@@ -2617,7 +2617,7 @@ module.exports = function (strings) {
                 value[i] = tagCmp;
             }
 
-            if (_typeof(value[i]) === 'object' || typeof value[i] === 'function') {
+            if (value[i] !== null && (_typeof(value[i]) === 'object' || typeof value[i] === 'function')) {
 
                 var property = strings[i];
                 if (!/</.test(property)) {
