@@ -7,6 +7,7 @@ const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
+const mapCompiled = require('./vdom/map-compiled');
 const {update} = require('./vdom/element');
 require('./directive/built-in/_bootstrap');
 
@@ -50,6 +51,9 @@ Object.defineProperties(Doz, {
     directive: {
         value: directive,
         enumerable: true
+    },
+    mapCompiled: {
+        value: mapCompiled
     },
     version: {
         value: '[AIV]{version}[/AIV]',
