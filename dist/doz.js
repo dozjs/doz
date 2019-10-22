@@ -455,8 +455,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var castStringTo = __webpack_require__(6);
-var dashToCamel = __webpack_require__(7);
+var castStringTo = __webpack_require__(7);
+var dashToCamel = __webpack_require__(8);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -466,7 +466,7 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
-var mapCompiled = __webpack_require__(8);
+var mapCompiled = __webpack_require__(9);
 
 var selfClosingElements = {
     meta: true,
@@ -507,12 +507,10 @@ var Element = function () {
     function Element(name, props, isSVG) {
         _classCallCheck(this, Element);
 
-        //if(name === 'slot') name = 'dzslot';
         this.type = name;
         this.props = props; //Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        //this.childrenHasKey = false;
     }
 
     _createClass(Element, [{
@@ -665,95 +663,14 @@ function propsFixer(nName, aName, aValue, props, $node) {
 module.exports = {
     compile: compile,
     serializeProps: serializeProps,
-    propsFixer: propsFixer
+    propsFixer: propsFixer,
+    Element: Element,
+    removeNLS: removeNLS,
+    last: last
 };
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var isJSON = __webpack_require__(35);
-var isNumber = __webpack_require__(36);
-var toJSON = __webpack_require__(37);
-var toNumber = __webpack_require__(38);
-var typesMap = __webpack_require__(39);
-
-function castStringTo(obj) {
-
-    //console.log('++++++>', typeof obj, obj)
-
-    /*if (typeof obj === 'function') {
-        return 'NO';
-    }*/
-    if (typeof obj !== 'string') {
-        return obj;
-    }
-
-    if (typesMap.hasOwnProperty(obj)) {
-        return typesMap[obj];
-    } else if (isJSON(obj)) {
-        return toJSON(obj);
-    } else if (isNumber(obj)) {
-        return toNumber(obj);
-    }
-
-    return obj;
-}
-
-module.exports = castStringTo;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function dashToCamel(s) {
-    return s.replace(/(-\w)/g, function (m) {
-        return m[1].toUpperCase();
-    });
-}
-
-module.exports = dashToCamel;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    lastId: 0,
-    data: {},
-    set: function set(value) {
-        var id = ++this.lastId;
-        id = "=%{" + id + "}%;";
-        //console.log('--->', value)
-        this.data[id] = value;
-        return id;
-    },
-    get: function get(id) {
-        if (!this.isValidId(id)) return;
-        var res = this.data[id];
-        delete this.data[id];
-        return res;
-    },
-    isValidId: function isValidId(id) {
-        return (/=%{\d+}%;/.test(id)
-        );
-    },
-    flush: function flush() {
-        this.data = {};
-    }
-};
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1167,6 +1084,86 @@ var Component = function (_DOMManipulation) {
 }(DOMManipulation);
 
 module.exports = Component;
+module.exports._Component = Component;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var isJSON = __webpack_require__(35);
+var isNumber = __webpack_require__(36);
+var toJSON = __webpack_require__(37);
+var toNumber = __webpack_require__(38);
+var typesMap = __webpack_require__(39);
+
+function castStringTo(obj) {
+
+    if (typeof obj !== 'string') {
+        return obj;
+    }
+
+    if (typesMap.hasOwnProperty(obj)) {
+        return typesMap[obj];
+    } else if (isJSON(obj)) {
+        return toJSON(obj);
+    } else if (isNumber(obj)) {
+        return toNumber(obj);
+    }
+
+    return obj;
+}
+
+module.exports = castStringTo;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function dashToCamel(s) {
+    return s.replace(/(-\w)/g, function (m) {
+        return m[1].toUpperCase();
+    });
+}
+
+module.exports = dashToCamel;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    lastId: 0,
+    data: {},
+    set: function set(value) {
+        var id = ++this.lastId;
+        id = "=%{" + id + "}%;";
+        //console.log('--->', value)
+        this.data[id] = value;
+        return id;
+    },
+    get: function get(id) {
+        if (!this.isValidId(id)) return;
+        var res = this.data[id];
+        delete this.data[id];
+        return res;
+    },
+    isValidId: function isValidId(id) {
+        return (/=%{\d+}%;/.test(id)
+        );
+    },
+    flush: function flush() {
+        this.data = {};
+    }
+};
 
 /***/ }),
 /* 10 */
@@ -1198,7 +1195,7 @@ var _require2 = __webpack_require__(5),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(40);
-var Component = __webpack_require__(9);
+var Component = __webpack_require__(6);
 var propsInit = __webpack_require__(20);
 var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
@@ -2534,11 +2531,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
-var mapCompiled = __webpack_require__(8);
+var mapCompiled = __webpack_require__(9);
 var camelToDash = __webpack_require__(17);
 
 var _require2 = __webpack_require__(5),
-    compile = _require2.compile;
+    compile = _require2.compile,
+    Element = _require2.Element;
 
 var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
@@ -2555,6 +2553,9 @@ var regClose = new RegExp('>(\\s+)?</' + tagText + '>', 'gi');
  * @returns {*}
  */
 module.exports = function (strings) {
+
+    var Component = __webpack_require__(6);
+
     var result = strings[0];
     var allowTag = false;
 
@@ -2568,14 +2569,14 @@ module.exports = function (strings) {
             var newValueString = '';
             for (var j = 0; j < value[i].length; j++) {
                 var obj = value[i][j];
-                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj.constructor && obj.constructor.name === 'Element') {
+                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj.constructor && obj.constructor === Element) {
                     newValueString += '<' + tagIterate + '>' + mapCompiled.set(obj) + '</' + tagIterate + '>';
                 }
             }
             if (newValueString) value[i] = newValueString;
         }
 
-        if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor.name === 'Element') {
+        if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {
             value[i] = mapCompiled.set(value[i]);
         }
 
@@ -2596,8 +2597,10 @@ module.exports = function (strings) {
 
         // if this function is bound to Doz component
         if (this._components) {
+            //console.log(value[i].__proto__.name === 'Component', value[i].__proto__ === Component)
+            //console.log('->',   value[i].__proto__ ===  this.constructor, value[i].__proto__.name === 'Component', value[i].__proto__.name, this.constructor.name)
             // if before is a <
-            if (typeof value[i] === 'function' && value[i].__proto__.name === 'Component' && strings[i].indexOf(LESSER) > -1) {
+            if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 //console.log('---------------')
                 var cmp = value[i];
                 var tagCmp = camelToDash(cmp.name);
@@ -2624,11 +2627,7 @@ module.exports = function (strings) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
-                        //let isFunction = (typeof value[i] === 'function' || value[i] instanceof Date);
                         value[i] = mapCompiled.set(value[i]);
-                        //if (isFunction) {
-                        //dFunctionPlaceholder += `" d-function-${property}"${value[i]}`;
-                        //}
                     }
                 }
             }
@@ -2789,14 +2788,14 @@ var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
 var component = __webpack_require__(60);
-var Component = __webpack_require__(9);
+var Component = __webpack_require__(6);
 var mixin = __webpack_require__(61);
 var h = __webpack_require__(18);
 
 var _require3 = __webpack_require__(5),
     compile = _require3.compile;
 
-var mapCompiled = __webpack_require__(8);
+var mapCompiled = __webpack_require__(9);
 
 var _require4 = __webpack_require__(15),
     update = _require4.update;
@@ -4223,7 +4222,7 @@ var _require = __webpack_require__(1),
     ATTR = _require.ATTR,
     PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
 
-var castStringTo = __webpack_require__(6);
+var castStringTo = __webpack_require__(7);
 var objectPath = __webpack_require__(47);
 
 function isEventAttribute(name) {
@@ -4711,7 +4710,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var canDecode = __webpack_require__(16);
 var composeStyleInner = __webpack_require__(12);
-var dashToCamel = __webpack_require__(7);
+var dashToCamel = __webpack_require__(8);
 var Base = __webpack_require__(57);
 
 var _require = __webpack_require__(1),
@@ -5112,7 +5111,7 @@ module.exports = component;
 "use strict";
 
 
-var Component = __webpack_require__(9);
+var Component = __webpack_require__(6);
 var mixin = __webpack_require__(19);
 
 function globalMixin(obj) {
@@ -5521,7 +5520,7 @@ directive('ref', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var dashToCamel = __webpack_require__(7);
+var dashToCamel = __webpack_require__(8);
 
 directive('is', {
     hasDataIs: function hasDataIs($target) {
@@ -5553,7 +5552,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var castStringTo = __webpack_require__(6);
+var castStringTo = __webpack_require__(7);
 var delay = __webpack_require__(3);
 
 directive('bind', {

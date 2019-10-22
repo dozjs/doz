@@ -1,7 +1,7 @@
 const {TAG} = require('../constants');
 const mapCompiled = require('./map-compiled');
 const camelToDash = require('../utils/camel-to-dash');
-const {compile} = require('../vdom/parser');
+const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
@@ -17,6 +17,9 @@ const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
  * @returns {*}
  */
 module.exports = function (strings, ...value) {
+
+    let Component = require('../component/Component');
+
     let result = strings[0];
     let allowTag = false;
 
@@ -26,7 +29,7 @@ module.exports = function (strings, ...value) {
             let newValueString = '';
             for (let j = 0; j < value[i].length; j++) {
                 let obj = value[i][j];
-                if(typeof obj === 'object' && obj.constructor && obj.constructor.name === 'Element') {
+                if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
                     newValueString += `<${tagIterate}>${mapCompiled.set(obj)}</${tagIterate}>`;
                 }
             }
@@ -34,7 +37,7 @@ module.exports = function (strings, ...value) {
                 value[i] = newValueString;
         }
 
-        if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor.name === 'Element') {
+        if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
             value[i] = mapCompiled.set(value[i]);
         }
 
@@ -51,8 +54,10 @@ module.exports = function (strings, ...value) {
 
         // if this function is bound to Doz component
         if (this._components) {
+            //console.log(value[i].__proto__.name === 'Component', value[i].__proto__ === Component)
+            //console.log('->',   value[i].__proto__ ===  this.constructor, value[i].__proto__.name === 'Component', value[i].__proto__.name, this.constructor.name)
             // if before is a <
-            if (typeof value[i] === 'function' && value[i].__proto__.name === 'Component' && strings[i].indexOf(LESSER) > -1) {
+            if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 //console.log('---------------')
                 let cmp = value[i];
                 let tagCmp = camelToDash(cmp.name);
@@ -79,11 +84,7 @@ module.exports = function (strings, ...value) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
-                        //let isFunction = (typeof value[i] === 'function' || value[i] instanceof Date);
                         value[i] = mapCompiled.set(value[i]);
-                        //if (isFunction) {
-                            //dFunctionPlaceholder += `" d-function-${property}"${value[i]}`;
-                        //}
                     }
                 }
             }

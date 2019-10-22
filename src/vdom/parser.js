@@ -36,7 +36,6 @@ function last(arr) {
     return arr[arr.length - 1];
 }
 
-
 function removeNLS(str) {
     return str.replace(REGEX.MATCH_NLS, '');
 }
@@ -44,12 +43,10 @@ function removeNLS(str) {
 class Element {
 
     constructor(name, props, isSVG) {
-        //if(name === 'slot') name = 'dzslot';
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
-        //this.childrenHasKey = false;
     }
 
     appendChild(node) {
@@ -210,5 +207,8 @@ function propsFixer(nName, aName, aValue, props, $node) {
 module.exports = {
     compile,
     serializeProps,
-    propsFixer
+    propsFixer,
+    Element,
+    removeNLS,
+    last
 };
