@@ -34,7 +34,7 @@ module.exports = function (strings, ...value) {
                 value[i] = newValueString;
         }
 
-        if(typeof value[i] === 'object' && value[i].constructor && value[i].constructor.name === 'Element') {
+        if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor.name === 'Element') {
             value[i] = mapCompiled.set(value[i]);
         }
 
