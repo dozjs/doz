@@ -466,7 +466,7 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
-var mapCompiled = __webpack_require__(12);
+var mapCompiled = __webpack_require__(8);
 
 var selfClosingElements = {
     meta: true,
@@ -722,6 +722,38 @@ module.exports = dashToCamel;
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    lastId: 0,
+    data: {},
+    set: function set(value) {
+        var id = ++this.lastId;
+        id = "=%{" + id + "}%;";
+        //console.log('--->', value)
+        this.data[id] = value;
+        return id;
+    },
+    get: function get(id) {
+        if (!this.isValidId(id)) return;
+        var res = this.data[id];
+        delete this.data[id];
+        return res;
+    },
+    isValidId: function isValidId(id) {
+        return (/=%{\d+}%;/.test(id)
+        );
+    },
+    flush: function flush() {
+        this.data = {};
+    }
+};
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1137,7 +1169,7 @@ var Component = function (_DOMManipulation) {
 module.exports = Component;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1151,7 +1183,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var html = __webpack_require__(10);
+var html = __webpack_require__(11);
 var transformChildStyle = __webpack_require__(27);
 
 var _require = __webpack_require__(1),
@@ -1166,7 +1198,7 @@ var _require2 = __webpack_require__(5),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(40);
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var propsInit = __webpack_require__(20);
 var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
@@ -1390,7 +1422,7 @@ function createInstance() {
 module.exports = createInstance;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1435,7 +1467,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1485,38 +1517,6 @@ function composeStyleInner(cssContent, tag) {
 }
 
 module.exports = composeStyleInner;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    lastId: 0,
-    data: {},
-    set: function set(value) {
-        var id = ++this.lastId;
-        id = "=%{" + id + "}%;";
-        //console.log('--->', value)
-        this.data[id] = value;
-        return id;
-    },
-    get: function get(id) {
-        if (!this.isValidId(id)) return;
-        var res = this.data[id];
-        delete this.data[id];
-        return res;
-    },
-    isValidId: function isValidId(id) {
-        return (/=%{\d+}%;/.test(id)
-        );
-    },
-    flush: function flush() {
-        this.data = {};
-    }
-};
 
 /***/ }),
 /* 13 */
@@ -2498,7 +2498,7 @@ module.exports = {
 "use strict";
 
 
-var html = __webpack_require__(10);
+var html = __webpack_require__(11);
 
 function canDecode(str) {
     return (/&\w+;/.test(str) ? html.decode(str) : str
@@ -2534,7 +2534,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
-var mapCompiled = __webpack_require__(12);
+var mapCompiled = __webpack_require__(8);
 var camelToDash = __webpack_require__(17);
 
 var _require2 = __webpack_require__(5),
@@ -2789,12 +2789,14 @@ var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
 var component = __webpack_require__(60);
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var mixin = __webpack_require__(61);
 var h = __webpack_require__(18);
 
 var _require3 = __webpack_require__(5),
     compile = _require3.compile;
+
+var mapCompiled = __webpack_require__(8);
 
 var _require4 = __webpack_require__(15),
     update = _require4.update;
@@ -2842,6 +2844,9 @@ Object.defineProperties(Doz, {
         value: directive,
         enumerable: true
     },
+    mapCompiled: {
+        value: mapCompiled
+    },
     version: {
         value: '1.26.0',
         enumerable: true
@@ -2864,7 +2869,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(26);
-var createInstance = __webpack_require__(9);
+var createInstance = __webpack_require__(10);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -3216,7 +3221,7 @@ module.exports = transformChildStyle;
 "use strict";
 
 
-var composeStyleInner = __webpack_require__(11);
+var composeStyleInner = __webpack_require__(12);
 var createStyle = __webpack_require__(29);
 
 function scopedInner(cssContent, uId, tag, scoped) {
@@ -4465,7 +4470,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        var dynamicInstance = __webpack_require__(9)({
+        var dynamicInstance = __webpack_require__(10)({
             root: root,
             template: item.node.outerHTML,
             app: instance.app,
@@ -4705,7 +4710,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var canDecode = __webpack_require__(16);
-var composeStyleInner = __webpack_require__(11);
+var composeStyleInner = __webpack_require__(12);
 var dashToCamel = __webpack_require__(7);
 var Base = __webpack_require__(57);
 
@@ -5107,7 +5112,7 @@ module.exports = component;
 "use strict";
 
 
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var mixin = __webpack_require__(19);
 
 function globalMixin(obj) {
