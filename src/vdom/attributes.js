@@ -1,4 +1,4 @@
-const {REGEX, ATTR} = require('../constants');
+const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
 
@@ -7,20 +7,20 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
-    if (!$target._props) {
-        $target._props = {};
+    if (!$target[PROPS_ATTRIBUTES]) {
+        $target[PROPS_ATTRIBUTES] = {};
     }
-    $target._props[name] = value;
+    $target[PROPS_ATTRIBUTES][name] = value;
 
-    if (isCustomAttribute(name) || typeof value === 'function') {
+    if (isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
-    } else if (typeof value === 'object') {
+    /*} else if (typeof value === 'object') {
         try {
             //$target.setAttribute(name, JSON.stringify(value));
         } catch (e) {
 
-        }
+        }*/
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);

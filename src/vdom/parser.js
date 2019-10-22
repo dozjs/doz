@@ -1,6 +1,6 @@
 const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const {REGEX, ATTR, TAG} = require('../constants');
+const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directive');
 const mapCompiled = require('./map-compiled');
@@ -160,10 +160,10 @@ function compile(data, cmp) {
 function serializeProps($node) {
     const props = {};
 
-    if ($node._props) {
-        let keys = Object.keys($node._props);
+    if ($node[PROPS_ATTRIBUTES]) {
+        let keys = Object.keys($node[PROPS_ATTRIBUTES]);
         for (let i = 0; i < keys.length; i++) {
-            propsFixer($node.nodeName, keys[i], $node._props[keys[i]], props, $node);
+            propsFixer($node.nodeName, keys[i], $node[PROPS_ATTRIBUTES][keys[i]], props, $node);
         }
     } else if ($node.attributes) {
         const attributes = Array.from($node.attributes);
