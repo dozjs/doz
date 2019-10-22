@@ -79,11 +79,11 @@ module.exports = function (strings, ...value) {
                     property = property.replace(/["'\s]+/g, '');
                     // Check if is an attribute
                     if (/^[\w-:]+=/.test(property)) {
-                        let isFunction = (typeof value[i] === 'function' || value[i] instanceof Date);
+                        //let isFunction = (typeof value[i] === 'function' || value[i] instanceof Date);
                         value[i] = mapCompiled.set(value[i]);
-                        if (isFunction) {
+                        //if (isFunction) {
                             //dFunctionPlaceholder += `" d-function-${property}"${value[i]}`;
-                        }
+                        //}
                     }
                 }
             }
