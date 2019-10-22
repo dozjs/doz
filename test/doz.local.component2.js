@@ -138,7 +138,7 @@ describe('Doz.local.component2', function () {
 
             const GridComponent = class extends Doz.Component {
                 template(h) {
-                    console.log('ééééééé', this.props.myFunc, typeof this.props.myFunc)
+                    //console.log('ééééééé', this.props)
                     return h`
                         <div>
                         ${this.props.myFunc()}

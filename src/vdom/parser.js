@@ -160,11 +160,15 @@ function compile(data, cmp) {
 function serializeProps($node) {
     const props = {};
 
-    if ($node.attributes) {
+    if ($node._props) {
+        let keys = Object.keys($node._props);
+        for (let i = 0; i < keys.length; i++) {
+            propsFixer($node.nodeName, keys[i], $node._props[keys[i]], props, $node);
+        }
+    } else if ($node.attributes) {
         const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-            //console.log('=======>', attr.nodeValue)
             propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
@@ -173,10 +177,12 @@ function serializeProps($node) {
 
 function propsFixer(nName, aName, aValue, props, $node) {
 
-    if (REGEX.IS_STRING_QUOTED.test(aValue))
+    if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
     let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    //console.log('ANAME', aName, aValue)
 
     let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
         ? dashToCamel(aName)
@@ -193,14 +199,12 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (objValue === undefined) {
         aValue = castStringTo(aValue);
     }  else {
-        //console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', objValue)
         aValue = objValue;
     }
 
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : aValue;
-        //: mapCompiled.get(aValue);
 }
 
 module.exports = {

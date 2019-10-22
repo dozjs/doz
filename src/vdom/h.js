@@ -99,7 +99,7 @@ module.exports = function (strings, ...value) {
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
-    console.log(result)
+    //console.log(result)
 
     result = compile(result);
 

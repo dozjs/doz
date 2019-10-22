@@ -10,19 +10,17 @@ function setAttribute($target, name, value, cmp) {
     if (!$target._props) {
         $target._props = {};
     }
-    if (isCustomAttribute(name)) {
+    $target._props[name] = value;
+
+    if (isCustomAttribute(name) || typeof value === 'function') {
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
         try {
-            //$target.setAttribute(name, JSON.stringify(value));
-            $target._props[name] = value;
+            $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {
 
         }
-    } else if (typeof value === 'function'){
-        //console.log($target)
-        $target._props[name] = value;
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
@@ -49,6 +47,7 @@ function updateAttribute($target, name, newVal, oldVal, cmp) {
 function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
+
     Object.keys(props).forEach(name => {
         if(!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);

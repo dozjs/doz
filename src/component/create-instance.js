@@ -86,6 +86,7 @@ function createInstance(cfg = {}) {
                 }
 
                 //console.log('BEFORE SERIALIZE', $child.nodeName)
+                //console.log('GET _PROPS', $child._props)
                 const props = serializeProps($child);
 
                 //console.log('serialized', props)
@@ -148,8 +149,8 @@ function createInstance(cfg = {}) {
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                    console.log('??????????????????????', cmpName);
-                    console.log(newElement.getHTMLElement()._props);
+                    //console.log('??????????????????????', cmpName);
+                    //console.log(newElement.getHTMLElement().outerHTML);
 
                     // Replace first child if defaultSlot exists with a slot comment
                     if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {

@@ -618,11 +618,15 @@ function compile(data, cmp) {
 function serializeProps($node) {
     var props = {};
 
-    if ($node.attributes) {
+    if ($node._props) {
+        var keys = Object.keys($node._props);
+        for (var i = 0; i < keys.length; i++) {
+            propsFixer($node.nodeName, keys[i], $node._props[keys[i]], props, $node);
+        }
+    } else if ($node.attributes) {
         var attributes = Array.from($node.attributes);
         for (var j = attributes.length - 1; j >= 0; --j) {
             var attr = attributes[j];
-            //console.log('=======>', attr.nodeValue)
             propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
         }
     }
@@ -631,9 +635,11 @@ function serializeProps($node) {
 
 function propsFixer(nName, aName, aValue, props, $node) {
 
-    if (REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
+    if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
     var isDirective = REGEX.IS_DIRECTIVE.test(aName);
+
+    //console.log('ANAME', aName, aValue)
 
     var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
 
@@ -648,12 +654,10 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (objValue === undefined) {
         aValue = castStringTo(aValue);
     } else {
-        //console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', objValue)
         aValue = objValue;
     }
 
     props[propsName] = aName === ATTR.FORCE_UPDATE ? true : aValue;
-    //: mapCompiled.get(aValue);
 }
 
 module.exports = {
@@ -1273,6 +1277,7 @@ function createInstance() {
                     }
 
                     //console.log('BEFORE SERIALIZE', $child.nodeName)
+                    //console.log('GET _PROPS', $child._props)
                     var props = serializeProps($child);
 
                     //console.log('serialized', props)
@@ -1344,8 +1349,8 @@ function createInstance() {
                         newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                         newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                        console.log('??????????????????????', cmpName);
-                        console.log(newElement.getHTMLElement()._props);
+                        //console.log('??????????????????????', cmpName);
+                        //console.log(newElement.getHTMLElement().outerHTML);
 
                         // Replace first child if defaultSlot exists with a slot comment
                         if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
@@ -2632,7 +2637,7 @@ module.exports = function (strings) {
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
 
-    console.log(result);
+    //console.log(result)
 
     result = compile(result);
 
@@ -4221,16 +4226,14 @@ function setAttribute($target, name, value, cmp) {
     if (!$target._props) {
         $target._props = {};
     }
-    if (isCustomAttribute(name)) {} else if (typeof value === 'boolean') {
+    $target._props[name] = value;
+
+    if (isCustomAttribute(name) || typeof value === 'function') {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
-            //$target.setAttribute(name, JSON.stringify(value));
-            $target._props[name] = value;
+            $target.setAttribute(name, JSON.stringify(value));
         } catch (e) {}
-    } else if (typeof value === 'function') {
-        //console.log($target)
-        $target._props[name] = value;
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
