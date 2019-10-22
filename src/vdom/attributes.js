@@ -17,7 +17,7 @@ function setAttribute($target, name, value, cmp) {
         setBooleanAttribute($target, name, value);
     } else if (typeof value === 'object') {
         try {
-            $target.setAttribute(name, JSON.stringify(value));
+            //$target.setAttribute(name, JSON.stringify(value));
         } catch (e) {
 
         }

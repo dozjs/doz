@@ -738,7 +738,7 @@ module.exports = {
     get: function get(id) {
         if (!this.isValidId(id)) return;
         var res = this.data[id];
-        //delete this.data[id];
+        delete this.data[id];
         return res;
     },
     isValidId: function isValidId(id) {
@@ -4232,7 +4232,7 @@ function setAttribute($target, name, value, cmp) {
         setBooleanAttribute($target, name, value);
     } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
         try {
-            $target.setAttribute(name, JSON.stringify(value));
+            //$target.setAttribute(name, JSON.stringify(value));
         } catch (e) {}
     } else {
         if (value === undefined) value = '';

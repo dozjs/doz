@@ -11,7 +11,7 @@ module.exports = {
     get(id) {
         if (!this.isValidId(id)) return;
         let res = this.data[id];
-        //delete this.data[id];
+        delete this.data[id];
         return res;
     },
     isValidId(id) {
