@@ -53,11 +53,8 @@ module.exports = function (strings, ...value) {
 
         // if this function is bound to Doz component
         if (this._components) {
-            //console.log(value[i].__proto__.name === 'Component', value[i].__proto__ === Component)
-            //console.log('->',   value[i].__proto__ ===  this.constructor, value[i].__proto__.name === 'Component', value[i].__proto__.name, this.constructor.name)
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
-                //console.log('---------------')
                 let cmp = value[i];
                 let tagCmp = camelToDash(cmp.name);
 
@@ -75,18 +72,23 @@ module.exports = function (strings, ...value) {
                 }
                 value[i] = tagCmp;
             }
+        }
 
-            if (value[i] !== null && (typeof value[i] === 'object' || typeof value[i] === 'function')) {
-
-                let property = strings[i];
-                if (!/</.test(property)) {
-                    property = property.replace(/["'\s]+/g, '');
-                    // Check if is an attribute
-                    if (/^[\w-:]+=/.test(property)) {
-                        value[i] = mapCompiled.set(value[i]);
-                    }
-                }
-            }
+        //if (value[i] !== null && (typeof value[i] === 'object' || typeof value[i] === 'function')) {
+            let property = strings[i];
+        //console.log('--------', property, value[i] )
+        let checkPoint = strings[i].trim();
+        //console.log(checkPoint[checkPoint.length - 2])
+        if (checkPoint.length > 2 && checkPoint[checkPoint.length - 2] === '=') {
+            //if (!/<\/?/.test(property)) {
+            //console.log(value[i])
+            property = property.replace(/["'\s]+/g, '');
+            // Check if is an attribute
+            //if (/^[\w-:]+=/.test(property)) {
+                value[i] = mapCompiled.set(value[i]);
+            //}
+            //}
+            //}
         }
 
         if(allowTag)
@@ -102,6 +104,6 @@ module.exports = function (strings, ...value) {
     //console.log(result)
 
     result = compile(result);
-
+    //console.log(result)
     return result;
 };

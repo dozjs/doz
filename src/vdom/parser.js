@@ -192,7 +192,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     }
 
     let objValue = mapCompiled.get(aValue);
-
+    //console.log(objValue, aValue)
     if (objValue === undefined) {
         aValue = castStringTo(aValue);
     }  else {

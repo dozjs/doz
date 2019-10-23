@@ -1,3 +1,4 @@
+const {h} = require('../index');
 const {compile} = require('../src/vdom/parser');
 const assert = require('assert');
 
@@ -8,13 +9,13 @@ function printObj(obj) {
 describe('parser2', function () {
     it('should ok', function () {
 
-        const root = compile(`
+        const root = h`
             <main id="hola" d:store="mystore">
-                <ul id="list" data-any="2">
+                <ul id="list" data-any="${2}">
                     <li onclick="console.log('hello')" data-o="cia">Hello World</li>
                 </ul>
             </main>
-        `);
+        `;
 
         //printObj(root);
         assert.strictEqual(root.type, 'main');

@@ -650,7 +650,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     }
 
     var objValue = mapCompiled.get(aValue);
-
+    //console.log(objValue, aValue)
     if (objValue === undefined) {
         aValue = castStringTo(aValue);
     } else {
@@ -2564,7 +2564,6 @@ module.exports = function (strings) {
     }
 
     for (var i = 0; i < value.length; ++i) {
-        var dFunctionPlaceholder = '';
         if (Array.isArray(value[i])) {
             var newValueString = '';
             for (var j = 0; j < value[i].length; j++) {
@@ -2597,11 +2596,8 @@ module.exports = function (strings) {
 
         // if this function is bound to Doz component
         if (this._components) {
-            //console.log(value[i].__proto__.name === 'Component', value[i].__proto__ === Component)
-            //console.log('->',   value[i].__proto__ ===  this.constructor, value[i].__proto__.name === 'Component', value[i].__proto__.name, this.constructor.name)
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
-                //console.log('---------------')
                 var cmp = value[i];
                 var tagCmp = camelToDash(cmp.name);
 
@@ -2619,21 +2615,26 @@ module.exports = function (strings) {
                 }
                 value[i] = tagCmp;
             }
-
-            if (value[i] !== null && (_typeof(value[i]) === 'object' || typeof value[i] === 'function')) {
-
-                var property = strings[i];
-                if (!/</.test(property)) {
-                    property = property.replace(/["'\s]+/g, '');
-                    // Check if is an attribute
-                    if (/^[\w-:]+=/.test(property)) {
-                        value[i] = mapCompiled.set(value[i]);
-                    }
-                }
-            }
         }
 
-        if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + dFunctionPlaceholder + strings[i + 1];else result += '' + value[i] + dFunctionPlaceholder + strings[i + 1];
+        //if (value[i] !== null && (typeof value[i] === 'object' || typeof value[i] === 'function')) {
+        var property = strings[i];
+        //console.log('--------', property, value[i] )
+        var checkPoint = strings[i].trim();
+        //console.log(checkPoint[checkPoint.length - 2])
+        if (checkPoint.length > 2 && checkPoint[checkPoint.length - 2] === '=') {
+            //if (!/<\/?/.test(property)) {
+            //console.log(value[i])
+            property = property.replace(/["'\s]+/g, '');
+            // Check if is an attribute
+            //if (/^[\w-:]+=/.test(property)) {
+            value[i] = mapCompiled.set(value[i]);
+            //}
+            //}
+            //}
+        }
+
+        if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
@@ -2641,7 +2642,7 @@ module.exports = function (strings) {
     //console.log(result)
 
     result = compile(result);
-
+    //console.log(result)
     return result;
 };
 
