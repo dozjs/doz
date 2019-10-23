@@ -24,7 +24,6 @@ module.exports = function (strings, ...value) {
     let allowTag = false;
 
     for (let i = 0; i < value.length; ++i) {
-        let dFunctionPlaceholder = '';
         if (Array.isArray(value[i])) {
             let newValueString = '';
             for (let j = 0; j < value[i].length; j++) {
@@ -91,9 +90,9 @@ module.exports = function (strings, ...value) {
         }
 
         if(allowTag)
-            result += `<${tagText}>${value[i]}</${tagText}>${dFunctionPlaceholder}${strings[i + 1]}`;
+            result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else
-            result += `${value[i]}${dFunctionPlaceholder}${strings[i + 1]}`;
+            result += `${value[i]}${strings[i + 1]}`;
     }
 
     result = result
