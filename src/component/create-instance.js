@@ -86,6 +86,8 @@ function createInstance(cfg = {}) {
                 }
 
                 //console.log('BEFORE SERIALIZE', $child.nodeName)
+                //console.log('BEFORE SERIALIZE PROPS', $child.nodeName, $child.__dozProps)
+                //console.log('BEFORE SERIALIZE ATTRIBUTES', $child.nodeName, Array.from($child.attributes).map(i => i.value))
                 //console.log('GET _PROPS', $child._props)
                 const props = serializeProps($child);
 

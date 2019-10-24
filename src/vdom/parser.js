@@ -157,6 +157,9 @@ function compile(data, cmp) {
 function serializeProps($node) {
     const props = {};
 
+    //console.log('serializeProps of', $node, $node[PROPS_ATTRIBUTES]);
+    //console.log('attribute of', $node, Array.from($node.attributes).toString());
+
     if ($node[PROPS_ATTRIBUTES]) {
         let keys = Object.keys($node[PROPS_ATTRIBUTES]);
         for (let i = 0; i < keys.length; i++) {
@@ -194,7 +197,8 @@ function propsFixer(nName, aName, aValue, props, $node) {
     let objValue = mapCompiled.get(aValue);
     //console.log(objValue, aValue)
     if (objValue === undefined) {
-        aValue = castStringTo(aValue);
+        //console.log('aValue', aValue)
+        //aValue = castStringTo(aValue);
     }  else {
         aValue = objValue;
     }

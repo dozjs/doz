@@ -7,6 +7,7 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
+    //console.log('setAttribute', $target, name, value)
     if (!$target[PROPS_ATTRIBUTES]) {
         $target[PROPS_ATTRIBUTES] = {};
     }

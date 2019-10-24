@@ -90,7 +90,7 @@ module.exports = function (strings, ...value) {
             //}
             //}
         }
-
+        //console.log('-------->', property, value[i] )
         if(allowTag)
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else

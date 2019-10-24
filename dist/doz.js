@@ -618,6 +618,9 @@ function compile(data, cmp) {
 function serializeProps($node) {
     var props = {};
 
+    //console.log('serializeProps of', $node, $node[PROPS_ATTRIBUTES]);
+    //console.log('attribute of', $node, Array.from($node.attributes).toString());
+
     if ($node[PROPS_ATTRIBUTES]) {
         var keys = Object.keys($node[PROPS_ATTRIBUTES]);
         for (var i = 0; i < keys.length; i++) {
@@ -652,7 +655,8 @@ function propsFixer(nName, aName, aValue, props, $node) {
     var objValue = mapCompiled.get(aValue);
     //console.log(objValue, aValue)
     if (objValue === undefined) {
-        aValue = castStringTo(aValue);
+        //console.log('aValue', aValue)
+        //aValue = castStringTo(aValue);
     } else {
         aValue = objValue;
     }
@@ -1153,7 +1157,7 @@ module.exports = {
     get: function get(id) {
         if (!this.isValidId(id)) return;
         var res = this.data[id];
-        delete this.data[id];
+        //delete this.data[id];
         return res;
     },
     isValidId: function isValidId(id) {
@@ -1276,6 +1280,8 @@ function createInstance() {
                     }
 
                     //console.log('BEFORE SERIALIZE', $child.nodeName)
+                    //console.log('BEFORE SERIALIZE PROPS', $child.nodeName, $child.__dozProps)
+                    //console.log('BEFORE SERIALIZE ATTRIBUTES', $child.nodeName, Array.from($child.attributes).map(i => i.value))
                     //console.log('GET _PROPS', $child._props)
                     var props = serializeProps($child);
 
@@ -2633,7 +2639,7 @@ module.exports = function (strings) {
             //}
             //}
         }
-
+        //console.log('-------->', property, value[i] )
         if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
@@ -4231,6 +4237,7 @@ function isEventAttribute(name) {
 }
 
 function setAttribute($target, name, value, cmp) {
+    //console.log('setAttribute', $target, name, value)
     if (!$target[PROPS_ATTRIBUTES]) {
         $target[PROPS_ATTRIBUTES] = {};
     }
@@ -4458,7 +4465,8 @@ module.exports.getLast = getLast;
 
 
 var _require = __webpack_require__(1),
-    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE;
+    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
 
 var directive = __webpack_require__(0);
 
@@ -4470,6 +4478,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
+        //console.log('create dynamic')
         var dynamicInstance = __webpack_require__(10)({
             root: root,
             template: item.node.outerHTML,
@@ -4481,6 +4490,11 @@ function drawDynamic(instance) {
 
             // Replace with dynamic instance original node
             //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
+            // Assign props attributes to new child
+            //console.log('Assign props attributes to new child')
+            if (item.node[PROPS_ATTRIBUTES]) {
+                dynamicInstance._rootElement.parentNode[PROPS_ATTRIBUTES] = item.node[PROPS_ATTRIBUTES];
+            }
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
             // if original node has children

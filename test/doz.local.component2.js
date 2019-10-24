@@ -72,6 +72,8 @@ describe('Doz.local.component2', function () {
                 <div id="app"></div>
             `;
 
+            const globalObj = {foo: 'bar'};
+
             const GridComponent = class extends Doz.Component {
                 constructor(o) {
                     super(o);
@@ -80,18 +82,24 @@ describe('Doz.local.component2', function () {
                     };
                 }
                 template(h) {
-                    return h`
+                    let res = h`
                         <div>
                             ${this.each(this.props.data, item => h`
-                                <${RowComponent} name="${item.name}"/>
+                                <${RowComponent} name="${item.name}" theobj="${globalObj}"/>
                             `)}
                         </div>
-                    `
+                    `;
+                    //console.log(JSON.stringify(res, null, 4))
+                    console.log(res.children[0].props.theobj === globalObj)
+                    return res;
                 }
             };
 
             const RowComponent = class extends Doz.Component {
                 template(h) {
+                    console.log('SAME OBJECT?', this.props.theobj === globalObj, this.props.theobj)
+                    if (this.props.theobj !== globalObj)
+                        throw new Error('theobj doesn\'t match with globalObj');
                     return h`
                         <div>my name is ${this.props.name}</div>
                     `
