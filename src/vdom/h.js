@@ -53,14 +53,30 @@ module.exports = function (strings, ...value) {
 
         // if this function is bound to Doz component
         if (this._components) {
+            if (this._localComponentLastId === undefined) {
+                this._localComponentLastId = 0;
+            }
+
+            if (this._componentsMap === undefined) {
+                this._componentsMap = new Map();
+            }
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 let cmp = value[i];
                 let tagCmp = camelToDash(cmp.name);
-
+                // Sanitize tag name
+                tagCmp = tagCmp.replace(/_+/, '');
                 // if is a single word, rename with double word
                 if (tagCmp.indexOf('-') === -1) {
                     tagCmp = `${tagCmp}-${tagCmp}`;
+                }
+
+                tagCmp += (this._localComponentLastId++);
+
+                if (this._componentsMap.has(value[i])) {
+                    tagCmp = this._componentsMap.get(value[i]);
+                } else {
+                    this._componentsMap.set(value[i], tagCmp);
                 }
 
                 // add to local components
