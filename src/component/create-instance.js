@@ -33,7 +33,10 @@ function createInstance(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
             //console.log('-------------------');
-            //console.log($child.nodeName);
+            if ($child.nodeName === 'DOZ-TODO-ITEM') {
+                console.log($child.nodeName);
+                console.log($child.__dozProps);
+            }
             //console.log($child.outerHTML);
             //console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);
@@ -88,7 +91,7 @@ function createInstance(cfg = {}) {
                 //console.log('BEFORE SERIALIZE', $child.nodeName)
                 //console.log('BEFORE SERIALIZE PROPS', $child.nodeName, $child.__dozProps)
                 //console.log('BEFORE SERIALIZE ATTRIBUTES', $child.nodeName, Array.from($child.attributes).map(i => i.value))
-                //console.log('GET _PROPS', $child._props)
+                //console.log('GET _PROPS', $child.__dozProps);
                 const props = serializeProps($child);
 
                 //console.log('serialized', props)

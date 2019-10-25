@@ -9,7 +9,7 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        //console.log('create dynamic')
+        console.log('create dynamic', item.node.outerHTML, item.node.__dozProps)
         const dynamicInstance = require('../create-instance')({
             root,
             template: item.node.outerHTML,
@@ -21,11 +21,11 @@ function drawDynamic(instance) {
 
             // Replace with dynamic instance original node
             //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-            // Assign props attributes to new child
+            /*// Assign props attributes to new child
             //console.log('Assign props attributes to new child')
             if(item.node[PROPS_ATTRIBUTES]) {
                 dynamicInstance._rootElement.parentNode[PROPS_ATTRIBUTES] = item.node[PROPS_ATTRIBUTES];
-            }
+            }*/
             root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
             // if original node has children

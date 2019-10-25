@@ -5,7 +5,7 @@ const toNumber = require('./to-number');
 const typesMap = require('./types-map');
 
 function castStringTo(obj) {
-
+//return obj;
     if (typeof obj !== 'string') {
         return obj;
     }
