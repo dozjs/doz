@@ -2380,7 +2380,7 @@ function update($parent, newNode, oldNode) {
 
         // Slot logic
 
-        var propsSlot = newNode.props ? newNode.props.slot : false;
+        var propsSlot = newNode && newNode.props ? newNode.props.slot : false;
 
         if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
             propsSlot = DEFAULT_SLOT_KEY;

@@ -78,7 +78,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         // Slot logic
 
-        let propsSlot = newNode.props ? newNode.props.slot : false;
+        let propsSlot = newNode && newNode.props ? newNode.props.slot : false;
 
         if ($parent[COMPONENT_INSTANCE]._defaultSlot && !propsSlot) {
             propsSlot = DEFAULT_SLOT_KEY;
