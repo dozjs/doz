@@ -9,7 +9,7 @@ function drawDynamic(instance) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
 
-        console.log('create dynamic', item.node, item.node.__dozProps)
+        //console.log('create dynamic', item.node, item.node.__dozProps)
         const dynamicInstance = require('../create-instance')({
             root,
             template: item.node,

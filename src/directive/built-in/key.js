@@ -1,6 +1,7 @@
 const {directive} = require('../index');
 const {COMPONENT_DYNAMIC_INSTANCE} = require('../../constants');
-const ATTR_KEY = 'data-key';
+const ATTR_DATA_KEY = 'data-key';
+const ATTR_D_KEY = 'd-key';
 
 directive('key', {
 
@@ -18,8 +19,7 @@ directive('key', {
     },
 
     onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
-        console.log('onAppComponentPropsAssignName', propName, propValue)
-        if (propName === ATTR_KEY) {
+        if (propName === ATTR_D_KEY || propName === ATTR_DATA_KEY) {
             props.key = propValue;
         }
     },

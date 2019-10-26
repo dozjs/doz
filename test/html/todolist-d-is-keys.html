@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../../dist/doz.js?5896254d445088o07695l580r5775e26555184oi092158"></script>
+    <script src="../../dist/doz.js?5896254d445088o07695l580r5775e265554184oi092158"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -81,8 +81,8 @@
         done(key) {
             const store = this.getStore('todo');
             const index = store.record.findIndex(item => item.key === key);
-            console.log('key', key)
-            console.log('index', index)
+            //console.log('key', key)
+            //console.log('index', index)
             store.record[index].done = !store.record[index].done;
         },
 
@@ -169,7 +169,7 @@
                     <button onclick="this.action.remove(${this.props.key})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.key})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                        <strong>${this.props.key} ${this.props.done} ${this.props.title}</strong>
+                        <strong>${this.props.key} - ${this.props.title}</strong>
                         <input
                             onblur="this.action.hideInput(${this.props.key})"
                             onkeypress="this.action.inputEnterPress(${this.props.key})"

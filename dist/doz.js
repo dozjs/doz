@@ -4481,7 +4481,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        console.log('create dynamic', item.node, item.node.__dozProps);
+        //console.log('create dynamic', item.node, item.node.__dozProps)
         var dynamicInstance = __webpack_require__(10)({
             root: root,
             template: item.node,
@@ -5780,7 +5780,8 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE;
 
-var ATTR_KEY = 'data-key';
+var ATTR_DATA_KEY = 'data-key';
+var ATTR_D_KEY = 'd-key';
 
 directive('key', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -5796,8 +5797,7 @@ directive('key', {
         });
     },
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
-        console.log('onAppComponentPropsAssignName', propName, propValue);
-        if (propName === ATTR_KEY) {
+        if (propName === ATTR_D_KEY || propName === ATTR_DATA_KEY) {
             props.key = propValue;
         }
     },
