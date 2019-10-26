@@ -18,6 +18,7 @@ directive('key', {
     },
 
     onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        console.log('onAppComponentPropsAssignName', propName, propValue)
         if (propName === ATTR_KEY) {
             props.key = propValue;
         }

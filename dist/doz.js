@@ -2648,7 +2648,7 @@ module.exports = function (strings) {
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
 
-    console.log(result);
+    //console.log(result)
 
     result = compile(result);
     //console.log(result)
@@ -4481,7 +4481,7 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        // console.log('create dynamic', item.node.outerHTML, item.node.__dozProps)
+        console.log('create dynamic', item.node, item.node.__dozProps);
         var dynamicInstance = __webpack_require__(10)({
             root: root,
             template: item.node,
@@ -5796,6 +5796,7 @@ directive('key', {
         });
     },
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        console.log('onAppComponentPropsAssignName', propName, propValue);
         if (propName === ATTR_KEY) {
             props.key = propValue;
         }
