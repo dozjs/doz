@@ -7,5 +7,5 @@ require('./hooks');
 require('./ref');
 require('./is');
 require('./bind');
-require('./key');
+//require('./key');
 require('./show');

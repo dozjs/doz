@@ -47,6 +47,8 @@ class Element {
         this.props = props;//Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        if (props.key !== undefined)
+            this.key = props.key;
     }
 
     appendChild(node) {
@@ -118,7 +120,6 @@ function compile(data, cmp) {
             }
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
-
             stack.push(currentParent);
         }
 

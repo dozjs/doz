@@ -8,6 +8,11 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
+
+    if (name === 'key' && $target.__dozKey === undefined) {
+        $target.__dozKey = value;
+    }
+
     if (!$target[PROPS_ATTRIBUTES]) {
         $target[PROPS_ATTRIBUTES] = {};
     }

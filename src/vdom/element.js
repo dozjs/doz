@@ -68,6 +68,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     if (!$parent) return;
 
+    if (newNode.key) {
+        //console.log('new node key', newNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
+    }
+
+    if (oldNode && oldNode.key) {
+        //console.log('old node key', oldNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
+    }
+
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
 
         let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
@@ -132,8 +140,20 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
         }
         $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
-        $parent.appendChild($newElement);
+
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
+
+        if ($newElement.__dozKey !== undefined) {
+            if ($parent.__dozKeyList === undefined) {
+                $parent.__dozKeyList = new Map();
+            }
+            if (!$parent.__dozKeyList.has($newElement.__dozKey)) {
+                $parent.__dozKeyList.set($newElement.__dozKey, $newElement);
+                console.log('new keyed node', $newElement, 'at index', index)
+            }
+        }
+
+        $parent.appendChild($newElement);
         return $newElement;
 
     } else if (!newNode) {
@@ -196,6 +216,18 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
+        let newNodeKeyList = [];
+        let oldNodeKeyList = [];
+        //console.log(newNode.children)
+        //console.log(oldNode.children)
+
+        if ((newNode.children[0] && newNode.children[0].key !== undefined) || (oldNode.children[0] && oldNode.children[0].key !== undefined)) {
+            console.log(newNode.type, $parent.childNodes[index]);
+            newNodeKeyList = newNode.children.map(i => i.key);
+            oldNodeKeyList = oldNode.children.map(i => i.key);
+            console.log(newNodeKeyList);
+            console.log(oldNodeKeyList);
+        }
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
             update(

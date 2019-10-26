@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../../dist/doz.js?5896775e265554184oi092158"></script>
+    <script src="../../dist/doz.js?5896775e26555564184oi092158"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -264,7 +264,7 @@
                     </div>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        h`<li d-is="doz-todo-item" d-key="${item.key}" title="${item.title}" done="${item.done}"></li>`
+                        h`<li d-is="doz-todo-item" key="${item.key}" title="${item.title}" done="${item.done}"></li>`
                     )}
                     </ul>
                     <div class="todo-info">

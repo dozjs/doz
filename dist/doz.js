@@ -512,6 +512,7 @@ var Element = function () {
         this.props = props; //Object.assign({}, props);
         this.children = [];
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        if (props.key !== undefined) this.key = props.key;
     }
 
     _createClass(Element, [{
@@ -580,7 +581,6 @@ function compile(data, cmp) {
             }
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
-
             stack.push(currentParent);
         }
 
@@ -848,7 +848,7 @@ var Component = function (_DOMManipulation) {
                 var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
                 //Remove attributes from component tag
-                removeAllAttributes(this._cfgRoot, ['style', 'class']);
+                removeAllAttributes(this._cfgRoot, ['style', 'class' /*, 'key'*/]);
 
                 if (!this._rootElement && rootElement) {
                     this._rootElement = rootElement;
@@ -2359,6 +2359,14 @@ function update($parent, newNode, oldNode) {
 
     if (!$parent) return;
 
+    if (newNode.key) {
+        //console.log('new node key', newNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
+    }
+
+    if (oldNode && oldNode.key) {
+        //console.log('old node key', oldNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
+    }
+
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
 
         var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
@@ -2422,8 +2430,20 @@ function update($parent, newNode, oldNode) {
             }
         }
         $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
-        $parent.appendChild($newElement);
+
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
+
+        if ($newElement.__dozKey !== undefined) {
+            if ($parent.__dozKeyList === undefined) {
+                $parent.__dozKeyList = new Map();
+            }
+            if (!$parent.__dozKeyList.has($newElement.__dozKey)) {
+                $parent.__dozKeyList.set($newElement.__dozKey, $newElement);
+                console.log('new keyed node', $newElement, 'at index', index);
+            }
+        }
+
+        $parent.appendChild($newElement);
         return $newElement;
     } else if (!newNode) {
         //console.log('remove node', $parent);
@@ -2472,6 +2492,38 @@ function update($parent, newNode, oldNode) {
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
+        var newNodeKeyList = [];
+        var oldNodeKeyList = [];
+        //console.log(newNode.children)
+        //console.log(oldNode.children)
+
+        if (newNode.children[0] && newNode.children[0].key !== undefined || oldNode.children[0] && oldNode.children[0].key !== undefined) {
+            console.log(newNode.type, $parent.childNodes[index]);
+            var _defined6 = newNode.children;
+            newNodeKeyList = new Array(_defined6.length);
+
+            var _defined7 = function _defined7(i) {
+                return i.key;
+            };
+
+            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+                newNodeKeyList[_i8] = _defined7(_defined6[_i8], _i8, _defined6);
+            }
+
+            var _defined8 = oldNode.children;
+            oldNodeKeyList = new Array(_defined8.length);
+
+            var _defined9 = function _defined9(i) {
+                return i.key;
+            };
+
+            for (var _i10 = 0; _i10 <= _defined8.length - 1; _i10++) {
+                oldNodeKeyList[_i10] = _defined9(_defined8[_i10], _i10, _defined8);
+            }
+
+            console.log(newNodeKeyList);
+            console.log(oldNodeKeyList);
+        }
 
         for (var i = 0; i < newLength || i < oldLength; i++) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
@@ -4241,6 +4293,11 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
+
+    if (name === 'key' && $target.__dozKey === undefined) {
+        $target.__dozKey = value;
+    }
+
     if (!$target[PROPS_ATTRIBUTES]) {
         $target[PROPS_ATTRIBUTES] = {};
     }
@@ -5163,7 +5220,7 @@ __webpack_require__(67);
 __webpack_require__(68);
 __webpack_require__(69);
 __webpack_require__(70);
-__webpack_require__(71);
+//require('./key');
 __webpack_require__(72);
 
 /***/ }),
@@ -5766,166 +5823,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _require = __webpack_require__(0),
-    directive = _require.directive;
-
-var _require2 = __webpack_require__(1),
-    COMPONENT_DYNAMIC_INSTANCE = _require2.COMPONENT_DYNAMIC_INSTANCE;
-
-var ATTR_DATA_KEY = 'data-key';
-var ATTR_D_KEY = 'd-key';
-
-directive('key', {
-    onAppComponentCreate: function onAppComponentCreate(instance) {
-        Object.defineProperties(instance, {
-            _dynamicNodes: {
-                value: {},
-                writable: true
-            },
-            _keyedNodes: {
-                value: {},
-                writable: true
-            }
-        });
-    },
-    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
-        //console.log('---<',$target)
-        if (propName === ATTR_D_KEY || propName === ATTR_DATA_KEY) {
-            props.key = propValue;
-        }
-    },
-    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        $target.dataset.key = directiveValue;
-        instance._keyedNodes[directiveValue] = $target;
-    },
-    onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        //$target.dataset.key = directiveValue;
-        //instance._keyedNodes[directiveValue] = $target;
-        //console.log('update', directiveValue)
-        //instance.props.key = directiveValue;
-
-        /*if(instance._keyedNodes[directiveValue].__dozComponentInstance) {
-            console.log(instance._keyedNodes[directiveValue].__dozComponentInstance)
-        }*/
-    },
-    onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
-        if (item.node.dataset.key) {
-            instance._dynamicNodes[item.node.dataset.key] = dynamicInstance._rootElement.parentNode;
-        }
-    },
-    onAppComponentRenderOverwrite: function onAppComponentRenderOverwrite(instance, changes, next, prev) {
-        var candidateKeyToRemove = void 0;
-        var thereIsDelete = false;
-        var noCmpKeyRemoved = false;
-        //console.log(changes);
-        //return true
-
-        var mustBeReturn = void 0;
-
-        var _defined
-        /*let oK = Object.keys(change.newValue);
-        if (oK.includes('key')) {
-            console.log(change.newValue)
-        }*/
-
-
-        /*if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
-            if (change.target && typeof change.target === 'object') {
-                let oK = Object.keys(change.target);
-                if (oK.length && Array.isArray(change.target[oK])) {
-                    if (change.target[oK].length
-                        && change.target[oK][0]
-                        && typeof change.target[oK][0] === 'object'
-                        && change.target[oK][0].key !== undefined) {
-                          // Just if deleted keys
-                        if (change.previousValue.length > change.newValue.length) {
-                            //console.log('ci sono key, posso fare qualcosa', typeof change.previousValue);
-                            let prevKeys = change.previousValue.map(item => item.key);
-                            let newKeys = change.newValue.map(item => item.key);
-                              let doRemoveKeys = prevKeys.filter(function(n) {
-                                return newKeys.indexOf(n) === -1;
-                            });
-                              noCmpKeyRemoved = !!doRemoveKeys.length;
-                              doRemoveKeys.forEach(item => {
-                                if(instance._keyedNodes[item])
-                                    instance._keyedNodes[item].parentNode.removeChild(instance._keyedNodes[item])
-                            });
-                        }
-                    }
-                }
-            }
-        }
-          // Trova la presunta chiave da eliminare
-        if (Array.isArray(change.target)) {
-            if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
-                  if (change.previousValue && typeof change.previousValue === 'object' && change.previousValue.key !== undefined) {
-                    candidateKeyToRemove = change.previousValue.key;
-                }
-            }
-            if (change.type === 'delete')
-                thereIsDelete = true;
-        }
-          // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
-        if (candidateKeyToRemove === undefined && (Array.isArray(change.previousValue) && !Array.isArray(change.newValue))
-            || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
-        ) {
-            change.previousValue.forEach(item => {
-                if (item && typeof item === 'object' && item.key !== undefined && instance._dynamicNodes[item.key] !== undefined) {
-                    if (instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
-                        instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                    } else {
-                        instance._dynamicNodes[item.key].parentNode.removeChild(instance._dynamicNodes[item.key]);
-                    }
-                }
-            });
-        }*/
-        = function _defined(change) {
-
-            if (change.previousValue && _typeof(change.previousValue) === 'object' && Object.keys(change.previousValue).length && change.target && _typeof(change.target) === 'object') {
-                console.log(change);
-                mustBeReturn = true;
-            }
-        };
-
-        for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-            _defined(changes[_i2], _i2, changes);
-        }
-
-        if (mustBeReturn) return true;
-
-        /*
-        if (noCmpKeyRemoved)
-            return true;
-          //console.log(thereIsDelete, candidateKeyToRemove)
-        //console.log(instance._keyedNodes, candidateKeyToRemove)
-        if (!thereIsDelete)
-            candidateKeyToRemove = undefined;
-          if (candidateKeyToRemove !== undefined) {
-            if (instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
-                if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
-                    instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                } else {
-                    //console.log(instance._dynamicNodes[candidateKeyToRemove]);
-                    instance._dynamicNodes[candidateKeyToRemove].parentNode.removeChild(instance._dynamicNodes[candidateKeyToRemove]);
-                }
-                return true;
-            } else if (instance._keyedNodes[candidateKeyToRemove] !== undefined) {
-                instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
-                return true;
-            }
-        }*/
-    }
-});
-
-/***/ }),
+/* 71 */,
 /* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 

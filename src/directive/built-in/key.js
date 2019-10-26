@@ -58,8 +58,11 @@ directive('key', {
 
         changes.forEach((change) => {
 
-            if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length && change.target && typeof change.target === 'object') {
-                console.log(change)
+
+            //if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length && change.target && typeof change.target === 'object') {
+            if (change.currentPath === 'record') {
+                console.log('in record')
+                console.log(change);
                 mustBeReturn = true;
                 /*let oK = Object.keys(change.newValue);
                 if (oK.includes('key')) {
