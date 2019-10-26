@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const transformChildStyle = require('./helpers/transform-child-style');
-const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX} = require('../constants');
+const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -34,19 +34,15 @@ function createInstance(cfg = {}) {
 
     function walk($child, parent = {}) {
         while ($child) {
-            //console.log('-------------------', $child.nodeName);
-            if (!$child.__dozWalked) {
-                $child.__dozWalked = true;
+
+            // Non bella ma funziona
+            if (!$child[ALREADY_WALKED]) {
+                $child[ALREADY_WALKED] = true;
             } else {
                 $child = $child.nextSibling;
                 continue;
             }
-            /*if ($child.nodeName === 'DOZ-TODO-ITEM') {
-                console.log($child.nodeName);
-                console.log($child.__dozProps);
-            }*/
-            //console.log($child.outerHTML);
-            //console.log('-------------------');
+
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -96,10 +92,6 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
-                //console.log('BEFORE SERIALIZE', $child.nodeName)
-                //console.log('BEFORE SERIALIZE PROPS', $child.nodeName, $child.__dozProps)
-                //console.log('BEFORE SERIALIZE ATTRIBUTES', $child.nodeName, Array.from($child.attributes).map(i => i.value))
-                //console.log('GET _PROPS', $child.__dozProps);
                 const props = serializeProps($child);
 
                 //console.log('serialized', props)
@@ -161,9 +153,6 @@ function createInstance(cfg = {}) {
 
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
-
-                    //console.log('??????????????????????', cmpName);
-                    //console.log(newElement.getHTMLElement().outerHTML);
 
                     // Replace first child if defaultSlot exists with a slot comment
                     if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {

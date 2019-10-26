@@ -34,19 +34,21 @@ describe('Doz.props-type', function () {
             });
             new Doz({
                 root: '#app',
-                template: `
-                    <my-cmp
-                        mnumber="5"
-                        mfloat="5.3"
-                        mzero="0"
-                        mzeromore="00"
-                        mstring="Doz"
-                        marray="[1, 2, 3]"
-                        mobject='{"a": 1, "b": 2, "c": 3, "d": [9,10]}'
-                        mbooleantrue="true"
-                        mbooleanfalse="false"
-                    />
-                `
+                template(h) {
+                    return h`
+                        <my-cmp
+                            mnumber="${5}"
+                            mfloat="${5.3}"
+                            mzero="${0}"
+                            mzeromore="00"
+                            mstring="Doz"
+                            marray="${[1, 2, 3]}"
+                            mobject='${{"a": 1, "b": 2, "c": 3, "d": [9,10]}}'
+                            mbooleantrue="${true}"
+                            mbooleanfalse="${false}"
+                        />
+                    `
+                }
             });
         });
 

@@ -53,13 +53,7 @@ module.exports = function (strings, ...value) {
 
         // if this function is bound to Doz component
         if (this._components) {
-            if (this._localComponentLastId === undefined) {
-                this._localComponentLastId = 0;
-            }
 
-            if (this._componentsMap === undefined) {
-                this._componentsMap = new Map();
-            }
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 let cmp = value[i];
@@ -90,23 +84,15 @@ module.exports = function (strings, ...value) {
             }
         }
 
-        //if (value[i] !== null && (typeof value[i] === 'object' || typeof value[i] === 'function')) {
-            let property = strings[i];
-        //console.log('--------', property, value[i] )
+        let property = strings[i];
         let checkPoint = strings[i].trim();
-        //console.log(checkPoint[checkPoint.length - 2])
         if (checkPoint.length > 2 && checkPoint[checkPoint.length - 2] === '=') {
             //if (!/<\/?/.test(property)) {
-            //console.log(value[i])
             property = property.replace(/["'\s]+/g, '');
             // Check if is an attribute
             //if (/^[\w-:]+=/.test(property)) {
-                value[i] = mapCompiled.set(value[i]);
-            //}
-            //}
-            //}
+            value[i] = mapCompiled.set(value[i]);
         }
-        //console.log('-------->', property, value[i] )
         if(allowTag)
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else

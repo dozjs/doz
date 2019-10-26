@@ -86,6 +86,13 @@ class Base {
                 value: null,
                 writable: true
             },
+            _localComponentLastId: {
+                value: 0,
+                writable: true
+            },
+            _componentsMap: {
+                value: new Map()
+            },
 
             //Public
             tag: {

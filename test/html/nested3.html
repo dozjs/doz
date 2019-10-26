@@ -103,12 +103,12 @@
         onDrawByParent(newNode, oldNode) {
             console.log(newNode)
             return  {
-                newNode: Doz.compile(Doz.h`
+                newNode: Doz.h`
                     <div>
                         <h1 class="title">${newNode}</h1>
                         <button onclick="scope.showAlert('${newNode}')">Click scope</button>
                     </div>
-                `)
+                `
             }
         }
     });

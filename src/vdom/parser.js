@@ -182,8 +182,6 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     let isDirective = REGEX.IS_DIRECTIVE.test(aName);
 
-    //console.log('ANAME', aName, aValue)
-
     let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
         ? dashToCamel(aName)
         : aName;

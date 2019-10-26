@@ -106,6 +106,7 @@ module.exports = {
     COMPONENT_INSTANCE: '__dozComponentInstance',
     COMPONENT_ROOT_INSTANCE: '__dozComponentRootInstance',
     PROPS_ATTRIBUTES: '__dozProps',
+    ALREADY_WALKED: '__dozWalked',
     DEFAULT_SLOT_KEY: '__default__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -642,8 +643,6 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     var isDirective = REGEX.IS_DIRECTIVE.test(aName);
 
-    //console.log('ANAME', aName, aValue)
-
     var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
 
     if ($node) {
@@ -1157,7 +1156,7 @@ module.exports = {
     get: function get(id) {
         if (!this.isValidId(id)) return;
         var res = this.data[id];
-        //delete this.data[id];
+        delete this.data[id];
         return res;
     },
     isValidId: function isValidId(id) {
@@ -1190,6 +1189,7 @@ var transformChildStyle = __webpack_require__(27);
 var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
+    ALREADY_WALKED = _require.ALREADY_WALKED,
     REGEX = _require.REGEX;
 
 var collection = __webpack_require__(2);
@@ -1231,19 +1231,15 @@ function createInstance() {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
-            //console.log('-------------------', $child.nodeName);
-            if (!$child.__dozWalked) {
-                $child.__dozWalked = true;
+
+            // Non bella ma funziona
+            if (!$child[ALREADY_WALKED]) {
+                $child[ALREADY_WALKED] = true;
             } else {
                 $child = $child.nextSibling;
                 continue;
             }
-            /*if ($child.nodeName === 'DOZ-TODO-ITEM') {
-                console.log($child.nodeName);
-                console.log($child.__dozProps);
-            }*/
-            //console.log($child.outerHTML);
-            //console.log('-------------------');
+
             directive.callAppWalkDOM(parent, $child);
 
             isChildStyle = transformChildStyle($child, parent);
@@ -1291,10 +1287,6 @@ function createInstance() {
                         return 'continue';
                     }
 
-                    //console.log('BEFORE SERIALIZE', $child.nodeName)
-                    //console.log('BEFORE SERIALIZE PROPS', $child.nodeName, $child.__dozProps)
-                    //console.log('BEFORE SERIALIZE ATTRIBUTES', $child.nodeName, Array.from($child.attributes).map(i => i.value))
-                    //console.log('GET _PROPS', $child.__dozProps);
                     var props = serializeProps($child);
 
                     //console.log('serialized', props)
@@ -1365,9 +1357,6 @@ function createInstance() {
 
                         newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                         newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
-
-                        //console.log('??????????????????????', cmpName);
-                        //console.log(newElement.getHTMLElement().outerHTML);
 
                         // Replace first child if defaultSlot exists with a slot comment
                         if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
@@ -2614,13 +2603,7 @@ module.exports = function (strings) {
 
         // if this function is bound to Doz component
         if (this._components) {
-            if (this._localComponentLastId === undefined) {
-                this._localComponentLastId = 0;
-            }
 
-            if (this._componentsMap === undefined) {
-                this._componentsMap = new Map();
-            }
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 var cmp = value[i];
@@ -2651,23 +2634,15 @@ module.exports = function (strings) {
             }
         }
 
-        //if (value[i] !== null && (typeof value[i] === 'object' || typeof value[i] === 'function')) {
         var property = strings[i];
-        //console.log('--------', property, value[i] )
         var checkPoint = strings[i].trim();
-        //console.log(checkPoint[checkPoint.length - 2])
         if (checkPoint.length > 2 && checkPoint[checkPoint.length - 2] === '=') {
             //if (!/<\/?/.test(property)) {
-            //console.log(value[i])
             property = property.replace(/["'\s]+/g, '');
             // Check if is an attribute
             //if (/^[\w-:]+=/.test(property)) {
             value[i] = mapCompiled.set(value[i]);
-            //}
-            //}
-            //}
         }
-        //console.log('-------->', property, value[i] )
         if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else result += '' + value[i] + strings[i + 1];
     }
 
@@ -5003,6 +4978,13 @@ var Base = function Base() {
         _defaultSlot: {
             value: null,
             writable: true
+        },
+        _localComponentLastId: {
+            value: 0,
+            writable: true
+        },
+        _componentsMap: {
+            value: new Map()
         },
 
         //Public
