@@ -1211,11 +1211,14 @@ function createInstance() {
 
     if (!cfg.root) return;
 
-    cfg.template = typeof cfg.template === 'string' ? html.create(cfg.template) : cfg.template;
+    if (cfg.template instanceof HTMLElement) {
+        if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
+    } else if (typeof cfg.template === 'string') {
+        cfg.template = html.create(cfg.template);
+        cfg.root.appendChild(cfg.template);
+    }
 
     //console.log('HTML, ', cfg.template)
-
-    cfg.root.appendChild(cfg.template);
 
     var componentInstance = null;
     var cmpName = void 0;
@@ -1228,11 +1231,17 @@ function createInstance() {
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         while ($child) {
-            //console.log('-------------------');
-            if ($child.nodeName === 'DOZ-TODO-ITEM') {
+            //console.log('-------------------', $child.nodeName);
+            if (!$child.__dozWalked) {
+                $child.__dozWalked = true;
+            } else {
+                $child = $child.nextSibling;
+                continue;
+            }
+            /*if ($child.nodeName === 'DOZ-TODO-ITEM') {
                 console.log($child.nodeName);
                 console.log($child.__dozProps);
-            }
+            }*/
             //console.log($child.outerHTML);
             //console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);
@@ -2605,14 +2614,30 @@ module.exports = function (strings) {
 
         // if this function is bound to Doz component
         if (this._components) {
+            if (this._localComponentLastId === undefined) {
+                this._localComponentLastId = 0;
+            }
+
+            if (this._componentsMap === undefined) {
+                this._componentsMap = new Map();
+            }
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 var cmp = value[i];
                 var tagCmp = camelToDash(cmp.name);
-
+                // Sanitize tag name
+                tagCmp = tagCmp.replace(/_+/, '');
                 // if is a single word, rename with double word
                 if (tagCmp.indexOf('-') === -1) {
                     tagCmp = tagCmp + '-' + tagCmp;
+                }
+
+                tagCmp += this._localComponentLastId++;
+
+                if (this._componentsMap.has(value[i])) {
+                    tagCmp = this._componentsMap.get(value[i]);
+                } else {
+                    this._componentsMap.set(value[i], tagCmp);
                 }
 
                 // add to local components
@@ -4481,10 +4506,11 @@ function drawDynamic(instance) {
         var item = instance._processing[index];
         var root = item.node.parentNode;
 
-        console.log('create dynamic', item.node.outerHTML, item.node.__dozProps);
+        // console.log('create dynamic', item.node.outerHTML, item.node.__dozProps)
         var dynamicInstance = __webpack_require__(10)({
             root: root,
-            template: item.node.outerHTML,
+            template: item.node,
+            //template: item.node.outerHTML,
             app: instance.app,
             parent: instance
         });
@@ -4498,12 +4524,13 @@ function drawDynamic(instance) {
             if(item.node[PROPS_ATTRIBUTES]) {
                 dynamicInstance._rootElement.parentNode[PROPS_ATTRIBUTES] = item.node[PROPS_ATTRIBUTES];
             }*/
-            root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
+
+            //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
             // if original node has children
             if (item.node.childNodes.length) {
                 // replace again -.-
-                root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
+                //root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
                 // and append root element of dynamic instance :D
                 item.node.appendChild(dynamicInstance._rootElement);
             }

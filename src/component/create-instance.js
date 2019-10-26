@@ -15,13 +15,15 @@ function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
 
-    cfg.template = typeof cfg.template === 'string'
-        ? html.create(cfg.template)
-        : cfg.template;
+    if (cfg.template instanceof HTMLElement) {
+        if (!cfg.template.parentNode)
+            cfg.root.appendChild(cfg.template);
+    } else if (typeof cfg.template === 'string'){
+        cfg.template = html.create(cfg.template);
+        cfg.root.appendChild(cfg.template);
+    }
 
     //console.log('HTML, ', cfg.template)
-
-    cfg.root.appendChild(cfg.template);
 
     let componentInstance = null;
     let cmpName;
@@ -32,11 +34,17 @@ function createInstance(cfg = {}) {
 
     function walk($child, parent = {}) {
         while ($child) {
-            //console.log('-------------------');
-            if ($child.nodeName === 'DOZ-TODO-ITEM') {
+            //console.log('-------------------', $child.nodeName);
+            if (!$child.__dozWalked) {
+                $child.__dozWalked = true;
+            } else {
+                $child = $child.nextSibling;
+                continue;
+            }
+            /*if ($child.nodeName === 'DOZ-TODO-ITEM') {
                 console.log($child.nodeName);
                 console.log($child.__dozProps);
-            }
+            }*/
             //console.log($child.outerHTML);
             //console.log('-------------------');
             directive.callAppWalkDOM(parent, $child);

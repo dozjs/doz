@@ -89,7 +89,7 @@
             return h`
                 <button onclick="this.addItem()">Add item</button>
                 <x-grid>
-                        ${this.each(this.props.rows, (row, i) => `
+                        ${this.each(this.props.rows, (row, i) => h`
                             <x-item>
                                 <button forceupdate onclick="this.removeItem(${i})">x</button>&nbsp;
                                 <button forceupdate onclick="this.infoItem(${i})">i</button>&nbsp;
