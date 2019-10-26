@@ -81,6 +81,8 @@
         done(key) {
             const store = this.getStore('todo');
             const index = store.record.findIndex(item => item.key === key);
+            console.log('key', key)
+            console.log('index', index)
             store.record[index].done = !store.record[index].done;
         },
 
@@ -167,7 +169,7 @@
                     <button onclick="this.action.remove(${this.props.key})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.key})" title="Done">&check;</button>
                     <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
-                        <strong>${this.props.title}</strong>
+                        <strong>${this.props.key} ${this.props.done} ${this.props.title}</strong>
                         <input
                             onblur="this.action.hideInput(${this.props.key})"
                             onkeypress="this.action.inputEnterPress(${this.props.key})"

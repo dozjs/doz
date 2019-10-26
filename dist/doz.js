@@ -2648,7 +2648,7 @@ module.exports = function (strings) {
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
 
-    //console.log(result)
+    console.log(result);
 
     result = compile(result);
     //console.log(result)
