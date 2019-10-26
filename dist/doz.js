@@ -5802,6 +5802,7 @@ directive('key', {
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        //console.log('dom el create', directiveValue)
         $target.dataset.key = directiveValue;
         instance._keyedNodes[directiveValue] = $target;
     },
@@ -5816,7 +5817,7 @@ directive('key', {
         var noCmpKeyRemoved = false;
 
         var _defined = function _defined(change) {
-
+            //console.log(change)
             if (change.previousValue && _typeof(change.previousValue) === 'object' && Object.keys(change.previousValue).length) {
                 if (change.target && _typeof(change.target) === 'object') {
                     var oK = Object.keys(change.target);

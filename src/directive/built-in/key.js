@@ -25,6 +25,7 @@ directive('key', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
+        //console.log('dom el create', directiveValue)
         $target.dataset.key = directiveValue;
         instance._keyedNodes[directiveValue] = $target;
     },
@@ -40,7 +41,7 @@ directive('key', {
         let thereIsDelete = false;
         let noCmpKeyRemoved = false;
         changes.forEach((change) => {
-
+//console.log(change)
             if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
                 if (change.target && typeof change.target === 'object') {
                     let oK = Object.keys(change.target);
