@@ -243,9 +243,9 @@
         },
         reverse() {
             let record = Object.assign([], this.getStore('todo').record);
-            console.log('before', JSON.stringify(record[0], null, 4));
+            //console.log('before', JSON.stringify(record[0], null, 4));
             this.getStore('todo').record = record.reverse();
-            console.log('after', this.getStore('todo').record[0]);
+            //console.log('after', this.getStore('todo').record[0]);
         },
 
         sort() {

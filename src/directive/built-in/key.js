@@ -19,6 +19,7 @@ directive('key', {
     },
 
     onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        //console.log('---<',$target)
         if (propName === ATTR_D_KEY || propName === ATTR_DATA_KEY) {
             props.key = propValue;
         }
@@ -27,6 +28,17 @@ directive('key', {
     onComponentDOMElementCreate(instance, $target, directiveValue) {
         $target.dataset.key = directiveValue;
         instance._keyedNodes[directiveValue] = $target;
+    },
+
+    onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        //$target.dataset.key = directiveValue;
+        //instance._keyedNodes[directiveValue] = $target;
+        //console.log('update', directiveValue)
+        //instance.props.key = directiveValue;
+
+        /*if(instance._keyedNodes[directiveValue].__dozComponentInstance) {
+            console.log(instance._keyedNodes[directiveValue].__dozComponentInstance)
+        }*/
     },
 
     onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
@@ -39,9 +51,23 @@ directive('key', {
         let candidateKeyToRemove;
         let thereIsDelete = false;
         let noCmpKeyRemoved = false;
+        //console.log(changes);
+        //return true
+
+        let mustBeReturn;
+
         changes.forEach((change) => {
 
-            if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
+            if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length && change.target && typeof change.target === 'object') {
+                console.log(change)
+                mustBeReturn = true;
+                /*let oK = Object.keys(change.newValue);
+                if (oK.includes('key')) {
+                    console.log(change.newValue)
+                }*/
+            }
+
+            /*if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
                 if (change.target && typeof change.target === 'object') {
                     let oK = Object.keys(change.target);
                     if (oK.length && Array.isArray(change.target[oK])) {
@@ -97,9 +123,13 @@ directive('key', {
                         }
                     }
                 });
-            }
+            }*/
         });
 
+        if (mustBeReturn)
+            return true;
+
+        /*
         if (noCmpKeyRemoved)
             return true;
 
@@ -121,6 +151,6 @@ directive('key', {
                 instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
                 return true;
             }
-        }
+        }*/
     }
 });

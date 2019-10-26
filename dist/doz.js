@@ -5797,14 +5797,24 @@ directive('key', {
         });
     },
     onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propName, propValue, isDirective, props) {
+        //console.log('---<',$target)
         if (propName === ATTR_D_KEY || propName === ATTR_DATA_KEY) {
             props.key = propValue;
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        //console.log('dom el create', directiveValue)
         $target.dataset.key = directiveValue;
         instance._keyedNodes[directiveValue] = $target;
+    },
+    onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        //$target.dataset.key = directiveValue;
+        //instance._keyedNodes[directiveValue] = $target;
+        //console.log('update', directiveValue)
+        //instance.props.key = directiveValue;
+
+        /*if(instance._keyedNodes[directiveValue].__dozComponentInstance) {
+            console.log(instance._keyedNodes[directiveValue].__dozComponentInstance)
+        }*/
     },
     onAppDynamicInstanceCreate: function onAppDynamicInstanceCreate(instance, dynamicInstance, item) {
         if (item.node.dataset.key) {
@@ -5815,95 +5825,73 @@ directive('key', {
         var candidateKeyToRemove = void 0;
         var thereIsDelete = false;
         var noCmpKeyRemoved = false;
+        //console.log(changes);
+        //return true
 
-        var _defined = function _defined(change) {
-            //console.log(change)
-            if (change.previousValue && _typeof(change.previousValue) === 'object' && Object.keys(change.previousValue).length) {
-                if (change.target && _typeof(change.target) === 'object') {
-                    var oK = Object.keys(change.target);
-                    if (oK.length && Array.isArray(change.target[oK])) {
-                        if (change.target[oK].length && change.target[oK][0] && _typeof(change.target[oK][0]) === 'object' && change.target[oK][0].key !== undefined) {
+        var mustBeReturn = void 0;
 
-                            // Just if deleted keys
-                            if (change.previousValue.length > change.newValue.length) {
-                                var _defined2 = change.previousValue;
+        var _defined
+        /*let oK = Object.keys(change.newValue);
+        if (oK.includes('key')) {
+            console.log(change.newValue)
+        }*/
 
-                                var _defined3 = function _defined3(item) {
-                                    return item.key;
-                                };
 
-                                //console.log('ci sono key, posso fare qualcosa', typeof change.previousValue);
-                                var prevKeys = new Array(_defined2.length);
-
-                                for (var _i8 = 0; _i8 <= _defined2.length - 1; _i8++) {
-                                    prevKeys[_i8] = _defined3(_defined2[_i8], _i8, _defined2);
-                                }
-
-                                var _defined4 = change.newValue;
-
-                                var _defined5 = function _defined5(item) {
-                                    return item.key;
-                                };
-
-                                var newKeys = new Array(_defined4.length);
-
-                                for (var _i9 = 0; _i9 <= _defined4.length - 1; _i9++) {
-                                    newKeys[_i9] = _defined5(_defined4[_i9], _i9, _defined4);
-                                }
-
-                                var _defined6 = function _defined6(n) {
-                                    return newKeys.indexOf(n) === -1;
-                                };
-
-                                var doRemoveKeys = [];
-
-                                for (var _i10 = 0; _i10 <= prevKeys.length - 1; _i10++) {
-                                    if (_defined6(prevKeys[_i10], _i10, prevKeys)) doRemoveKeys.push(prevKeys[_i10]);
-                                }
-
-                                noCmpKeyRemoved = !!doRemoveKeys.length;
-
-                                var _defined7 = function _defined7(item) {
-                                    if (instance._keyedNodes[item]) instance._keyedNodes[item].parentNode.removeChild(instance._keyedNodes[item]);
-                                };
-
-                                for (var _i7 = 0; _i7 <= doRemoveKeys.length - 1; _i7++) {
-                                    _defined7(doRemoveKeys[_i7], _i7, doRemoveKeys);
-                                }
-                            }
+        /*if (change.previousValue && typeof change.previousValue === 'object' && Object.keys(change.previousValue).length) {
+            if (change.target && typeof change.target === 'object') {
+                let oK = Object.keys(change.target);
+                if (oK.length && Array.isArray(change.target[oK])) {
+                    if (change.target[oK].length
+                        && change.target[oK][0]
+                        && typeof change.target[oK][0] === 'object'
+                        && change.target[oK][0].key !== undefined) {
+                          // Just if deleted keys
+                        if (change.previousValue.length > change.newValue.length) {
+                            //console.log('ci sono key, posso fare qualcosa', typeof change.previousValue);
+                            let prevKeys = change.previousValue.map(item => item.key);
+                            let newKeys = change.newValue.map(item => item.key);
+                              let doRemoveKeys = prevKeys.filter(function(n) {
+                                return newKeys.indexOf(n) === -1;
+                            });
+                              noCmpKeyRemoved = !!doRemoveKeys.length;
+                              doRemoveKeys.forEach(item => {
+                                if(instance._keyedNodes[item])
+                                    instance._keyedNodes[item].parentNode.removeChild(instance._keyedNodes[item])
+                            });
                         }
                     }
                 }
             }
-
-            // Trova la presunta chiave da eliminare
-            if (Array.isArray(change.target)) {
-                if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
-
-                    if (change.previousValue && _typeof(change.previousValue) === 'object' && change.previousValue.key !== undefined) {
-                        candidateKeyToRemove = change.previousValue.key;
-                    }
+        }
+          // Trova la presunta chiave da eliminare
+        if (Array.isArray(change.target)) {
+            if ((change.type === 'update' || change.type === 'delete') && candidateKeyToRemove === undefined) {
+                  if (change.previousValue && typeof change.previousValue === 'object' && change.previousValue.key !== undefined) {
+                    candidateKeyToRemove = change.previousValue.key;
                 }
-                if (change.type === 'delete') thereIsDelete = true;
             }
-
-            // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
-            if (candidateKeyToRemove === undefined && Array.isArray(change.previousValue) && !Array.isArray(change.newValue) || Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length) {
-                var _defined8 = function _defined8(item) {
-                    if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item.key !== undefined && instance._dynamicNodes[item.key] !== undefined) {
-                        if (instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
-                            instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
-                        } else {
-                            instance._dynamicNodes[item.key].parentNode.removeChild(instance._dynamicNodes[item.key]);
-                        }
+            if (change.type === 'delete')
+                thereIsDelete = true;
+        }
+          // Se l'array viene svuotato allora dovrò cercare tutte le eventuali chiavi che fanno riferimento ai nodi
+        if (candidateKeyToRemove === undefined && (Array.isArray(change.previousValue) && !Array.isArray(change.newValue))
+            || (Array.isArray(change.previousValue) && change.previousValue.length > change.newValue.length)
+        ) {
+            change.previousValue.forEach(item => {
+                if (item && typeof item === 'object' && item.key !== undefined && instance._dynamicNodes[item.key] !== undefined) {
+                    if (instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE]) {
+                        instance._dynamicNodes[item.key][COMPONENT_DYNAMIC_INSTANCE].destroy();
+                    } else {
+                        instance._dynamicNodes[item.key].parentNode.removeChild(instance._dynamicNodes[item.key]);
                     }
-                };
-
-                var _defined9 = change.previousValue;
-
-                for (var _i12 = 0; _i12 <= _defined9.length - 1; _i12++) {
-                    _defined8(_defined9[_i12], _i12, _defined9);
                 }
+            });
+        }*/
+        = function _defined(change) {
+
+            if (change.previousValue && _typeof(change.previousValue) === 'object' && Object.keys(change.previousValue).length && change.target && _typeof(change.target) === 'object') {
+                console.log(change);
+                mustBeReturn = true;
             }
         };
 
@@ -5911,13 +5899,16 @@ directive('key', {
             _defined(changes[_i2], _i2, changes);
         }
 
-        if (noCmpKeyRemoved) return true;
+        if (mustBeReturn) return true;
 
-        //console.log(thereIsDelete, candidateKeyToRemove)
+        /*
+        if (noCmpKeyRemoved)
+            return true;
+          //console.log(thereIsDelete, candidateKeyToRemove)
         //console.log(instance._keyedNodes, candidateKeyToRemove)
-        if (!thereIsDelete) candidateKeyToRemove = undefined;
-
-        if (candidateKeyToRemove !== undefined) {
+        if (!thereIsDelete)
+            candidateKeyToRemove = undefined;
+          if (candidateKeyToRemove !== undefined) {
             if (instance._dynamicNodes[candidateKeyToRemove] !== undefined) {
                 if (instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE]) {
                     instance._dynamicNodes[candidateKeyToRemove][COMPONENT_DYNAMIC_INSTANCE].destroy();
@@ -5930,7 +5921,7 @@ directive('key', {
                 instance._keyedNodes[candidateKeyToRemove].parentNode.removeChild(instance._keyedNodes[candidateKeyToRemove]);
                 return true;
             }
-        }
+        }*/
     }
 });
 
