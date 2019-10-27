@@ -49,9 +49,13 @@ class Element {
         this.isSVG = isSVG || REGEX.IS_SVG.test(name);
         if (props.key !== undefined)
             this.key = props.key;
+        this.hasKeys = undefined;
     }
 
     appendChild(node) {
+        if (node.props && node.props.key !== undefined) {
+            this.hasKeys = true;
+        }
         this.children.push(node);
         return node;
     }

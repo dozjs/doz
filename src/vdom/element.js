@@ -143,7 +143,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
 
-        if ($newElement.__dozKey !== undefined) {
+        /*if ($newElement.__dozKey !== undefined) {
             if ($parent.__dozKeyList === undefined) {
                 $parent.__dozKeyList = new Map();
             }
@@ -151,7 +151,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 $parent.__dozKeyList.set($newElement.__dozKey, $newElement);
                 console.log('new keyed node', $newElement, 'at index', index)
             }
-        }
+        }*/
 
         $parent.appendChild($newElement);
         return $newElement;
@@ -218,15 +218,72 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         const oldLength = oldNode.children.length;
         let newNodeKeyList = [];
         let oldNodeKeyList = [];
-        //console.log(newNode.children)
-        //console.log(oldNode.children)
 
-        if ((newNode.children[0] && newNode.children[0].key !== undefined) || (oldNode.children[0] && oldNode.children[0].key !== undefined)) {
-            console.log(newNode.type, $parent.childNodes[index]);
+        // Children could be keys.
+        // Every time there are update operation of the list should be enter here.
+        // These operations are done only for the first level of nodes for example
+        // <ul>
+        //      <li>other1</li>
+        //      <li>other2</li>
+        //      <li>other3</li>
+        // </ul>
+        // Only the "LI" tags will be processed with this algorithm.
+        // The content of the "LI" tag will be processed by the normal "update" function
+        if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
+            let $myListParent = $parent.childNodes[index];
+            console.log(newNode.type, $myListParent);
             newNodeKeyList = newNode.children.map(i => i.key);
             oldNodeKeyList = oldNode.children.map(i => i.key);
             console.log(newNodeKeyList);
             console.log(oldNodeKeyList);
+            // here my new logic for keys
+
+            // Check if $myListParent has __dozKeyList
+            if ($myListParent.__dozKeyList === undefined) {
+                $myListParent.__dozKeyList = new Map();
+            }
+
+            let oldKeyDoRemove = oldNodeKeyList.filter(x => !newNodeKeyList.includes(x));
+            //console.log('diff', oldKeyDoRemove)
+            // Ci sono key da rimuovere?
+            for (let i = 0; i < oldKeyDoRemove.length; i++) {
+                if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
+                    let $oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
+                    console.log('da rimuovere', $oldElement);
+                    $myListParent.removeChild($oldElement);
+                    $myListParent.__dozKeyList.delete(oldKeyDoRemove[i]);
+                }
+            }
+
+            for (let i = 0; i < newLength; i++) {
+                //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
+                // Se non esiste creo il nodo
+                if (!$myListParent.__dozKeyList.has(newNode.children[i].props.key)) {
+                    let $newElement = create(newNode.children[i], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    $myListParent.__dozKeyList.set(newNode.children[i].props.key, $newElement);
+                    //console.log('elemento creato', $newElement);
+                    // appendo per il momento
+                    $myListParent.appendChild($newElement);
+                } else {
+                    // esiste.. devo fare qualcosa?, devo aggiornare qualcosa dentro?
+                    let $element = $myListParent.__dozKeyList.get(newNode.children[i].props.key);
+                    console.log('esiste, devo fare qualcosa?', $element);
+                    console.log('node', newNode.children[i]);
+                    update(
+                        $myListParent,
+                        newNode.children[i],
+                        oldNode.children[i],
+                        i,
+                        cmp,
+                        initial,
+                        $parent[COMPONENT_INSTANCE] || cmpParent
+                    );
+                }
+
+
+            }
+
+            return ;
         }
 
         for (let i = 0; i < newLength || i < oldLength; i++) {
