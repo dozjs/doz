@@ -231,11 +231,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // The content of the "LI" tag will be processed by the normal "update" function
         if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
             let $myListParent = $parent.childNodes[index];
-            console.log(newNode.type, $myListParent);
+            //console.log(newNode.type, $myListParent);
             newNodeKeyList = newNode.children.map(i => i.key);
             oldNodeKeyList = oldNode.children.map(i => i.key);
-            console.log(newNodeKeyList);
-            console.log(oldNodeKeyList);
+            //console.log(newNodeKeyList);
+            //console.log(oldNodeKeyList);
             // here my new logic for keys
 
             // Check if $myListParent has __dozKeyList
@@ -249,38 +249,49 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             for (let i = 0; i < oldKeyDoRemove.length; i++) {
                 if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
                     let $oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
-                    console.log('da rimuovere', $oldElement);
-                    $myListParent.removeChild($oldElement);
+                    //console.log('da rimuovere', $oldElement);
+                    if($oldElement[COMPONENT_INSTANCE]) {
+                        $oldElement[COMPONENT_INSTANCE].destroy();
+                    } else {
+                        $myListParent.removeChild($oldElement);
+                    }
                     $myListParent.__dozKeyList.delete(oldKeyDoRemove[i]);
                 }
             }
 
-            for (let i = 0; i < newLength; i++) {
+            let listOfElement = [];
+
+            for (let i = 0; i < newNodeKeyList.length; i++) {
                 //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
+                let $element = $myListParent.__dozKeyList.get(newNodeKeyList[i]);
                 // Se non esiste creo il nodo
-                if (!$myListParent.__dozKeyList.has(newNode.children[i].props.key)) {
+                if (!$element) {
                     let $newElement = create(newNode.children[i], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
-                    $myListParent.__dozKeyList.set(newNode.children[i].props.key, $newElement);
+                    $myListParent.__dozKeyList.set(newNodeKeyList[i], $newElement);
                     //console.log('elemento creato', $newElement);
                     // appendo per il momento
-                    $myListParent.appendChild($newElement);
+                    listOfElement.push($newElement);
+                    //$myListParent.appendChild($newElement);
                 } else {
-                    // esiste.. devo fare qualcosa?, devo aggiornare qualcosa dentro?
-                    let $element = $myListParent.__dozKeyList.get(newNode.children[i].props.key);
-                    console.log('esiste, devo fare qualcosa?', $element);
-                    console.log('node', newNode.children[i]);
-                    update(
-                        $myListParent,
-                        newNode.children[i],
-                        oldNode.children[i],
-                        i,
+                    listOfElement.push($element);
+                    // Update attributes?
+                    updateAttributes(
+                        $element,
+                        newNode.children[i].props,
+                        oldNode.children[i].props,
                         cmp,
-                        initial,
                         $parent[COMPONENT_INSTANCE] || cmpParent
-                    );
+                    )
                 }
+            }
 
-
+            // Reorder?
+            for(let i = 0; i < listOfElement.length; i++) {
+                let $currentElementAtPosition = $myListParent.childNodes[i];
+                let $element = listOfElement[i];
+                if ($element === $currentElementAtPosition)
+                    continue;
+                $myListParent.insertBefore($element, $currentElementAtPosition);
             }
 
             return ;
