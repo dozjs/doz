@@ -2363,14 +2363,6 @@ function update($parent, newNode, oldNode) {
 
     if (!$parent) return;
 
-    if (newNode.key) {
-        //console.log('new node key', newNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
-    }
-
-    if (oldNode && oldNode.key) {
-        //console.log('old node key', oldNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
-    }
-
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
 
         var result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
@@ -2509,6 +2501,7 @@ function update($parent, newNode, oldNode) {
         // </ul>
         // Only the "LI" tags will be processed with this algorithm.
         // The content of the "LI" tag will be processed by the normal "update" function
+
         if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
             var $myListParent = $parent.childNodes[index];
             //console.log(newNode.type, $myListParent);
@@ -2593,6 +2586,8 @@ function update($parent, newNode, oldNode) {
             for (var _i13 = 0; _i13 < listOfElement.length; _i13++) {
                 var $currentElementAtPosition = $myListParent.childNodes[_i13];
                 var _$element = listOfElement[_i13];
+                //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
+                //console.log('equal?', $element === $currentElementAtPosition)
                 if (_$element === $currentElementAtPosition) continue;
                 $myListParent.insertBefore(_$element, $currentElementAtPosition);
             }
@@ -4369,14 +4364,15 @@ function isEventAttribute(name) {
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
 
-    if (name === 'key' && $target.__dozKey === undefined) {
-        $target.__dozKey = value;
-    }
-
     if (!$target[PROPS_ATTRIBUTES]) {
         $target[PROPS_ATTRIBUTES] = {};
     }
     $target[PROPS_ATTRIBUTES][name] = value;
+
+    if (name === 'key' && $target.__dozKey === undefined) {
+        $target.__dozKey = value;
+        return;
+    }
 
     if (isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
@@ -5296,7 +5292,7 @@ __webpack_require__(68);
 __webpack_require__(69);
 __webpack_require__(70);
 //require('./key');
-__webpack_require__(72);
+__webpack_require__(71);
 
 /***/ }),
 /* 63 */
@@ -5898,8 +5894,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 71 */,
-/* 72 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

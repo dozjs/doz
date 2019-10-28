@@ -68,14 +68,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     if (!$parent) return;
 
-    if (newNode.key) {
-        //console.log('new node key', newNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
-    }
-
-    if (oldNode && oldNode.key) {
-        //console.log('old node key', oldNode.props.key, 'at index', index, 'dozKey', $parent.childNodes[index]);
-    }
-
     if (cmpParent && $parent[COMPONENT_INSTANCE]) {
 
         let result = hooks.callDrawByParent($parent[COMPONENT_INSTANCE], newNode, oldNode);
@@ -229,6 +221,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // </ul>
         // Only the "LI" tags will be processed with this algorithm.
         // The content of the "LI" tag will be processed by the normal "update" function
+
         if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
             let $myListParent = $parent.childNodes[index];
             //console.log(newNode.type, $myListParent);
@@ -289,6 +282,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             for(let i = 0; i < listOfElement.length; i++) {
                 let $currentElementAtPosition = $myListParent.childNodes[i];
                 let $element = listOfElement[i];
+                //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
+                //console.log('equal?', $element === $currentElementAtPosition)
                 if ($element === $currentElementAtPosition)
                     continue;
                 $myListParent.insertBefore($element, $currentElementAtPosition);

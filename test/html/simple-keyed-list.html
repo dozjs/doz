@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - nested</title>
+    <script src="../../dist/doz.js?5dp891ku454646k6ìkj5r4thp743d888"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+
+
+    Doz.component('x-label', {
+        template(h) {
+            return h`
+                <span>-- ${this.props.value}</span>
+            `
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        props: {
+            linkName: 'A link',
+            rows: [
+                {
+                    value: Math.random(),
+                    key: 'ui1'
+                },
+                {
+                    value: Math.random(),
+                    key: 'ui2'
+                } ,
+                {
+                    value: Math.random(),
+                    key: 'ui3'
+                } ,
+                {
+                    value: Math.random(),
+                    key: 'ui4'
+                } ,
+                {
+                    value: Math.random(),
+                    key: 'ui5'
+                }
+            ]
+        },
+        template(h) {
+            return h`
+                <button onclick="this.addItem()">Add item</button>
+                <ul>
+                        ${this.each(this.props.rows, (row, i) => h`
+                            <li key="${row.key}">
+                                <button forceupdate onclick="this.removeItem(${i})">x</button>&nbsp;
+                                <button forceupdate onclick="this.infoItem(${i})">i</button>&nbsp;
+                                <button forceupdate onclick="this.update(${i})">update</button>&nbsp;
+                                ${i} ${row.value}
+                            </li>
+                        `)}
+                </ul>
+            `;
+        },
+        infoItem(index) {
+            console.log(index, this.props.rows[index]);
+        },
+        update(index) {
+            this.props.rows[index].value = Math.random();
+        },
+        removeItem(index) {
+            this.props.rows.splice(index, 1)
+        },
+        addItem() {
+            this.props.rows.push({
+                value: Math.random(),
+                key: 'ui' + Math.random()
+            });
+        }
+    });
+
+</script>
+</body>
+</html>
