@@ -2311,8 +2311,6 @@ function create(node, cmp, initial, cmpParent) {
         node.type = TAG.EMPTY;
     }
 
-    //console.log(node.type, node.targetDefaultSlot);
-
     if (node.props && node.props.slot && !node.isNewSlotEl) {
         return document.createComment('slot(' + node.props.slot + ')');
     }
