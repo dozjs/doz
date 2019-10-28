@@ -1159,6 +1159,7 @@ module.exports = {
     },
     get: function get(id) {
         if (!this.isValidId(id)) return;
+        id = id.trim();
         var res = this.data[id];
         delete this.data[id];
         return res;
