@@ -5722,10 +5722,18 @@ directive('bind', {
         });
     },
     onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
-        this.updateBoundElementsByChanges(instance, changes);
+        var _this2 = this;
+
+        delay(function () {
+            _this2.updateBoundElementsByChanges(instance, changes);
+        });
     },
     onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
-        this.updateBoundElementsByPropsIteration(instance);
+        var _this3 = this;
+
+        delay(function () {
+            _this3.updateBoundElementsByPropsIteration(instance);
+        });
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
         if (!this.canBind($target)) return;
@@ -5740,7 +5748,7 @@ directive('bind', {
         return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
     },
     setBind: function setBind(instance, $target, value) {
-        var _this2 = this;
+        var _this4 = this;
 
         if (instance.props[value] === undefined) return;
 
@@ -5814,16 +5822,16 @@ directive('bind', {
         // Set first value
         // Why this delay? because I need to waiting options tag
         delay(function () {
-            _this2.updateBoundElement($target, instance.props[value]);
+            _this4.updateBoundElement($target, instance.props[value]);
         });
     },
     updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
-        var _this3 = this;
+        var _this5 = this;
 
         var _defined8 = function _defined8(item) {
             var value = item.newValue;
             var property = item.property;
-            _this3.updateBoundElements(instance, value, property);
+            _this5.updateBoundElements(instance, value, property);
         };
 
         for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
@@ -5845,11 +5853,11 @@ directive('bind', {
         })(instance._rawProps);
     },
     updateBoundElements: function updateBoundElements(instance, value, property) {
-        var _this4 = this;
+        var _this6 = this;
 
         if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
             var _defined9 = function _defined9($target) {
-                _this4.updateBoundElement($target, value);
+                _this6.updateBoundElement($target, value);
             };
 
             var _defined10 = instance._boundElements[property];
