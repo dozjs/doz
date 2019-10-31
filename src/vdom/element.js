@@ -47,11 +47,12 @@ function create(node, cmp, initial, cmpParent) {
 
     attach($el, node.props, cmp, cmpParent);
 
-    //console.log($el);
-
-    node.children
-        .map(item => create(item, cmp, initial, cmpParent))
-        .forEach($el.appendChild.bind($el));
+    // The children with keys will be created later
+    if (!node.hasKeys) {
+        node.children
+            .map(item => create(item, cmp, initial, cmpParent))
+            .forEach($el.appendChild.bind($el));
+    }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
     //console.log(cmpParent)
@@ -266,16 +267,20 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 } else {
                     listOfElement.push($element);
                     // Update attributes?
+                    // Remember that the operation must be on the key and not on the index
                     updateAttributes(
                         $element,
-                        newNode.children[i].props,
-                        oldNode.children[i].props,
+                        newNode.children[i].props, // This is wrong, must be newNodeKeyObj.props
+                        oldNode.children[i].props, // This is wrong must be oldNodeKeyObj.props
                         cmp,
                         $parent[COMPONENT_INSTANCE] || cmpParent
                     )
+                    // Here also update function on the key
+                    // update(...
                 }
             }
 
+            //console.log('reorder', $myListParent.innerHTML)
             // Reorder?
             for(let i = 0; i < listOfElement.length; i++) {
                 let $currentElementAtPosition = $myListParent.childNodes[i];

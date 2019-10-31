@@ -2327,22 +2327,23 @@ function create(node, cmp, initial, cmpParent) {
 
     attach($el, node.props, cmp, cmpParent);
 
-    //console.log($el);
+    // The children with keys will be created later
+    if (!node.hasKeys) {
+        var _defined2 = node.children;
 
-    var _defined2 = node.children;
+        var _defined3 = function _defined3(item) {
+            return create(item, cmp, initial, cmpParent);
+        };
 
-    var _defined3 = function _defined3(item) {
-        return create(item, cmp, initial, cmpParent);
-    };
+        var _defined = new Array(_defined2.length);
 
-    var _defined = new Array(_defined2.length);
+        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+            _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+        }
 
-    for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-        _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
-    }
-
-    for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
-        $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
+        for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
+            $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
+        }
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
@@ -2577,10 +2578,16 @@ function update($parent, newNode, oldNode) {
                 } else {
                     listOfElement.push($element);
                     // Update attributes?
-                    updateAttributes($element, newNode.children[_i12].props, oldNode.children[_i12].props, cmp, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    // Remember that the operation must be on the key and not on the index
+                    updateAttributes($element, newNode.children[_i12].props, // This is wrong, must be newNodeKeyObj.props
+                    oldNode.children[_i12].props, // This is wrong must be oldNodeKeyObj.props
+                    cmp, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    // Here also update function on the key
+                    // update(...
                 }
             }
 
+            //console.log('reorder', $myListParent.innerHTML)
             // Reorder?
             for (var _i13 = 0; _i13 < listOfElement.length; _i13++) {
                 var $currentElementAtPosition = $myListParent.childNodes[_i13];
