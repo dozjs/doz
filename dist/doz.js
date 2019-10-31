@@ -2587,7 +2587,6 @@ function update($parent, newNode, oldNode) {
                 }
             }
 
-            //console.log('reorder', $myListParent.innerHTML)
             // Reorder?
             for (var _i13 = 0; _i13 < listOfElement.length; _i13++) {
                 var $currentElementAtPosition = $myListParent.childNodes[_i13];

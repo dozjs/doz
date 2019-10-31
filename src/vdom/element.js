@@ -280,7 +280,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 }
             }
 
-            //console.log('reorder', $myListParent.innerHTML)
             // Reorder?
             for(let i = 0; i < listOfElement.length; i++) {
                 let $currentElementAtPosition = $myListParent.childNodes[i];
