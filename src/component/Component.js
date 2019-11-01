@@ -34,7 +34,7 @@ class Component extends DOMManipulation {
             enumerable: true
         });
 
-        Object.defineProperty(this, '_h', {
+        Object.defineProperty(this, 'h', {
             value: h.bind(this),
             enumerable: false
         });
@@ -159,7 +159,7 @@ class Component extends DOMManipulation {
         if (this._renderPause) return;
 
         this.beginSafeRender();
-        const template = this.template(this._h, this.props);
+        const template = this.template(this.h, this.props);
         this.endSafeRender();
 
         let next = template && typeof template === 'object'

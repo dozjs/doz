@@ -112,8 +112,8 @@ class Doz {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
-                            template() {
-                                return `<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
+                            template(h) {
+                                return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
                             }
                         }
                     };

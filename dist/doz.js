@@ -739,7 +739,7 @@ var Component = function (_DOMManipulation) {
             enumerable: true
         });
 
-        Object.defineProperty(_this, '_h', {
+        Object.defineProperty(_this, 'h', {
             value: h.bind(_this),
             enumerable: false
         });
@@ -835,7 +835,7 @@ var Component = function (_DOMManipulation) {
             if (this._renderPause) return;
 
             this.beginSafeRender();
-            var template = this.template(this._h, this.props);
+            var template = this.template(this.h, this.props);
             this.endSafeRender();
 
             var next = template && (typeof template === 'undefined' ? 'undefined' : _typeof(template)) === 'object' ? template : compile(template, this);
@@ -3019,6 +3019,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _templateObject = _taggedTemplateLiteral(['<', '>', '</', '>'], ['<', '>', '</', '>']);
+
+function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(26);
@@ -3152,8 +3156,8 @@ var Doz = function () {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
-                            template: function template() {
-                                return '<' + TAG.ROOT + '>' + contentStr + '</' + TAG.ROOT + '>';
+                            template: function template(h) {
+                                return h(_templateObject, TAG.ROOT, contentStr, TAG.ROOT);
                             }
                         }
                     };
