@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - Simple keyed list</title>
-    <script src="../../dist/doz.js?5dp891ku454646k6ìkj5r4th41p7453d888"></script>
+    <script src="../../dist/doz.js?5dp891ku454646k6ìkj5r4th41p74555543d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -61,9 +61,9 @@
                 <ul>
                         ${this.each(this.props.rows, (row, i) => h`
                             <li key="${row.key}">
-                                <button onclick="this.removeItem(${row.key})">x</button>&nbsp;
-                                <button onclick="this.infoItem(${row.key})">i</button>&nbsp;
-                                <button onclick="this.update(${row.key})">update</button>&nbsp;
+                                <button onclick="this.removeItem(${row.key}, ${false}, ${true})" class="m1">x</button>&nbsp;
+                                <button onclick="this.infoItem(${row.key}, ${false}, ${true})" class="m1">i</button>&nbsp;
+                                <button onclick="this.update(${row.key}, ${false}, ${true})" class="m1">update</button>&nbsp;
                                 My Key ${row.key} ${row.value}
                             </li>
                         `)}

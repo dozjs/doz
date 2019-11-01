@@ -239,7 +239,7 @@ describe('Doz.local.component2', function () {
                 },
                 template(h) {
                     return  h`
-                        <${GridComponent} name="${{a:['boom','foo']}}"  />
+                        <${GridComponent} name="${{a:['boom','foo']}}"></${GridComponent}>
                     `;
                 }
             });

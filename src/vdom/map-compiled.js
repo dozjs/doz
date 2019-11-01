@@ -12,7 +12,7 @@ module.exports = {
         if (!this.isValidId(id)) return;
         id = id.trim();
         let res = this.data[id];
-        delete this.data[id];
+        //delete this.data[id];
         return res;
     },
     isValidId(id) {

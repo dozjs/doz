@@ -24,6 +24,7 @@ module.exports = function (strings, ...value) {
     let allowTag = false;
 
     for (let i = 0; i < value.length; ++i) {
+        let isComponentConstructor = false;
         if (Array.isArray(value[i])) {
             let newValueString = '';
             for (let j = 0; j < value[i].length; j++) {
@@ -56,6 +57,7 @@ module.exports = function (strings, ...value) {
 
             // if before is a <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
+                isComponentConstructor = true;
                 let cmp = value[i];
                 let tagCmp = camelToDash(cmp.name);
                 // Sanitize tag name
@@ -84,28 +86,24 @@ module.exports = function (strings, ...value) {
             }
         }
 
-        let property = strings[i];
-        let checkPoint = strings[i].trim();
-        if (checkPoint.length > 2 && checkPoint[checkPoint.length - 2] === '=') {
-            //if (!/<\/?/.test(property)) {
-            property = property.replace(/["'\s]+/g, '');
-            // Check if is an attribute
-            //if (/^[\w-:]+=/.test(property)) {
-            value[i] = mapCompiled.set(value[i]);
-        }
         if(allowTag)
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        else
+        else {
+            // If is not component constructor then add to map.
+            if(!isComponentConstructor)
+                value[i] = mapCompiled.set(value[i]);
             result += `${value[i]}${strings[i + 1]}`;
+        }
     }
 
     result = result
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
-    //console.log(result)
+    console.log(result)
 
     result = compile(result);
-    //console.log(result)
+    console.log(result)
+    console.log(mapCompiled.data)
     return result;
 };

@@ -1,4 +1,4 @@
-const castStringTo = require('../utils/cast-string-to');
+//const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
@@ -196,9 +196,21 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
+    //pannocchia console.log(objValue, aName, aValue)
 
+    if (typeof aValue === 'string') {
+        aValue.replace(/(=%{\d+}%;)/g, (match) => {
+            console.log(aName, match)
+        });
+    }
+
+    // Bisogna poter gestire più placeholder nella stessa stringa
+    // magari utilizzando la callback della funziona replace
+    // inoltre è necessario escludere le stringhe provenienti
+    // attributi come gli handlers onclick ecc... perchè al momento vengono composti
+    // dentro il modulo attributes.js
     let objValue = mapCompiled.get(aValue);
-    //console.log(objValue, aValue)
+
     if (objValue === undefined) {
         //console.log('aValue', aValue)
         //aValue = castStringTo(aValue);

@@ -130,19 +130,10 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 return $newElement;
             }
         }
+
+        //console.log(newNode)
+
         $newElement = create(newNode, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
-
-        //console.log('$newElement', $newElement[COMPONENT_ROOT_INSTANCE])
-
-        /*if ($newElement.__dozKey !== undefined) {
-            if ($parent.__dozKeyList === undefined) {
-                $parent.__dozKeyList = new Map();
-            }
-            if (!$parent.__dozKeyList.has($newElement.__dozKey)) {
-                $parent.__dozKeyList.set($newElement.__dozKey, $newElement);
-                console.log('new keyed node', $newElement, 'at index', index)
-            }
-        }*/
 
         $parent.appendChild($newElement);
         return $newElement;
