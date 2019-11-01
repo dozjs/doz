@@ -14,8 +14,10 @@ function setAttribute($target, name, value, cmp) {
     }
     $target[PROPS_ATTRIBUTES][name] = value;
 
-    if (name === 'key' && $target.__dozKey === undefined) {
-        $target.__dozKey = value;
+    if (name === 'key') {
+        if ($target.__dozKey === undefined) {
+            $target.__dozKey = value;
+        }
         return;
     }
 

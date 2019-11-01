@@ -2462,6 +2462,123 @@ function update($parent, newNode, oldNode) {
         cmp.$$afterNodeChange(_$newElement, $oldElement);
 
         return _$newElement;
+    } else if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
+        // Children could be keys.
+        // Every time there are update operation of the list should be enter here.
+        // These operations are done only for the first level of nodes for example
+        // <ul>
+        //      <li>other1</li>
+        //      <li>other2</li>
+        //      <li>other3</li>
+        // </ul>
+        // Only the "LI" tags will be processed with this algorithm.
+        // The content of the "LI" tag will be processed by the normal "update" function
+
+        var $myListParent = $parent.childNodes[index];
+        //console.log(newNode.type, $myListParent);
+        var _defined6 = newNode.children;
+
+        var _defined7 = function _defined7(i) {
+            return i.key;
+        };
+
+        var newNodeKeyList = new Array(_defined6.length);
+
+        for (var _i13 = 0; _i13 <= _defined6.length - 1; _i13++) {
+            newNodeKeyList[_i13] = _defined7(_defined6[_i13], _i13, _defined6);
+        }
+
+        var _defined8 = oldNode.children;
+
+        var _defined9 = function _defined9(i) {
+            return i.key;
+        };
+
+        var oldNodeKeyList = new Array(_defined8.length);
+        //console.log(newNodeKeyList);
+        //console.log(oldNodeKeyList);
+        // here my new logic for keys
+
+        // Check if $myListParent has __dozKeyList
+
+        for (var _i14 = 0; _i14 <= _defined8.length - 1; _i14++) {
+            oldNodeKeyList[_i14] = _defined9(_defined8[_i14], _i14, _defined8);
+        }
+
+        if ($myListParent.__dozKeyList === undefined) {
+            $myListParent.__dozKeyList = new Map();
+        }
+
+        var _defined10 = function _defined10(x) {
+            return !newNodeKeyList.includes(x);
+        };
+
+        var oldKeyDoRemove = [];
+        //console.log('diff', oldKeyDoRemove)
+        // Ci sono key da rimuovere?
+
+        for (var _i15 = 0; _i15 <= oldNodeKeyList.length - 1; _i15++) {
+            if (_defined10(oldNodeKeyList[_i15], _i15, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i15]);
+        }
+
+        for (var i = 0; i < oldKeyDoRemove.length; i++) {
+            if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
+                var _$oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
+                //console.log('da rimuovere', $oldElement);
+                if (_$oldElement[COMPONENT_INSTANCE]) {
+                    _$oldElement[COMPONENT_INSTANCE].destroy();
+                } else {
+                    $myListParent.removeChild(_$oldElement);
+                }
+                $myListParent.__dozKeyList.delete(oldKeyDoRemove[i]);
+            }
+        }
+
+        var listOfElement = [];
+
+        for (var _i10 = 0; _i10 < newNodeKeyList.length; _i10++) {
+            // This is the key of all
+            var theKey = newNodeKeyList[_i10];
+            //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
+            var $element = $myListParent.__dozKeyList.get(theKey);
+            // Se non esiste creo il nodo
+            if (!$element) {
+                var _$newElement2 = create(newNode.children[_i10], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                $myListParent.__dozKeyList.set(theKey, _$newElement2);
+                //console.log('elemento creato', $newElement);
+                // appendo per il momento
+                listOfElement.push(_$newElement2);
+                //$myListParent.appendChild($newElement);
+            } else {
+                // Get the child from newNode and oldNode by the same key
+                var newChildByKey = getChildByKey(theKey, newNode.children);
+                var oldChildByKey = getChildByKey(theKey, oldNode.children);
+
+                listOfElement.push($element);
+                // Update attributes?
+                // Remember that the operation must be on the key and not on the index
+                updateAttributes($element, newChildByKey.props, oldChildByKey.props, cmp, $parent[COMPONENT_INSTANCE] || cmpParent);
+                // Here also update function using the key
+                // update(...
+
+                var newChildByKeyLength = newChildByKey.children.length;
+                var oldChildByKeyLength = oldChildByKey.children.length;
+
+                for (var _i11 = 0; _i11 < newChildByKeyLength || _i11 < oldChildByKeyLength; _i11++) {
+                    update($element, newChildByKey.children[_i11], oldChildByKey.children[_i11], _i11, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                }
+            }
+        }
+
+        // Reorder?
+        for (var _i12 = 0; _i12 < listOfElement.length; _i12++) {
+            var $currentElementAtPosition = $myListParent.childNodes[_i12];
+            var _$element = listOfElement[_i12];
+            //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
+            //console.log('equal?', $element === $currentElementAtPosition)
+            if (_$element === $currentElementAtPosition) continue;
+            $myListParent.insertBefore(_$element, $currentElementAtPosition);
+        }
     } else if (newNode.type) {
         // walk node
         /*
@@ -2488,124 +2605,24 @@ function update($parent, newNode, oldNode) {
 
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
-        var newNodeKeyList = [];
-        var oldNodeKeyList = [];
 
-        // Children could be keys.
-        // Every time there are update operation of the list should be enter here.
-        // These operations are done only for the first level of nodes for example
-        // <ul>
-        //      <li>other1</li>
-        //      <li>other2</li>
-        //      <li>other3</li>
-        // </ul>
-        // Only the "LI" tags will be processed with this algorithm.
-        // The content of the "LI" tag will be processed by the normal "update" function
-
-        if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
-            var $myListParent = $parent.childNodes[index];
-            //console.log(newNode.type, $myListParent);
-            var _defined6 = newNode.children;
-            newNodeKeyList = new Array(_defined6.length);
-
-            var _defined7 = function _defined7(i) {
-                return i.key;
-            };
-
-            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                newNodeKeyList[_i8] = _defined7(_defined6[_i8], _i8, _defined6);
-            }
-
-            var _defined8 = oldNode.children;
-            oldNodeKeyList = new Array(_defined8.length);
-
-            var _defined9 = function _defined9(i) {
-                return i.key;
-            };
-
-            for (var _i10 = 0; _i10 <= _defined8.length - 1; _i10++) {
-                oldNodeKeyList[_i10] = _defined9(_defined8[_i10], _i10, _defined8);
-            }
-            //console.log(newNodeKeyList);
-            //console.log(oldNodeKeyList);
-            // here my new logic for keys
-
-            // Check if $myListParent has __dozKeyList
-
-
-            if ($myListParent.__dozKeyList === undefined) {
-                $myListParent.__dozKeyList = new Map();
-            }
-
-            var _defined10 = function _defined10(x) {
-                return !newNodeKeyList.includes(x);
-            };
-
-            var oldKeyDoRemove = [];
-            //console.log('diff', oldKeyDoRemove)
-            // Ci sono key da rimuovere?
-
-            for (var _i14 = 0; _i14 <= oldNodeKeyList.length - 1; _i14++) {
-                if (_defined10(oldNodeKeyList[_i14], _i14, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i14]);
-            }
-
-            for (var i = 0; i < oldKeyDoRemove.length; i++) {
-                if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
-                    var _$oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
-                    //console.log('da rimuovere', $oldElement);
-                    if (_$oldElement[COMPONENT_INSTANCE]) {
-                        _$oldElement[COMPONENT_INSTANCE].destroy();
-                    } else {
-                        $myListParent.removeChild(_$oldElement);
-                    }
-                    $myListParent.__dozKeyList.delete(oldKeyDoRemove[i]);
-                }
-            }
-
-            var listOfElement = [];
-
-            for (var _i12 = 0; _i12 < newNodeKeyList.length; _i12++) {
-                //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
-                var $element = $myListParent.__dozKeyList.get(newNodeKeyList[_i12]);
-                // Se non esiste creo il nodo
-                if (!$element) {
-                    var _$newElement2 = create(newNode.children[_i12], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
-                    $myListParent.__dozKeyList.set(newNodeKeyList[_i12], _$newElement2);
-                    //console.log('elemento creato', $newElement);
-                    // appendo per il momento
-                    listOfElement.push(_$newElement2);
-                    //$myListParent.appendChild($newElement);
-                } else {
-                    listOfElement.push($element);
-                    // Update attributes?
-                    // Remember that the operation must be on the key and not on the index
-                    updateAttributes($element, newNode.children[_i12].props, // This is wrong, must be newNodeKeyObj.props
-                    oldNode.children[_i12].props, // This is wrong must be oldNodeKeyObj.props
-                    cmp, $parent[COMPONENT_INSTANCE] || cmpParent);
-                    // Here also update function on the key
-                    // update(...
-                }
-            }
-
-            // Reorder?
-            for (var _i13 = 0; _i13 < listOfElement.length; _i13++) {
-                var $currentElementAtPosition = $myListParent.childNodes[_i13];
-                var _$element = listOfElement[_i13];
-                //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
-                //console.log('equal?', $element === $currentElementAtPosition)
-                if (_$element === $currentElementAtPosition) continue;
-                $myListParent.insertBefore(_$element, $currentElementAtPosition);
-            }
-
-            return;
-        }
-
-        for (var _i15 = 0; _i15 < newLength || _i15 < oldLength; _i15++) {
-            update($parent.childNodes[index], newNode.children[_i15], oldNode.children[_i15], _i15, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+        for (var _i16 = 0; _i16 < newLength || _i16 < oldLength; _i16++) {
+            update($parent.childNodes[index], newNode.children[_i16], oldNode.children[_i16], _i16, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         }
 
         clearDead();
     }
+}
+
+function getChildByKey(key, children) {
+    var res = {};
+    for (var i = 0; i < children.length; i++) {
+        if (key === children[i].key) {
+            res = children[i];
+            break;
+        }
+    }
+    return res;
 }
 
 function clearDead() {
@@ -4374,8 +4391,10 @@ function setAttribute($target, name, value, cmp) {
     }
     $target[PROPS_ATTRIBUTES][name] = value;
 
-    if (name === 'key' && $target.__dozKey === undefined) {
-        $target.__dozKey = value;
+    if (name === 'key') {
+        if ($target.__dozKey === undefined) {
+            $target.__dozKey = value;
+        }
         return;
     }
 

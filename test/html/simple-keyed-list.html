@@ -61,10 +61,10 @@
                 <ul>
                         ${this.each(this.props.rows, (row, i) => h`
                             <li key="${row.key}">
-                                <button forceupdate onclick="this.removeItem(${row.key})">x</button>&nbsp;
-                                <button forceupdate onclick="this.infoItem(${row.key})">i</button>&nbsp;
-                                <button forceupdate onclick="this.update(${row.key})">update</button>&nbsp;
-                                ${i} ${row.value}
+                                <button onclick="this.removeItem(${row.key})">x</button>&nbsp;
+                                <button onclick="this.infoItem(${row.key})">i</button>&nbsp;
+                                <button onclick="this.update(${row.key})">update</button>&nbsp;
+                                My Key ${row.key} ${row.value}
                             </li>
                         `)}
                 </ul>
