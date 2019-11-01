@@ -164,15 +164,15 @@ function createInstance(cfg = {}) {
 
                     // This is an hack for call render a second time so the
                     // event onAppDraw and onDrawByParent are fired after
-                    // that the component is mounted
+                    // that the component is mounted.
+                    // This hack makes also the component that has keys
+                    // Really this hack is very important :D :D
                     delay(() => {
                         newElement.render(false, [], true)
                     });
 
-
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
-
                 }
 
                 parentElement = newElement;
