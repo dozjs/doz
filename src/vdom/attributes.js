@@ -1,5 +1,5 @@
 const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
-const castStringTo = require('../utils/cast-string-to');
+//const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
 const mapCompiled = require('./map-compiled');
 
@@ -103,7 +103,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             args = stringArgs.split(',').map(item => {
                 item = item.trim();
                 //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                return item === 'scope' ? cmpParent : mapCompiled.get(item) || item
+                let itemMap = mapCompiled.get(item);
+                if (itemMap !== undefined)
+                    item = itemMap;
+
+                return item === 'scope'
+                    ? cmpParent
+                    : item
             })
         }
 
@@ -125,8 +131,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             if (stringArgs) {
                 args = stringArgs.split(',').map(item => {
                     item = item.trim();
+                    let itemMap = mapCompiled.get(item);
+                    if (itemMap !== undefined)
+                        item = itemMap;
                     //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
-                    return item === 'this' ? cmp : mapCompiled.get(item) || item
+                    return item === 'this'
+                        ? cmp
+                        : item
                 })
             }
 

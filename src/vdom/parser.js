@@ -4,6 +4,7 @@ const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directive');
 const mapCompiled = require('./map-compiled');
+const eventsAttributes = require('../utils/events-attributes');
 
 const selfClosingElements = {
     meta: true,
@@ -196,28 +197,46 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
-    //pannocchia console.log(objValue, aName, aValue)
-
-    if (typeof aValue === 'string') {
-        aValue.replace(/(=%{\d+}%;)/g, (match) => {
-            console.log(aName, match)
+/*
+    console.log('BEFORE:', aName, aValue)
+    console.log('COND 1:', aName, aValue, typeof aValue === 'string')
+    console.log('COND 2:', aName, aValue, !mapCompiled.isValidId(aValue))
+    console.log('COND 3:', aName, aValue, !eventsAttributes.includes(aName))*/
+    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
+        //console.log('RPL   :', aName, aValue)
+        aValue = aValue.replace(/(=%{\d+}%;)/g, (match) => {
+            //console.log('--------->', aName, aValue, match)
+            let objValue = mapCompiled.get(match);
+            //console.log('---------<', objValue)
+            if (objValue !== undefined) {
+                return objValue;
+            } else
+                return match;
         });
+    } else {
+        let objValue = mapCompiled.get(aValue);
+
+        if (objValue !== undefined) {
+            aValue = objValue;
+        }
     }
+
+
 
     // Bisogna poter gestire più placeholder nella stessa stringa
     // magari utilizzando la callback della funziona replace
-    // inoltre è necessario escludere le stringhe provenienti
-    // attributi come gli handlers onclick ecc... perchè al momento vengono composti
+    // inoltre è necessario escludere le stringhe provenienti da
+    // attributi come gli eventi onclick ecc... perchè al momento vengono composti
     // dentro il modulo attributes.js
+
+/*
     let objValue = mapCompiled.get(aValue);
 
-    if (objValue === undefined) {
-        //console.log('aValue', aValue)
-        //aValue = castStringTo(aValue);
-    }  else {
+    if (objValue !== undefined) {
         aValue = objValue;
     }
-
+*/
+    //console.log('AFTER :', aName, aValue)
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true
         : aValue;

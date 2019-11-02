@@ -146,7 +146,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
     } else if (isChanged(newNode, oldNode)) {
-        //console.log('node changes', $parent);
+        //console.log('node changes', newNode, oldNode);
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
