@@ -18,6 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directive');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
+
 //const mapCompiled = require('../vdom/map-compiled');
 
 class Component extends DOMManipulation {
@@ -169,23 +170,25 @@ class Component extends DOMManipulation {
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
 
+        /*
         let isOverwritten = false;
         directive.callAppComponentRenderOverwrite(this, changes, next, this._prev, overwrite => {
             isOverwritten = overwrite;
         });
+        */
 
-        if(!isOverwritten) {
-            const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+        //if(!isOverwritten) {
+        const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
-            //Remove attributes from component tag
-            removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/]);
+        //Remove attributes from component tag
+        removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/]);
 
-            if (!this._rootElement && rootElement) {
-                this._rootElement = rootElement;
-                this._parentElement = rootElement.parentNode;
-            }
-            this._prev = next;
+        if (!this._rootElement && rootElement) {
+            this._rootElement = rootElement;
+            this._parentElement = rootElement.parentNode;
         }
+        this._prev = next;
+        //}
 
         if (!silentAfterRenderEvent)
             hooks.callAfterRender(this);

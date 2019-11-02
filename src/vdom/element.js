@@ -164,6 +164,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         return $newElement;
     } else if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
+        //console.log('key')
         // Children could be keys.
         // Every time there are update operation of the list should be enter here.
         // These operations are done only for the first level of nodes for example
@@ -240,7 +241,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 const newChildByKeyLength = newChildByKey.children.length;
                 const oldChildByKeyLength = oldChildByKey.children.length;
 
+                //console.log(newChildByKey.children[i])
+                //console.log(oldChildByKey.children[i])
+
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
+                    if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
+                    //console.log('aaaa')
                     update(
                         $element,
                         newChildByKey.children[i],
@@ -266,6 +272,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
     } else if (newNode.type) {
+        //console.log('bbbbbbb', newNode.type)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:

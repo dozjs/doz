@@ -767,6 +767,7 @@ var DOMManipulation = __webpack_require__(52);
 var directive = __webpack_require__(0);
 var cloneObject = __webpack_require__(54);
 var toLiteralString = __webpack_require__(20);
+
 //const mapCompiled = require('../vdom/map-compiled');
 
 var Component = function (_DOMManipulation) {
@@ -890,23 +891,25 @@ var Component = function (_DOMManipulation) {
             this.app.emit('draw', next, this._prev, this);
             queueDraw.emit(this, next, this._prev);
 
-            var isOverwritten = false;
-            directive.callAppComponentRenderOverwrite(this, changes, next, this._prev, function (overwrite) {
+            /*
+            let isOverwritten = false;
+            directive.callAppComponentRenderOverwrite(this, changes, next, this._prev, overwrite => {
                 isOverwritten = overwrite;
             });
+            */
 
-            if (!isOverwritten) {
-                var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+            //if(!isOverwritten) {
+            var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
-                //Remove attributes from component tag
-                removeAllAttributes(this._cfgRoot, ['style', 'class' /*, 'key'*/]);
+            //Remove attributes from component tag
+            removeAllAttributes(this._cfgRoot, ['style', 'class' /*, 'key'*/]);
 
-                if (!this._rootElement && rootElement) {
-                    this._rootElement = rootElement;
-                    this._parentElement = rootElement.parentNode;
-                }
-                this._prev = next;
+            if (!this._rootElement && rootElement) {
+                this._rootElement = rootElement;
+                this._parentElement = rootElement.parentNode;
             }
+            this._prev = next;
+            //}
 
             if (!silentAfterRenderEvent) hooks.callAfterRender(this);
 
@@ -2439,6 +2442,7 @@ function update($parent, newNode, oldNode) {
 
         return _$newElement;
     } else if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
+        //console.log('key')
         // Children could be keys.
         // Every time there are update operation of the list should be enter here.
         // These operations are done only for the first level of nodes for example
@@ -2540,7 +2544,12 @@ function update($parent, newNode, oldNode) {
                 var newChildByKeyLength = newChildByKey.children.length;
                 var oldChildByKeyLength = oldChildByKey.children.length;
 
+                //console.log(newChildByKey.children[i])
+                //console.log(oldChildByKey.children[i])
+
                 for (var _i11 = 0; _i11 < newChildByKeyLength || _i11 < oldChildByKeyLength; _i11++) {
+                    if (newChildByKey.children[_i11] === undefined && oldChildByKey.children[_i11] === undefined) continue;
+                    //console.log('aaaa')
                     update($element, newChildByKey.children[_i11], oldChildByKey.children[_i11], _i11, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 }
             }
@@ -2556,6 +2565,7 @@ function update($parent, newNode, oldNode) {
             $myListParent.insertBefore(_$element, $currentElementAtPosition);
         }
     } else if (newNode.type) {
+        //console.log('bbbbbbb', newNode.type)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:
@@ -5260,7 +5270,6 @@ __webpack_require__(63);
 __webpack_require__(64);
 __webpack_require__(65);
 __webpack_require__(66);
-//require('./key');
 __webpack_require__(73);
 
 /***/ }),
