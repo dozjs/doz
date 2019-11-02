@@ -1,5 +1,6 @@
 const {TAG} = require('../constants');
 const mapCompiled = require('./map-compiled');
+const hCache = require('./h-cache');
 const camelToDash = require('../utils/camel-to-dash');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
@@ -18,6 +19,10 @@ const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
  */
 module.exports = function (strings, ...value) {
 
+    //hCache.get(strings, value);
+    //console.log('val', value);
+
+    // Why? cycling require :D
     let Component = require('../component/Component');
 
     let result = strings[0];
@@ -100,9 +105,11 @@ module.exports = function (strings, ...value) {
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
-    //console.log(result)
+    //console.log(result);
 
     result = compile(result);
+
+    //hCache.set(strings, value, result);
     //console.log(result)
     //console.log(mapCompiled.data)
     return result;

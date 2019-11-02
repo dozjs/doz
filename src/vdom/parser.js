@@ -163,9 +163,6 @@ function compile(data, cmp) {
 function serializeProps($node) {
     const props = {};
 
-    //console.log('serializeProps of', $node, $node[PROPS_ATTRIBUTES]);
-    //console.log('attribute of', $node, Array.from($node.attributes).toString());
-
     if ($node[PROPS_ATTRIBUTES]) {
         let keys = Object.keys($node[PROPS_ATTRIBUTES]);
         for (let i = 0; i < keys.length; i++) {
@@ -197,45 +194,21 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
-/*
-    console.log('BEFORE:', aName, aValue)
-    console.log('COND 1:', aName, aValue, typeof aValue === 'string')
-    console.log('COND 2:', aName, aValue, !mapCompiled.isValidId(aValue))
-    console.log('COND 3:', aName, aValue, !eventsAttributes.includes(aName))*/
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-        //console.log('RPL   :', aName, aValue)
-        aValue = aValue.replace(/(=%{\d+}%;)/g, (match) => {
-            //console.log('--------->', aName, aValue, match)
-            let objValue = mapCompiled.get(match);
-            //console.log('---------<', objValue)
-            if (objValue !== undefined) {
-                return objValue;
-            } else
-                return match;
-        });
-    } else {
-        let objValue = mapCompiled.get(aValue);
-
-        if (objValue !== undefined) {
-            aValue = objValue;
-        }
-    }
-
-
-
     // Bisogna poter gestire più placeholder nella stessa stringa
     // magari utilizzando la callback della funziona replace
     // inoltre è necessario escludere le stringhe provenienti da
     // attributi come gli eventi onclick ecc... perchè al momento vengono composti
     // dentro il modulo attributes.js
 
-/*
-    let objValue = mapCompiled.get(aValue);
-
-    if (objValue !== undefined) {
-        aValue = objValue;
+    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
+        aValue = mapCompiled.getAll(aValue);
+    } else {
+        let objValue = mapCompiled.get(aValue);
+        if (objValue !== undefined) {
+            aValue = objValue;
+        }
     }
-*/
+
     //console.log('AFTER :', aName, aValue)
     props[propsName] = aName === ATTR.FORCE_UPDATE
         ? true

@@ -1,7 +1,6 @@
 module.exports = {
     lastId: 0,
     data: {},
-    //REGEX_STRING: '=%{\d+}%;',
     set(value) {
         let id = ++this.lastId;
         id = `=%{${id}}%;`;
@@ -16,9 +15,17 @@ module.exports = {
         delete this.data[id];
         return res;
     },
+    getAll(str) {
+        return str.replace(/(=%{\d+}%;)/g, (match) => {
+            let objValue = this.get(match);
+            if (objValue !== undefined) {
+                return objValue;
+            } else
+                return match;
+        });
+    },
     isValidId(id) {
         return /^=%{\d+}%;$/.test(id)
-        //return /=%{\d+}%;/.test(id)
     },
     flush() {
         this.data = {};
