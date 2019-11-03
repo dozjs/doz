@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - unreleased
+- **Added** support to new local components with class
+- **Added** key attribute for keyed loops
+- **Changed** now props in template preserves the type
+- **Removed** directive `d-key`
+- **Fixed** Keyed loops
+
 ## [1.26.0] - 2019-10-17
 - **Added** attribute `scoped` to tag style
 - **Improved** sanitization input values
