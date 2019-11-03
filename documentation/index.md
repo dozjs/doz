@@ -1492,7 +1492,7 @@ Doz.component('my-list', {
         return h`
             <ul>
                 ${this.each(this.props.colors, (color,  i) => h`
-                    <li d-key="${color.id}">${i}) ${color.name}</li>
+                    <li key="${color.id}">${i}) ${color.name}</li>
                 `)}
             </ul>
         `
@@ -1510,9 +1510,9 @@ new Doz({
 });
 ```
 
-**Important**: The directive `d-key` help Doz identify which items have changed, are added, or are removed.
+**Important**: The attribute `key` help Doz identify which items have changed, are added, or are removed.
 
-**Important**: Without `d-key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
+**Important**: Without `key`, the `onBeforeUnmount`, `onUnmount` and `onDestroy` events will not be called.
 
 [FIDDLE](https://jsfiddle.net/Lgm7437o/)
 
