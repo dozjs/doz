@@ -1,6 +1,5 @@
 const {TAG} = require('../constants');
 const mapCompiled = require('./map-compiled');
-const hCache = require('./h-cache');
 const camelToDash = require('../utils/camel-to-dash');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
