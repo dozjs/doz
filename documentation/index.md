@@ -130,7 +130,7 @@ All props are stored into `props` (your component data) property of the componen
 Doz uses [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to build the component UI then the props are injected inside the string.
 
 ```javascript
-Doz.define('my-clock', class extends Doz.Component {
+class MyClock extends Doz.Component {
     constructor(o) {
         super(o);
         this.props = {
@@ -145,14 +145,14 @@ Doz.define('my-clock', class extends Doz.Component {
     onMount() {
         setInterval(() => this.props.time = new Date().toLocaleTimeString(), 1000)
     }
-});
+}
 
 new Doz({
     root: '#app',
     template(h) {
         return h`
             <h1>Welcome to my app:</h1>
-            <my-clock title="it's"/>
+            <${MyClock} title="it's"/>
         `
     }
 });
@@ -1646,7 +1646,7 @@ Doz.component('my-salutation', {
                     display: inline;
                 }
 
-                @media only screen and (max-width: 600px) {
+               @media only screen and (max-width: 600px) {
                     h1 {
                         color: white;
                         background-color: green;
@@ -1669,6 +1669,43 @@ new Doz({
         `
     }
 });
+```
+
+**Since 1.26.0**
+
+> Adding "scoped" attribute to tag "style" it's possible to reset css inheritance.
+
+```js
+class MyComponent1 extends Doz.Component {
+    template(h) {
+        return h`
+            <style scoped>
+                h1 {
+                    font-size: 12px;
+                }
+            </style>
+
+            <h1>Hello Doz</h1>
+        `
+    }
+}
+
+class MyComponent2 extends Doz.Component {
+    template(h) {
+        return h`
+            <style scoped>
+                h1 {
+                    color: green;
+                }
+            </style>
+            
+            <!-- This will be green -->
+            <h1>Hello Doz</h1>
+            <!-- This will be black -->
+            <${MyComponent1}/>
+        `
+    }
+}
 ```
 
 **Since 1.19.0**

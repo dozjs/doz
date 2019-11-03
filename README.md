@@ -52,10 +52,11 @@ $ npm start
 
 #### Component definition
 
+ButtonCounter.js
 ```javascript
-import {define, Component} from 'doz'
+import {Component} from 'doz'
 
-define('button-counter', class extends Component {
+export default class extends Component {
 
     constructor(o) {
         super(o);
@@ -67,7 +68,6 @@ define('button-counter', class extends Component {
 
     template(h) {
         return h`
-
             <style>
                 button {
                     font-size: 16px;
@@ -78,17 +78,18 @@ define('button-counter', class extends Component {
             <button onclick="this.props.counter++">
                 ${this.props.title} ${this.props.counter}
             </button>
-
         `
     }
 
-});
+};
 ```
 
 #### Make an app with the component defined above
 
+app.js
 ```javascript
 import Doz from 'doz'
+import ButtonCounter from './ButtonCounter'
 
 new Doz({
 
@@ -96,7 +97,7 @@ new Doz({
 
     template(h) {
         return h`
-            <button-counter title="Click me!"/>
+            <${ButtonCounter} title="Click me!"/>
         `
     }
 

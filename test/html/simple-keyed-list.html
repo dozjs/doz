@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - Simple keyed list</title>
-    <script src="../../dist/doz.js?5dp891ku454646k6ìkj5r4th41p74555543d888"></script>
+    <script src="../../dist/doz.js?5dp891ku454646k6ìkj5r4th41p745543d888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -34,23 +34,23 @@
             rows: [
                 {
                     value: Math.random(),
-                    key: 'ui1'
+                    id: 'ui1'
                 },
                 {
                     value: Math.random(),
-                    key: 'ui2'
+                    id: 'ui2'
                 } ,
                 {
                     value: Math.random(),
-                    key: 'ui3'
+                    id: 'ui3'
                 } ,
                 {
                     value: Math.random(),
-                    key: 'ui4'
+                    id: 'ui4'
                 } ,
                 {
                     value: Math.random(),
-                    key: 'ui5'
+                    id: 'ui5'
                 }
             ]
         },
@@ -60,11 +60,11 @@
                 <button onclick="this.addItem()">Add item</button>
                 <ul>
                         ${this.each(this.props.rows, (row, i) => h`
-                            <li key="${row.key}">
-                                <button onclick="this.removeItem(${row.key}, ${false}, ${true})" class="m1">x</button>&nbsp;
-                                <button onclick="this.infoItem(${row.key}, ${false}, ${true})" class="m1">i</button>&nbsp;
-                                <button onclick="this.update(${row.key}, ${false}, ${true})" class="m1">update</button>&nbsp;
-                                My Key ${row.key} ${row.value}
+                            <li key="${row.id}">
+                                <button onclick="this.removeItem(${row.id}, ${false}, ${true})" class="m1">x</button>&nbsp;
+                                <button onclick="this.infoItem(${row.id}, ${false}, ${true})" class="m1">i</button>&nbsp;
+                                <button onclick="this.update(${row.id}, ${false}, ${true})" class="m1">update</button>&nbsp;
+                                My Key ${row.id} ${row.value}
                             </li>
                         `)}
                 </ul>
@@ -72,23 +72,23 @@
         },
         infoItem(key) {
             const store = this.getStore('todo');
-            const index = store.rows.findIndex(item => item.key === key);
+            const index = store.rows.findIndex(item => item.id === key);
             console.log(index, this.props.rows[index]);
         },
         update(key) {
             const store = this.getStore('todo');
-            const index = store.rows.findIndex(item => item.key === key);
+            const index = store.rows.findIndex(item => item.id === key);
             this.props.rows[index].value = Math.random();
         },
         removeItem(key) {
             const store = this.getStore('todo');
-            const index = store.rows.findIndex(item => item.key === key);
+            const index = store.rows.findIndex(item => item.id === key);
             this.props.rows.splice(index, 1)
         },
         addItem() {
             this.props.rows.push({
                 value: Math.random(),
-                key: 'ui' + Math.random()
+                id: 'ui' + Math.random()
             });
         }
     });
