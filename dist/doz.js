@@ -2756,6 +2756,15 @@ module.exports = function (strings) {
                         cfg: cmp
                     };
                 }
+
+                // add to local app components
+                if (this.app._components[tagCmp] === undefined) {
+                    this.app._components[tagCmp] = {
+                        tag: tagCmp,
+                        cfg: cmp
+                    };
+                }
+
                 value[i] = tagCmp;
             }
         }
