@@ -59,7 +59,7 @@ module.exports = function (strings, ...value) {
         // if this function is bound to Doz component
         if (this._components) {
 
-            // if before is a <
+            // if before is to <
             if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 let cmp = value[i];
@@ -103,7 +103,8 @@ module.exports = function (strings, ...value) {
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else {
             // If is not component constructor then add to map.
-            if(!isComponentConstructor)
+            // Exclude string type also
+            if(!isComponentConstructor && typeof value[i] !== 'string')
                 value[i] = mapCompiled.set(value[i]);
             result += `${value[i]}${strings[i + 1]}`;
         }
