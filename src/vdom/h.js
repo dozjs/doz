@@ -82,7 +82,7 @@ module.exports = function (strings, ...value) {
                 // add to local components
                 if (this._components[tagCmp] === undefined) {
                     this._components[tagCmp] = {
-                        tagCmp,
+                        tag: tagCmp,
                         cfg: cmp
                     };
                 }
