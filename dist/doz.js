@@ -593,7 +593,7 @@ function compile(data, cmp) {
                 var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
-                    var possibleCompiled = mapCompiled.get(text);
+                    var possibleCompiled = mapCompiled.get(text.trim());
                     currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
             }
