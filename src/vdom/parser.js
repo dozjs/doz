@@ -82,7 +82,7 @@ function compile(data, cmp) {
                 const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
-                    let possibleCompiled = mapCompiled.get(text);
+                    let possibleCompiled = mapCompiled.get(text.trim());
                     currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
             }
