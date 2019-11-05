@@ -594,7 +594,7 @@ function compile(data, cmp) {
                 // if has content
                 if (text) {
                     var possibleCompiled = mapCompiled.get(text.trim());
-                    currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                    if (!Array.isArray(possibleCompiled)) currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
             }
         }
@@ -4418,7 +4418,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             args = new Array(_defined3.length);
 
             var _defined4 = function _defined4(item) {
-                item = item.trim();
+                item = trimQuotes(item.trim());
                 //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
                 var itemMap = mapCompiled.get(item);
                 if (itemMap !== undefined) item = itemMap;
@@ -4449,7 +4449,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 _args = new Array(_defined5.length);
 
                 var _defined6 = function _defined6(item) {
-                    item = item.trim();
+                    item = trimQuotes(item.trim());
                     var itemMap = mapCompiled.get(item);
                     if (itemMap !== undefined) item = itemMap;
                     //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
