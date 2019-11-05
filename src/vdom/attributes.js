@@ -101,7 +101,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         let stringArgs = match[2];
         if (stringArgs) {
             args = stringArgs.split(',').map(item => {
-                item = item.trim();
+                item = trimQuotes(item.trim());
                 //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
                 let itemMap = mapCompiled.get(item);
                 if (itemMap !== undefined)
@@ -130,7 +130,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             let stringArgs = match[2];
             if (stringArgs) {
                 args = stringArgs.split(',').map(item => {
-                    item = item.trim();
+                    item = trimQuotes(item.trim());
                     let itemMap = mapCompiled.get(item);
                     if (itemMap !== undefined)
                         item = itemMap;

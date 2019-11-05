@@ -83,7 +83,8 @@ function compile(data, cmp) {
                 // if has content
                 if (text) {
                     let possibleCompiled = mapCompiled.get(text.trim());
-                    currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                    if (!Array.isArray(possibleCompiled))
+                        currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
             }
         }
