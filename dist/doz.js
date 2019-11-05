@@ -262,7 +262,7 @@ module.exports = {
     data: {},
     set: function set(value) {
         var id = ++this.lastId;
-        id = "=%{" + id + "}%;";
+        id = "/*=%{" + id + "}%=*/";
         //console.log('--->', value)
         this.data[id] = value;
         return id;
@@ -277,7 +277,7 @@ module.exports = {
     getAll: function getAll(str) {
         var _this = this;
 
-        return str.replace(/(=%{\d+}%;)/g, function (match) {
+        return str.replace(/(\/\*=%{\d+}%=\*\/)/g, function (match) {
             var objValue = _this.get(match);
             if (objValue !== undefined) {
                 return objValue;
@@ -285,7 +285,7 @@ module.exports = {
         });
     },
     isValidId: function isValidId(id) {
-        return (/^=%{\d+}%;$/.test(id)
+        return (/^\/\*=%{\d+}%=\*\/$/.test(id)
         );
     },
     flush: function flush() {

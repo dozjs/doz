@@ -3,7 +3,7 @@ module.exports = {
     data: {},
     set(value) {
         let id = ++this.lastId;
-        id = `=%{${id}}%;`;
+        id = `/*=%{${id}}%=*/`;
         //console.log('--->', value)
         this.data[id] = value;
         return id;
@@ -16,7 +16,7 @@ module.exports = {
         return res;
     },
     getAll(str) {
-        return str.replace(/(=%{\d+}%;)/g, (match) => {
+        return str.replace(/(\/\*=%{\d+}%=\*\/)/g, (match) => {
             let objValue = this.get(match);
             if (objValue !== undefined) {
                 return objValue;
@@ -25,7 +25,7 @@ module.exports = {
         });
     },
     isValidId(id) {
-        return /^=%{\d+}%;$/.test(id)
+        return /^\/\*=%{\d+}%=\*\/$/.test(id)
     },
     flush() {
         this.data = {};
