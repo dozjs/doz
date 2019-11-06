@@ -248,7 +248,7 @@ describe('Doz.local.component2', function () {
                 const html = document.body.innerHTML.trim();
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><grid-component0><div>foo</div></grid-component0></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><grid-component-1-0><div>foo</div></grid-component-1-0></dz-app></div>');
                 done();
             }, 100);
 

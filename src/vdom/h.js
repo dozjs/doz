@@ -71,7 +71,7 @@ module.exports = function (strings, ...value) {
                     tagCmp = `${tagCmp}-${tagCmp}`;
                 }
 
-                tagCmp += (this._localComponentLastId++);
+                tagCmp += '-' + this.uId + '-' + (this._localComponentLastId++);
 
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
