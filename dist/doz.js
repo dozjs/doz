@@ -2731,7 +2731,7 @@ module.exports = function (strings) {
         if (this._components) {
 
             // if before is to <
-            if (typeof value[i] === 'function' && value[i].__proto__ === Component && strings[i].indexOf(LESSER) > -1) {
+            if (typeof value[i] === 'function' /*&& value[i].__proto__ === Component*/ && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 var cmp = value[i];
                 var tagCmp = camelToDash(cmp.name);
