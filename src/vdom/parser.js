@@ -4,7 +4,7 @@ const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directive');
 const mapCompiled = require('./map-compiled');
-const eventsAttributes = require('../utils/events-attributes');
+//const eventsAttributes = require('../utils/events-attributes');
 
 const selfClosingElements = {
     meta: true,
@@ -201,7 +201,8 @@ function propsFixer(nName, aName, aValue, props, $node) {
     // attributi come gli eventi onclick ecc... perchè al momento vengono composti
     // dentro il modulo attributes.js
 
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
+    //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
+    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !REGEX.IS_LISTENER.test(aName)) {
         aValue = mapCompiled.getAll(aValue);
     } else {
         let objValue = mapCompiled.get(aValue);
