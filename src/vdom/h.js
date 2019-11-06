@@ -67,9 +67,9 @@ module.exports = function (strings, ...value) {
                 // Sanitize tag name
                 tagCmp = tagCmp.replace(/_+/, '');
                 // if is a single word, rename with double word
-                if (tagCmp.indexOf('-') === -1) {
+                /*if (tagCmp.indexOf('-') === -1) {
                     tagCmp = `${tagCmp}-${tagCmp}`;
-                }
+                }*/
 
                 tagCmp += '-' + this.uId + '-' + (this._localComponentLastId++);
 
