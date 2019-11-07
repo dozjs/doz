@@ -22,10 +22,11 @@ module.exports = function (strings, ...value) {
     //console.log('val', value);
 
     // Why? cycling require :D
-    let Component = require('../component/Component');
+    //let Component = require('../component/Component');
 
     let result = strings[0];
     let allowTag = false;
+    let isInStyle = false;
 
     for (let i = 0; i < value.length; ++i) {
         let isComponentConstructor = false;
@@ -45,6 +46,7 @@ module.exports = function (strings, ...value) {
             value[i] = mapCompiled.set(value[i]);
         }
 
+
         [...strings[i]].forEach(char => {
             if (char === LESSER)
                 allowTag = false;
@@ -52,7 +54,16 @@ module.exports = function (strings, ...value) {
                 allowTag = true;
         });
 
-        if(/<\/?style( scoped)?>/ig.test(strings[i])) {
+
+        if (strings[i].indexOf('<style') > -1) {
+            isInStyle = true;
+        }
+
+        if (strings[i].indexOf('</style') > -1) {
+            isInStyle = false;
+        }
+
+        if(isInStyle) {
             allowTag = false;
         }
 
@@ -104,8 +115,9 @@ module.exports = function (strings, ...value) {
         else {
             // If is not component constructor then add to map.
             // Exclude string type also
-            if(!isComponentConstructor && typeof value[i] !== 'string')
+            if(!isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapCompiled.set(value[i]);
+            }
             result += `${value[i]}${strings[i + 1]}`;
         }
     }

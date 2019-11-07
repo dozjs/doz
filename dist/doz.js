@@ -2686,10 +2686,11 @@ module.exports = function (strings) {
     //console.log('val', value);
 
     // Why? cycling require :D
-    var Component = __webpack_require__(7);
+    //let Component = require('../component/Component');
 
     var result = strings[0];
     var allowTag = false;
+    var isInStyle = false;
 
     for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         value[_key - 1] = arguments[_key];
@@ -2723,7 +2724,15 @@ module.exports = function (strings) {
             _defined(_defined2[_i2], _i2, _defined2);
         }
 
-        if (/<\/?style( scoped)?>/ig.test(strings[i])) {
+        if (strings[i].indexOf('<style') > -1) {
+            isInStyle = true;
+        }
+
+        if (strings[i].indexOf('</style') > -1) {
+            isInStyle = false;
+        }
+
+        if (isInStyle) {
             allowTag = false;
         }
 
@@ -2773,7 +2782,9 @@ module.exports = function (strings) {
         if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else {
             // If is not component constructor then add to map.
             // Exclude string type also
-            if (!isComponentConstructor && typeof value[i] !== 'string') value[i] = mapCompiled.set(value[i]);
+            if (!isComponentConstructor && typeof value[i] !== 'string') {
+                value[i] = mapCompiled.set(value[i]);
+            }
             result += '' + value[i] + strings[i + 1];
         }
     }

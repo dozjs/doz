@@ -21,6 +21,25 @@
             count: 0
         },
 
+        _template(h) {
+            return h`
+                <style>
+                    button {
+                        color: red;
+                        background-color: yellow;
+                        font-size: ${10 + this.props.count}px;
+                        padding: ${12 + this.props.count}px;
+                        animation: example;
+                        animation-name: example;
+                        /*color: black;*/
+                    }
+                </style>
+                <button
+                    onclick="this.props.count++"
+                > Count ${this.props.count}</button> count ${this.props.count}
+            `;
+        },
+
         template(h) {
             return h`
                 <style>
@@ -28,7 +47,7 @@
                         color: red;
                         background-color: yellow;
                         font-size: ${10 + this.props.count}px;
-                        padding: 20px;
+                        padding: ${12 + this.props.count}px;
                         animation: example;
                         animation-name: example;
                         /*color: black;*/
@@ -50,7 +69,7 @@
                 </style>
                 <button
                     onclick="this.props.count++"
-                >Count ${this.props.count}</button> count ${this.props.count}
+                > Count ${this.props.count}</button> count ${this.props.count}
             `;
         }
     });
