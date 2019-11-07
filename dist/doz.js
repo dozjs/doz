@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.0.0  
+// [DOZ]  Build version: 2.0.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -500,7 +500,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 //const castStringTo = require('../utils/cast-string-to');
-var dashToCamel = __webpack_require__(8);
+var dashToCamel = __webpack_require__(7);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -726,6 +726,21 @@ module.exports = {
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function dashToCamel(s) {
+    return s.replace(/(-\w)/g, function (m) {
+        return m[1].toUpperCase();
+    });
+}
+
+module.exports = dashToCamel;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1135,21 +1150,6 @@ module.exports = Component;
 module.exports._Component = Component;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function dashToCamel(s) {
-    return s.replace(/(-\w)/g, function (m) {
-        return m[1].toUpperCase();
-    });
-}
-
-module.exports = dashToCamel;
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1180,7 +1180,7 @@ var _require2 = __webpack_require__(6),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(34);
-var Component = __webpack_require__(7);
+var Component = __webpack_require__(8);
 var propsInit = __webpack_require__(19);
 var delay = __webpack_require__(4);
 var directive = __webpack_require__(0);
@@ -2944,7 +2944,7 @@ var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
 var component = __webpack_require__(54);
-var Component = __webpack_require__(7);
+var Component = __webpack_require__(8);
 var mixin = __webpack_require__(55);
 var h = __webpack_require__(17);
 
@@ -3003,7 +3003,7 @@ Object.defineProperties(Doz, {
         value: mapCompiled
     },
     version: {
-        value: '2.0.0',
+        value: '2.0.1',
         enumerable: true
     }
 });
@@ -4821,7 +4821,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var canDecode = __webpack_require__(15);
 var composeStyleInner = __webpack_require__(11);
-var dashToCamel = __webpack_require__(8);
+var dashToCamel = __webpack_require__(7);
 var Base = __webpack_require__(51);
 
 var _require = __webpack_require__(1),
@@ -5229,7 +5229,7 @@ module.exports = component;
 "use strict";
 
 
-var Component = __webpack_require__(7);
+var Component = __webpack_require__(8);
 var mixin = __webpack_require__(18);
 
 function globalMixin(obj) {
@@ -5637,7 +5637,7 @@ directive('ref', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var dashToCamel = __webpack_require__(8);
+var dashToCamel = __webpack_require__(7);
 
 directive('is', {
     hasDataIs: function hasDataIs($target) {
