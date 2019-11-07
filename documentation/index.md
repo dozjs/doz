@@ -13,8 +13,6 @@ Below some basic concepts:
 - [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
-    - [Props types](#props-types)
-        - [Types available](#types-available)
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
@@ -36,6 +34,7 @@ Below some basic concepts:
             - [d-bind](#d-bind)
             - [d-ref](#d-ref)
             - [d-is](#d-is)
+            - [d-show](#d-show)
         - [DOZ component](#doz-component)
             - [d:id](#did)
             - [d:store](#dstore)
@@ -161,46 +160,6 @@ new Doz({
 [LIVE](https://codepen.io/pen/eYYZVwz)
 
 ---
-
-### Props types
-
-**Since 1.20.0**
-
-When passing a prop via attribute, it is automatically converted to the most appropriate type. 
-The reason for this conversion is that all the attributes are strings. 
-Now, using the "propsType" object, you can define a type for each prop.
-
-```javascript
-Doz.component('my-types', {
-    propsType: {
-        myParam: 'string'
-    },
-    template() {
-        return `
-            <h3>This is number but string: ${this.props.myParam}</h3>
-        `
-    }
-});
-
-new Doz({
-    root: '#app',
-    template(h) {
-        return h`
-            <my-types my-param="10"/>
-        `
-    }
-});
-```
----
-
-#### Types available
-
-- `string`
-- `number`
-- `boolean`
-- `object`
-- `array`
-- `date`
 
 ### Props listener
 
@@ -542,14 +501,14 @@ new Doz({
 ```
 
 #### Passing arguments
-The method passed to event is transformed by Doz (in reality it's a string) so the arguments are automatically casted.
+Doz keeps the types passed to the function.
 `this` is a special placeholder that identify current instance.
 
 ```javascript
 Doz.component('my-button', {
     template(h) {
         return h`
-            <button onclick="this.clickme('hello', 'world', this)">Click me!</button>
+            <button onclick="this.clickme(${'hello'}, ${true}, ${123}, ${function(){return true}}, this)">Click me!</button>
         `
     },
     clickme(myArg, otherArg, me, e) {
@@ -569,8 +528,6 @@ new Doz({
     }
 });
 ```
-
-[FIDDLE](https://jsfiddle.net/1wj852pd/)
 
 > If you want the HTMLElement reference inside the handler you can use `$this`.
 
@@ -827,31 +784,8 @@ As said previously, when define a component with `component` this will be global
 Doz also allows you to create local components:
 
 ```javascript
-// First way
-const helloWorld = {
-    tag: 'hello-world',
-    cfg: {
-        template(h) {
-            return h`
-                <h2>Hello World</h2>
-            `
-        }
-    }
-}
-
-new Doz({
-    components: [helloWorld],
-    root: '#app',
-    template(h) {
-        return h`
-            <h1>Welcome to my app:</h1>
-            <hello-world></hello-world>
-        `
-    }
-});
-
-// Second way
-const helloWorld = {
+// Extendig the Component class
+const HelloWorld = class extends Doz.Component {
     template(h) {
         return h`
             <h2>Hello World</h2>
@@ -859,15 +793,20 @@ const helloWorld = {
     }
 }
 
+// Or a simple function
+const Other = function (h) {
+    return h`
+        <h3>Other</h3>
+    `
+}
+
 new Doz({
-    components: {
-        'hello-world': helloWorld
-    },
     root: '#app',
     template(h) {
         return h`
             <h1>Welcome to my app:</h1>
-            <hello-world></hello-world>
+            <${HelloWorld}/>
+            <${Other}/>
         `
     }
 });
@@ -1181,6 +1120,26 @@ new Doz({
         return h`
             <h1>Welcome to my app:</h1>
             <my-list></my-list>
+        `
+    }
+});
+```
+
+---
+
+##### d-show
+
+**Since 1.25.0**
+
+Show or hide an element.
+
+```javascript
+new Doz({
+    root: '#app',
+    template(h){
+        return h`
+            <h1>Welcome to my app:</h1>
+            <h2 d-show=${false}>Wow!</h2>
         `
     }
 });

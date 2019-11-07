@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0] - unreleased
+## [2.0.0] - 2019-11-07
 - **Added** support to new local components with class
 - **Added** key attribute for keyed loops
 - **Changed** now props in template preserves the type
