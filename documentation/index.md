@@ -35,6 +35,7 @@ Below some basic concepts:
             - [d-ref](#d-ref)
             - [d-is](#d-is)
             - [d-show](#d-show)
+            - [Custom directives](#custom-directives)
         - [DOZ component](#doz-component)
             - [d:id](#did)
             - [d:store](#dstore)
@@ -97,7 +98,7 @@ new Doz({
 ---
 
 ## Component definition
-The method `define` defines an component globally that can be added to any other component of the project.
+The method `define` or the alias `component` defines an component globally that can be added to any other component of the project.
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
 
 ```javascript
@@ -384,7 +385,7 @@ props: {
 }
 ```
 
-This scenario it's a problem
+This scenario could create some problems
 ```javascript
 props: {
     other: {
@@ -780,7 +781,10 @@ new Doz({
 ---
 
 ### Local component
-As said previously, when define a component with `component` this will be global.
+
+**Since 2.0.0**
+
+As said previously, when define a component with `define` or `component` this will be global.
 Doz also allows you to create local components:
 
 ```javascript
@@ -1144,6 +1148,15 @@ new Doz({
     }
 });
 ```
+
+---
+##### Custom directives
+
+**Since 1.25.0**
+
+If you need to create a custom directive please look this directory.
+
+[https://github.com/dozjs/doz/tree/master/src/directive/built-in](https://github.com/dozjs/doz/tree/master/src/directive/built-in)
 
 ---
 
@@ -2046,6 +2059,7 @@ The tags you shouldn't use:
 - dz-root
 - dz-slot
 - dz-text-node
+- dz-iterate-node
 
 ---
 
