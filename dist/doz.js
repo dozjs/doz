@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.0.2  
+// [DOZ]  Build version: 2.0.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2740,10 +2740,10 @@ module.exports = function (strings) {
         if (this._components) {
 
             // if before is to <
-            if (typeof value[i] === 'function' /*&& value[i].__proto__ === Component*/ && strings[i].indexOf(LESSER) > -1) {
+            if (value[i] && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 var cmp = value[i];
-                var tagCmp = camelToDash(cmp.name);
+                var tagCmp = camelToDash(cmp.name || 'obj');
                 // Sanitize tag name
                 tagCmp = tagCmp.replace(/_+/, '');
                 // if is a single word, rename with double word
@@ -3003,7 +3003,7 @@ Object.defineProperties(Doz, {
         value: mapCompiled
     },
     version: {
-        value: '2.0.2',
+        value: '2.0.3',
         enumerable: true
     }
 });
