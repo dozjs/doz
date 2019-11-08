@@ -33,6 +33,7 @@ describe('Doz.local.component2', function () {
                     `
                 }
             }
+
             new Doz({
                 root: '#app',
                 template(h) {
@@ -72,7 +73,9 @@ describe('Doz.local.component2', function () {
                 <div id="app"></div>
             `;
 
-            const globalObj = function myFunc() {return 'hello doz'};
+            const globalObj = function myFunc() {
+                return 'hello doz'
+            };
 
             const GridComponent = class extends Doz.Component {
                 constructor(o) {
@@ -81,6 +84,7 @@ describe('Doz.local.component2', function () {
                         data: []
                     };
                 }
+
                 template(h) {
                     let res = h`
                         <div>
@@ -165,7 +169,7 @@ describe('Doz.local.component2', function () {
                     records: []
                 },
                 template(h) {
-                    return  h`
+                    return h`
                         <${GridComponent} my-func="${aFunction}" name="${'boom'}"  />
                     `;
                 }
@@ -202,7 +206,7 @@ describe('Doz.local.component2', function () {
                     records: []
                 },
                 template(h) {
-                    return  h`
+                    return h`
                         <${GridComponent} my-func="${new Date()}" name="${'boom'}"/>
                     `;
                 }
@@ -238,8 +242,8 @@ describe('Doz.local.component2', function () {
                     records: []
                 },
                 template(h) {
-                    return  h`
-                        <${GridComponent} name="${{a:['boom','foo']}}"></${GridComponent}>
+                    return h`
+                        <${GridComponent} name="${{a: ['boom', 'foo']}}"></${GridComponent}>
                     `;
                 }
             });
@@ -259,7 +263,7 @@ describe('Doz.local.component2', function () {
             document.body.innerHTML = `
                 <div id="app"></div>
             `;
-            const GridComponent = function(h) {
+            const GridComponent = function (h) {
                 return h`
                     <div>
                         ${this.props.name.a[1]}
@@ -273,8 +277,8 @@ describe('Doz.local.component2', function () {
                     records: []
                 },
                 template(h) {
-                    return  h`
-                        <${GridComponent} name="${{a:['boom','foo']}}"></${GridComponent}>
+                    return h`
+                        <${GridComponent} name="${{a: ['boom', 'foo']}}"></${GridComponent}>
                     `;
                 }
             });
@@ -284,6 +288,43 @@ describe('Doz.local.component2', function () {
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><grid-component-1-0><div>foo</div></grid-component-1-0></dz-app></div>');
+                done();
+            }, 100);
+
+        });
+
+        it('should be ok 6', function (done) {
+
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+            const GridComponent = {
+                template(h) {
+                    return h`
+                        <div>
+                            ${this.props.name.a[1]}
+                        </div>
+                    `
+                }
+            };
+
+            new Doz({
+                root: '#app',
+                props: {
+                    records: []
+                },
+                template(h) {
+                    return h`
+                        <${GridComponent} name="${{a: ['boom', 'foo']}}"></${GridComponent}>
+                    `;
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML.trim();
+                //console.log(require('../src/vdom/map-compiled').data);
+                console.log(html);
+                be.err.equal(html, '<div id="app"><dz-app><obj-1-0><div>foo</div></obj-1-0></dz-app></div>');
                 done();
             }, 100);
 

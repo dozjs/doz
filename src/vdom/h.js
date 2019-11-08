@@ -71,10 +71,10 @@ module.exports = function (strings, ...value) {
         if (this._components) {
 
             // if before is to <
-            if (typeof value[i] === 'function' /*&& value[i].__proto__ === Component*/ && strings[i].indexOf(LESSER) > -1) {
+            if (value[i] && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 let cmp = value[i];
-                let tagCmp = camelToDash(cmp.name);
+                let tagCmp = camelToDash(cmp.name || 'obj');
                 // Sanitize tag name
                 tagCmp = tagCmp.replace(/_+/, '');
                 // if is a single word, rename with double word
