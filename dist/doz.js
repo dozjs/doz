@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.0.1  
+// [DOZ]  Build version: 2.0.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3003,7 +3003,7 @@ Object.defineProperties(Doz, {
         value: mapCompiled
     },
     version: {
-        value: '2.0.1',
+        value: '2.0.2',
         enumerable: true
     }
 });
@@ -4879,7 +4879,7 @@ var DOMManipulation = function (_Base) {
             if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
                 if ($parent.nodeName === 'SCRIPT') {
                     // it could be heavy
-                    if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
+                    if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner && document.getElementById($parent.dataset.id)) {
                         document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
                     }
                 } else {
