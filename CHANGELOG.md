@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2019-11-08
+- **Fixed** possible undefined style element
+
 ## [2.0.1] - 2019-11-07
 - **Fixed** style issues
 

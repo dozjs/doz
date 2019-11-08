@@ -43,7 +43,7 @@ class DOMManipulation extends Base {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
-                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner) {
+                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner && document.getElementById($parent.dataset.id)) {
                     document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
                 }
             } else {
