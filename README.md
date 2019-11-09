@@ -14,6 +14,8 @@ Almost like writing in VanillaJS. For modern browser.
 | <a href="https://dozjs.github.io/doz/example/">Demo</a> 
 | <a href="https://github.com/dozjs/doz/tree/master/example">Browse example code</a>
 <br/><br/>
+<a href="https://play.xdevel.com/2">SEE A PROJECT BUILT WITH DOZ</a>
+<br/><br/>
 </div>
 
 ## Why
