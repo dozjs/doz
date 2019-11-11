@@ -274,12 +274,15 @@ class Component extends DOMManipulation {
         return this;
     }
 
-    destroy(onlyInstance) {
-        if (this.unmount(onlyInstance, true) === false)
-            return;
+    destroy(onlyInstance, onlyDestroy) {
 
-        if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
-            return;
+        if (!onlyDestroy) {
+            if (this.unmount(onlyInstance, true) === false)
+                return;
+
+            if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
+                return;
+            }
         }
 
         Object.keys(this.children).forEach(child => {
