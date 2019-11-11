@@ -37,11 +37,9 @@ we need to know a lot of directives and they make confusion for example with the
 Doz was created to make the development of web applications easy, by reading this simple documentation
 you will be able to immediately start creating something without getting lost in words and multiple import of functions.
 
-## Installation
+## Get started
 ```
-$ npm install -g doz-cli
-
-$ doz app my-app
+$ npx doz-cli app my-app
 $ cd my-app
 $ npm start
 ```
