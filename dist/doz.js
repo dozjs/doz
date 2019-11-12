@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.0.6  
+// [DOZ]  Build version: 2.0.7  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1499,7 +1499,8 @@ function composeStyleInner(cssContent, tag) {
         return match;
     });
 
-    cssContent = cssContent.replace(/\s{2,}/g, ' ').replace(/{ /g, '{').replace(/ }/g, '}').replace(/\n/g, '').trim();
+    cssContent = cssContent.replace(/\s{2,}/g, ' ').replace(/{ /g, '{').replace(/ }/g, '}').replace(/\s:/g, ':') //remove space before pseudo classes
+    .replace(/\n/g, '').trim();
 
     return cssContent;
 }
@@ -3003,7 +3004,7 @@ Object.defineProperties(Doz, {
         value: mapCompiled
     },
     version: {
-        value: '2.0.6',
+        value: '2.0.7',
         enumerable: true
     }
 });
