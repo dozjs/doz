@@ -53,6 +53,7 @@ function composeStyleInner(cssContent, tag) {
         .replace(/\s{2,}/g, ' ')
         .replace(/{ /g, '{')
         .replace(/ }/g, '}')
+        .replace(/\s:/g, ':') //remove space before pseudo classes
         .replace(/\n/g, '')
         .trim();
 
