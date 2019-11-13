@@ -1164,6 +1164,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var html = __webpack_require__(10);
 var transformChildStyle = __webpack_require__(26);
 
@@ -1171,6 +1173,9 @@ var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
     ALREADY_WALKED = _require.ALREADY_WALKED,
+    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
+    DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES,
     REGEX = _require.REGEX;
 
 var collection = __webpack_require__(2);
@@ -1242,8 +1247,6 @@ function createInstance() {
                 localComponents = parent.cmp._components;
             }
 
-            //console.log('---->', cmpName)
-
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
             var parentElement = void 0;
@@ -1266,6 +1269,41 @@ function createInstance() {
                         trash.push($child);
                         $child = $child.nextSibling;
                         return 'continue';
+                    }
+
+                    // Replace possible child name generated automatically
+                    // Tags generated automatically are like my-tag-1-0
+                    // This block transforms to original tag like my-tag
+                    if (cmp.tag && cmpName !== cmp.tag) {
+                        var $newNodeChild = document.createElement(cmp.tag);
+
+                        while ($child.childNodes.length > 0) {
+                            $newNodeChild.appendChild($child.childNodes[0]);
+                        }
+
+                        $child.parentNode.replaceChild($newNodeChild, $child);
+                        // Copy all attributes
+
+                        var _defined = function _defined(attr) {
+                            $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue);
+                        };
+
+                        var _defined2 = [].concat(_toConsumableArray($child.attributes));
+
+                        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+                            _defined(_defined2[_i2], _i2, _defined2);
+                        }
+                        // Copy all specials Doz properties attached to element
+
+
+                        if ($child[COMPONENT_INSTANCE]) $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
+                        if ($child[COMPONENT_DYNAMIC_INSTANCE]) $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
+                        if ($child[COMPONENT_ROOT_INSTANCE]) $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
+                        if ($child[PROPS_ATTRIBUTES]) $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
+                        if ($child[ALREADY_WALKED]) $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
+                        if ($child[DEFAULT_SLOT_KEY]) $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
+
+                        $child = $newNodeChild;
                     }
 
                     var props = serializeProps($child);
@@ -1395,12 +1433,12 @@ function createInstance() {
 
     walk(cfg.template);
 
-    var _defined = function _defined($child) {
+    var _defined3 = function _defined3($child) {
         return $child.remove();
     };
 
-    for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
-        _defined(trash[_i2], _i2, trash);
+    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
+        _defined3(trash[_i4], _i4, trash);
     }
 
     return componentInstance;
@@ -2744,15 +2782,15 @@ module.exports = function (strings) {
             if (value[i] && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 var cmp = value[i];
-                var tagCmp = camelToDash(cmp.name || 'obj');
+                var tagName = camelToDash(cmp.tag || cmp.name || 'obj');
                 // Sanitize tag name
-                tagCmp = tagCmp.replace(/_+/, '');
+                tagName = tagName.replace(/_+/, '');
                 // if is a single word, rename with double word
-                /*if (tagCmp.indexOf('-') === -1) {
-                    tagCmp = `${tagCmp}-${tagCmp}`;
-                }*/
+                if (tagName.indexOf('-') === -1) {
+                    tagName = tagName + '-' + tagName;
+                }
 
-                tagCmp += '-' + this.uId + '-' + this._localComponentLastId++;
+                var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
 
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
@@ -2763,7 +2801,7 @@ module.exports = function (strings) {
                 // add to local components
                 if (this._components[tagCmp] === undefined) {
                     this._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }
@@ -2771,7 +2809,7 @@ module.exports = function (strings) {
                 // add to local app components
                 if (this.app._components[tagCmp] === undefined) {
                     this.app._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }
