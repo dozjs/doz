@@ -18,7 +18,7 @@ function createInstance(cfg = {}) {
     if (cfg.template instanceof HTMLElement) {
         if (!cfg.template.parentNode)
             cfg.root.appendChild(cfg.template);
-    } else if (typeof cfg.template === 'string'){
+    } else if (typeof cfg.template === 'string') {
         cfg.template = html.create(cfg.template);
         cfg.root.appendChild(cfg.template);
     }
@@ -90,6 +90,9 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
+                // Replace possible child name generated automatically
+                // Tags generated automatically are like my-tag-1-0
+                // This block transforms to original tag like my-tag
                 if (cmp.tag && cmpName !== cmp.tag) {
                     let $newNodeChild = document.createElement(cmp.tag);
 
@@ -99,7 +102,9 @@ function createInstance(cfg = {}) {
 
                     $child.parentNode.replaceChild($newNodeChild, $child);
                     // Copy all attributes
-                    [...$child.attributes].forEach( attr => { $newNodeChild.setAttribute(attr.nodeName ,attr.nodeValue) });
+                    [...$child.attributes].forEach(attr => {
+                        $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue)
+                    });
                     // Copy all specials Doz properties attached to element
                     if ($child[COMPONENT_INSTANCE])
                         $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
@@ -116,7 +121,6 @@ function createInstance(cfg = {}) {
 
                     $child = $newNodeChild;
                 }
-
 
                 const props = serializeProps($child);
 
