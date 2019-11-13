@@ -252,7 +252,7 @@ describe('Doz.local.component2', function () {
                 const html = document.body.innerHTML.trim();
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><grid-component-1-0><div>foo</div></grid-component-1-0></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><grid-component><div>foo</div></grid-component></dz-app></div>');
                 done();
             }, 100);
 
@@ -287,7 +287,7 @@ describe('Doz.local.component2', function () {
                 const html = document.body.innerHTML.trim();
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><grid-component-1-0><div>foo</div></grid-component-1-0></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><grid-component><div>foo</div></grid-component></dz-app></div>');
                 done();
             }, 100);
 
@@ -324,7 +324,7 @@ describe('Doz.local.component2', function () {
                 const html = document.body.innerHTML.trim();
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><obj-1-0><div>foo</div></obj-1-0></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><obj-obj><div>foo</div></obj-obj></dz-app></div>');
                 done();
             }, 100);
 

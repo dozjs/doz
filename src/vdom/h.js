@@ -74,15 +74,15 @@ module.exports = function (strings, ...value) {
             if (value[i] && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 let cmp = value[i];
-                let tagCmp = camelToDash(cmp.name || 'obj');
+                let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
                 // Sanitize tag name
-                tagCmp = tagCmp.replace(/_+/, '');
+                tagName = tagName.replace(/_+/, '');
                 // if is a single word, rename with double word
-                /*if (tagCmp.indexOf('-') === -1) {
-                    tagCmp = `${tagCmp}-${tagCmp}`;
-                }*/
+                if (tagName.indexOf('-') === -1) {
+                    tagName = `${tagName}-${tagName}`;
+                }
 
-                tagCmp += '-' + this.uId + '-' + (this._localComponentLastId++);
+                let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
@@ -93,7 +93,7 @@ module.exports = function (strings, ...value) {
                 // add to local components
                 if (this._components[tagCmp] === undefined) {
                     this._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }
@@ -101,7 +101,7 @@ module.exports = function (strings, ...value) {
                 // add to local app components
                 if (this.app._components[tagCmp] === undefined) {
                     this.app._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }

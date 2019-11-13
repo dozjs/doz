@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const transformChildStyle = require('./helpers/transform-child-style');
-const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} = require('../constants');
+const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, COMPONENT_DYNAMIC_INSTANCE, DEFAULT_SLOT_KEY, PROPS_ATTRIBUTES, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -64,8 +64,6 @@ function createInstance(cfg = {}) {
                 localComponents = parent.cmp._components;
             }
 
-            //console.log('---->', cmpName)
-
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
@@ -91,6 +89,34 @@ function createInstance(cfg = {}) {
                     $child = $child.nextSibling;
                     continue;
                 }
+
+                if (cmp.tag && cmpName !== cmp.tag) {
+                    let $newNodeChild = document.createElement(cmp.tag);
+
+                    while ($child.childNodes.length > 0) {
+                        $newNodeChild.appendChild($child.childNodes[0]);
+                    }
+
+                    $child.parentNode.replaceChild($newNodeChild, $child);
+                    // Copy all attributes
+                    [...$child.attributes].forEach( attr => { $newNodeChild.setAttribute(attr.nodeName ,attr.nodeValue) });
+                    // Copy all specials Doz properties attached to element
+                    if ($child[COMPONENT_INSTANCE])
+                        $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
+                    if ($child[COMPONENT_DYNAMIC_INSTANCE])
+                        $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
+                    if ($child[COMPONENT_ROOT_INSTANCE])
+                        $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
+                    if ($child[PROPS_ATTRIBUTES])
+                        $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
+                    if ($child[ALREADY_WALKED])
+                        $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
+                    if ($child[DEFAULT_SLOT_KEY])
+                        $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
+
+                    $child = $newNodeChild;
+                }
+
 
                 const props = serializeProps($child);
 
