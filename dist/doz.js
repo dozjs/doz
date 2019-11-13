@@ -1333,7 +1333,7 @@ function createInstance() {
                         }
 
                         newElement = new cmp.cfg({
-                            tag: cmpName,
+                            tag: cmp.tag || cmpName,
                             root: $child,
                             app: cfg.app,
                             props: props,
@@ -1342,7 +1342,7 @@ function createInstance() {
                         });
                     } else {
                         newElement = new Component({
-                            tag: cmpName,
+                            tag: cmp.tag || cmpName,
                             cmp: cmp,
                             root: $child,
                             app: cfg.app,
