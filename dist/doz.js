@@ -2805,7 +2805,7 @@ module.exports = function (strings) {
         if (isBoundedToComponent && !isInStyle) {
 
             // if before is to <
-            if (value[i] && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
+            if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 var cmp = value[i];
                 var tagName = camelToDash(cmp.tag || cmp.name || 'obj');

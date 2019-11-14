@@ -74,7 +74,7 @@ module.exports = function (strings, ...value) {
         if (isBoundedToComponent && !isInStyle) {
 
             // if before is to <
-            if (value[i] && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
+            if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 let cmp = value[i];
                 let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
