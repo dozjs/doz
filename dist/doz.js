@@ -2712,6 +2712,7 @@ var GREATER = '>';
 
 var regOpen = new RegExp('<' + tagText + '>(\\s+)?<', 'gi');
 var regClose = new RegExp('>(\\s+)?</' + tagText + '>', 'gi');
+var regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
 /**
  * This method add special tag to value placeholder
@@ -2730,6 +2731,7 @@ module.exports = function (strings) {
     var result = strings[0];
     var allowTag = false;
     var isInStyle = false;
+    var isBoundedToComponent = !!this._components;
 
     for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         value[_key - 1] = arguments[_key];
@@ -2776,7 +2778,7 @@ module.exports = function (strings) {
         }
 
         // if this function is bound to Doz component
-        if (this._components) {
+        if (isBoundedToComponent) {
 
             // if before is to <
             if (value[i] && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
@@ -2820,8 +2822,8 @@ module.exports = function (strings) {
 
         if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else {
             // If is not component constructor then add to map.
-            // Exclude string type also
-            if (!isComponentConstructor && typeof value[i] !== 'string') {
+            // Exclude string type and style also
+            if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapCompiled.set(value[i]);
             }
             result += '' + value[i] + strings[i + 1];
@@ -2830,7 +2832,18 @@ module.exports = function (strings) {
 
     result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
 
-    //console.log(result);
+    if (isBoundedToComponent) {
+        // Now get style from complete string
+        result = result.replace(regStyle, function (match, p1) {
+            if (match) {
+                // Here should be create the tag style
+                console.log('style content', p1);
+                return '';
+            }
+        });
+    }
+
+    console.log(result);
 
     result = compile(result);
 

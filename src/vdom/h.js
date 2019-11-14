@@ -9,6 +9,7 @@ const GREATER = '>';
 
 const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
+const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
 /**
  * This method add special tag to value placeholder
@@ -27,6 +28,7 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
+    let isBoundedToComponent = !!this._components;
 
     for (let i = 0; i < value.length; ++i) {
         let isComponentConstructor = false;
@@ -68,7 +70,7 @@ module.exports = function (strings, ...value) {
         }
 
         // if this function is bound to Doz component
-        if (this._components) {
+        if (isBoundedToComponent) {
 
             // if before is to <
             if (value[i] && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
@@ -114,8 +116,8 @@ module.exports = function (strings, ...value) {
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else {
             // If is not component constructor then add to map.
-            // Exclude string type also
-            if(!isComponentConstructor && typeof value[i] !== 'string') {
+            // Exclude string type and style also
+            if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapCompiled.set(value[i]);
             }
             result += `${value[i]}${strings[i + 1]}`;
@@ -126,7 +128,18 @@ module.exports = function (strings, ...value) {
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
-    //console.log(result);
+    if (isBoundedToComponent) {
+        // Now get style from complete string
+        result = result.replace(regStyle, (match, p1) => {
+            if (match) {
+                // Here should be create the tag style
+                console.log('style content', p1);
+                return '';
+            }
+        });
+    }
+
+    console.log(result);
 
     result = compile(result);
 
