@@ -2802,7 +2802,7 @@ module.exports = function (strings) {
         }
 
         // if this function is bound to Doz component
-        if (isBoundedToComponent) {
+        if (isBoundedToComponent && !isInStyle) {
 
             // if before is to <
             if (value[i] && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
@@ -2875,11 +2875,11 @@ module.exports = function (strings) {
         });
     }
 
+    result = result.trim();
     //console.log(result);
 
     result = compile(result);
 
-    //hCache.set(strings, value, result);
     //console.log(result)
     //console.log(mapCompiled.data)
     return result;
