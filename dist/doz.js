@@ -2701,9 +2701,12 @@ var _require = __webpack_require__(1),
 var mapCompiled = __webpack_require__(3);
 var camelToDash = __webpack_require__(16);
 
-var _require2 = __webpack_require__(6),
-    compile = _require2.compile,
-    Element = _require2.Element;
+var _require2 = __webpack_require__(27),
+    scopedInner = _require2.scopedInner;
+
+var _require3 = __webpack_require__(6),
+    compile = _require3.compile,
+    Element = _require3.Element;
 
 var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
@@ -2721,6 +2724,7 @@ var regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
  * @returns {*}
  */
 module.exports = function (strings) {
+    var _this = this;
 
     //hCache.get(strings, value);
     //console.log('val', value);
@@ -2835,15 +2839,23 @@ module.exports = function (strings) {
     if (isBoundedToComponent) {
         // Now get style from complete string
         result = result.replace(regStyle, function (match, p1) {
-            if (match) {
+            if (match && p1) {
+                if (!_this._rootElement || p1 === _this._currentStyle) return;
                 // Here should be create the tag style
-                console.log('style content', p1);
+                _this._currentStyle = p1;
+                var isScoped = /scoped/.test(match);
+                var dataSetUId = _this.uId;
+                _this.getHTMLElement().dataset.uid = _this.uId;
+                var tagByData = '[data-uid="' + dataSetUId + '"]';
+
+                scopedInner(_this._currentStyle, dataSetUId, tagByData, isScoped);
+
                 return '';
             }
         });
     }
 
-    console.log(result);
+    //console.log(result);
 
     result = compile(result);
 
@@ -5124,6 +5136,10 @@ var Base = function Base() {
         },
         _localComponentLastId: {
             value: 0,
+            writable: true
+        },
+        _currentStyle: {
+            value: '',
             writable: true
         },
         _componentsMap: {

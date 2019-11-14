@@ -1,6 +1,7 @@
 const {TAG} = require('../constants');
 const mapCompiled = require('./map-compiled');
 const camelToDash = require('../utils/camel-to-dash');
+const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
@@ -131,15 +132,23 @@ module.exports = function (strings, ...value) {
     if (isBoundedToComponent) {
         // Now get style from complete string
         result = result.replace(regStyle, (match, p1) => {
-            if (match) {
+            if (match && p1) {
+                if (!this._rootElement || p1 === this._currentStyle) return;
                 // Here should be create the tag style
-                console.log('style content', p1);
+                this._currentStyle = p1;
+                let isScoped = /scoped/.test(match);
+                const dataSetUId = this.uId;
+                this.getHTMLElement().dataset.uid = this.uId;
+                let tagByData = `[data-uid="${dataSetUId}"]`;
+
+                scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+
                 return '';
             }
         });
     }
 
-    console.log(result);
+    //console.log(result);
 
     result = compile(result);
 

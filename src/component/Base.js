@@ -90,6 +90,10 @@ class Base {
                 value: 0,
                 writable: true
             },
+            _currentStyle: {
+                value: '',
+                writable: true
+            },
             _componentsMap: {
                 value: new Map()
             },
