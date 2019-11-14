@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -765,24 +765,24 @@ var observer = __webpack_require__(35);
 var hooks = __webpack_require__(5);
 var update = __webpack_require__(39).updateElement;
 var drawDynamic = __webpack_require__(42);
-var proxy = __webpack_require__(12);
+var proxy = __webpack_require__(13);
 var toInlineStyle = __webpack_require__(43);
 var queueReady = __webpack_require__(44);
 var queueDraw = __webpack_require__(45);
 var extendInstance = __webpack_require__(46);
 var removeAllAttributes = __webpack_require__(47);
-var h = __webpack_require__(17);
+var h = __webpack_require__(18);
 var loadLocal = __webpack_require__(48);
 var localMixin = __webpack_require__(49);
 
 var _require2 = __webpack_require__(6),
     compile = _require2.compile;
 
-var propsInit = __webpack_require__(19);
+var propsInit = __webpack_require__(20);
 var DOMManipulation = __webpack_require__(50);
 var directive = __webpack_require__(0);
 var cloneObject = __webpack_require__(52);
-var toLiteralString = __webpack_require__(20);
+var toLiteralString = __webpack_require__(21);
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -1167,7 +1167,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var html = __webpack_require__(10);
-var transformChildStyle = __webpack_require__(26);
+var transformChildStyle = __webpack_require__(27);
 
 var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
@@ -1186,7 +1186,7 @@ var _require2 = __webpack_require__(6),
 
 var hmr = __webpack_require__(34);
 var Component = __webpack_require__(8);
-var propsInit = __webpack_require__(19);
+var propsInit = __webpack_require__(20);
 var delay = __webpack_require__(4);
 var directive = __webpack_require__(0);
 var getComponentName = __webpack_require__(53);
@@ -1498,6 +1498,26 @@ module.exports = html;
 "use strict";
 
 
+var composeStyleInner = __webpack_require__(12);
+var createStyle = __webpack_require__(28);
+
+function scopedInner(cssContent, uId, tag, scoped) {
+    if (typeof cssContent !== 'string') return;
+    cssContent = composeStyleInner(cssContent, tag);
+    return createStyle(cssContent, uId, tag, scoped);
+}
+
+module.exports = {
+    scopedInner: scopedInner
+};
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 /*
 // Add tag prefix to animation name inside keyframe
 (@(?:[\w-]+-)?keyframes\s+)([\w-_]+)
@@ -1546,7 +1566,7 @@ function composeStyleInner(cssContent, tag) {
 module.exports = composeStyleInner;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2219,7 +2239,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2285,7 +2305,7 @@ function manipulate(instance, value, currentPath, onFly, init) {
 module.exports = manipulate;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2304,7 +2324,7 @@ var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
-var canDecode = __webpack_require__(15);
+var canDecode = __webpack_require__(16);
 var hooks = __webpack_require__(5);
 
 var storeElementNode = Object.create(null);
@@ -2656,7 +2676,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2672,7 +2692,7 @@ function canDecode(str) {
 module.exports = canDecode;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2685,7 +2705,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2699,9 +2719,9 @@ var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
 var mapCompiled = __webpack_require__(3);
-var camelToDash = __webpack_require__(16);
+var camelToDash = __webpack_require__(17);
 
-var _require2 = __webpack_require__(27),
+var _require2 = __webpack_require__(11),
     scopedInner = _require2.scopedInner;
 
 var _require3 = __webpack_require__(6),
@@ -2866,7 +2886,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2904,13 +2924,13 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var manipulate = __webpack_require__(13);
+var manipulate = __webpack_require__(14);
 
 function propsInit(instance) {
 
@@ -2930,7 +2950,7 @@ function propsInit(instance) {
 module.exports = propsInit;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2943,7 +2963,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2983,25 +3003,25 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(23);
-
-/***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Doz = __webpack_require__(24);
+module.exports = __webpack_require__(24);
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(25);
 var collection = __webpack_require__(2);
 
-var _require = __webpack_require__(21),
+var _require = __webpack_require__(22),
     use = _require.use;
 
 var _require2 = __webpack_require__(0),
@@ -3010,14 +3030,14 @@ var _require2 = __webpack_require__(0),
 var component = __webpack_require__(54);
 var Component = __webpack_require__(8);
 var mixin = __webpack_require__(55);
-var h = __webpack_require__(17);
+var h = __webpack_require__(18);
 
 var _require3 = __webpack_require__(6),
     compile = _require3.compile;
 
 var mapCompiled = __webpack_require__(3);
 
-var _require4 = __webpack_require__(14),
+var _require4 = __webpack_require__(15),
     update = _require4.update;
 
 __webpack_require__(56);
@@ -3075,7 +3095,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3091,15 +3111,15 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var bind = __webpack_require__(25);
+var bind = __webpack_require__(26);
 var createInstance = __webpack_require__(9);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(20);
-var plugin = __webpack_require__(21);
+var toLiteralString = __webpack_require__(21);
+var plugin = __webpack_require__(22);
 var directive = __webpack_require__(0);
 
 var Doz = function () {
@@ -3366,7 +3386,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3397,13 +3417,13 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _require = __webpack_require__(27),
+var _require = __webpack_require__(11),
     scopedInner = _require.scopedInner;
 
 function transformChildStyle(child, parent) {
@@ -3436,26 +3456,6 @@ function transformChildStyle(child, parent) {
 }
 
 module.exports = transformChildStyle;
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var composeStyleInner = __webpack_require__(11);
-var createStyle = __webpack_require__(28);
-
-function scopedInner(cssContent, uId, tag, scoped) {
-    if (typeof cssContent !== 'string') return;
-    cssContent = composeStyleInner(cssContent, tag);
-    return createStyle(cssContent, uId, tag, scoped);
-}
-
-module.exports = {
-    scopedInner: scopedInner
-};
 
 /***/ }),
 /* 28 */
@@ -4183,10 +4183,10 @@ module.exports = hmr;
 "use strict";
 
 
-var proxy = __webpack_require__(12);
+var proxy = __webpack_require__(13);
 var events = __webpack_require__(5);
 var propsListener = __webpack_require__(37);
-var manipulate = __webpack_require__(13);
+var manipulate = __webpack_require__(14);
 
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
@@ -4348,7 +4348,7 @@ module.exports = function castType(value, type) {
 "use strict";
 
 
-var element = __webpack_require__(14);
+var element = __webpack_require__(15);
 
 module.exports = {
     updateElement: element.update
@@ -4693,7 +4693,7 @@ module.exports = drawDynamic;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(16);
+var camelToDash = __webpack_require__(17);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4859,7 +4859,7 @@ module.exports = loadLocal;
 "use strict";
 
 
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(19);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -4883,8 +4883,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var canDecode = __webpack_require__(15);
-var composeStyleInner = __webpack_require__(11);
+var canDecode = __webpack_require__(16);
+var composeStyleInner = __webpack_require__(12);
 var dashToCamel = __webpack_require__(7);
 var Base = __webpack_require__(51);
 
@@ -5298,7 +5298,7 @@ module.exports = component;
 
 
 var Component = __webpack_require__(8);
-var mixin = __webpack_require__(18);
+var mixin = __webpack_require__(19);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
