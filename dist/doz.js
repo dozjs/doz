@@ -2859,8 +2859,8 @@ module.exports = function (strings) {
     if (isBoundedToComponent) {
         // Now get style from complete string
         result = result.replace(regStyle, function (match, p1) {
+            if (!_this._rootElement || p1 === _this._currentStyle) return;
             if (match && p1) {
-                if (!_this._rootElement || p1 === _this._currentStyle) return;
                 // Here should be create the tag style
                 _this._currentStyle = p1;
                 var isScoped = /scoped/.test(match);
@@ -2869,9 +2869,9 @@ module.exports = function (strings) {
                 var tagByData = '[data-uid="' + dataSetUId + '"]';
 
                 scopedInner(_this._currentStyle, dataSetUId, tagByData, isScoped);
-
-                return '';
             }
+
+            return '';
         });
     }
 
