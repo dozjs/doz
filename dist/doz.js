@@ -2859,7 +2859,7 @@ module.exports = function (strings) {
     if (isBoundedToComponent) {
         // Now get style from complete string
         result = result.replace(regStyle, function (match, p1) {
-            if (!_this._rootElement || p1 === _this._currentStyle) return;
+            if (!_this._rootElement || p1 === _this._currentStyle) return '';
             if (match && p1) {
                 // Here should be create the tag style
                 _this._currentStyle = p1;
