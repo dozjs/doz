@@ -56,7 +56,7 @@ ButtonCounter.js
 ```javascript
 import {Component} from 'doz'
 
-export default class extends Component {
+export default class ButtonCounter extends Component {
 
     constructor(o) {
         super(o);
