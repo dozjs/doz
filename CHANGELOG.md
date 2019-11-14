@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.8] - 2019-11-14
+- **Fixed** issue when `each` method returns empty array
+- **Improved** style manager 
+
 ## [2.0.7] - 2019-11-12
 - **Fixed** possible issue of style with pseudo classes 
 
