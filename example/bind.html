@@ -153,25 +153,27 @@
 
     new Doz({
         root: document.getElementById('app'),
-        template: `
-            <h3>Input type text</h3>
-            <doz-text placeholder="write a message"></doz-text>
-            <hr>
-            <h3>Input type radio</h3>
-            <doz-radio></doz-radio>
-            <hr>
-            <h3>Input type checkbox</h3>
-            <doz-checkbox></doz-checkbox>
-            <hr>
-            <h3>Input type checkbox multiple</h3>
-            <doz-checkbox-multiple></doz-checkbox-multiple>
-            <hr>
-            <h3>Select</h3>
-            <doz-select></doz-select>
-            <hr>
-            <h3>Select multiple</h3>
-            <doz-select-multiple></doz-select-multiple>
-        `
+        template(h) {
+            return h`
+                <h3>Input type text</h3>
+                <doz-text placeholder="write a message"></doz-text>
+                <hr>
+                <h3>Input type radio</h3>
+                <doz-radio></doz-radio>
+                <hr>
+                <h3>Input type checkbox</h3>
+                <doz-checkbox></doz-checkbox>
+                <hr>
+                <h3>Input type checkbox multiple</h3>
+                <doz-checkbox-multiple></doz-checkbox-multiple>
+                <hr>
+                <h3>Select</h3>
+                <doz-select></doz-select>
+                <hr>
+                <h3>Select multiple</h3>
+                <doz-select-multiple></doz-select-multiple>
+            `
+        }
     });
 
 </script>

@@ -242,10 +242,12 @@
     new Doz({
         actions,
         root: document.getElementById('app'),
-        template: `
-            <h1>TO-DO list</h1>
-            <doz-todo></doz-todo>
-        `
+        template(h) {
+            return h`
+                <h1>TO-DO list</h1>
+                <doz-todo></doz-todo>
+            `
+        }
     });
 
     //setTimeout(() => {

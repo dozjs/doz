@@ -46,9 +46,9 @@
                 </style>
                 <div>
                     <h1>${this.props.title}</h1>
-                    <button onclick="this.props.counter++">+</button>
-                    <span class="counter">${this.props.counter}</span>
                     <button onclick="this.props.counter--">-</button>
+                    <span class="counter">${this.props.counter}</span>
+                    <button onclick="this.props.counter++">+</button>
                 </div>`
         },
         props: {
@@ -58,9 +58,11 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <doz-button-counter title="The counter"/>
-        `
+        template(h) {
+            return h`
+                <doz-button-counter title="The counter"/>
+            `
+        }
     });
 
 </script>

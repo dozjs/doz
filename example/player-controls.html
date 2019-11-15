@@ -65,10 +65,12 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <play-pause></play-pause>
-            <volume-control></volume-control>
-        `
+        template(h) {
+            return h`
+                <play-pause/>
+                <volume-control/>
+            `
+        }
     });
 
 

@@ -45,7 +45,9 @@
 
     new Doz({
         root: '#app',
-        template: '<doz-logo></doz-logo>'
+        template(h) {
+            return h`<doz-logo/>'
+        }
     });
 
 

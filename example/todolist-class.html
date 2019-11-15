@@ -233,12 +233,14 @@
     new Doz({
         actions,
         root: document.getElementById('app'),
-        template: `
-            <div>
-                <h1>TO-DO list</h1>
-                <doz-todo></doz-todo>
-            </div>
-        `
+        template(h) {
+            return h`
+                <div>
+                    <h1>TO-DO list</h1>
+                    <doz-todo></doz-todo>
+                </div>
+            `
+        }
     });
 
 </script>

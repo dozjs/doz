@@ -44,9 +44,9 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <my-component/>
-        `
+        template(h) {
+            return h`<my-component/>`
+        }
     });
 
 

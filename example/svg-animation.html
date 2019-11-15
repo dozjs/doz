@@ -44,7 +44,9 @@
 
     new Doz({
         root: '#app',
-        template: '<doz-anim></doz-anim>'
+        template(h) {
+            return h`<doz-anim></doz-anim>'
+        }
     });
 
 

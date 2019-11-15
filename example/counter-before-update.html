@@ -70,10 +70,12 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <p>Stop at 10</p>
-            <doz-button-counter title="Click me!"/>
-        `
+        template(h) {
+            return h`
+                <p>Stop at 10</p>
+                <doz-button-counter title="Click me!"/>
+            `
+        }
     });
 
 </script>

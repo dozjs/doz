@@ -104,7 +104,9 @@
     new Doz({
         actions,
         root: '#app',
-        template: `<my-player></my-player>`
+        template(h) {
+            return h`<my-player/>`
+        }
     });
 
 

@@ -71,9 +71,11 @@
 
     new Doz({
         root: document.getElementById('app'),
-        template: `
-            <doz-button-counter title="Click me!"/>
-        `
+        template(h) {
+            return h`
+                <doz-button-counter title="Click me!"/>
+            `
+        }
     });
 
 </script>

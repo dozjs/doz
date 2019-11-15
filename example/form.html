@@ -232,12 +232,14 @@
 
     new Doz({
         root: '#app',
-        template: `
-        <div class="container">
-            <h1 class="display-4">Request</h1>
-            <app-form/>
-        </div>
-    `
+        template(h) {
+            return h`
+                <div class="container">
+                    <h1 class="display-4">Request</h1>
+                    <app-form/>
+                </div>
+            `
+        }
     });
 </script>
 </body>
