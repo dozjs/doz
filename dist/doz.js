@@ -3040,7 +3040,8 @@ var mapCompiled = __webpack_require__(3);
 var _require4 = __webpack_require__(15),
     update = _require4.update;
 
-__webpack_require__(56);
+var tag = __webpack_require__(56);
+__webpack_require__(57);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -3088,6 +3089,10 @@ Object.defineProperties(Doz, {
     },
     version: {
         value: '2.0.8',
+        enumerable: true
+    },
+    tag: {
+        value: tag,
         enumerable: true
     }
 });
@@ -5313,19 +5318,32 @@ module.exports = globalMixin;
 "use strict";
 
 
-__webpack_require__(57);
+module.exports = function tag(name) {
+    return function (target) {
+        target.tag = name;
+    };
+};
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 __webpack_require__(58);
 __webpack_require__(59);
 __webpack_require__(60);
 __webpack_require__(61);
-
 __webpack_require__(62);
+
 __webpack_require__(63);
 __webpack_require__(64);
-__webpack_require__(71);
+__webpack_require__(65);
+__webpack_require__(72);
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5403,7 +5421,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5470,7 +5488,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5519,7 +5537,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5557,7 +5575,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5671,7 +5689,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5696,7 +5714,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5726,7 +5744,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5737,7 +5755,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var castStringTo = __webpack_require__(65);
+var castStringTo = __webpack_require__(66);
 var delay = __webpack_require__(4);
 
 directive('bind', {
@@ -5932,17 +5950,17 @@ directive('bind', {
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var isJSON = __webpack_require__(66);
-var isNumber = __webpack_require__(67);
-var toJSON = __webpack_require__(68);
-var toNumber = __webpack_require__(69);
-var typesMap = __webpack_require__(70);
+var isJSON = __webpack_require__(67);
+var isNumber = __webpack_require__(68);
+var toJSON = __webpack_require__(69);
+var toNumber = __webpack_require__(70);
+var typesMap = __webpack_require__(71);
 
 function castStringTo(obj) {
     //return obj;
@@ -5964,7 +5982,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5976,7 +5994,7 @@ module.exports = function isJSON(obj) {
 };
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5989,7 +6007,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6004,7 +6022,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6024,7 +6042,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6040,7 +6058,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
