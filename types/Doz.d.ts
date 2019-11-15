@@ -45,6 +45,12 @@ export function h(template: string): string
 export function compile(template: string): object
 
 /**
+ * Tag decorator.
+ * @param {string} name
+ */
+export function tag(name: string): void
+
+/**
  * Collection
  */
 export interface collection {
