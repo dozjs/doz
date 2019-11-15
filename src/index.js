@@ -9,6 +9,7 @@ const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
 const mapCompiled = require('./vdom/map-compiled');
 const {update} = require('./vdom/element');
+const tag = require('./decorator/tag');
 require('./directive/built-in/_bootstrap');
 
 Object.defineProperties(Doz, {
@@ -57,6 +58,10 @@ Object.defineProperties(Doz, {
     },
     version: {
         value: '[AIV]{version}[/AIV]',
+        enumerable: true
+    },
+    tag: {
+        value: tag,
         enumerable: true
     }
 });
