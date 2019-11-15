@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 2019-11-15
+- **Added** `tag` decorator
+
 ## [2.0.8] - 2019-11-14
 - **Fixed** issue when `each` method returns empty array
 - **Improved** style manager 
