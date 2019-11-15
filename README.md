@@ -54,9 +54,10 @@ $ npm start
 
 ButtonCounter.js
 ```javascript
-import {Component} from 'doz'
+import {Component, tag} from 'doz'
 
-export default class ButtonCounter extends Component {
+@tag('button-counter')
+export default class extends Component {
 
     constructor(o) {
         super(o);
