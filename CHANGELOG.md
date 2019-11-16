@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1] - 2019-11-16
+- **Updated** readme example
+
 ## [2.1.0] - 2019-11-15
 - **Added** `tag` decorator
 
