@@ -59,14 +59,10 @@ import {Component, tag} from 'doz'
 @tag('button-counter')
 export default class extends Component {
 
-    constructor(o) {
-        super(o);
-        
-        this.props = {
-            counter: 0
-        }
-    }
-
+    props = {
+        counter: 0
+    };
+    
     template(h) {
         return h`
             <style>
@@ -104,8 +100,6 @@ new Doz({
 
 });
 ```
-
-[LIVE](https://codepen.io/pen/YzzqMym)
 
 ## Doz ecosystem
 - 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provides a boilerplate to creating app and component
