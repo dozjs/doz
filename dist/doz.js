@@ -102,11 +102,11 @@ module.exports = Object.assign({
 
 
 module.exports = {
-    COMPONENT_DYNAMIC_INSTANCE: '__dozComponentDynamicInstance',
-    COMPONENT_INSTANCE: '__dozComponentInstance',
-    COMPONENT_ROOT_INSTANCE: '__dozComponentRootInstance',
-    PROPS_ATTRIBUTES: '__dozProps',
-    ALREADY_WALKED: '__dozWalked',
+    COMPONENT_DYNAMIC_INSTANCE: 'dozComponentDynamicInstance',
+    COMPONENT_INSTANCE: 'dozComponentInstance',
+    COMPONENT_ROOT_INSTANCE: 'dozComponentRootInstance',
+    PROPS_ATTRIBUTES: 'dozProps',
+    ALREADY_WALKED: 'dozWalked',
     DEFAULT_SLOT_KEY: '__default__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
