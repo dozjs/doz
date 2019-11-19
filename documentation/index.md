@@ -1552,10 +1552,12 @@ Doz.define('user-card', class extends Doz.Component {
     template(h) {
         return h`
             <div>
-            	<h1>${this.props.name}</h1>
+            	<slot name="name"/>
               <div> 
               	<h2>Biography</h2>
-              	<slot/>
+              	<slot name="biography"/>
+                <hr/>
+                <slot name="projects">No projects</slot>
               </div>
             </div>
         `
@@ -1569,12 +1571,13 @@ new Doz({
 
     template(h) {
         return h`
-            <user-card name="Mike Ricali">
-            	<p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Quisque magna neque, pharetra ac felis ut,
-                    finibus volutpat dolor. Orci varius.
-                </p>
+            <user-card>
+            	<h1 slot="name">Mike Ricali</h1>
+            	<p slot="biography">
+              	Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Quisque magna neque, pharetra ac felis ut,
+                finibus volutpat dolor. Orci varius.
+              </p>
             </user-card>
         `
     }
