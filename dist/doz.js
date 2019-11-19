@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.1.1  
+// [DOZ]  Build version: 2.1.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1377,10 +1377,10 @@ function createInstance() {
                         newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                         newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                        // Replace first child if defaultSlot exists with a slot comment
-                        if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                        // Replace first element child if defaultSlot exists with a slot comment
+                        if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
                             var slotPlaceholder = document.createComment('slot');
-                            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                         }
 
                         //$child.insertBefore(newElement._rootElement, $child.firstChild);
@@ -3088,7 +3088,7 @@ Object.defineProperties(Doz, {
         value: mapCompiled
     },
     version: {
-        value: '2.1.1',
+        value: '2.1.2',
         enumerable: true
     },
     tag: {
