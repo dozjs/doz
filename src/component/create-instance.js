@@ -184,10 +184,10 @@ function createInstance(cfg = {}) {
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                    // Replace first child if defaultSlot exists with a slot comment
-                    if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                    // Replace first element child if defaultSlot exists with a slot comment
+                    if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
                         let slotPlaceholder = document.createComment('slot');
-                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);
