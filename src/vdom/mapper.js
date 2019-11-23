@@ -1,10 +1,15 @@
+const timestamp = new Date().getTime();
+
+const REGEX_1 = new RegExp('(\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/)', 'g');
+const REGEX_2 = new RegExp('^\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/$');
+
 module.exports = {
     lastId: 0,
     data: {},
     set(value) {
         let id = ++this.lastId;
-        id = `/*=%{${id}}%=*/`;
-        //console.log('--->', value)
+        id = `/*${timestamp}=%{${id}}%=*/`;
+        //console.log('--->', id, value)
         this.data[id] = value;
         return id;
     },
@@ -16,7 +21,7 @@ module.exports = {
         return res;
     },
     getAll(str) {
-        return str.replace(/(\/\*=%{\d+}%=\*\/)/g, (match) => {
+        return str.replace(REGEX_1, (match) => {
             let objValue = this.get(match);
             if (objValue !== undefined) {
                 return objValue;
@@ -25,7 +30,7 @@ module.exports = {
         });
     },
     isValidId(id) {
-        return /^\/\*=%{\d+}%=\*\/$/.test(id)
+        return REGEX_2.test(id)
     },
     flush() {
         this.data = {};

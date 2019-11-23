@@ -257,13 +257,18 @@ module.exports = {
 "use strict";
 
 
+var timestamp = new Date().getTime();
+
+var REGEX_1 = new RegExp('(\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/)', 'g');
+var REGEX_2 = new RegExp('^\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/$');
+
 module.exports = {
     lastId: 0,
     data: {},
     set: function set(value) {
         var id = ++this.lastId;
-        id = "/*=%{" + id + "}%=*/";
-        //console.log('--->', value)
+        id = '/*' + timestamp + '=%{' + id + '}%=*/';
+        //console.log('--->', id, value)
         this.data[id] = value;
         return id;
     },
@@ -277,7 +282,7 @@ module.exports = {
     getAll: function getAll(str) {
         var _this = this;
 
-        return str.replace(/(\/\*=%{\d+}%=\*\/)/g, function (match) {
+        return str.replace(REGEX_1, function (match) {
             var objValue = _this.get(match);
             if (objValue !== undefined) {
                 return objValue;
@@ -285,8 +290,7 @@ module.exports = {
         });
     },
     isValidId: function isValidId(id) {
-        return (/^\/\*=%{\d+}%=\*\/$/.test(id)
-        );
+        return REGEX_2.test(id);
     },
     flush: function flush() {
         this.data = {};
