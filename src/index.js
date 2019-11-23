@@ -65,5 +65,4 @@ Object.defineProperties(Doz, {
         enumerable: true
     }
 });
-//console.log(mapper)
 module.exports = Doz;
