@@ -257,17 +257,17 @@ module.exports = {
 "use strict";
 
 
-var timestamp = new Date().getTime();
+var RND = Math.random();
 
-var REGEX_1 = new RegExp('(\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/)', 'g');
-var REGEX_2 = new RegExp('^\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/$');
+var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
+var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 
 module.exports = {
     lastId: 0,
     data: {},
     set: function set(value) {
         var id = ++this.lastId;
-        id = '/*' + timestamp + '=%{' + id + '}%=*/';
+        id = '/*' + RND + '=%{' + id + '}%=*/';
         //console.log('--->', id, value)
         this.data[id] = value;
         return id;

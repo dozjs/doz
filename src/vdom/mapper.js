@@ -1,14 +1,14 @@
-const timestamp = new Date().getTime();
+const RND = Math.random();
 
-const REGEX_1 = new RegExp('(\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/)', 'g');
-const REGEX_2 = new RegExp('^\\/\\*' + timestamp + '=%{\\d+}%=\\*\\/$');
+const REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
+const REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 
 module.exports = {
     lastId: 0,
     data: {},
     set(value) {
         let id = ++this.lastId;
-        id = `/*${timestamp}=%{${id}}%=*/`;
+        id = `/*${RND}=%{${id}}%=*/`;
         //console.log('--->', id, value)
         this.data[id] = value;
         return id;
