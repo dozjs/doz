@@ -1,5 +1,6 @@
 //const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
+const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directive');
@@ -202,7 +203,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     // dentro il modulo attributes.js
 
     //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !REGEX.IS_LISTENER.test(aName)) {
+    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !isListener(aName)) {
         aValue = mapCompiled.getAll(aValue);
     } else {
         let objValue = mapCompiled.get(aValue);

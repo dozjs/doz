@@ -42,74 +42,101 @@ function callMethod(...args) {
 }
 
 function callComponentBeforeCreate(...args) {
-    args = ['onComponentBeforeCreate', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentBeforeCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeCreate', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentCreate(...args) {
-    args = ['onComponentCreate', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentCreate', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentBeforeMount(...args) {
-    args = ['onComponentBeforeMount', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentBeforeMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeMount', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentMount(...args) {
-    args = ['onComponentMount', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentMount', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentMountAsync(...args) {
-    args = ['onComponentMountAsync', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentMountAsync'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentMountAsync', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentAfterRender(...args) {
-    args = ['onComponentAfterRender', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentAfterRender'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentAfterRender', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentBeforeUpdate(...args) {
-    args = ['onComponentBeforeUpdate', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentBeforeUpdate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeUpdate', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentUpdate(...args) {
-    args = ['onComponentUpdate', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentUpdate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentUpdate', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentBeforeUnmount(...args) {
-    args = ['onComponentBeforeUnmount', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentBeforeUnmount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeUnmount', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentUnmount(...args) {
-    args = ['onComponentUnmount', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentUnmount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentUnmount', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentBeforeDestroy(...args) {
-    args = ['onComponentBeforeDestroy', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentBeforeDestroy'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeDestroy', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentDestroy(...args) {
-    args = ['onComponentDestroy', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentDestroy'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentDestroy', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentLoadProps(...args) {
-    args = ['onComponentLoadProps', ...args];
-    callMethod.apply(null, args)
+    let resArgs = ['onComponentLoadProps'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentLoadProps', ...args];
+    callMethod.apply(null, resArgs)
 }
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     let method = 'onComponentDOMElementCreate';
-    let attributes = Array.from($target.attributes);
-    attributes.forEach(attribute => {
+    let i = $target.attributes.length;
+    while(i--) {
+        let attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attribute.value;
@@ -119,13 +146,14 @@ function callComponentDOMElementCreate(instance, $target, initial) {
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial])
             }
         }
-    });
+    }
 }
 
 function callComponentDOMElementUpdate(instance, $target) {
     let method = 'onComponentDOMElementUpdate';
-    let attributes = Array.from($target.attributes);
-    attributes.forEach(attribute => {
+    let i = $target.attributes.length;
+    while(i--) {
+        let attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attribute.value;
@@ -135,7 +163,7 @@ function callComponentDOMElementUpdate(instance, $target) {
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue])
             }
         }
-    });
+    }
 }
 
 module.exports = {

@@ -1,10 +1,5 @@
-const {compile} = require('../src/vdom/parser');
 const h = require('../src/vdom/h');
-const {updateElement} = require('../src/vdom/index');
-const html = require('../src/utils/html');
-const be = require('bejs');
-const DOM = require('../src/component/DOMManipulation');
-const mapCompiled = require('../src/vdom/mapper');
+const mapper = require('../src/vdom/mapper');
 
 describe('h', function () {
 
@@ -26,7 +21,7 @@ describe('h', function () {
                 </div>
                 `;
 
-            console.log(mapCompiled.data);
+            console.log(mapper.data);
             console.log(JSON.stringify(res, null, 4));
         });
     });

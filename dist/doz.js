@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,7 +92,7 @@ function directive(name) {
 
 module.exports = Object.assign({
     directive: directive
-}, __webpack_require__(31), __webpack_require__(32));
+}, __webpack_require__(32), __webpack_require__(33));
 
 /***/ }),
 /* 1 */
@@ -159,7 +159,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var data = __webpack_require__(30);
+var data = __webpack_require__(31);
 
 /**
  * Register a component to global
@@ -501,6 +501,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 //const castStringTo = require('../utils/cast-string-to');
 var dashToCamel = __webpack_require__(7);
+var isListener = __webpack_require__(13);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -702,7 +703,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     // dentro il modulo attributes.js
 
     //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !REGEX.IS_LISTENER.test(aName)) {
+    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !isListener(aName)) {
         aValue = mapCompiled.getAll(aValue);
     } else {
         var objValue = mapCompiled.get(aValue);
@@ -761,28 +762,28 @@ var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(35);
+var observer = __webpack_require__(36);
 var hooks = __webpack_require__(5);
-var update = __webpack_require__(39).updateElement;
-var drawDynamic = __webpack_require__(42);
-var proxy = __webpack_require__(13);
-var toInlineStyle = __webpack_require__(43);
-var queueReady = __webpack_require__(44);
-var queueDraw = __webpack_require__(45);
-var extendInstance = __webpack_require__(46);
-var removeAllAttributes = __webpack_require__(47);
-var h = __webpack_require__(18);
-var loadLocal = __webpack_require__(48);
-var localMixin = __webpack_require__(49);
+var update = __webpack_require__(40).updateElement;
+var drawDynamic = __webpack_require__(43);
+var proxy = __webpack_require__(14);
+var toInlineStyle = __webpack_require__(44);
+var queueReady = __webpack_require__(45);
+var queueDraw = __webpack_require__(46);
+var extendInstance = __webpack_require__(47);
+var removeAllAttributes = __webpack_require__(48);
+var h = __webpack_require__(19);
+var loadLocal = __webpack_require__(49);
+var localMixin = __webpack_require__(50);
 
 var _require2 = __webpack_require__(6),
     compile = _require2.compile;
 
-var propsInit = __webpack_require__(20);
-var DOMManipulation = __webpack_require__(50);
+var propsInit = __webpack_require__(21);
+var DOMManipulation = __webpack_require__(51);
 var directive = __webpack_require__(0);
-var cloneObject = __webpack_require__(52);
-var toLiteralString = __webpack_require__(21);
+var cloneObject = __webpack_require__(53);
+var toLiteralString = __webpack_require__(22);
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -1167,7 +1168,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var html = __webpack_require__(10);
-var transformChildStyle = __webpack_require__(27);
+var transformChildStyle = __webpack_require__(28);
 
 var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
@@ -1184,12 +1185,12 @@ var hooks = __webpack_require__(5);
 var _require2 = __webpack_require__(6),
     serializeProps = _require2.serializeProps;
 
-var hmr = __webpack_require__(34);
+var hmr = __webpack_require__(35);
 var Component = __webpack_require__(8);
-var propsInit = __webpack_require__(20);
+var propsInit = __webpack_require__(21);
 var delay = __webpack_require__(4);
 var directive = __webpack_require__(0);
-var getComponentName = __webpack_require__(53);
+var getComponentName = __webpack_require__(54);
 
 function createInstance() {
     var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1499,7 +1500,7 @@ module.exports = html;
 
 
 var composeStyleInner = __webpack_require__(12);
-var createStyle = __webpack_require__(28);
+var createStyle = __webpack_require__(29);
 
 function scopedInner(cssContent, uId, tag, scoped) {
     if (typeof cssContent !== 'string') return;
@@ -1572,6 +1573,18 @@ module.exports = composeStyleInner;
 "use strict";
 
 
+module.exports = function isListener(str) {
+    if (typeof str !== 'string') return false;
+    return str[0] === 'o' && str[1] === 'n';
+};
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
@@ -1589,7 +1602,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 
 var delay = __webpack_require__(4);
-var stringDecoder = __webpack_require__(36);
+var stringDecoder = __webpack_require__(37);
 
 /**
  * ObservableSlim
@@ -2239,7 +2252,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2247,7 +2260,7 @@ module.exports = ObservableSlim;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var castType = __webpack_require__(38);
+var castType = __webpack_require__(39);
 
 function manipulate(instance, value, currentPath, onFly, init) {
 
@@ -2305,7 +2318,7 @@ function manipulate(instance, value, currentPath, onFly, init) {
 module.exports = manipulate;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2313,7 +2326,7 @@ module.exports = manipulate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _require = __webpack_require__(40),
+var _require = __webpack_require__(41),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -2324,7 +2337,7 @@ var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
-var canDecode = __webpack_require__(16);
+var canDecode = __webpack_require__(17);
 var hooks = __webpack_require__(5);
 
 var storeElementNode = Object.create(null);
@@ -2676,7 +2689,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2692,7 +2705,7 @@ function canDecode(str) {
 module.exports = canDecode;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2705,7 +2718,7 @@ function camelToDash(s) {
 module.exports = camelToDash;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2719,7 +2732,7 @@ var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
 var mapCompiled = __webpack_require__(3);
-var camelToDash = __webpack_require__(17);
+var camelToDash = __webpack_require__(18);
 
 var _require2 = __webpack_require__(11),
     scopedInner = _require2.scopedInner;
@@ -2886,7 +2899,7 @@ module.exports = function (strings) {
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2924,13 +2937,13 @@ function mixin(target) {
 module.exports = mixin;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var manipulate = __webpack_require__(14);
+var manipulate = __webpack_require__(15);
 
 function propsInit(instance) {
 
@@ -2950,7 +2963,7 @@ function propsInit(instance) {
 module.exports = propsInit;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2963,7 +2976,7 @@ function toLiteralString(str) {
 module.exports = toLiteralString;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3003,45 +3016,45 @@ module.exports = {
 };
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(24);
-
-/***/ }),
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Doz = __webpack_require__(25);
+module.exports = __webpack_require__(25);
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Doz = __webpack_require__(26);
 var collection = __webpack_require__(2);
 
-var _require = __webpack_require__(22),
+var _require = __webpack_require__(23),
     use = _require.use;
 
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(54);
+var component = __webpack_require__(55);
 var Component = __webpack_require__(8);
-var mixin = __webpack_require__(55);
-var h = __webpack_require__(18);
+var mixin = __webpack_require__(56);
+var h = __webpack_require__(19);
 
 var _require3 = __webpack_require__(6),
     compile = _require3.compile;
 
 var mapCompiled = __webpack_require__(3);
 
-var _require4 = __webpack_require__(15),
+var _require4 = __webpack_require__(16),
     update = _require4.update;
 
-var tag = __webpack_require__(56);
-__webpack_require__(57);
+var tag = __webpack_require__(57);
+__webpack_require__(58);
 
 Object.defineProperties(Doz, {
     collection: {
@@ -3100,7 +3113,7 @@ Object.defineProperties(Doz, {
 module.exports = Doz;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3116,15 +3129,15 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var bind = __webpack_require__(26);
+var bind = __webpack_require__(27);
 var createInstance = __webpack_require__(9);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
     REGEX = _require.REGEX;
 
-var toLiteralString = __webpack_require__(21);
-var plugin = __webpack_require__(22);
+var toLiteralString = __webpack_require__(22);
+var plugin = __webpack_require__(23);
 var directive = __webpack_require__(0);
 
 var Doz = function () {
@@ -3391,7 +3404,7 @@ var Doz = function () {
 module.exports = Doz;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3422,7 +3435,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3463,13 +3476,13 @@ function transformChildStyle(child, parent) {
 module.exports = transformChildStyle;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var tagList = __webpack_require__(29);
+var tagList = __webpack_require__(30);
 
 function createStyle(cssContent, uId, tag, scoped) {
     var result = void 0;
@@ -3504,7 +3517,7 @@ function createStyle(cssContent, uId, tag, scoped) {
 module.exports = createStyle;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3517,7 +3530,7 @@ module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', '
 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'main', 'map', 'mark', 'menu', 'meter', 'nav', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'small', 'source', 'span', 'strong', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3530,13 +3543,11 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var _require = __webpack_require__(2),
     data = _require.data;
@@ -3573,229 +3584,304 @@ function callMethod() {
 }
 
 function callAppInit() {
+    var resArgs = ['onAppInit'];
+
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         args[_key2] = arguments[_key2];
     }
 
-    args = ['onAppInit'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppInit', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentCreate() {
+    var resArgs = ['onAppComponentCreate'];
+
     for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         args[_key3] = arguments[_key3];
     }
 
-    args = ['onAppComponentCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeCreate() {
+    var resArgs = ['onAppComponentBeforeCreate'];
+
     for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         args[_key4] = arguments[_key4];
     }
 
-    args = ['onAppComponentBeforeCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentConfigCreate() {
+    var resArgs = ['onAppComponentConfigCreate'];
+
     for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
         args[_key5] = arguments[_key5];
     }
 
-    args = ['onAppComponentConfigCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentConfigCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeMount() {
+    var resArgs = ['onAppComponentBeforeMount'];
+
     for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
         args[_key6] = arguments[_key6];
     }
 
-    args = ['onAppComponentBeforeMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentMount() {
+    var resArgs = ['onAppComponentMount'];
+
     for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
         args[_key7] = arguments[_key7];
     }
 
-    args = ['onAppComponentMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentMountAsync() {
+    var resArgs = ['onAppComponentMountAsync'];
+
     for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
         args[_key8] = arguments[_key8];
     }
 
-    args = ['onAppComponentMountAsync'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentMountAsync', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeUpdate() {
+    var resArgs = ['onAppComponentBeforeUpdate'];
+
     for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
         args[_key9] = arguments[_key9];
     }
 
-    args = ['onAppComponentBeforeUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentUpdate() {
+    var resArgs = ['onAppComponentUpdate'];
+
     for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
         args[_key10] = arguments[_key10];
     }
 
-    args = ['onAppComponentUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentDrawByParent() {
+    var resArgs = ['onAppComponentDrawByParent'];
+
     for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
         args[_key11] = arguments[_key11];
     }
 
-    args = ['onAppComponentDrawByParent'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentDrawByParent', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAfterRender() {
+    var resArgs = ['onAppComponentAfterRender'];
+
     for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
         args[_key12] = arguments[_key12];
     }
 
-    args = ['onAppComponentAfterRender'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAfterRender', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeUnmount() {
+    var resArgs = ['onAppComponentBeforeUnmount'];
+
     for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
         args[_key13] = arguments[_key13];
     }
 
-    args = ['onAppComponentBeforeUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentUnmount() {
+    var resArgs = ['onAppComponentUnmount'];
+
     for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
         args[_key14] = arguments[_key14];
     }
 
-    args = ['onAppComponentUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeDestroy() {
+    var resArgs = ['onAppComponentBeforeDestroy'];
+
     for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
         args[_key15] = arguments[_key15];
     }
 
-    args = ['onAppComponentBeforeDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentSetConfig() {
+    var resArgs = ['onAppComponentSetConfig'];
+
     for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
         args[_key16] = arguments[_key16];
     }
 
-    args = ['onAppComponentSetConfig'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentSetConfig', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentSetProps() {
+    var resArgs = ['onAppComponentSetProps'];
+
     for (var _len17 = arguments.length, args = Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
         args[_key17] = arguments[_key17];
     }
 
-    args = ['onAppComponentSetProps'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentSetProps', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentLoadProps() {
+    var resArgs = ['onAppComponentLoadProps'];
+
     for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
         args[_key18] = arguments[_key18];
     }
 
-    args = ['onAppComponentLoadProps'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentLoadProps', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentDestroy() {
+    var resArgs = ['onAppComponentDestroy'];
+
     for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
         args[_key19] = arguments[_key19];
     }
 
-    args = ['onAppComponentDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAssignIndex() {
+    var resArgs = ['onAppComponentAssignIndex'];
+
     for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
         args[_key20] = arguments[_key20];
     }
 
-    args = ['onAppComponentAssignIndex'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAssignIndex', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppWalkDOM() {
+    var resArgs = ['onAppWalkDOM'];
+
     for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
         args[_key21] = arguments[_key21];
     }
 
-    args = ['onAppWalkDOM'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppWalkDOM', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAssignName() {
+    var resArgs = ['onAppComponentAssignName'];
+
     for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
         args[_key22] = arguments[_key22];
     }
 
-    args = ['onAppComponentAssignName'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAssignName', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentPropsAssignName() {
+    var resArgs = ['onAppComponentPropsAssignName'];
+
     for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
         args[_key23] = arguments[_key23];
     }
 
-    args = ['onAppComponentPropsAssignName'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentPropsAssignName', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppDOMElementCreate() {
+    //todo Dovrebbe risolvere il problema del tag doppio
+    var resArgs = ['onAppDOMElementCreate'];
+
     for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
         args[_key24] = arguments[_key24];
     }
 
-    //todo Dovrebbe risolvere il problema del tag doppio
-    args = ['onAppDOMElementCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppDOMElementCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppDynamicInstanceCreate() {
+    var resArgs = ['onAppDynamicInstanceCreate'];
+
     for (var _len25 = arguments.length, args = Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
         args[_key25] = arguments[_key25];
     }
 
-    args = ['onAppDynamicInstanceCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppDynamicInstanceCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentRenderOverwrite() {
+    var resArgs = ['onAppComponentRenderOverwrite'];
+
     for (var _len26 = arguments.length, args = Array(_len26), _key26 = 0; _key26 < _len26; _key26++) {
         args[_key26] = arguments[_key26];
     }
 
-    args = ['onAppComponentRenderOverwrite'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentRenderOverwrite', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 /*function callAppDOMAttributeSet(...args) {
@@ -3832,18 +3918,16 @@ module.exports = {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var _require = __webpack_require__(2),
     data = _require.data;
 
-var _require2 = __webpack_require__(33),
+var _require2 = __webpack_require__(34),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
     isDirective = _require2.isDirective;
 
@@ -3912,127 +3996,166 @@ function callMethod() {
 }
 
 function callComponentBeforeCreate() {
+    var resArgs = ['onComponentBeforeCreate'];
+
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         args[_key2] = arguments[_key2];
     }
 
-    args = ['onComponentBeforeCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentCreate() {
+    var resArgs = ['onComponentCreate'];
+
     for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         args[_key3] = arguments[_key3];
     }
 
-    args = ['onComponentCreate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentBeforeMount() {
+    var resArgs = ['onComponentBeforeMount'];
+
     for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         args[_key4] = arguments[_key4];
     }
 
-    args = ['onComponentBeforeMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentMount() {
+    var resArgs = ['onComponentMount'];
+
     for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
         args[_key5] = arguments[_key5];
     }
 
-    args = ['onComponentMount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentMountAsync() {
+    var resArgs = ['onComponentMountAsync'];
+
     for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
         args[_key6] = arguments[_key6];
     }
 
-    args = ['onComponentMountAsync'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentMountAsync', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentAfterRender() {
+    var resArgs = ['onComponentAfterRender'];
+
     for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
         args[_key7] = arguments[_key7];
     }
 
-    args = ['onComponentAfterRender'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentAfterRender', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentBeforeUpdate() {
+    var resArgs = ['onComponentBeforeUpdate'];
+
     for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
         args[_key8] = arguments[_key8];
     }
 
-    args = ['onComponentBeforeUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentUpdate() {
+    var resArgs = ['onComponentUpdate'];
+
     for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
         args[_key9] = arguments[_key9];
     }
 
-    args = ['onComponentUpdate'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentBeforeUnmount() {
+    var resArgs = ['onComponentBeforeUnmount'];
+
     for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
         args[_key10] = arguments[_key10];
     }
 
-    args = ['onComponentBeforeUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentUnmount() {
+    var resArgs = ['onComponentUnmount'];
+
     for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
         args[_key11] = arguments[_key11];
     }
 
-    args = ['onComponentUnmount'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentBeforeDestroy() {
+    var resArgs = ['onComponentBeforeDestroy'];
+
     for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
         args[_key12] = arguments[_key12];
     }
 
-    args = ['onComponentBeforeDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentBeforeDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentDestroy() {
+    var resArgs = ['onComponentDestroy'];
+
     for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
         args[_key13] = arguments[_key13];
     }
 
-    args = ['onComponentDestroy'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentLoadProps() {
+    var resArgs = ['onComponentLoadProps'];
+
     for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
         args[_key14] = arguments[_key14];
     }
 
-    args = ['onComponentLoadProps'].concat(_toConsumableArray(args));
-    callMethod.apply(null, args);
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentLoadProps', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     var method = 'onComponentDOMElementCreate';
-    var attributes = Array.from($target.attributes);
-
-    var _defined5 = function _defined5(attribute) {
+    var i = $target.attributes.length;
+    while (i--) {
+        var attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             var directiveValue = attribute.value;
@@ -4042,18 +4165,14 @@ function callComponentDOMElementCreate(instance, $target, initial) {
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
             }
         }
-    };
-
-    for (var _i6 = 0; _i6 <= attributes.length - 1; _i6++) {
-        _defined5(attributes[_i6], _i6, attributes);
     }
 }
 
 function callComponentDOMElementUpdate(instance, $target) {
     var method = 'onComponentDOMElementUpdate';
-    var attributes = Array.from($target.attributes);
-
-    var _defined6 = function _defined6(attribute) {
+    var i = $target.attributes.length;
+    while (i--) {
+        var attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             var directiveValue = attribute.value;
@@ -4063,10 +4182,6 @@ function callComponentDOMElementUpdate(instance, $target) {
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue]);
             }
         }
-    };
-
-    for (var _i8 = 0; _i8 <= attributes.length - 1; _i8++) {
-        _defined6(attributes[_i8], _i8, attributes);
     }
 }
 
@@ -4089,7 +4204,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4138,7 +4253,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4182,16 +4297,16 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var proxy = __webpack_require__(13);
+var proxy = __webpack_require__(14);
 var events = __webpack_require__(5);
-var propsListener = __webpack_require__(37);
-var manipulate = __webpack_require__(14);
+var propsListener = __webpack_require__(38);
+var manipulate = __webpack_require__(15);
 
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);
@@ -4241,7 +4356,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4257,7 +4372,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4301,7 +4416,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4347,20 +4462,20 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var element = __webpack_require__(15);
+var element = __webpack_require__(16);
 
 module.exports = {
     updateElement: element.update
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4377,11 +4492,12 @@ var _require = __webpack_require__(1),
 //const castStringTo = require('../utils/cast-string-to');
 
 
-var objectPath = __webpack_require__(41);
+var objectPath = __webpack_require__(42);
+var isListener = __webpack_require__(13);
 var mapCompiled = __webpack_require__(3);
 
 function isEventAttribute(name) {
-    return REGEX.IS_LISTENER.test(name);
+    return isListener(name);
 }
 
 function setAttribute($target, name, value, cmp) {
@@ -4584,7 +4700,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     var datasetArray = Object.keys($target.dataset);
     for (var _i7 = 0; _i7 < datasetArray.length; _i7++) {
-        if (REGEX.IS_LISTENER.test(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
+        if (isListener(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
     }
 
     //cmp.$$afterAttributesCreate($target, bindValue);
@@ -4596,7 +4712,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4621,7 +4737,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4690,7 +4806,7 @@ function drawDynamic(instance) {
 module.exports = drawDynamic;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4698,7 +4814,7 @@ module.exports = drawDynamic;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var camelToDash = __webpack_require__(17);
+var camelToDash = __webpack_require__(18);
 
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -4727,7 +4843,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4745,7 +4861,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4778,7 +4894,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4791,7 +4907,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4812,7 +4928,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4858,13 +4974,13 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var mixin = __webpack_require__(19);
+var mixin = __webpack_require__(20);
 
 function localMixin(instance) {
     mixin(instance, instance.mixin);
@@ -4874,7 +4990,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4888,10 +5004,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var canDecode = __webpack_require__(16);
+var canDecode = __webpack_require__(17);
 var composeStyleInner = __webpack_require__(12);
 var dashToCamel = __webpack_require__(7);
-var Base = __webpack_require__(51);
+var Base = __webpack_require__(52);
 
 var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -5041,7 +5157,7 @@ var DOMManipulation = function (_Base) {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5235,7 +5351,7 @@ var Base = function Base() {
 module.exports = Base;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5248,7 +5364,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5261,7 +5377,7 @@ function getComponentName(child) {
 module.exports = getComponentName;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5296,14 +5412,14 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Component = __webpack_require__(8);
-var mixin = __webpack_require__(19);
+var mixin = __webpack_require__(20);
 
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
@@ -5312,7 +5428,7 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5325,25 +5441,25 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(58);
 __webpack_require__(59);
 __webpack_require__(60);
 __webpack_require__(61);
 __webpack_require__(62);
-
 __webpack_require__(63);
+
 __webpack_require__(64);
 __webpack_require__(65);
-__webpack_require__(72);
+__webpack_require__(66);
+__webpack_require__(73);
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5421,7 +5537,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5488,7 +5604,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5537,7 +5653,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5575,7 +5691,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5689,7 +5805,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5714,7 +5830,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5744,7 +5860,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5755,7 +5871,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var castStringTo = __webpack_require__(66);
+var castStringTo = __webpack_require__(67);
 var delay = __webpack_require__(4);
 
 directive('bind', {
@@ -5950,17 +6066,17 @@ directive('bind', {
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var isJSON = __webpack_require__(67);
-var isNumber = __webpack_require__(68);
-var toJSON = __webpack_require__(69);
-var toNumber = __webpack_require__(70);
-var typesMap = __webpack_require__(71);
+var isJSON = __webpack_require__(68);
+var isNumber = __webpack_require__(69);
+var toJSON = __webpack_require__(70);
+var toNumber = __webpack_require__(71);
+var typesMap = __webpack_require__(72);
 
 function castStringTo(obj) {
     //return obj;
@@ -5982,7 +6098,7 @@ function castStringTo(obj) {
 module.exports = castStringTo;
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5994,7 +6110,7 @@ module.exports = function isJSON(obj) {
 };
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6007,7 +6123,7 @@ module.exports = function isNumber(obj) {
 };
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6022,7 +6138,7 @@ module.exports = function toJSON(obj) {
 };
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6042,7 +6158,7 @@ module.exports = function toNumber(obj) {
 };
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6058,7 +6174,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6072,9 +6188,11 @@ directive('show', {
         $target.style.display = value === 'false' ? 'none' : '';
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        console.log('aaaa');
         this.setVisible($target, directiveValue);
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        console.log('bbbb');
         this.setVisible($target, directiveValue);
     }
 });

@@ -1,10 +1,11 @@
 const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 //const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
+const isListener = require('../utils/is-listener');
 const mapCompiled = require('./mapper');
 
 function isEventAttribute(name) {
-    return REGEX.IS_LISTENER.test(name);
+    return isListener(name);
 }
 
 function setAttribute($target, name, value, cmp) {
@@ -205,7 +206,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     const datasetArray = Object.keys($target.dataset);
     for (let i = 0; i < datasetArray.length; i++) {
-        if (REGEX.IS_LISTENER.test(datasetArray[i]))
+        if (isListener(datasetArray[i]))
             addEventListener($target, i, $target.dataset[datasetArray[i]], cmp, cmpParent);
     }
 

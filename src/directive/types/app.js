@@ -29,129 +29,179 @@ function callMethod(...args) {
 }
 
 function callAppInit(...args) {
-    args = ['onAppInit', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppInit'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppInit', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentCreate(...args) {
-    args = ['onAppComponentCreate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeCreate(...args) {
-    args = ['onAppComponentBeforeCreate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentBeforeCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentConfigCreate(...args) {
-    args = ['onAppComponentConfigCreate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentConfigCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentConfigCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeMount(...args) {
-    args = ['onAppComponentBeforeMount', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentBeforeMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentMount(...args) {
-    args = ['onAppComponentMount', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentMount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentMountAsync(...args) {
-    args = ['onAppComponentMountAsync', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentMountAsync'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentMountAsync', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeUpdate(...args) {
-    args = ['onAppComponentBeforeUpdate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentBeforeUpdate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentUpdate(...args) {
-    args = ['onAppComponentUpdate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentUpdate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentUpdate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentDrawByParent(...args) {
-    args = ['onAppComponentDrawByParent', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentDrawByParent'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentDrawByParent', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAfterRender(...args) {
-    args = ['onAppComponentAfterRender', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentAfterRender'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAfterRender', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeUnmount(...args) {
-    args = ['onAppComponentBeforeUnmount', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentBeforeUnmount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentUnmount(...args) {
-    args = ['onAppComponentUnmount', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentUnmount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentUnmount', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentBeforeDestroy(...args) {
-    args = ['onAppComponentBeforeDestroy', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentBeforeDestroy'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentBeforeDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentSetConfig(...args) {
-    args = ['onAppComponentSetConfig', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentSetConfig'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentSetConfig', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentSetProps(...args) {
-    args = ['onAppComponentSetProps', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentSetProps'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentSetProps', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentLoadProps(...args) {
-    args = ['onAppComponentLoadProps', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentLoadProps'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentLoadProps', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentDestroy(...args) {
-    args = ['onAppComponentDestroy', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentDestroy'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentDestroy', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAssignIndex(...args) {
-    args = ['onAppComponentAssignIndex', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentAssignIndex'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAssignIndex', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppWalkDOM(...args) {
-    args = ['onAppWalkDOM', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppWalkDOM'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppWalkDOM', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentAssignName(...args) {
-    args = ['onAppComponentAssignName', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentAssignName'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentAssignName', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentPropsAssignName(...args) {
-    args = ['onAppComponentPropsAssignName', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentPropsAssignName'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentPropsAssignName', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppDOMElementCreate(...args) {
     //todo Dovrebbe risolvere il problema del tag doppio
-    args = ['onAppDOMElementCreate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppDOMElementCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppDOMElementCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppDynamicInstanceCreate(...args) {
-    args = ['onAppDynamicInstanceCreate', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppDynamicInstanceCreate'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppDynamicInstanceCreate', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 function callAppComponentRenderOverwrite(...args) {
-    args = ['onAppComponentRenderOverwrite', ...args];
-    callMethod.apply(null, args);
+    let resArgs = ['onAppComponentRenderOverwrite'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentRenderOverwrite', ...args];
+    callMethod.apply(null, resArgs);
 }
 
 /*function callAppDOMAttributeSet(...args) {
