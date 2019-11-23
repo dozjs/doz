@@ -1,5 +1,5 @@
 const {TAG} = require('../constants');
-const mapCompiled = require('./mapper');
+const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
 const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
@@ -38,7 +38,7 @@ module.exports = function (strings, ...value) {
             for (let j = 0; j < value[i].length; j++) {
                 let obj = value[i][j];
                 if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
-                    newValueString += `<${tagIterate}>${mapCompiled.set(obj)}</${tagIterate}>`;
+                    newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
                 }
             }
             if (newValueString)
@@ -46,7 +46,7 @@ module.exports = function (strings, ...value) {
         }
 
         if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
-            value[i] = mapCompiled.set(value[i]);
+            value[i] = mapper.set(value[i]);
         }
 
 
@@ -119,7 +119,7 @@ module.exports = function (strings, ...value) {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-                value[i] = mapCompiled.set(value[i]);
+                value[i] = mapper.set(value[i]);
             }
             result += `${value[i]}${strings[i + 1]}`;
         }

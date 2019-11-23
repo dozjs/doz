@@ -6,10 +6,10 @@ const REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 module.exports = {
     lastId: 0,
     data: {},
-    set(value) {
+    set(value, from) {
         let id = ++this.lastId;
         id = `/*${RND}=%{${id}}%=*/`;
-        //console.log('--->', id, value)
+        //console.log('--->', id, value, from)
         this.data[id] = value;
         return id;
     },
@@ -18,6 +18,7 @@ module.exports = {
         id = id.trim();
         let res = this.data[id];
         delete this.data[id];
+        //this.flush()
         return res;
     },
     getAll(str) {

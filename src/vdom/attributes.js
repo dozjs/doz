@@ -2,7 +2,7 @@ const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 //const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
-const mapCompiled = require('./mapper');
+const mapper = require('./mapper');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -24,14 +24,15 @@ function setAttribute($target, name, value, cmp) {
     }
 
     if (isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') {
+        // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
+        // like onclick, onmousedown etc. ...
+        // handlers are associated to the element only once.
+        // at the moment the only way to remove the keys is to take them.
+        if (isEventAttribute(name) && typeof value === 'string') {
+            mapper.getAll(value);
+        }
     } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
-    /*} else if (typeof value === 'object') {
-        try {
-            //$target.setAttribute(name, JSON.stringify(value));
-        } catch (e) {
-
-        }*/
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
@@ -104,7 +105,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             args = stringArgs.split(',').map(item => {
                 item = trimQuotes(item.trim());
                 //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                let itemMap = mapCompiled.get(item);
+                let itemMap = mapper.get(item);
                 if (itemMap !== undefined)
                     item = itemMap;
 
@@ -132,7 +133,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             if (stringArgs) {
                 args = stringArgs.split(',').map(item => {
                     item = trimQuotes(item.trim());
-                    let itemMap = mapCompiled.get(item);
+                    let itemMap = mapper.get(item);
                     if (itemMap !== undefined)
                         item = itemMap;
                     //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
@@ -199,8 +200,8 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     for(let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
+        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 

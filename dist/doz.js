@@ -265,10 +265,10 @@ var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 module.exports = {
     lastId: 0,
     data: {},
-    set: function set(value) {
+    set: function set(value, from) {
         var id = ++this.lastId;
         id = '/*' + RND + '=%{' + id + '}%=*/';
-        //console.log('--->', id, value)
+        //console.log('--->', id, value, from)
         this.data[id] = value;
         return id;
     },
@@ -277,6 +277,7 @@ module.exports = {
         id = id.trim();
         var res = this.data[id];
         delete this.data[id];
+        //this.flush()
         return res;
     },
     getAll: function getAll(str) {
@@ -515,7 +516,7 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
-var mapCompiled = __webpack_require__(3);
+var mapper = __webpack_require__(3);
 //const eventsAttributes = require('../utils/events-attributes');
 
 var selfClosingElements = {
@@ -598,7 +599,7 @@ function compile(data, cmp) {
                 var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
-                    var possibleCompiled = mapCompiled.get(text.trim());
+                    var possibleCompiled = mapper.get(text.trim());
                     if (!Array.isArray(possibleCompiled)) currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
             }
@@ -707,10 +708,10 @@ function propsFixer(nName, aName, aValue, props, $node) {
     // dentro il modulo attributes.js
 
     //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !isListener(aName)) {
-        aValue = mapCompiled.getAll(aValue);
+    if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
+        aValue = mapper.getAll(aValue);
     } else {
-        var objValue = mapCompiled.get(aValue);
+        var objValue = mapper.get(aValue);
         if (objValue !== undefined) {
             aValue = objValue;
         }
@@ -1530,12 +1531,12 @@ module.exports = {
 // Add tag prefix to animation
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
-var mapCompiled = __webpack_require__(3);
+var mapper = __webpack_require__(3);
 
 function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
 
-    cssContent = mapCompiled.getAll(cssContent);
+    cssContent = mapper.getAll(cssContent);
 
     var sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
@@ -2735,7 +2736,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
-var mapCompiled = __webpack_require__(3);
+var mapper = __webpack_require__(3);
 var camelToDash = __webpack_require__(18);
 
 var _require2 = __webpack_require__(11),
@@ -2785,14 +2786,14 @@ module.exports = function (strings) {
             for (var j = 0; j < value[i].length; j++) {
                 var obj = value[i][j];
                 if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj.constructor && obj.constructor === Element) {
-                    newValueString += '<' + tagIterate + '>' + mapCompiled.set(obj) + '</' + tagIterate + '>';
+                    newValueString += '<' + tagIterate + '>' + mapper.set(obj) + '</' + tagIterate + '>';
                 }
             }
             if (newValueString) value[i] = newValueString;
         }
 
         if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {
-            value[i] = mapCompiled.set(value[i]);
+            value[i] = mapper.set(value[i]);
         }
 
         var _defined = function _defined(char) {
@@ -2865,7 +2866,7 @@ module.exports = function (strings) {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-                value[i] = mapCompiled.set(value[i]);
+                value[i] = mapper.set(value[i]);
             }
             result += '' + value[i] + strings[i + 1];
         }
@@ -3052,7 +3053,7 @@ var h = __webpack_require__(19);
 var _require3 = __webpack_require__(6),
     compile = _require3.compile;
 
-var mapCompiled = __webpack_require__(3);
+var mapper = __webpack_require__(3);
 
 var _require4 = __webpack_require__(16),
     update = _require4.update;
@@ -3101,8 +3102,8 @@ Object.defineProperties(Doz, {
         value: directive,
         enumerable: true
     },
-    mapCompiled: {
-        value: mapCompiled
+    mapper: {
+        value: mapper
     },
     version: {
         value: '2.1.3',
@@ -3113,7 +3114,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     }
 });
-
+//console.log(mapper)
 module.exports = Doz;
 
 /***/ }),
@@ -4498,7 +4499,7 @@ var _require = __webpack_require__(1),
 
 var objectPath = __webpack_require__(42);
 var isListener = __webpack_require__(13);
-var mapCompiled = __webpack_require__(3);
+var mapper = __webpack_require__(3);
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -4519,13 +4520,16 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if (isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {} else if (typeof value === 'boolean') {
+    if (isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+        // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
+        // like onclick, onmousedown etc. ...
+        // handlers are associated to the element only once.
+        // at the moment the only way to remove the keys is to take them.
+        if (isEventAttribute(name) && typeof value === 'string') {
+            mapper.getAll(value);
+        }
+    } else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);
-        /*} else if (typeof value === 'object') {
-            try {
-                //$target.setAttribute(name, JSON.stringify(value));
-            } catch (e) {
-              }*/
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
@@ -4612,7 +4616,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             var _defined4 = function _defined4(item) {
                 item = trimQuotes(item.trim());
                 //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                var itemMap = mapCompiled.get(item);
+                var itemMap = mapper.get(item);
                 if (itemMap !== undefined) item = itemMap;
 
                 return item === 'scope' ? cmpParent : item;
@@ -4642,7 +4646,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 
                 var _defined6 = function _defined6(item) {
                     item = trimQuotes(item.trim());
-                    var itemMap = mapCompiled.get(item);
+                    var itemMap = mapper.get(item);
                     if (itemMap !== undefined) item = itemMap;
                     //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
                     return item === 'this' ? cmp : item;
@@ -4697,8 +4701,8 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     for (var i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
-        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
+        setAttribute($target, name, nodeProps[name], cmp, cmpParent);
         cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
