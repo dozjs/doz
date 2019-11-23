@@ -7,7 +7,7 @@ const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
-const mapCompiled = require('./vdom/map-compiled');
+const mapCompiled = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorator/tag');
 require('./directive/built-in/_bootstrap');

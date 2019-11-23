@@ -177,7 +177,7 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(require('../src/vdom/map-compiled').data);
+                console.log(require('../src/vdom/mapper').data);
                 console.log(html);
                 done();
             }, 100);

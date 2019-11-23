@@ -1,5 +1,5 @@
 const {TAG} = require('../constants');
-const mapCompiled = require('./map-compiled');
+const mapCompiled = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
 const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');

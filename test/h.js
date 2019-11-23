@@ -4,7 +4,7 @@ const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
 const be = require('bejs');
 const DOM = require('../src/component/DOMManipulation');
-const mapCompiled = require('../src/vdom/map-compiled');
+const mapCompiled = require('../src/vdom/mapper');
 
 describe('h', function () {
 

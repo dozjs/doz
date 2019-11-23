@@ -1,7 +1,7 @@
 const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 //const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
-const mapCompiled = require('./map-compiled');
+const mapCompiled = require('./mapper');
 
 function isEventAttribute(name) {
     return REGEX.IS_LISTENER.test(name);
