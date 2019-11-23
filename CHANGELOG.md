@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Fixed** memory leak using element handler
+- **Improved** performance
+
 ## [2.1.3] - 2019-11-19
 - **Fixed** 'Cannot call a class as a function' with mount method
 
