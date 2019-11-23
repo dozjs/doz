@@ -26,11 +26,12 @@
             state: false,
             count: 0
         },
-        template() {
-            return `
+        template(h) {
+            return h`
                 <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
                 <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
                 <button onclick="this.props.count++">Count ${this.props.count}</button>
+                <button onclick="${() => this.props.count++}">Count ${this.props.count}</button>
             `;
         },
         toggle() {
