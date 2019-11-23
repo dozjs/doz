@@ -206,6 +206,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
         aValue = mapper.getAll(aValue);
     } else {
+        //console.log(aValue)
         let objValue = mapper.get(aValue);
         if (objValue !== undefined) {
             aValue = objValue;

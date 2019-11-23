@@ -29,6 +29,7 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
+    let isInHandler = false;
     let isBoundedToComponent = !!this._components;
 
     for (let i = 0; i < value.length; ++i) {
@@ -75,6 +76,7 @@ module.exports = function (strings, ...value) {
 
             // if before is to <
             if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
+                console.log('vv', strings[i].search(/\s+on\w+=["']?/), value[i]);
                 isComponentConstructor = true;
                 let cmp = value[i];
                 let tagName = camelToDash(cmp.tag || cmp.name || 'obj');

@@ -711,6 +711,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
         aValue = mapper.getAll(aValue);
     } else {
+        //console.log(aValue)
         var objValue = mapper.get(aValue);
         if (objValue !== undefined) {
             aValue = objValue;
@@ -2773,6 +2774,7 @@ module.exports = function (strings) {
     var result = strings[0];
     var allowTag = false;
     var isInStyle = false;
+    var isInHandler = false;
     var isBoundedToComponent = !!this._components;
 
     for (var _len = arguments.length, value = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2824,6 +2826,7 @@ module.exports = function (strings) {
 
             // if before is to <
             if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
+                console.log('vv', strings[i].search(/\s+on\w+=["']?/), value[i]);
                 isComponentConstructor = true;
                 var cmp = value[i];
                 var tagName = camelToDash(cmp.tag || cmp.name || 'obj');
