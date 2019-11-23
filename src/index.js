@@ -65,4 +65,5 @@ Object.defineProperties(Doz, {
         enumerable: true
     }
 });
+
 module.exports = Doz;
