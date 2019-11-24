@@ -1,6 +1,7 @@
 const {TAG} = require('../constants');
 const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
+const eventsAttributes = require('../utils/events-attributes');
 const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
@@ -29,7 +30,6 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
-    let isInHandler = false;
     let isBoundedToComponent = !!this._components;
 
     for (let i = 0; i < value.length; ++i) {
@@ -50,8 +50,11 @@ module.exports = function (strings, ...value) {
             value[i] = mapper.set(value[i]);
         }
 
+        //console.log(strings[i].split(''));
+        //console.log([...strings[i]]);
 
-        [...strings[i]].forEach(char => {
+        strings[i].split('').forEach(char => {
+            //console.log(char)
             if (char === LESSER)
                 allowTag = false;
             if (char === GREATER)
@@ -71,12 +74,26 @@ module.exports = function (strings, ...value) {
             allowTag = false;
         }
 
+        //
+        let isInHandler = false;
+        // Check if value is a function and is after an events attributes like onclick for example.
+        if (typeof value[i] === 'function') {
+            for (let x = 0; x < eventsAttributes.length; x++) {
+                let r = strings[i].split(` ${eventsAttributes[x]}=`);
+                if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+                    isInHandler = true;
+                    break;
+                }
+            }
+        }
+
+        //console.log(isInHandler, value[i]);
+
         // if this function is bound to Doz component
-        if (isBoundedToComponent && !isInStyle) {
+        if (isBoundedToComponent && !isInStyle && !isInHandler) {
 
             // if before is to <
             if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
-                console.log('vv', strings[i].search(/\s+on\w+=["']?/), value[i]);
                 isComponentConstructor = true;
                 let cmp = value[i];
                 let tagName = camelToDash(cmp.tag || cmp.name || 'obj');

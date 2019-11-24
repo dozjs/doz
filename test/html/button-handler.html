@@ -31,7 +31,7 @@
                 <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
                 <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
                 <button onclick="this.props.count++">Count ${this.props.count}</button>
-                <button onclick="${() => this.props.count++}">Count ${this.props.count}</button>
+                <button onclick="${(e) => {this.props.count++; console.log(this.app)}}" onmousedown="${() => console.log('mousedown')}">Count ${this.props.count}</button>
             `;
         },
         toggle() {

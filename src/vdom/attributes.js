@@ -93,69 +93,72 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
 
-    // If use scope. from onDrawByParent event
-    let match = value.match(REGEX.GET_LISTENER_SCOPE);
-
-    if (match) {
-
-        let args = null;
-        let handler = match[1];
-        let stringArgs = match[2];
-        if (stringArgs) {
-            args = stringArgs.split(',').map(item => {
-                item = trimQuotes(item.trim());
-                //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                let itemMap = mapper.get(item);
-                if (itemMap !== undefined)
-                    item = itemMap;
-
-                return item === 'scope'
-                    ? cmpParent
-                    : item
-            })
-        }
-
-        const method = objectPath(handler, cmpParent);
-        if (method !== undefined) {
-            value = args
-                ? method.bind(cmpParent, ...args)
-                : method.bind(cmpParent);
-        }
-
-    } else {
-
-        match = value.match(REGEX.GET_LISTENER);
+    // Legacy logic where use a string instead of function
+    if (typeof value === 'string') {
+        // If use scope. from onDrawByParent event
+        let match = value.match(REGEX.GET_LISTENER_SCOPE);
 
         if (match) {
+
             let args = null;
             let handler = match[1];
             let stringArgs = match[2];
             if (stringArgs) {
                 args = stringArgs.split(',').map(item => {
                     item = trimQuotes(item.trim());
+                    //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
                     let itemMap = mapper.get(item);
                     if (itemMap !== undefined)
                         item = itemMap;
-                    //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
-                    return item === 'this'
-                        ? cmp
+
+                    return item === 'scope'
+                        ? cmpParent
                         : item
                 })
             }
 
-            let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
-
-            if (isParentMethod) {
-                handler = isParentMethod[1];
-                cmp = cmp.parent;
-            }
-
-            const method = objectPath(handler, cmp);
-
+            const method = objectPath(handler, cmpParent);
             if (method !== undefined) {
                 value = args
-                    ? method.bind(cmp, ...args)
-                    : method.bind(cmp);
+                    ? method.bind(cmpParent, ...args)
+                    : method.bind(cmpParent);
+            }
+
+        } else {
+
+            match = value.match(REGEX.GET_LISTENER);
+
+            if (match) {
+                let args = null;
+                let handler = match[1];
+                let stringArgs = match[2];
+                if (stringArgs) {
+                    args = stringArgs.split(',').map(item => {
+                        item = trimQuotes(item.trim());
+                        let itemMap = mapper.get(item);
+                        if (itemMap !== undefined)
+                            item = itemMap;
+                        //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
+                        return item === 'this'
+                            ? cmp
+                            : item
+                    })
+                }
+
+                let isParentMethod = handler.match(REGEX.IS_PARENT_METHOD);
+
+                if (isParentMethod) {
+                    handler = isParentMethod[1];
+                    cmp = cmp.parent;
+                }
+
+                const method = objectPath(handler, cmp);
+
+                if (method !== undefined) {
+                    value = args
+                        ? method.bind(cmp, ...args)
+                        : method.bind(cmp);
+                }
             }
         }
     }
