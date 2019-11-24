@@ -158,13 +158,13 @@
             //console.log('done', this.props.done)
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>&nbsp;
-                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>&nbsp;
-                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                    <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>&nbsp;
+                    <button onclick="${() => this.action.done(this.props.id)}" title="Done">&check;</button>&nbsp;
+                    <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.id})"
-                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            onblur="${(e) => this.action.hideInput(this.props.id, e)}"
+                            onkeypress="${(e) => this.action.inputEnterPress(this.props.id, e)}"
                             style="display: none"
                             type="text"
                             d-bind="title"
