@@ -1,7 +1,7 @@
 const {TAG} = require('../constants');
 const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
-const eventsAttributes = require('../utils/events-attributes');
+//const eventsAttributes = require('../utils/events-attributes');
 const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
@@ -78,13 +78,12 @@ module.exports = function (strings, ...value) {
         let isInHandler = false;
         // Check if value is a function and is after an events attributes like onclick for example.
         if (typeof value[i] === 'function') {
-            for (let x = 0; x < eventsAttributes.length; x++) {
-                let r = strings[i].split(` ${eventsAttributes[x]}=`);
+            //for (let x = 0; x < eventsAttributes.length; x++) {
+                let r = strings[i].split(`=`);
                 if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
                     isInHandler = true;
-                    break;
                 }
-            }
+            //}
         }
 
         //console.log(isInHandler, value[i]);

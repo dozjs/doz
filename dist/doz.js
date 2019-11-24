@@ -2737,7 +2737,7 @@ var _require = __webpack_require__(1),
 
 var mapper = __webpack_require__(3);
 var camelToDash = __webpack_require__(18);
-var eventsAttributes = __webpack_require__(49);
+//const eventsAttributes = require('../utils/events-attributes');
 
 var _require2 = __webpack_require__(11),
     scopedInner = _require2.scopedInner;
@@ -2827,13 +2827,12 @@ module.exports = function (strings) {
         var isInHandler = false;
         // Check if value is a function and is after an events attributes like onclick for example.
         if (typeof value[i] === 'function') {
-            for (var x = 0; x < eventsAttributes.length; x++) {
-                var r = strings[i].split(' ' + eventsAttributes[x] + '=');
-                if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
-                    isInHandler = true;
-                    break;
-                }
+            //for (let x = 0; x < eventsAttributes.length; x++) {
+            var r = strings[i].split('=');
+            if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+                isInHandler = true;
             }
+            //}
         }
 
         //console.log(isInHandler, value[i]);
@@ -4970,15 +4969,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = ['onabort', 'onafterprint', 'onauxclick', 'onbeforeprint', 'onbeforeunload', 'onblur', 'oncancel', 'oncanplay', 'oncanplaythrough', 'onchange', 'onclick', 'onclose', 'oncontextmenu', 'oncopy', 'oncuechange', 'oncut', 'ondblclick', 'ondrag', 'ondragend', 'ondragenter', 'ondragexit', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'ondurationchange', 'onemptied', 'onended', 'onerror', 'onfocus', 'onformdata', 'onhashchange', 'oninput', 'oninvalid', 'onkeydown', 'onkeypress', 'onkeyup', 'onlanguagechange', 'onload', 'onloadeddata', 'onloadedmetadata', 'onloadend', 'onloadstart', 'onmessage', 'onmessageerror', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onoffline', 'ononline', 'onpagehide', 'onpageshow', 'onpaste', 'onpause', 'onplay', 'onplaying', 'onpopstate', 'onprogress', 'onratechange', 'onrejectionhandled', 'onreset', 'onresize', 'onscroll', 'onsecuritypolicyviolation', 'onseeked', 'onseeking', 'onselect', 'onstalled', 'onstorage', 'onsubmit', 'onsuspend', 'ontimeupdate', 'ontoggle', 'onunhandledrejection', 'onunload', 'onvolumechange', 'onwaiting', 'onwheel'];
-
-/***/ }),
+/* 49 */,
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5722,11 +5713,16 @@ directive(':on-$event', {
             },
             emit: {
                 value: function value(name) {
-                    if (instance._callback && instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
-                        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                            args[_key - 1] = arguments[_key];
-                        }
+                    if (!instance._callback) return;
 
+                    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                        args[_key - 1] = arguments[_key];
+                    }
+
+                    if (typeof instance._callback[name] === 'function') {
+                        instance._callback[name].apply(instance.parent, args);
+                        // legacy for string
+                    } else if (instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
                         instance.parent[instance._callback[name]].apply(instance.parent, args);
                     }
                 },
