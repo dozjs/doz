@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - counter</title>
     <title>Title</title>
-    <script src="../dist/doz.js?589659884"></script>
+    <script src="../dist/doz.js?5849659884"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -46,13 +46,20 @@
                 </style>
                 <div>
                     <h1>${this.props.title}</h1>
-                    <button onclick="${() => this.props.counter--}">-</button>
+                    <button onclick="${this.decrease}">-</button>
                     <span class="counter">${this.props.counter}</span>
-                    <button onclick="${() => this.props.counter++}">+</button>
+                    <button onclick="${this.increase}">+</button>
                 </div>`
         },
         props: {
             counter: 0
+        },
+        increase(e) {
+            console.log(e)
+            this.props.counter++
+        },
+        decrease() {
+            this.props.counter--
         }
     });
 

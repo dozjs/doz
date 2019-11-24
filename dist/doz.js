@@ -4619,6 +4619,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
 
+    var alreadyFunction = false;
+
+    // Determines if the function is passed by mapper
+    if (typeof value === 'function') {
+        alreadyFunction = true;
+    }
+
     // Legacy logic where use a string instead of function
     if (typeof value === 'string') {
         // If use scope. from onDrawByParent event
@@ -4694,7 +4701,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         }
     }
 
-    if (typeof value === 'function') $target.addEventListener(extractEventName(name), value);else {
+    if (typeof value === 'function') {
+        if (alreadyFunction) {
+            $target.addEventListener(extractEventName(name), value.bind(cmp));
+        } else {
+            $target.addEventListener(extractEventName(name), value);
+        }
+    } else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
         // I don't understand but with regex test sometimes it don't works fine so use match... boh!
         //if (REGEX.IS_LISTENER_SCOPE.test(value) || value === 'scope') {
