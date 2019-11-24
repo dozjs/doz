@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.1] - 2019-11-24
+- **Added** support handler as function to `d-on` directive
+- **Improved** catch logic for handler into template
+
 ## [2.2.0] - 2019-11-24
 - **Added** support handler as function instead string for html element
 - **Fixed** memory leak using element handler
