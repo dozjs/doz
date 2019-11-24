@@ -21,8 +21,9 @@ Below some basic concepts:
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
-        - [Inline logic](#inline-logic)
-        - [Passing arguments](#passing-arguments)
+        - [Handlers old](#handlers-old)
+            - [Inline logic old](#inline-logic-old)
+            - [Passing arguments old](#passing-arguments-old)
     - [Emitter](#emitter)
     - [Lifecycle Hooks](#lifecycle-hooks)
     - [Drawing Hooks](#drawing-hooks)
@@ -443,6 +444,40 @@ Doz.component('my-component', {
 ```
 
 ### Handlers
+
+**Since 2.2.0**
+
+All HTML element of a component accepts standard events.
+
+```javascript
+Doz.component('my-button', {
+    template(h) {
+        return h`
+            <button onclick="${this.clickMe}">Click me!</button>
+        `
+    },
+    clickMe(e) {
+        alert(e)
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-button></my-button>
+        `
+    }
+});
+```
+
+---
+
+### Handlers old
+
+**Before 2.2.0**
+
 All HTML element of a component accepts standard events. It's possible also passing a component method or [actions](#actions).
 
 ```javascript
@@ -472,9 +507,9 @@ new Doz({
 
 ---
 
-#### Inline logic
+#### Inline logic old
 
-**Since 1.3.2**
+**Before 2.2.0**
 
 Doz supports also inline logic. Normally `this` is reference of HTML element but in Doz it's every reference of component instance.
 
@@ -501,7 +536,10 @@ new Doz({
 });
 ```
 
-#### Passing arguments
+#### Passing arguments old
+
+**Before 2.2.0**
+
 Doz keeps the types passed to the function.
 `this` is a special placeholder that identify current instance.
 
