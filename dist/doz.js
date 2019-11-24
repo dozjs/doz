@@ -4716,7 +4716,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 
 function attach($target, nodeProps, cmp, cmpParent) {
 
-    var bindValue = void 0;
     var name = void 0;
 
     var propsKeys = Object.keys(nodeProps);
@@ -4730,7 +4729,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     var datasetArray = Object.keys($target.dataset);
     for (var _i7 = 0; _i7 < datasetArray.length; _i7++) {
-        if (isListener(datasetArray[_i7])) addEventListener($target, _i7, $target.dataset[datasetArray[_i7]], cmp, cmpParent);
+        if (isListener(datasetArray[_i7])) addEventListener($target, datasetArray[_i7], $target.dataset[datasetArray[_i7]], cmp, cmpParent);
     }
 
     //cmp.$$afterAttributesCreate($target, bindValue);
