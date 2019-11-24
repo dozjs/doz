@@ -72,10 +72,14 @@ export default class extends Component {
                 }
             </style>
 
-            <button onclick="${() => this.props.counter++}">
+            <button onclick="${this.increase}">
                 ${this.props.title} ${this.props.counter}
             </button>
         `
+    }
+    
+    increase() {
+        this.props.counter++;
     }
 
 };
