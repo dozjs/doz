@@ -25,7 +25,7 @@
 
                     button {
                         height: 50px;
-                        width: 100px;
+                        width: 50px;
                         font-size: 24px;
                         font-weight: bold;
                     }
@@ -46,9 +46,9 @@
                 </style>
                 <div>
                     <h1>${this.props.title}</h1>
-                    <button onclick="this.props.counter--">-</button>
+                    <button onclick="${() => this.props.counter--}">-</button>
                     <span class="counter">${this.props.counter}</span>
-                    <button onclick="this.props.counter++">+</button>
+                    <button onclick="${() => this.props.counter++}">+</button>
                 </div>`
         },
         props: {

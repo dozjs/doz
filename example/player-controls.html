@@ -32,9 +32,9 @@
         template: function (h) {
             switch (this.props.state) {
                 case 'play':
-                    return h`<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
+                    return h`<button forceupdate onclick="${() => this.pause()}"><i class="fa fa-pause"></i></button>`;
                 case 'pause':
-                    return h`<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
+                    return h`<button forceupdate onclick="${() => this.play()}"><i class="fa fa-play"></i></button>`;
                 case 'loading':
                     return h`<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
