@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.2.1  
+// [DOZ]  Build version: 2.2.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3124,7 +3124,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.2.1',
+        value: '2.2.2',
         enumerable: true
     },
     tag: {
@@ -6234,11 +6234,9 @@ directive('show', {
         $target.style.display = value === 'false' ? 'none' : '';
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        console.log('aaaa');
         this.setVisible($target, directiveValue);
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        console.log('bbbb');
         this.setVisible($target, directiveValue);
     }
 });
