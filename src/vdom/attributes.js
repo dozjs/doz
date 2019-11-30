@@ -3,6 +3,7 @@ const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
+const {isDirective} = require('../directives/helpers');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -23,7 +24,7 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if (isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') {
+    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !isDirective(name)) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -36,6 +37,7 @@ function setAttribute($target, name, value, cmp) {
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
+        //$target[name] = value;
     }
 }
 
@@ -78,7 +80,7 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     $target.setAttribute(name, value);
-    $target[name] = value;
+    //$target[name] = value;
 }
 
 function extractEventName(name) {

@@ -1,6 +1,6 @@
 const {data} = require('../../collection');
 const {extractDirectivesFromProps, isDirective} = require('../helpers');
-const {REGEX} = require('../../constants.js');
+const {REGEX, PROPS_ATTRIBUTES} = require('../../constants.js');
 
 // Hooks for the component
 function callMethod(...args) {
@@ -139,7 +139,8 @@ function callComponentDOMElementCreate(instance, $target, initial) {
         let attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            let directiveValue = attribute.value;
+            let directiveValue = $target[PROPS_ATTRIBUTES][attribute.name];// || attribute.value;
+            //console.log('directiveValue', directiveValue)
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 $target.removeAttribute(attribute.name);
@@ -156,7 +157,7 @@ function callComponentDOMElementUpdate(instance, $target) {
         let attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            let directiveValue = attribute.value;
+            let directiveValue = $target[PROPS_ATTRIBUTES][attribute.name];// || attribute.value;
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);

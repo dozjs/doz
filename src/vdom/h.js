@@ -77,7 +77,7 @@ module.exports = function (strings, ...value) {
         //
         let isInHandler = false;
         // Check if value is a function and is after an event attribute like onclick for example.
-        if (typeof value[i] === 'function') {
+        if (typeof value[i] === 'function' || typeof value[i] === 'object') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
                 let r = strings[i].split(`=`);
                 if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
@@ -136,6 +136,7 @@ module.exports = function (strings, ...value) {
         else {
             // If is not component constructor then add to map.
             // Exclude string type and style also
+            //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
             if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapper.set(value[i]);
             }

@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.2.0  
+// [DOZ]  Build version: 2.2.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -711,7 +711,6 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
         aValue = mapper.getAll(aValue);
     } else {
-        //console.log(aValue)
         var objValue = mapper.get(aValue);
         if (objValue !== undefined) {
             aValue = objValue;
@@ -2826,7 +2825,7 @@ module.exports = function (strings) {
         //
         var isInHandler = false;
         // Check if value is a function and is after an event attribute like onclick for example.
-        if (typeof value[i] === 'function') {
+        if (typeof value[i] === 'function' || _typeof(value[i]) === 'object') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
             var r = strings[i].split('=');
             if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
@@ -2883,6 +2882,7 @@ module.exports = function (strings) {
         if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else {
             // If is not component constructor then add to map.
             // Exclude string type and style also
+            //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
             if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapper.set(value[i]);
             }
@@ -3124,7 +3124,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.2.0',
+        value: '2.2.2',
         enumerable: true
     },
     tag: {
@@ -3955,7 +3955,8 @@ var _require2 = __webpack_require__(34),
     isDirective = _require2.isDirective;
 
 var _require3 = __webpack_require__(1),
-    REGEX = _require3.REGEX;
+    REGEX = _require3.REGEX,
+    PROPS_ATTRIBUTES = _require3.PROPS_ATTRIBUTES;
 
 // Hooks for the component
 
@@ -4181,7 +4182,8 @@ function callComponentDOMElementCreate(instance, $target, initial) {
         var attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            var directiveValue = attribute.value;
+            var directiveValue = $target[PROPS_ATTRIBUTES][attribute.name]; // || attribute.value;
+            //console.log('directiveValue', directiveValue)
             var directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 $target.removeAttribute(attribute.name);
@@ -4198,7 +4200,7 @@ function callComponentDOMElementUpdate(instance, $target) {
         var attribute = $target.attributes[i];
         if (isDirective(attribute.name)) {
             var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            var directiveValue = attribute.value;
+            var directiveValue = $target[PROPS_ATTRIBUTES][attribute.name]; // || attribute.value;
             var directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);
@@ -4519,6 +4521,9 @@ var objectPath = __webpack_require__(42);
 var isListener = __webpack_require__(13);
 var mapper = __webpack_require__(3);
 
+var _require2 = __webpack_require__(34),
+    isDirective = _require2.isDirective;
+
 function isEventAttribute(name) {
     return isListener(name);
 }
@@ -4538,7 +4543,7 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if (isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+    if ((isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') && !isDirective(name)) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -4551,6 +4556,7 @@ function setAttribute($target, name, value, cmp) {
     } else {
         if (value === undefined) value = '';
         $target.setAttribute(name, value);
+        //$target[name] = value;
     }
 }
 
@@ -4603,7 +4609,7 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     $target.setAttribute(name, value);
-    $target[name] = value;
+    //$target[name] = value;
 }
 
 function extractEventName(name) {
@@ -5498,6 +5504,7 @@ __webpack_require__(64);
 __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(73);
+__webpack_require__(74);
 
 /***/ }),
 /* 59 */
@@ -6231,13 +6238,50 @@ var _require = __webpack_require__(0),
 
 directive('show', {
     setVisible: function setVisible($target, value) {
-        $target.style.display = value === 'false' ? 'none' : '';
+        $target.style.display = value === false ? 'none' : '';
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
+    }
+});
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+function animate(node, animationName, callback) {
+    node.classList.add('animated', animationName);
+
+    function handleAnimationEnd() {
+        node.classList.remove('animated', animationName);
+        node.removeEventListener('animationend', handleAnimationEnd);
+        if (typeof callback === 'function') callback();
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd);
+}
+
+directive('animate', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            animate: {
+                value: animate,
+                enumerable: true
+            }
+        });
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        console.log('directiveValue', directiveValue);
+        instance.animate($target, directiveValue.enter);
     }
 });
 
