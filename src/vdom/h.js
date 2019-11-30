@@ -76,7 +76,7 @@ module.exports = function (strings, ...value) {
 
         //
         let isInHandler = false;
-        // Check if value is a function and is after an events attributes like onclick for example.
+        // Check if value is a function and is after an event attribute like onclick for example.
         if (typeof value[i] === 'function') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
                 let r = strings[i].split(`=`);
