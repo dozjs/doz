@@ -35,7 +35,7 @@
         drawOther() {
             if (this.other) return;
             this.other = this.mount(this.h`
-                <div lastChild="aaaa" d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}">
+                <div d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}">
                     <second-component></second-component>
                     <thirty-component></thirty-component>
                 </div>
@@ -45,7 +45,7 @@
                 //console.log('component beforeUnmount');
                 //this.getHTMLElement().style.display = 'block';
                 //this.animate(this.getHTMLElement(), 'fadeOut', ()=> this.getHTMLElement().remove());
-                return false
+                //return false
             };
 
             this.other.onDestroy = function () {
