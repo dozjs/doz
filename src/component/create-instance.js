@@ -8,7 +8,7 @@ const hmr = require('./helpers/hmr');
 const Component = require('./Component');
 const propsInit = require('./helpers/props-init');
 const delay = require('../utils/delay');
-const directive = require('../directive');
+const directive = require('../directives');
 const getComponentName = require('./helpers/get-component-name');
 
 function createInstance(cfg = {}) {

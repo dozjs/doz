@@ -3,7 +3,7 @@ const composeStyleInner = require('../utils/compose-style-inner');
 const dashToCamel = require('../utils/dash-to-camel');
 const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
-const directive = require('../directive');
+const directive = require('../directives');
 
 class DOMManipulation extends Base {
     constructor(opt) {

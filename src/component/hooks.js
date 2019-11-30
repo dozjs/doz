@@ -1,5 +1,5 @@
 const delay = require('../utils/delay');
-const directive = require('../directive');
+const directive = require('../directives');
 
 function callBeforeCreate(context) {
     directive.callAppComponentBeforeCreate(context);

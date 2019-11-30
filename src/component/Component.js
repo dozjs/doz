@@ -15,7 +15,7 @@ const localMixin = require('./helpers/local-mixin');
 const {compile} = require('../vdom/parser');
 const propsInit = require('./helpers/props-init');
 const DOMManipulation = require('./DOMManipulation');
-const directive = require('../directive');
+const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 

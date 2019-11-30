@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.2.2  
+// [DOZ]  Build version: 2.2.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2825,7 +2825,7 @@ module.exports = function (strings) {
 
         //
         var isInHandler = false;
-        // Check if value is a function and is after an events attributes like onclick for example.
+        // Check if value is a function and is after an event attribute like onclick for example.
         if (typeof value[i] === 'function') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
             var r = strings[i].split('=');
@@ -3124,7 +3124,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.2.2',
+        value: '2.2.0',
         enumerable: true
     },
     tag: {

@@ -3,7 +3,7 @@ const dashToCamel = require('../utils/dash-to-camel');
 const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
-const directive = require('../directive');
+const directive = require('../directives');
 const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 
