@@ -175,6 +175,11 @@ class Base {
                 value: {},
                 enumerable: true,
                 writable: true
+            },
+            lockRemoveInstanceByCallback: {
+                value: null,
+                enumerable: true,
+                writable: true
             }
         });
     }

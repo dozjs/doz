@@ -244,6 +244,11 @@ class Component extends DOMManipulation {
     }
 
     unmount(onlyInstance = false, byDestroy, silently) {
+        if (this.lockRemoveInstanceByCallback && typeof this.lockRemoveInstanceByCallback === 'function') {
+            this.lockRemoveInstanceByCallback(this.unmount, onlyInstance, byDestroy, silently);
+            return;
+        }
+
         if (!onlyInstance && (Boolean(this._unmountedParentNode)
             || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
             return;
@@ -275,8 +280,14 @@ class Component extends DOMManipulation {
     }
 
     destroy(onlyInstance) {
-        if (this.unmount(onlyInstance, true) === false)
+        if (this.lockRemoveInstanceByCallback && typeof this.lockRemoveInstanceByCallback === 'function') {
+            this.lockRemoveInstanceByCallback(this.destroy, onlyInstance);
             return;
+        }
+
+        if (this.unmount(onlyInstance, true) === false) {
+            return;
+        }
 
         if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
             return;
@@ -287,6 +298,7 @@ class Component extends DOMManipulation {
         });
 
         hooks.callDestroy(this);
+        return true;
     }
 
     // noinspection JSMethodCanBeStatic
