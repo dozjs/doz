@@ -35,7 +35,7 @@ directive('animate', {
         });
     },
 
-    onComponentDOMElementCreate(instance, $target, directiveValue) {
+    createAnimations(instance, $target, directiveValue) {
         if (directiveValue.enter) {
             wait(() => {
                 return !$target.__animationIsRunning;
@@ -45,17 +45,14 @@ directive('animate', {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
                 instance.animate($target, directiveValue.enter, () => {
-                    //console.log('ENTER animation end', $target);
                     $target.__animationIsRunning = false;
-                    //$target.__animationEnterIsComplete = true;
+                    $target.__animationEnterIsComplete = true;
                 });
             });
             instance.elementsWithAnimation.push({$target, directiveValue});
-            //console.log(instance, $target, directiveValue.enter);
         }
         if (directiveValue.leave) {
             instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {
-                //console.log('call lockRemoveInstanceByCallback', callerMethod, args)
                 let animationsEnd = [];
                 for (let i = 0; i < instance.elementsWithAnimation.length; i++) {
                     let elementObj = instance.elementsWithAnimation[i];
@@ -67,7 +64,6 @@ directive('animate', {
                                 }, () => {
                                     elementObj.$target.__animationIsRunning = true;
                                     instance.animate(elementObj.$target, elementObj.directiveValue.leave, () => {
-                                        //console.log('LEAVE animation end', elementObj.$target);
                                         elementObj.$target.__animationOriginDisplay = elementObj.$target.style.display;
                                         elementObj.$target.style.display = 'none';
                                         elementObj.$target.__animationIsRunning = false;
@@ -87,5 +83,16 @@ directive('animate', {
                 });
             }
         }
+    },
+
+    onComponentDOMElementCreate(instance, $target, directiveValue) {
+        this.createAnimations(instance, $target, directiveValue)
+    },
+
+    onComponentMount(instance, directiveValue) {
+        let $target = instance.getHTMLElement();
+        if ($target.__animationOriginDisplay)
+            this.createAnimations(instance, $target, directiveValue)
+
     }
 });

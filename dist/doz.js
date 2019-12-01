@@ -6310,7 +6310,7 @@ directive('animate', {
             }
         });
     },
-    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+    createAnimations: function createAnimations(instance, $target, directiveValue) {
         if (directiveValue.enter) {
             wait(function () {
                 return !$target.__animationIsRunning;
@@ -6320,13 +6320,11 @@ directive('animate', {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
                 instance.animate($target, directiveValue.enter, function () {
-                    //console.log('ENTER animation end', $target);
                     $target.__animationIsRunning = false;
-                    //$target.__animationEnterIsComplete = true;
+                    $target.__animationEnterIsComplete = true;
                 });
             });
             instance.elementsWithAnimation.push({ $target: $target, directiveValue: directiveValue });
-            //console.log(instance, $target, directiveValue.enter);
         }
         if (directiveValue.leave) {
             instance.lockRemoveInstanceByCallback = function (callerMethod) {
@@ -6334,7 +6332,6 @@ directive('animate', {
                     args[_key - 1] = arguments[_key];
                 }
 
-                //console.log('call lockRemoveInstanceByCallback', callerMethod, args)
                 var animationsEnd = [];
 
                 var _loop = function _loop(i) {
@@ -6346,7 +6343,6 @@ directive('animate', {
                         }, function () {
                             elementObj.$target.__animationIsRunning = true;
                             instance.animate(elementObj.$target, elementObj.directiveValue.leave, function () {
-                                //console.log('LEAVE animation end', elementObj.$target);
                                 elementObj.$target.__animationOriginDisplay = elementObj.$target.style.display;
                                 elementObj.$target.style.display = 'none';
                                 elementObj.$target.__animationIsRunning = false;
@@ -6368,6 +6364,13 @@ directive('animate', {
                 });
             };
         }
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        this.createAnimations(instance, $target, directiveValue);
+    },
+    onComponentMount: function onComponentMount(instance, directiveValue) {
+        var $target = instance.getHTMLElement();
+        if ($target.__animationOriginDisplay) this.createAnimations(instance, $target, directiveValue);
     }
 });
 
