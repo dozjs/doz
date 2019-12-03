@@ -6311,8 +6311,10 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
+        //instance.elementsWithAnimation = [];
         if (directiveValue.enter) {
             wait(function () {
+                console.log('wait enter');
                 return !$target.__animationIsRunning;
             }, function () {
                 $target.__animationIsRunning = true;
@@ -6337,8 +6339,10 @@ directive('animate', {
                 var _loop = function _loop(i) {
                     var elementObj = instance.elementsWithAnimation[i];
 
+                    console.log(elementObj);
                     animationsEnd.push(new Promise(function (resolve) {
                         wait(function () {
+                            console.log('wait leave');
                             return !elementObj.$target.__animationIsRunning;
                         }, function () {
                             elementObj.$target.__animationIsRunning = true;
@@ -6368,9 +6372,13 @@ directive('animate', {
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.createAnimations(instance, $target, directiveValue);
     },
-    onComponentMount: function onComponentMount(instance, directiveValue) {
-        var $target = instance.getHTMLElement();
-        if ($target.__animationOriginDisplay) this.createAnimations(instance, $target, directiveValue);
+    onComponentMountAsync: function onComponentMountAsync(instance, directiveValue) {
+        /*let $target = instance.getHTMLElement();
+        if ($target.__animationOriginDisplay) {
+            console.log('aaaaaaaaaaaaaaaaaaa')
+            this.createAnimations(instance, $target, directiveValue)
+        }*/
+
     }
 });
 

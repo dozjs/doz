@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component at runtime, no destroy</title>
-    <script src="../dist/doz.js?5896548885497614458041c133"></script>
+    <script src="../dist/doz.js?58965488854976144580491c133"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -57,19 +57,19 @@
                 `);
 
                 this.other.onBeforeMount = () => {
-                    console.log('main component before mount');
+                    //console.log('main component before mount');
                 };
 
                 this.other.onMount = () => {
-                    console.log('main component mount');
+                    //console.log('main component mount');
                 };
 
                 this.other.onBeforeUnmount = () => {
-                    console.log('main component before unmount');
+                    //console.log('main component before unmount');
                 };
 
                 this.other.onUnmount = () => {
-                    console.log('main component unmount');
+                    //console.log('main component unmount');
                 };
             } else {
                 this.other.mount();
@@ -87,19 +87,19 @@
                 this.other2 = this.mount(`<div>other</div>`);
 
                 this.other2.onBeforeMount = () => {
-                    console.log('main component before mount');
+                    //console.log('main component before mount');
                 };
 
                 this.other2.onMount = () => {
-                    console.log('main component mount');
+                    //console.log('main component mount');
                 };
 
                 this.other2.onBeforeUnmount = () => {
-                    console.log('main component before unmount');
+                    //console.log('main component before unmount');
                 };
 
                 this.other2.onUnmount = () => {
-                    console.log('main component unmount');
+                    //console.log('main component unmount');
                 };
             } else {
                 this.other2.mount();
@@ -124,16 +124,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            console.log('create', this.tag);
+            //console.log('create', this.tag);
         },
         onMount() {
-            console.log('mount', this.tag);
+            //console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            console.log('before unmount', this.tag);
+            //console.log('before unmount', this.tag);
         },
         onUnmount() {
-            console.log('unmount', this.tag);
+            //console.log('unmount', this.tag);
         }
     });
 
@@ -148,16 +148,16 @@
             this.props.state = !this.props.state;
         },
         onCreate() {
-            console.log('create', this.tag);
+            //console.log('create', this.tag);
         },
         onMount() {
-            console.log('mount', this.tag);
+            //console.log('mount', this.tag);
         },
         onBeforeUnmount() {
-            console.log('before unmount', this.tag);
+            //console.log('before unmount', this.tag);
         },
         onUnmount() {
-            console.log('unmount', this.tag);
+            //console.log('unmount', this.tag);
         }
     });
 

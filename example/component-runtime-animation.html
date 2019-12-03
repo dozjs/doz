@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component at runtime</title>
-    <script src="../dist/doz.js?589425654860441c4346884"></script>
+    <script src="../dist/doz.js?589425654860441c434d6884"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -36,8 +36,8 @@
             if (this.other) return;
             this.other = this.mount(this.h`
                 <div>
-                    <second-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
-                    <thirty-component d-animate="${{enter: 'flipInX', leave: 'fadeOut'}}"/>
+                    <second-component d-animate="${{enter: 'flipInY', leave: 'flipOutY'}}"/>
+                    <thirty-component d-animate="${{enter: 'flipInX', leave: 'flipOutX'}}"/>
                 </div>
             `);
 

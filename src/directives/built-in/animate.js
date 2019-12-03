@@ -36,8 +36,10 @@ directive('animate', {
     },
 
     createAnimations(instance, $target, directiveValue) {
+        //instance.elementsWithAnimation = [];
         if (directiveValue.enter) {
             wait(() => {
+                console.log('wait enter');
                 return !$target.__animationIsRunning;
             }, () => {
                 $target.__animationIsRunning = true;
@@ -57,9 +59,11 @@ directive('animate', {
                 for (let i = 0; i < instance.elementsWithAnimation.length; i++) {
                     let elementObj = instance.elementsWithAnimation[i];
 
+                    console.log(elementObj)
                     animationsEnd.push(
                         new Promise(resolve => {
                                 wait(() => {
+                                    console.log('wait leave');
                                     return !elementObj.$target.__animationIsRunning;
                                 }, () => {
                                     elementObj.$target.__animationIsRunning = true;
@@ -89,10 +93,12 @@ directive('animate', {
         this.createAnimations(instance, $target, directiveValue)
     },
 
-    onComponentMount(instance, directiveValue) {
-        let $target = instance.getHTMLElement();
-        if ($target.__animationOriginDisplay)
+    onComponentMountAsync(instance, directiveValue) {
+        /*let $target = instance.getHTMLElement();
+        if ($target.__animationOriginDisplay) {
+            console.log('aaaaaaaaaaaaaaaaaaa')
             this.createAnimations(instance, $target, directiveValue)
+        }*/
 
     }
 });
