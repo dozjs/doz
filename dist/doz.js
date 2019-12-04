@@ -6273,6 +6273,8 @@ directive('show', {
 "use strict";
 
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
@@ -6305,16 +6307,17 @@ directive('animate', {
                 enumerable: true
             },
             elementsWithAnimation: {
-                value: [],
+                value: new Map(),
                 writable: true
             }
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
         //instance.elementsWithAnimation = [];
+        //console.log(instance, $target)
         if (directiveValue.enter) {
             wait(function () {
-                console.log('wait enter');
+                //console.log('wait enter');
                 return !$target.__animationIsRunning;
             }, function () {
                 $target.__animationIsRunning = true;
@@ -6326,9 +6329,11 @@ directive('animate', {
                     $target.__animationEnterIsComplete = true;
                 });
             });
-            instance.elementsWithAnimation.push({ $target: $target, directiveValue: directiveValue });
+            if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
         }
         if (directiveValue.leave) {
+            // Use instance.parent as instance... boh why?
+            if (instance.parent && instance.parent.tag === 'dz-mount') instance = instance.parent;
             instance.lockRemoveInstanceByCallback = function (callerMethod) {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -6336,28 +6341,54 @@ directive('animate', {
 
                 var animationsEnd = [];
 
-                var _loop = function _loop(i) {
-                    var elementObj = instance.elementsWithAnimation[i];
+                var _loop = function _loop(key, value) {
+                    var $targetOfMap = key;
+                    var directiveValueOfMap = value;
 
-                    console.log(elementObj);
                     animationsEnd.push(new Promise(function (resolve) {
                         wait(function () {
-                            console.log('wait leave');
-                            return !elementObj.$target.__animationIsRunning;
+                            return !$targetOfMap.__animationIsRunning;
                         }, function () {
-                            elementObj.$target.__animationIsRunning = true;
-                            instance.animate(elementObj.$target, elementObj.directiveValue.leave, function () {
-                                elementObj.$target.__animationOriginDisplay = elementObj.$target.style.display;
-                                elementObj.$target.style.display = 'none';
-                                elementObj.$target.__animationIsRunning = false;
+                            $targetOfMap.__animationIsRunning = true;
+                            instance.animate($targetOfMap, directiveValueOfMap.leave, function () {
+                                //console.error('animation ends', $targetOfMap)
+                                $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
+                                $targetOfMap.style.display = 'none';
+                                $targetOfMap.__animationIsRunning = false;
                                 resolve();
                             });
                         });
                     }));
                 };
 
-                for (var i = 0; i < instance.elementsWithAnimation.length; i++) {
-                    _loop(i);
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = instance.elementsWithAnimation[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var _ref = _step.value;
+
+                        var _ref2 = _slicedToArray(_ref, 2);
+
+                        var key = _ref2[0];
+                        var value = _ref2[1];
+
+                        _loop(key, value);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
                 }
 
                 Promise.all(animationsEnd).then(function () {
@@ -6372,13 +6403,11 @@ directive('animate', {
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.createAnimations(instance, $target, directiveValue);
     },
-    onComponentMountAsync: function onComponentMountAsync(instance, directiveValue) {
-        /*let $target = instance.getHTMLElement();
+    onComponentMount: function onComponentMount(instance, directiveValue) {
+        var $target = instance.getHTMLElement();
         if ($target.__animationOriginDisplay) {
-            console.log('aaaaaaaaaaaaaaaaaaa')
-            this.createAnimations(instance, $target, directiveValue)
-        }*/
-
+            this.createAnimations(instance, $target, directiveValue);
+        }
     }
 });
 

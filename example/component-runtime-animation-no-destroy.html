@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component at runtime, no destroy</title>
-    <script src="../dist/doz.js?58965488854976144580491c133"></script>
+    <script src="../dist/doz.js?5896548885497614458d04r91c133"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -51,7 +51,7 @@
                             qui va una scritta
                         </div>
                         <div style="padding: 20px; background: #5063ff">
-                            <thirty-component/>
+                            <thirty-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
                         </div>
                     </div>
                 `);
@@ -77,6 +77,7 @@
 
         },
         removeOther() {
+            console.log(this.other)
             if (this.other) {
                 this.other.unmount();
             }
@@ -84,7 +85,7 @@
         drawOther2() {
             if (!this.other2) {
 
-                this.other2 = this.mount(`<div>other</div>`);
+                this.other2 = this.mount(this.h`<div d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}">other</div>`);
 
                 this.other2.onBeforeMount = () => {
                     //console.log('main component before mount');
