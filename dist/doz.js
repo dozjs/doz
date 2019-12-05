@@ -6480,19 +6480,6 @@ directive('animate', {
         $target.__lokedForAnimation = true;
         this.createAnimations(instance, $target, directiveValue);
     },
-
-
-    /*
-    onComponentMount(instance, directiveValue) {
-        let $target = instance.getHTMLElement();
-        if ($target.__lokedForAnimation) return;
-          if (instance.parent && instance.parent.elementsWithAnimation.length)
-            instance = instance.parent;
-        $target.__lokedForAnimation = true;
-        this.createAnimations(instance, $target, directiveValue)
-    },
-    */
-
     onAppComponentMount: function onAppComponentMount(instance) {
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;

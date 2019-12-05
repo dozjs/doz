@@ -172,18 +172,6 @@ directive('animate', {
         this.createAnimations(instance, $target, directiveValue)
     },
 
-    /*
-    onComponentMount(instance, directiveValue) {
-        let $target = instance.getHTMLElement();
-        if ($target.__lokedForAnimation) return;
-
-        if (instance.parent && instance.parent.elementsWithAnimation.length)
-            instance = instance.parent;
-        $target.__lokedForAnimation = true;
-        this.createAnimations(instance, $target, directiveValue)
-    },
-    */
-
     onAppComponentMount(instance) {
         for (let [key, value] of instance.elementsWithAnimation) {
             let $target = key;
