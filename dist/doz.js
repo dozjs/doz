@@ -6313,13 +6313,12 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
-        //instance.elementsWithAnimation = [];
-        //console.log(instance, $target)
         if (directiveValue.enter) {
             wait(function () {
-                //console.log('wait enter');
+                //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
             }, function () {
+                if (!document.body.contains($target)) return;
                 $target.__animationIsRunning = true;
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
@@ -6327,13 +6326,12 @@ directive('animate', {
                 instance.animate($target, directiveValue.enter, function () {
                     $target.__animationIsRunning = false;
                     $target.__animationEnterIsComplete = true;
+                    $target.__lokedForAnimation = false;
                 });
             });
             if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
         }
         if (directiveValue.leave) {
-            // Use instance.parent as instance... boh why?
-            if (instance.parent && instance.parent.tag === 'dz-mount') instance = instance.parent;
             instance.lockRemoveInstanceByCallback = function (callerMethod) {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -6349,12 +6347,14 @@ directive('animate', {
                         wait(function () {
                             return !$targetOfMap.__animationIsRunning;
                         }, function () {
+                            if (!document.body.contains($targetOfMap)) return;
                             $targetOfMap.__animationIsRunning = true;
                             instance.animate($targetOfMap, directiveValueOfMap.leave, function () {
                                 //console.error('animation ends', $targetOfMap)
                                 $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
                                 $targetOfMap.style.display = 'none';
                                 $targetOfMap.__animationIsRunning = false;
+                                $targetOfMap.__lokedForAnimation = false;
                                 resolve();
                             });
                         });
@@ -6401,13 +6401,51 @@ directive('animate', {
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        if ($target.__lokedForAnimation) return;
+        $target.__lokedForAnimation = true;
         this.createAnimations(instance, $target, directiveValue);
     },
     onComponentMount: function onComponentMount(instance, directiveValue) {
         var $target = instance.getHTMLElement();
-        if ($target.__animationOriginDisplay) {
-            console.log(instance.parent);
-            this.createAnimations(instance, $target, directiveValue);
+        if ($target.__lokedForAnimation) return;
+        // Use instance.parent as instance... boh why?
+        if (instance.parent && instance.parent.elementsWithAnimation) instance = instance.parent;
+        $target.__lokedForAnimation = true;
+        this.createAnimations(instance, $target, directiveValue);
+    },
+    onAppComponentMount: function onAppComponentMount(instance) {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+            for (var _iterator2 = instance.elementsWithAnimation[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var _ref3 = _step2.value;
+
+                var _ref4 = _slicedToArray(_ref3, 2);
+
+                var key = _ref4[0];
+                var value = _ref4[1];
+
+                var $target = key;
+                var directiveValue = value;
+                if ($target.__lokedForAnimation) continue;
+                $target.__lokedForAnimation = true;
+                this.createAnimations(instance, $target, directiveValue);
+            }
+        } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                }
+            } finally {
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
+                }
+            }
         }
     }
 });

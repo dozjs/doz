@@ -35,7 +35,7 @@
         $allowMount: true,
         template(h) {
             return h`
-                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate d-animate="${{enter: 'flipInX', leave: 'fadeOut'}}" onclick="this.drawOther()">Mount second</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
                 <button forceupdate onclick="this.drawOther2()">Mount second 2</i></button>
                 <button forceupdate onclick="this.removeOther2()">Unmount second 2</i></button>
@@ -77,7 +77,7 @@
 
         },
         removeOther() {
-            console.log(this.other)
+            //console.log(this.other)
             if (this.other) {
                 this.other.unmount();
             }

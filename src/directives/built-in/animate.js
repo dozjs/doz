@@ -36,29 +36,26 @@ directive('animate', {
     },
 
     createAnimations(instance, $target, directiveValue) {
-        //instance.elementsWithAnimation = [];
-        //console.log(instance, $target)
         if (directiveValue.enter) {
             wait(() => {
-                //console.log('wait enter');
+                //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
             }, () => {
+                if (!document.body.contains($target)) return;
                 $target.__animationIsRunning = true;
-                if($target.__animationOriginDisplay) {
+                if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
                 instance.animate($target, directiveValue.enter, () => {
                     $target.__animationIsRunning = false;
                     $target.__animationEnterIsComplete = true;
+                    $target.__lokedForAnimation = false;
                 });
             });
             if (!instance.elementsWithAnimation.has($target))
                 instance.elementsWithAnimation.set($target, directiveValue);
         }
         if (directiveValue.leave) {
-            // Use instance.parent as instance... boh why?
-            if (instance.parent && instance.parent.tag === 'dz-mount')
-                instance = instance.parent;
             instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {
                 let animationsEnd = [];
                 for (let [key, value] of instance.elementsWithAnimation) {
@@ -70,12 +67,14 @@ directive('animate', {
                                 wait(() => {
                                     return !$targetOfMap.__animationIsRunning;
                                 }, () => {
+                                    if (!document.body.contains($targetOfMap)) return;
                                     $targetOfMap.__animationIsRunning = true;
                                     instance.animate($targetOfMap, directiveValueOfMap.leave, () => {
                                         //console.error('animation ends', $targetOfMap)
                                         $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
                                         $targetOfMap.style.display = 'none';
                                         $targetOfMap.__animationIsRunning = false;
+                                        $targetOfMap.__lokedForAnimation = false;
                                         resolve();
                                     });
                                 });
@@ -95,15 +94,28 @@ directive('animate', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
+        if ($target.__lokedForAnimation) return;
+        $target.__lokedForAnimation = true;
         this.createAnimations(instance, $target, directiveValue)
     },
 
     onComponentMount(instance, directiveValue) {
         let $target = instance.getHTMLElement();
-        if ($target.__animationOriginDisplay) {
-            console.log(instance.parent)
+        if ($target.__lokedForAnimation) return;
+        // Use instance.parent as instance... boh why?
+        if (instance.parent && instance.parent.elementsWithAnimation)
+            instance = instance.parent;
+        $target.__lokedForAnimation = true;
+        this.createAnimations(instance, $target, directiveValue)
+    },
+
+    onAppComponentMount(instance) {
+        for (let [key, value] of instance.elementsWithAnimation) {
+            let $target = key;
+            let directiveValue = value;
+            if ($target.__lokedForAnimation) continue;
+            $target.__lokedForAnimation = true;
             this.createAnimations(instance, $target, directiveValue)
         }
-
     }
 });
