@@ -36,7 +36,7 @@
             if (this.other) return;
             this.other = this.mount(this.h`
                 <div>
-                    <second-component d-animate="${{show: 'flipInY', hide: 'flipOutY'}}"/>
+                    <second-component d-animate="${{show: {name: 'flipInY', duration: '3s'}, hide: {name: 'flipOutY', duration: '5s'}}}"/>
                     <thirty-component d-animate="${{show: 'flipInX', hide: 'flipOutX'}}"/>
                 </div>
             `);

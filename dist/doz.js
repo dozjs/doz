@@ -6275,6 +6275,8 @@ directive('show', {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
@@ -6324,6 +6326,28 @@ directive('animate', {
         $target.__animationDirectiveValue = directiveValue;
 
         if (directiveValue.show) {
+
+            if (_typeof(directiveValue.show) !== 'object') {
+                directiveValue.show = {
+                    name: directiveValue.show
+                };
+            }
+
+            if (directiveValue.show.duration) {
+                $target.style.animationDuration = directiveValue.show.duration;
+                $target.style.webkitAnimationDuration = directiveValue.show.duration;
+            }
+
+            if (directiveValue.show.delay) {
+                $target.style.animationDelay = directiveValue.show.delay;
+                $target.style.webkitAnimationDelay = directiveValue.show.delay;
+            }
+
+            if (directiveValue.show.iterationCount) {
+                $target.style.animationIterationCount = directiveValue.show.iterationCount;
+                $target.style.webkitAnimationIterationCount = directiveValue.show.iterationCount;
+            }
+
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
@@ -6333,15 +6357,30 @@ directive('animate', {
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
-                instance.animate($target, directiveValue.show, function () {
+                instance.animate($target, directiveValue.show.name, function () {
                     $target.__animationIsRunning = false;
                     $target.__animationEnterIsComplete = true;
                     $target.__lokedForAnimation = false;
+
+                    $target.style.animationDuration = '';
+                    $target.style.animationDelay = '';
+                    $target.style.animationIterationCount = '';
+
+                    $target.style.webkitAnimationDuration = '';
+                    $target.style.webkitAnimationDelay = '';
+                    $target.style.webkitAnimationIterationCount = '';
                 });
             });
-            if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
         }
+
         if (directiveValue.hide) {
+
+            if (_typeof(directiveValue.hide) !== 'object') {
+                directiveValue.hide = {
+                    name: directiveValue.hide
+                };
+            }
+
             instance.lockRemoveInstanceByCallback = function (callerMethod) {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -6359,12 +6398,36 @@ directive('animate', {
                         }, function () {
                             if (!document.body.contains($targetOfMap)) return;
                             $targetOfMap.__animationIsRunning = true;
-                            instance.animate($targetOfMap, directiveValueOfMap.hide, function () {
+
+                            if (directiveValueOfMap.hide.duration) {
+                                $targetOfMap.style.animationDuration = directiveValueOfMap.hide.duration;
+                                $targetOfMap.style.webkitAnimationDuration = directiveValueOfMap.hide.duration;
+                            }
+
+                            if (directiveValueOfMap.hide.delay) {
+                                $targetOfMap.style.animationDelay = directiveValueOfMap.hide.delay;
+                                $targetOfMap.style.webkitAnimationDelay = directiveValueOfMap.hide.delay;
+                            }
+
+                            if (directiveValueOfMap.hide.iterationCount) {
+                                $targetOfMap.style.animationIterationCount = directiveValueOfMap.hide.iterationCount;
+                                $targetOfMap.style.webkitAnimationIterationCount = directiveValueOfMap.hide.iterationCount;
+                            }
+
+                            instance.animate($targetOfMap, directiveValueOfMap.hide.name, function () {
                                 //console.error('animation ends', $targetOfMap)
                                 $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
                                 $targetOfMap.style.display = 'none';
                                 $targetOfMap.__animationIsRunning = false;
                                 $targetOfMap.__lokedForAnimation = false;
+
+                                $targetOfMap.style.animationDuration = '';
+                                $targetOfMap.style.animationDelay = '';
+                                $targetOfMap.style.animationIterationCount = '';
+
+                                $targetOfMap.style.webkitAnimationDuration = '';
+                                $targetOfMap.style.webkitAnimationDelay = '';
+                                $targetOfMap.style.webkitAnimationIterationCount = '';
                                 resolve();
                             });
                         });
@@ -6409,6 +6472,8 @@ directive('animate', {
                 });
             };
         }
+
+        if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         if ($target.__lokedForAnimation) return;
@@ -6472,6 +6537,9 @@ directive('animate', {
 "use strict";
 
 
+window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
+
 function wait(what, callback) {
     var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
 
@@ -6484,16 +6552,16 @@ function wait(what, callback) {
         }
         if (!what()) {
             count++;
-            rid = requestAnimationFrame(check);
+            rid = window.requestAnimationFrame(check);
         } else {
             if (rid) {
-                cancelAnimationFrame(rid);
+                window.cancelAnimationFrame(rid);
                 rid = null;
             }
             callback();
         }
     };
-    rid = requestAnimationFrame(check);
+    rid = window.requestAnimationFrame(check);
 }
 
 module.exports = wait;
