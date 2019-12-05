@@ -6313,7 +6313,7 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
-        if (directiveValue.enter) {
+        if (directiveValue.show) {
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
@@ -6323,7 +6323,7 @@ directive('animate', {
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
-                instance.animate($target, directiveValue.enter, function () {
+                instance.animate($target, directiveValue.show, function () {
                     $target.__animationIsRunning = false;
                     $target.__animationEnterIsComplete = true;
                     $target.__lokedForAnimation = false;
@@ -6331,7 +6331,7 @@ directive('animate', {
             });
             if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
         }
-        if (directiveValue.leave) {
+        if (directiveValue.hide) {
             instance.lockRemoveInstanceByCallback = function (callerMethod) {
                 for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                     args[_key - 1] = arguments[_key];
@@ -6349,7 +6349,7 @@ directive('animate', {
                         }, function () {
                             if (!document.body.contains($targetOfMap)) return;
                             $targetOfMap.__animationIsRunning = true;
-                            instance.animate($targetOfMap, directiveValueOfMap.leave, function () {
+                            instance.animate($targetOfMap, directiveValueOfMap.hide, function () {
                                 //console.error('animation ends', $targetOfMap)
                                 $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
                                 $targetOfMap.style.display = 'none';
@@ -6405,14 +6405,19 @@ directive('animate', {
         $target.__lokedForAnimation = true;
         this.createAnimations(instance, $target, directiveValue);
     },
-    onComponentMount: function onComponentMount(instance, directiveValue) {
-        var $target = instance.getHTMLElement();
+
+
+    /*
+    onComponentMount(instance, directiveValue) {
+        let $target = instance.getHTMLElement();
         if ($target.__lokedForAnimation) return;
-        // Use instance.parent as instance... boh why?
-        if (instance.parent && instance.parent.elementsWithAnimation) instance = instance.parent;
+          if (instance.parent && instance.parent.elementsWithAnimation.length)
+            instance = instance.parent;
         $target.__lokedForAnimation = true;
-        this.createAnimations(instance, $target, directiveValue);
+        this.createAnimations(instance, $target, directiveValue)
     },
+    */
+
     onAppComponentMount: function onAppComponentMount(instance) {
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;

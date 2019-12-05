@@ -35,7 +35,7 @@
         $allowMount: true,
         template(h) {
             return h`
-                <button forceupdate d-animate="${{enter: 'flipInX', leave: 'fadeOut'}}" onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate d-animate="${{show: 'flipInX', hide: 'fadeOut'}}" onclick="this.drawOther()">Mount second</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
                 <button forceupdate onclick="this.drawOther2()">Mount second 2</i></button>
                 <button forceupdate onclick="this.removeOther2()">Unmount second 2</i></button>
@@ -46,12 +46,12 @@
 
                 this.other = this.mount(this.h`
                     <div>
-                        <second-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
+                        <second-component d-animate="${{show: 'fadeIn', hide: 'fadeOut'}}"/>
                         <div>
                             qui va una scritta
                         </div>
                         <div style="padding: 20px; background: #5063ff">
-                            <thirty-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
+                            <thirty-component d-animate="${{show: 'fadeIn', hide: 'fadeOut'}}"/>
                         </div>
                     </div>
                 `);
@@ -85,7 +85,7 @@
         drawOther2() {
             if (!this.other2) {
 
-                this.other2 = this.mount(this.h`<div d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}">other</div>`);
+                this.other2 = this.mount(this.h`<div d-animate="${{show: 'fadeIn', hide: 'fadeOut'}}">other</div>`);
 
                 this.other2.onBeforeMount = () => {
                     //console.log('main component before mount');
