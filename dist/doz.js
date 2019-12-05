@@ -6321,6 +6321,8 @@ directive('animate', {
             };
         }
 
+        $target.__animationDirectiveValue = directiveValue;
+
         if (directiveValue.show) {
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
