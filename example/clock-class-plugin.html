@@ -85,9 +85,11 @@
 
     new Doz({
         root: document.getElementById('app'),
-        template: `
-            <doz-clock title="it's"></doz-clock>
-        `
+        template(h) {
+            return h`
+                <doz-clock title="it's"/>
+            `
+        }
     });
 
 </script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - button handler</title>
-    <script src="../../dist/doz.js?589654888"></script>
+    <script src="../../dist/doz.js?589654448488"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -26,11 +26,12 @@
             state: false,
             count: 0
         },
-        template() {
-            return `
+        template(h) {
+            return h`
                 <button onclick="this.toggle()">${this.props.state ? 'off' : 'on'}</button>
                 <button onclick="location.href='#'+Math.random(); console.log(this)">Change location HASH</button>
                 <button onclick="this.props.count++">Count ${this.props.count}</button>
+                <button data-on3="ciao" onclick="${(e) => {this.props.count++; console.log(this.app)}}" onmousedown="${() => console.log('mousedown')}">Count ${this.props.count}</button>
             `;
         },
         toggle() {

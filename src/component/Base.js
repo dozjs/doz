@@ -90,6 +90,10 @@ class Base {
                 value: 0,
                 writable: true
             },
+            _currentStyle: {
+                value: '',
+                writable: true
+            },
             _componentsMap: {
                 value: new Map()
             },
@@ -169,6 +173,11 @@ class Base {
             },
             propsData: {
                 value: {},
+                enumerable: true,
+                writable: true
+            },
+            lockRemoveInstanceByCallback: {
+                value: null,
                 enumerable: true,
                 writable: true
             }

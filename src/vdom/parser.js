@@ -1,9 +1,10 @@
 //const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
+const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
-const directive = require('../directive');
-const mapCompiled = require('./map-compiled');
+const directive = require('../directives');
+const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 
 const selfClosingElements = {
@@ -82,7 +83,7 @@ function compile(data, cmp) {
                 const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
-                    let possibleCompiled = mapCompiled.get(text.trim());
+                    let possibleCompiled = mapper.get(text.trim());
                     if (!Array.isArray(possibleCompiled))
                         currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
                 }
@@ -202,10 +203,10 @@ function propsFixer(nName, aName, aValue, props, $node) {
     // dentro il modulo attributes.js
 
     //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-    if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !REGEX.IS_LISTENER.test(aName)) {
-        aValue = mapCompiled.getAll(aValue);
+    if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
+        aValue = mapper.getAll(aValue);
     } else {
-        let objValue = mapCompiled.get(aValue);
+        let objValue = mapper.get(aValue);
         if (objValue !== undefined) {
             aValue = objValue;
         }

@@ -5,12 +5,12 @@
 // Add tag prefix to animation
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
-const mapCompiled = require('../vdom/map-compiled');
+const mapper = require('../vdom/mapper');
 
 function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
 
-    cssContent = mapCompiled.getAll(cssContent);
+    cssContent = mapper.getAll(cssContent);
 
     let sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
@@ -53,6 +53,7 @@ function composeStyleInner(cssContent, tag) {
         .replace(/\s{2,}/g, ' ')
         .replace(/{ /g, '{')
         .replace(/ }/g, '}')
+        .replace(/\s:/g, ':') //remove space before pseudo classes
         .replace(/\n/g, '')
         .trim();
 

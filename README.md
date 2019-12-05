@@ -36,6 +36,7 @@ In the web there are many frameworks that do all the same things. But a lot of t
 we need to know a lot of directives and they make confusion for example with the context of "this".
 Doz was created to make the development of web applications easy, by reading this simple documentation
 you will be able to immediately start creating something without getting lost in words and multiple import of functions.
+E poi ve lo scrivo in italiano: adoro creare cose :).
 
 ## Get started
 ```
@@ -54,18 +55,15 @@ $ npm start
 
 ButtonCounter.js
 ```javascript
-import {Component} from 'doz'
+import {Component, tag} from 'doz'
 
+@tag('button-counter')
 export default class extends Component {
 
-    constructor(o) {
-        super(o);
-        
-        this.props = {
-            counter: 0
-        }
-    }
-
+    props = {
+        counter: 0
+    };
+    
     template(h) {
         return h`
             <style>
@@ -75,10 +73,14 @@ export default class extends Component {
                 }
             </style>
 
-            <button onclick="this.props.counter++">
+            <button onclick="${this.increase}">
                 ${this.props.title} ${this.props.counter}
             </button>
         `
+    }
+    
+    increase() {
+        this.props.counter++;
     }
 
 };
@@ -103,8 +105,6 @@ new Doz({
 
 });
 ```
-
-[LIVE](https://codepen.io/pen/YzzqMym)
 
 ## Doz ecosystem
 - 👨🏻‍💻 [doz-cli](https://github.com/dozjs/doz-cli) provides a boilerplate to creating app and component

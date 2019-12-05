@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p1254p84654542544GFd44142055444234"></script>
+    <script src="../dist/doz.js?p1254p8464542544GFd441425055444234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -158,13 +158,13 @@
             //console.log('done', this.props.done)
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>&nbsp;
-                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>&nbsp;
-                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                    <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>&nbsp;
+                    <button onclick="${() => this.action.done(this.props.id)}" title="Done">&check;</button>&nbsp;
+                    <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.id})"
-                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            onblur="${(e) => this.action.hideInput(this.props.id, e)}"
+                            onkeypress="${(e) => this.action.inputEnterPress(this.props.id, e)}"
                             style="display: none"
                             type="text"
                             d-bind="title"
@@ -242,10 +242,12 @@
     new Doz({
         actions,
         root: document.getElementById('app'),
-        template: `
-            <h1>TO-DO list</h1>
-            <doz-todo></doz-todo>
-        `
+        template(h) {
+            return h`
+                <h1>TO-DO list</h1>
+                <doz-todo></doz-todo>
+            `
+        }
     });
 
     //setTimeout(() => {

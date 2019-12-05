@@ -15,7 +15,7 @@ const localMixin = require('./helpers/local-mixin');
 const {compile} = require('../vdom/parser');
 const propsInit = require('./helpers/props-init');
 const DOMManipulation = require('./DOMManipulation');
-const directive = require('../directive');
+const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 
@@ -244,6 +244,11 @@ class Component extends DOMManipulation {
     }
 
     unmount(onlyInstance = false, byDestroy, silently) {
+        if (this.lockRemoveInstanceByCallback && typeof this.lockRemoveInstanceByCallback === 'function') {
+            this.lockRemoveInstanceByCallback(this.unmount, onlyInstance, byDestroy, silently);
+            return;
+        }
+
         if (!onlyInstance && (Boolean(this._unmountedParentNode)
             || !this._rootElement || !this._rootElement.parentNode || !this._rootElement.parentNode.parentNode)) {
             return;
@@ -274,15 +279,18 @@ class Component extends DOMManipulation {
         return this;
     }
 
-    destroy(onlyInstance, onlyDestroy) {
+    destroy(onlyInstance) {
+        if (this.lockRemoveInstanceByCallback && typeof this.lockRemoveInstanceByCallback === 'function') {
+            this.lockRemoveInstanceByCallback(this.destroy, onlyInstance);
+            return;
+        }
 
-        if (!onlyDestroy) {
-            if (this.unmount(onlyInstance, true) === false)
-                return;
+        if (this.unmount(onlyInstance, true) === false) {
+            return;
+        }
 
-            if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
-                return;
-            }
+        if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
+            return;
         }
 
         Object.keys(this.children).forEach(child => {
@@ -290,6 +298,7 @@ class Component extends DOMManipulation {
         });
 
         hooks.callDestroy(this);
+        return true;
     }
 
     // noinspection JSMethodCanBeStatic

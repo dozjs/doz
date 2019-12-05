@@ -1,15 +1,16 @@
 const Doz = require('./Doz');
 const collection = require('./collection');
 const {use} = require('./plugin');
-const {directive} = require('./directive');
+const {directive} = require('./directives');
 const component = require('./component');
 const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
-const mapCompiled = require('./vdom/map-compiled');
+const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
-require('./directive/built-in/_bootstrap');
+const tag = require('./decorators/tag');
+require('./directives/built-in/_bootstrap');
 
 Object.defineProperties(Doz, {
     collection: {
@@ -52,11 +53,15 @@ Object.defineProperties(Doz, {
         value: directive,
         enumerable: true
     },
-    mapCompiled: {
-        value: mapCompiled
+    mapper: {
+        value: mapper
     },
     version: {
         value: '[AIV]{version}[/AIV]',
+        enumerable: true
+    },
+    tag: {
+        value: tag,
         enumerable: true
     }
 });

@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.2] - 2019-11-25
+- **Removed** console log in directive `d-show`
+
+## [2.2.1] - 2019-11-24
+- **Added** support handler as function to `d-on` directive
+- **Improved** catch logic for handler into template
+
+## [2.2.0] - 2019-11-24
+- **Added** support handler as function instead string for html element
+- **Fixed** memory leak using element handler
+- **Improved** performance
+
+## [2.1.3] - 2019-11-19
+- **Fixed** 'Cannot call a class as a function' with mount method
+
+## [2.1.2] - 2019-11-19
+- **Fixed** issue when before a slot there are a text child
+
+## [2.1.1] - 2019-11-16
+- **Updated** readme example
+
+## [2.1.0] - 2019-11-15
+- **Added** `tag` decorator
+
+## [2.0.8] - 2019-11-14
+- **Fixed** issue when `each` method returns empty array
+- **Improved** style manager 
+
+## [2.0.7] - 2019-11-12
+- **Fixed** possible issue of style with pseudo classes 
+
 ## [2.0.6] - 2019-11-11
 - **Changed** installation method, using npx instead npm, this solve issue on Mac.
 

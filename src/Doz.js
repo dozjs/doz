@@ -3,7 +3,7 @@ const createInstance = require('./component/create-instance');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
-const directive = require('./directive');
+const directive = require('./directives');
 
 class Doz {
 

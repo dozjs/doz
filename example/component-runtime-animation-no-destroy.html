@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component at runtime, no destroy</title>
+    <script src="../dist/doz.js?5896548885497614458d04r91c133"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            height: 50px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Component at runtime, unmount without destroy</h1>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('label-x', {
+       template() {
+           return '<span>qui va una scritta</span>';
+       }
+    });
+
+    Doz.component('fist-component', {
+        $allowMount: true,
+        template(h) {
+            return h`
+                <button forceupdate onclick="this.drawOther()">Mount second</i></button>
+                <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
+                <button forceupdate onclick="this.drawOther2()">Mount second 2</i></button>
+                <button forceupdate onclick="this.removeOther2()">Unmount second 2</i></button>
+            `;
+        },
+        drawOther() {
+            if (!this.other) {
+
+                this.other = this.mount(this.h`
+                    <div>
+                        <second-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
+                        <div>
+                            qui va una scritta
+                        </div>
+                        <div style="padding: 20px; background: #5063ff">
+                            <thirty-component d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}"/>
+                        </div>
+                    </div>
+                `);
+
+                this.other.onBeforeMount = () => {
+                    //console.log('main component before mount');
+                };
+
+                this.other.onMount = () => {
+                    //console.log('main component mount');
+                };
+
+                this.other.onBeforeUnmount = () => {
+                    //console.log('main component before unmount');
+                };
+
+                this.other.onUnmount = () => {
+                    //console.log('main component unmount');
+                };
+            } else {
+                this.other.mount();
+            }
+
+        },
+        removeOther() {
+            console.log(this.other)
+            if (this.other) {
+                this.other.unmount();
+            }
+        },
+        drawOther2() {
+            if (!this.other2) {
+
+                this.other2 = this.mount(this.h`<div d-animate="${{enter: 'fadeIn', leave: 'fadeOut'}}">other</div>`);
+
+                this.other2.onBeforeMount = () => {
+                    //console.log('main component before mount');
+                };
+
+                this.other2.onMount = () => {
+                    //console.log('main component mount');
+                };
+
+                this.other2.onBeforeUnmount = () => {
+                    //console.log('main component before unmount');
+                };
+
+                this.other2.onUnmount = () => {
+                    //console.log('main component unmount');
+                };
+            } else {
+                this.other2.mount();
+            }
+
+        },
+        removeOther2() {
+            if (this.other2) {
+                this.other2.unmount();
+            }
+        }
+    });
+
+    Doz.component('second-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        },
+        onCreate() {
+            //console.log('create', this.tag);
+        },
+        onMount() {
+            //console.log('mount', this.tag);
+        },
+        onBeforeUnmount() {
+            //console.log('before unmount', this.tag);
+        },
+        onUnmount() {
+            //console.log('unmount', this.tag);
+        }
+    });
+
+    Doz.component('thirty-component', {
+        props: {
+            state: false
+        },
+        template() {
+            return `<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        },
+        toggle() {
+            this.props.state = !this.props.state;
+        },
+        onCreate() {
+            //console.log('create', this.tag);
+        },
+        onMount() {
+            //console.log('mount', this.tag);
+        },
+        onBeforeUnmount() {
+            //console.log('before unmount', this.tag);
+        },
+        onUnmount() {
+            //console.log('unmount', this.tag);
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template: `<fist-component></fist-component>`
+    });
+
+</script>
+</body>
+</html>

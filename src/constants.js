@@ -1,9 +1,9 @@
 module.exports = {
-    COMPONENT_DYNAMIC_INSTANCE: '__dozComponentDynamicInstance',
-    COMPONENT_INSTANCE: '__dozComponentInstance',
-    COMPONENT_ROOT_INSTANCE: '__dozComponentRootInstance',
-    PROPS_ATTRIBUTES: '__dozProps',
-    ALREADY_WALKED: '__dozWalked',
+    COMPONENT_DYNAMIC_INSTANCE: 'dozComponentDynamicInstance',
+    COMPONENT_INSTANCE: 'dozComponentInstance',
+    COMPONENT_ROOT_INSTANCE: 'dozComponentRootInstance',
+    PROPS_ATTRIBUTES: 'dozProps',
+    ALREADY_WALKED: 'dozWalked',
     DEFAULT_SLOT_KEY: '__default__',
     NS: {
         SVG: 'http://www.w3.org/2000/svg'
@@ -29,7 +29,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)/i,
+        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
         IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,

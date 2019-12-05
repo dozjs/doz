@@ -1,5 +1,5 @@
 const {COMPONENT_DYNAMIC_INSTANCE, PROPS_ATTRIBUTES} = require('../../constants');
-const directive = require('../../directive');
+const directive = require('../../directives');
 
 function drawDynamic(instance) {
 

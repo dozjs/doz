@@ -1,6 +1,8 @@
 const {TAG} = require('../constants');
-const mapCompiled = require('./map-compiled');
+const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
+//const eventsAttributes = require('../utils/events-attributes');
+const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
@@ -9,6 +11,7 @@ const GREATER = '>';
 
 const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
+const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
 /**
  * This method add special tag to value placeholder
@@ -27,6 +30,7 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
+    let isBoundedToComponent = !!this._components;
 
     for (let i = 0; i < value.length; ++i) {
         let isComponentConstructor = false;
@@ -35,7 +39,7 @@ module.exports = function (strings, ...value) {
             for (let j = 0; j < value[i].length; j++) {
                 let obj = value[i][j];
                 if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
-                    newValueString += `<${tagIterate}>${mapCompiled.set(obj)}</${tagIterate}>`;
+                    newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
                 }
             }
             if (newValueString)
@@ -43,11 +47,14 @@ module.exports = function (strings, ...value) {
         }
 
         if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
-            value[i] = mapCompiled.set(value[i]);
+            value[i] = mapper.set(value[i]);
         }
 
+        //console.log(strings[i].split(''));
+        //console.log([...strings[i]]);
 
-        [...strings[i]].forEach(char => {
+        strings[i].split('').forEach(char => {
+            //console.log(char)
             if (char === LESSER)
                 allowTag = false;
             if (char === GREATER)
@@ -67,22 +74,36 @@ module.exports = function (strings, ...value) {
             allowTag = false;
         }
 
+        //
+        let isInHandler = false;
+        // Check if value is a function and is after an event attribute like onclick for example.
+        if (typeof value[i] === 'function' || typeof value[i] === 'object') {
+            //for (let x = 0; x < eventsAttributes.length; x++) {
+                let r = strings[i].split(`=`);
+                if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+                    isInHandler = true;
+                }
+            //}
+        }
+
+        //console.log(isInHandler, value[i]);
+
         // if this function is bound to Doz component
-        if (this._components) {
+        if (isBoundedToComponent && !isInStyle && !isInHandler) {
 
             // if before is to <
-            if (value[i] && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
+            if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
                 let cmp = value[i];
-                let tagCmp = camelToDash(cmp.name || 'obj');
+                let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
                 // Sanitize tag name
-                tagCmp = tagCmp.replace(/_+/, '');
+                tagName = tagName.replace(/_+/, '');
                 // if is a single word, rename with double word
-                /*if (tagCmp.indexOf('-') === -1) {
-                    tagCmp = `${tagCmp}-${tagCmp}`;
-                }*/
+                if (tagName.indexOf('-') === -1) {
+                    tagName = `${tagName}-${tagName}`;
+                }
 
-                tagCmp += '-' + this.uId + '-' + (this._localComponentLastId++);
+                let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
@@ -93,7 +114,7 @@ module.exports = function (strings, ...value) {
                 // add to local components
                 if (this._components[tagCmp] === undefined) {
                     this._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }
@@ -101,7 +122,7 @@ module.exports = function (strings, ...value) {
                 // add to local app components
                 if (this.app._components[tagCmp] === undefined) {
                     this.app._components[tagCmp] = {
-                        tag: tagCmp,
+                        tag: tagName,
                         cfg: cmp
                     };
                 }
@@ -114,9 +135,10 @@ module.exports = function (strings, ...value) {
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         else {
             // If is not component constructor then add to map.
-            // Exclude string type also
-            if(!isComponentConstructor && typeof value[i] !== 'string') {
-                value[i] = mapCompiled.set(value[i]);
+            // Exclude string type and style also
+            //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
+            if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
+                value[i] = mapper.set(value[i]);
             }
             result += `${value[i]}${strings[i + 1]}`;
         }
@@ -126,11 +148,30 @@ module.exports = function (strings, ...value) {
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
+    if (isBoundedToComponent) {
+        // Now get style from complete string
+        result = result.replace(regStyle, (match, p1) => {
+            if (!this._rootElement || p1 === this._currentStyle) return '';
+            if (match && p1) {
+                // Here should be create the tag style
+                this._currentStyle = p1;
+                let isScoped = /scoped/.test(match);
+                const dataSetUId = this.uId;
+                this.getHTMLElement().dataset.uid = this.uId;
+                let tagByData = `[data-uid="${dataSetUId}"]`;
+
+                scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+            }
+
+            return '';
+        });
+    }
+
+    result = result.trim();
     //console.log(result);
 
     result = compile(result);
 
-    //hCache.set(strings, value, result);
     //console.log(result)
     //console.log(mapCompiled.data)
     return result;

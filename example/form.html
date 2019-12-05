@@ -28,8 +28,8 @@
         props: {
             messages: ''
         },
-        template() {
-            return `
+        template(h) {
+            return h`
             <span d-ref="el" style="display: ${this.props.messages ? 'inline' : 'none'}">
                 ${this.props.messages}
             </span>
@@ -179,10 +179,10 @@
                 }
             }
         },
-        template() {
+        template(h) {
             const locale = this.props.localeString[this.props.lang] || this.props.localeString['en'];
 
-            return `
+            return h`
                 <div>
                     Language
                     <select d-bind="lang">
@@ -232,12 +232,14 @@
 
     new Doz({
         root: '#app',
-        template: `
-        <div class="container">
-            <h1 class="display-4">Request</h1>
-            <app-form/>
-        </div>
-    `
+        template(h) {
+            return h`
+                <div class="container">
+                    <h1 class="display-4">Request</h1>
+                    <app-form/>
+                </div>
+            `
+        }
     });
 </script>
 </body>

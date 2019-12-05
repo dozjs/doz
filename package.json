@@ -1,6 +1,6 @@
 {
     "name": "doz",
-    "version": "2.0.6",
+    "version": "2.2.2",
     "description": "A JavaScript framework for building UI, almost like writing in VanillaJS.",
     "main": "dist/doz.js",
     "typings": "types/index.d.ts",

@@ -1,6 +1,6 @@
 const html = require('../utils/html');
 const transformChildStyle = require('./helpers/transform-child-style');
-const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} = require('../constants');
+const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, COMPONENT_DYNAMIC_INSTANCE, DEFAULT_SLOT_KEY, PROPS_ATTRIBUTES, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
@@ -8,7 +8,7 @@ const hmr = require('./helpers/hmr');
 const Component = require('./Component');
 const propsInit = require('./helpers/props-init');
 const delay = require('../utils/delay');
-const directive = require('../directive');
+const directive = require('../directives');
 const getComponentName = require('./helpers/get-component-name');
 
 function createInstance(cfg = {}) {
@@ -18,7 +18,7 @@ function createInstance(cfg = {}) {
     if (cfg.template instanceof HTMLElement) {
         if (!cfg.template.parentNode)
             cfg.root.appendChild(cfg.template);
-    } else if (typeof cfg.template === 'string'){
+    } else if (typeof cfg.template === 'string') {
         cfg.template = html.create(cfg.template);
         cfg.root.appendChild(cfg.template);
     }
@@ -64,8 +64,6 @@ function createInstance(cfg = {}) {
                 localComponents = parent.cmp._components;
             }
 
-            //console.log('---->', cmpName)
-
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
@@ -92,6 +90,38 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
+                // Replace possible child name generated automatically
+                // Tags generated automatically are like my-tag-1-0
+                // This block transforms to original tag like my-tag
+                if (cmp.tag && cmpName !== cmp.tag) {
+                    let $newNodeChild = document.createElement(cmp.tag);
+
+                    while ($child.childNodes.length > 0) {
+                        $newNodeChild.appendChild($child.childNodes[0]);
+                    }
+
+                    $child.parentNode.replaceChild($newNodeChild, $child);
+                    // Copy all attributes
+                    [...$child.attributes].forEach(attr => {
+                        $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue)
+                    });
+                    // Copy all specials Doz properties attached to element
+                    if ($child[COMPONENT_INSTANCE])
+                        $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
+                    if ($child[COMPONENT_DYNAMIC_INSTANCE])
+                        $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
+                    if ($child[COMPONENT_ROOT_INSTANCE])
+                        $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
+                    if ($child[PROPS_ATTRIBUTES])
+                        $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
+                    if ($child[ALREADY_WALKED])
+                        $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
+                    if ($child[DEFAULT_SLOT_KEY])
+                        $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
+
+                    $child = $newNodeChild;
+                }
+
                 const props = serializeProps($child);
 
                 //console.log('serialized', props)
@@ -110,7 +140,7 @@ function createInstance(cfg = {}) {
                     }
 
                     newElement = new cmp.cfg({
-                        tag: cmpName,
+                        tag: cmp.tag || cmpName,
                         root: $child,
                         app: cfg.app,
                         props,
@@ -119,7 +149,7 @@ function createInstance(cfg = {}) {
                     });
                 } else {
                     newElement = new Component({
-                        tag: cmpName,
+                        tag: cmp.tag || cmpName,
                         cmp,
                         root: $child,
                         app: cfg.app,
@@ -154,10 +184,10 @@ function createInstance(cfg = {}) {
                     newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
 
-                    // Replace first child if defaultSlot exists with a slot comment
-                    if (newElement._defaultSlot && newElement.getHTMLElement().firstChild) {
+                    // Replace first element child if defaultSlot exists with a slot comment
+                    if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
                         let slotPlaceholder = document.createComment('slot');
-                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstChild);
+                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
 
                     //$child.insertBefore(newElement._rootElement, $child.firstChild);

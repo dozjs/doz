@@ -10,7 +10,11 @@ directive(':on-$event', {
             },
             emit: {
                 value: function (name, ...args) {
-                    if (instance._callback && instance._callback[name] !== undefined
+                    if (!instance._callback) return;
+                    if (typeof instance._callback[name] === 'function') {
+                        instance._callback[name].apply(instance.parent, args);
+                        // legacy for string
+                    } else if (instance._callback[name] !== undefined
                         && instance.parent[instance._callback[name]] !== undefined
                         && typeof instance.parent[instance._callback[name]] === 'function') {
                         instance.parent[instance._callback[name]].apply(instance.parent, args);

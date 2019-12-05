@@ -5,8 +5,7 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - player controls</title>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?589654888"></script>
+    <script src="../dist/doz.js?58965044888"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -33,9 +32,9 @@
         template: function (h) {
             switch (this.props.state) {
                 case 'play':
-                    return h`<button forceupdate onclick="this.pause()"><i class="fa fa-pause"></i></button>`;
+                    return h`<button forceupdate onclick="${() => this.pause()}"><i class="fa fa-pause"></i></button>`;
                 case 'pause':
-                    return h`<button forceupdate onclick="this.play()"><i class="fa fa-play"></i></button>`;
+                    return h`<button forceupdate onclick="${() => this.play()}"><i class="fa fa-play"></i></button>`;
                 case 'loading':
                     return h`<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
@@ -65,10 +64,12 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <play-pause></play-pause>
-            <volume-control></volume-control>
-        `
+        template(h) {
+            return h`
+                <play-pause/>
+                <volume-control/>
+            `
+        }
     });
 
 

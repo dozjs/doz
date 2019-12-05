@@ -30,12 +30,14 @@
 
     new Doz({
         root: '#app',
-        template: `
-            <doz-hello
-                color="red"
-                text="Hello! I'm an SFC component: Single Function Component"
-            />
-        `
+        template(h) {
+            return h`
+                <doz-hello
+                    color="red"
+                    text="Hello! I'm an SFC component: Single Function Component"
+                />
+            `
+        }
     });
 
 </script>

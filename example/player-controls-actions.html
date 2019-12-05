@@ -5,8 +5,7 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - player controls actions</title>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script>
-    <script src="../dist/doz.js?589654888"></script>
+    <script src="../dist/doz.js?5896548188"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -51,14 +50,14 @@
         props: {
             state: 'pause'
         },
-        template: function () {
+        template: function (h) {
             switch (this.props.state) {
                 case 'play':
-                    return `<button forceupdate onclick="this.action.pause()"><i class="fa fa-pause"></i></button>`;
+                    return h`<button forceupdate onclick="this.action.pause()"><i class="fa fa-pause"></i></button>`;
                 case 'pause':
-                    return `<button forceupdate onclick="this.action.play()"><i class="fa fa-play"></i></button>`;
+                    return h`<button forceupdate onclick="this.action.play()"><i class="fa fa-play"></i></button>`;
                 case 'loading':
-                    return `<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
+                    return h`<button disabled><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></button>`;
             }
         },
         onUpdate() {
@@ -70,14 +69,14 @@
         props: {
             mute: false
         },
-        template: function () {
-            return `<button onclick="this.action.mute()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
+        template: function (h) {
+            return h`<button onclick="this.action.mute()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
         }
     });
 
     Doz.component('bar-control', {
-        template() {
-            return `
+        template(h) {
+            return h`
                 <play-pause state="${this.props.state}"></play-pause>
                 <volume-control mute="${this.props.mute}"></volume-control>
             `
@@ -93,8 +92,8 @@
             state: 'pause',
             mute: true
         },
-        template() {
-            return `<bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
+        template(h) {
+            return h`<bar-control state="${this.props.state}" mute="${this.props.mute}"></bar-control>`;
         },
         onUpdate() {
             console.log('UPDATE my-player', this.props)
@@ -104,7 +103,9 @@
     new Doz({
         actions,
         root: '#app',
-        template: `<my-player></my-player>`
+        template(h) {
+            return h`<my-player/>`
+        }
     });
 
 
