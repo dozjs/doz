@@ -6406,6 +6406,7 @@ directive('animate', {
     onComponentMount: function onComponentMount(instance, directiveValue) {
         var $target = instance.getHTMLElement();
         if ($target.__animationOriginDisplay) {
+            console.log(instance.parent);
             this.createAnimations(instance, $target, directiveValue);
         }
     }
