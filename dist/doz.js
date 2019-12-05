@@ -6313,6 +6313,14 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
+
+        if (typeof directiveValue === 'string') {
+            directiveValue = {
+                show: directiveValue,
+                hide: directiveValue
+            };
+        }
+
         if (directiveValue.show) {
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
