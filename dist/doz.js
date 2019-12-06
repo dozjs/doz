@@ -5522,7 +5522,7 @@ __webpack_require__(64);
 __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(73);
-__webpack_require__(74);
+__webpack_require__(76);
 
 /***/ }),
 /* 59 */
@@ -6267,7 +6267,44 @@ directive('show', {
 });
 
 /***/ }),
-/* 74 */
+/* 74 */,
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
+
+function wait(what, callback) {
+    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
+
+    var rid = void 0;
+    var count = 0;
+    var check = function check() {
+        if (count > maxCount) {
+            console.log('max cicles exceeded');
+            return;
+        }
+        if (!what()) {
+            count++;
+            rid = window.requestAnimationFrame(check);
+        } else {
+            if (rid) {
+                window.cancelAnimationFrame(rid);
+                rid = null;
+            }
+            callback();
+        }
+    };
+    rid = window.requestAnimationFrame(check);
+}
+
+module.exports = wait;
+
+/***/ }),
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6281,35 +6318,7 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 var wait = __webpack_require__(75);
-
-function animate(node, animationName, opts, callback) {
-
-    if (typeof opts === 'function') {
-        callback = opts;
-        opts = {};
-    } else if (!opts) {
-        opts = {};
-    }
-
-    var computedStyle = window.getComputedStyle(node);
-    // Now supports IE11
-    node.classList.add('animated');
-    node.classList.add(animationName);
-
-    if (computedStyle.display === 'inline') {
-        node.style.display = 'inline-block';
-    }
-
-    function handleAnimationEnd() {
-        node.classList.remove('animated');
-        node.classList.remove(animationName);
-        node.style.display = computedStyle.display;
-        node.removeEventListener('animationend', handleAnimationEnd);
-        if (typeof callback === 'function') callback();
-    }
-
-    node.addEventListener('animationend', handleAnimationEnd);
-}
+var animate = __webpack_require__(77);
 
 directive('animate', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -6325,8 +6334,8 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
-        if ($target.__lokedForAnimation) return;
-        $target.__lokedForAnimation = true;
+        if ($target.__lockedForAnimation) return;
+        $target.__lockedForAnimation = true;
 
         if (typeof directiveValue === 'string') {
             directiveValue = {
@@ -6345,43 +6354,21 @@ directive('animate', {
                 };
             }
 
-            if (directiveValue.show.duration) {
-                $target.style.animationDuration = directiveValue.show.duration;
-                $target.style.webkitAnimationDuration = directiveValue.show.duration;
-            }
-
-            if (directiveValue.show.delay) {
-                $target.style.animationDelay = directiveValue.show.delay;
-                $target.style.webkitAnimationDelay = directiveValue.show.delay;
-            }
-
-            if (directiveValue.show.iterationCount) {
-                $target.style.animationIterationCount = directiveValue.show.iterationCount;
-                $target.style.webkitAnimationIterationCount = directiveValue.show.iterationCount;
-            }
+            var optAnimation = {
+                duration: directiveValue.show.duration,
+                delay: directiveValue.show.delay,
+                iterationCount: directiveValue.show.iterationCount
+            };
 
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
             }, function () {
                 if (!document.body.contains($target)) return;
-                $target.__animationIsRunning = true;
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
-                instance.animate($target, directiveValue.show.name, function () {
-                    $target.__animationIsRunning = false;
-                    $target.__animationEnterIsComplete = true;
-                    $target.__lokedForAnimation = false;
-
-                    $target.style.animationDuration = '';
-                    $target.style.animationDelay = '';
-                    $target.style.animationIterationCount = '';
-
-                    $target.style.webkitAnimationDuration = '';
-                    $target.style.webkitAnimationDelay = '';
-                    $target.style.webkitAnimationIterationCount = '';
-                });
+                instance.animate($target, directiveValue.show.name, optAnimation);
             });
         }
 
@@ -6409,37 +6396,13 @@ directive('animate', {
                             return !$targetOfMap.__animationIsRunning;
                         }, function () {
                             if (!document.body.contains($targetOfMap)) return;
-                            $targetOfMap.__animationIsRunning = true;
-
-                            if (directiveValueOfMap.hide.duration) {
-                                $targetOfMap.style.animationDuration = directiveValueOfMap.hide.duration;
-                                $targetOfMap.style.webkitAnimationDuration = directiveValueOfMap.hide.duration;
-                            }
-
-                            if (directiveValueOfMap.hide.delay) {
-                                $targetOfMap.style.animationDelay = directiveValueOfMap.hide.delay;
-                                $targetOfMap.style.webkitAnimationDelay = directiveValueOfMap.hide.delay;
-                            }
-
-                            if (directiveValueOfMap.hide.iterationCount) {
-                                $targetOfMap.style.animationIterationCount = directiveValueOfMap.hide.iterationCount;
-                                $targetOfMap.style.webkitAnimationIterationCount = directiveValueOfMap.hide.iterationCount;
-                            }
-
-                            instance.animate($targetOfMap, directiveValueOfMap.hide.name, function () {
-                                //console.error('animation ends', $targetOfMap)
-                                $targetOfMap.__animationOriginDisplay = $targetOfMap.style.display;
+                            var optAnimation = {
+                                duration: directiveValueOfMap.hide.duration,
+                                delay: directiveValueOfMap.hide.delay,
+                                iterationCount: directiveValueOfMap.hide.iterationCount
+                            };
+                            instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
                                 $targetOfMap.style.display = 'none';
-                                $targetOfMap.__animationIsRunning = false;
-                                $targetOfMap.__lokedForAnimation = false;
-
-                                $targetOfMap.style.animationDuration = '';
-                                $targetOfMap.style.animationDelay = '';
-                                $targetOfMap.style.animationIterationCount = '';
-
-                                $targetOfMap.style.webkitAnimationDuration = '';
-                                $targetOfMap.style.webkitAnimationDelay = '';
-                                $targetOfMap.style.webkitAnimationIterationCount = '';
                                 resolve();
                             });
                         });
@@ -6524,40 +6487,77 @@ directive('animate', {
 });
 
 /***/ }),
-/* 75 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
-window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
+function animate($target, animationName, opts, callback) {
 
-function wait(what, callback) {
-    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
+    if (typeof opts === 'function') {
+        callback = opts;
+        opts = {};
+    } else if (!opts) {
+        opts = {};
+    }
+    $target.__animationIsRunning = true;
 
-    var rid = void 0;
-    var count = 0;
-    var check = function check() {
-        if (count > maxCount) {
-            console.log('max cicles exceeded');
-            return;
-        }
-        if (!what()) {
-            count++;
-            rid = window.requestAnimationFrame(check);
-        } else {
-            if (rid) {
-                window.cancelAnimationFrame(rid);
-                rid = null;
-            }
-            callback();
-        }
-    };
-    rid = window.requestAnimationFrame(check);
+    var computedStyle = window.getComputedStyle($target);
+    // Now supports IE11
+    $target.classList.add('animated');
+    $target.classList.add(animationName);
+
+    if (computedStyle.display === 'inline') {
+        $target.style.display = 'inline-block';
+    }
+
+    if (opts.delay) {
+        $target.style.animationDelay = opts.delay;
+        $target.style.webkitAnimationDelay = opts.delay;
+        $target.style.mozAnimationDelay = opts.delay;
+    }
+
+    if (opts.duration) {
+        $target.style.animationDuration = opts.duration;
+        $target.style.webkitAnimationDuration = opts.duration;
+        $target.style.mozAnimationDuration = opts.duration;
+    }
+
+    if (opts.iterationCount) {
+        $target.style.animationIterationCount = opts.iterationCount;
+        $target.style.webkitAnimationIterationCount = opts.iterationCount;
+        $target.style.mozAnimationIterationCount = opts.iterationCount;
+    }
+
+    function handleAnimationEnd() {
+        $target.classList.remove('animated');
+        $target.classList.remove(animationName);
+
+        $target.__animationIsRunning = false;
+        $target.__animationEnterIsComplete = true;
+        $target.__lockedForAnimation = false;
+        $target.__animationOriginDisplay = $target.style.display;
+
+        $target.style.display = computedStyle.display;
+        $target.style.animationDelay = '';
+        $target.style.webkitAnimationDelay = '';
+        $target.style.mozAnimationDelay = '';
+        $target.style.animationDuration = '';
+        $target.style.webkitAnimationDuration = '';
+        $target.style.mozAnimationDuration = '';
+        $target.style.animationIterationCount = '';
+        $target.style.webkitAnimationIterationCount = '';
+        $target.style.mozAnimationIterationCount = '';
+
+        $target.removeEventListener('animationend', handleAnimationEnd);
+        if (typeof callback === 'function') callback();
+    }
+
+    $target.addEventListener('animationend', handleAnimationEnd);
 }
 
-module.exports = wait;
+module.exports = animate;
 
 /***/ })
 /******/ ]);
