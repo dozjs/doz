@@ -5522,7 +5522,7 @@ __webpack_require__(64);
 __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(73);
-__webpack_require__(76);
+__webpack_require__(74);
 
 /***/ }),
 /* 59 */
@@ -6267,44 +6267,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 74 */,
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
-window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
-
-function wait(what, callback) {
-    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
-
-    var rid = void 0;
-    var count = 0;
-    var check = function check() {
-        if (count > maxCount) {
-            console.log('max cicles exceeded');
-            return;
-        }
-        if (!what()) {
-            count++;
-            rid = window.requestAnimationFrame(check);
-        } else {
-            if (rid) {
-                window.cancelAnimationFrame(rid);
-                rid = null;
-            }
-            callback();
-        }
-    };
-    rid = window.requestAnimationFrame(check);
-}
-
-module.exports = wait;
-
-/***/ }),
-/* 76 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6318,7 +6281,7 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 var wait = __webpack_require__(75);
-var animate = __webpack_require__(77);
+var animate = __webpack_require__(76);
 
 directive('animate', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -6487,7 +6450,43 @@ directive('animate', {
 });
 
 /***/ }),
-/* 77 */
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
+
+function wait(what, callback) {
+    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
+
+    var rid = void 0;
+    var count = 0;
+    var check = function check() {
+        if (count > maxCount) {
+            console.log('max cicles exceeded');
+            return;
+        }
+        if (!what()) {
+            count++;
+            rid = window.requestAnimationFrame(check);
+        } else {
+            if (rid) {
+                window.cancelAnimationFrame(rid);
+                rid = null;
+            }
+            callback();
+        }
+    };
+    rid = window.requestAnimationFrame(check);
+}
+
+module.exports = wait;
+
+/***/ }),
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
