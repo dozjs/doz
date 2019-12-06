@@ -4,6 +4,7 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
+const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -79,7 +80,11 @@ function isCustomAttribute(name) {
 }
 
 function setBooleanAttribute($target, name, value) {
-    $target.setAttribute(name, value);
+    if (booleanAttributes.includes(name) && value === false) {
+        $target.removeAttribute(name);
+    } else {
+        $target.setAttribute(name, value);
+    }
     //$target[name] = value;
 }
 
