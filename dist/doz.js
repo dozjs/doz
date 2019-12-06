@@ -6282,17 +6282,27 @@ var _require = __webpack_require__(0),
 
 var wait = __webpack_require__(75);
 
-function animate(node, animationName, callback) {
+function animate(node, animationName, opts, callback) {
+
+    if (typeof opts === 'function') {
+        callback = opts;
+        opts = {};
+    } else if (!opts) {
+        opts = {};
+    }
 
     var computedStyle = window.getComputedStyle(node);
-    node.classList.add('animated', animationName);
+    // Now supports IE11
+    node.classList.add('animated');
+    node.classList.add(animationName);
 
     if (computedStyle.display === 'inline') {
         node.style.display = 'inline-block';
     }
 
     function handleAnimationEnd() {
-        node.classList.remove('animated', animationName);
+        node.classList.remove('animated');
+        node.classList.remove(animationName);
         node.style.display = computedStyle.display;
         node.removeEventListener('animationend', handleAnimationEnd);
         if (typeof callback === 'function') callback();
@@ -6315,6 +6325,8 @@ directive('animate', {
         });
     },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
+        if ($target.__lokedForAnimation) return;
+        $target.__lokedForAnimation = true;
 
         if (typeof directiveValue === 'string') {
             directiveValue = {
@@ -6476,8 +6488,6 @@ directive('animate', {
         if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        if ($target.__lokedForAnimation) return;
-        $target.__lokedForAnimation = true;
         this.createAnimations(instance, $target, directiveValue);
     },
     onAppComponentMount: function onAppComponentMount(instance) {
@@ -6494,11 +6504,7 @@ directive('animate', {
                 var key = _ref4[0];
                 var value = _ref4[1];
 
-                var $target = key;
-                var directiveValue = value;
-                if ($target.__lokedForAnimation) continue;
-                $target.__lokedForAnimation = true;
-                this.createAnimations(instance, $target, directiveValue);
+                this.createAnimations(instance, key, value);
             }
         } catch (err) {
             _didIteratorError2 = true;
