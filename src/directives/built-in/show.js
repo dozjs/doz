@@ -19,12 +19,12 @@ directive('show', {
                     $target.style.display = '';
                     $target.__animationShow(() => {
                         $target.style.display = '';
-                        resolve('');
+                        resolve();
                     });
                 } else {
                     $target.__animationHide(() => {
                         $target.style.display = 'none';
-                        resolve('none');
+                        resolve();
                     });
                 }
             });
