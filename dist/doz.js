@@ -6597,7 +6597,6 @@ function animateHelper($target, animationName, opts, callback) {
     $target.__animationIsRunning = true;
 
     var computedStyle = window.getComputedStyle($target);
-    console.log(computedStyle.display);
     opts.classLib = opts.classLib || 'animated'; //Default animate.css
 
     // Now supports IE11
