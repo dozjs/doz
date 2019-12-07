@@ -8,4 +8,4 @@ require('./ref');
 require('./is');
 require('./bind');
 require('./show');
-require('./animate/index');
+require('./animate/animate');

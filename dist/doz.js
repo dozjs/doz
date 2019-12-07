@@ -5537,7 +5537,7 @@ __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(67);
 __webpack_require__(74);
-__webpack_require__(75);
+__webpack_require__(77);
 
 /***/ }),
 /* 60 */
@@ -6282,7 +6282,44 @@ directive('show', {
 });
 
 /***/ }),
-/* 75 */
+/* 75 */,
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
+
+function wait(what, callback) {
+    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
+
+    var rid = void 0;
+    var count = 0;
+    var check = function check() {
+        if (count >= maxCount) {
+            console.warn('wait, max cicles exceeded ' + maxCount);
+            return;
+        }
+        if (!what()) {
+            count++;
+            rid = window.requestAnimationFrame(check);
+        } else {
+            if (rid) {
+                window.cancelAnimationFrame(rid);
+                rid = null;
+            }
+            callback();
+        }
+    };
+    rid = window.requestAnimationFrame(check);
+}
+
+module.exports = wait;
+
+/***/ }),
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6296,13 +6333,13 @@ var _require = __webpack_require__(0),
     directive = _require.directive;
 
 var wait = __webpack_require__(76);
-var animate = __webpack_require__(77);
+var animateHelper = __webpack_require__(78);
 
 directive('animate', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             animate: {
-                value: animate,
+                value: animateHelper,
                 enumerable: true
             },
             elementsWithAnimation: {
@@ -6493,49 +6530,13 @@ directive('animate', {
 });
 
 /***/ }),
-/* 76 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
-window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
-
-function wait(what, callback) {
-    var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
-
-    var rid = void 0;
-    var count = 0;
-    var check = function check() {
-        if (count >= maxCount) {
-            console.warn('wait, max cicles exceeded ' + maxCount);
-            return;
-        }
-        if (!what()) {
-            count++;
-            rid = window.requestAnimationFrame(check);
-        } else {
-            if (rid) {
-                window.cancelAnimationFrame(rid);
-                rid = null;
-            }
-            callback();
-        }
-    };
-    rid = window.requestAnimationFrame(check);
-}
-
-module.exports = wait;
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function animate($target, animationName, opts, callback) {
+function animateHelper($target, animationName, opts, callback) {
 
     if (typeof opts === 'function') {
         callback = opts;
@@ -6601,7 +6602,7 @@ function animate($target, animationName, opts, callback) {
     $target.addEventListener('animationend', handleAnimationEnd);
 }
 
-module.exports = animate;
+module.exports = animateHelper;
 
 /***/ })
 /******/ ]);
