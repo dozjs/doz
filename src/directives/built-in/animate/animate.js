@@ -36,6 +36,7 @@ directive('animate', {
                                     duration: directiveValueOfMap.hide.duration,
                                     delay: directiveValueOfMap.hide.delay,
                                     iterationCount: directiveValueOfMap.hide.iterationCount,
+                                    classLib: directiveValueOfMap.classLib,
                                 };
                                 instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, () => {
                                     $targetOfMap.style.display = 'none';
@@ -82,6 +83,7 @@ directive('animate', {
                 duration: directiveValue.show.duration,
                 delay: directiveValue.show.delay,
                 iterationCount: directiveValue.show.iterationCount,
+                classLib: directiveValue.classLib,
             };
 
             //Add always an useful method for show
@@ -113,6 +115,7 @@ directive('animate', {
                 duration: directiveValue.hide.duration,
                 delay: directiveValue.hide.delay,
                 iterationCount: directiveValue.hide.iterationCount,
+                classLib: directiveValue.classLib,
             };
 
             //Add always an useful method for show

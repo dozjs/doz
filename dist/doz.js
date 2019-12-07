@@ -6363,7 +6363,8 @@ directive('animate', {
                         var optAnimation = {
                             duration: directiveValueOfMap.hide.duration,
                             delay: directiveValueOfMap.hide.delay,
-                            iterationCount: directiveValueOfMap.hide.iterationCount
+                            iterationCount: directiveValueOfMap.hide.iterationCount,
+                            classLib: directiveValueOfMap.classLib
                         };
                         instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
                             $targetOfMap.style.display = 'none';
@@ -6438,7 +6439,8 @@ directive('animate', {
             var optAnimation = {
                 duration: directiveValue.show.duration,
                 delay: directiveValue.show.delay,
-                iterationCount: directiveValue.show.iterationCount
+                iterationCount: directiveValue.show.iterationCount,
+                classLib: directiveValue.classLib
             };
 
             //Add always an useful method for show
@@ -6471,7 +6473,8 @@ directive('animate', {
             var _optAnimation = {
                 duration: directiveValue.hide.duration,
                 delay: directiveValue.hide.delay,
-                iterationCount: directiveValue.hide.iterationCount
+                iterationCount: directiveValue.hide.iterationCount,
+                classLib: directiveValue.classLib
             };
 
             //Add always an useful method for show
@@ -6595,8 +6598,11 @@ function animateHelper($target, animationName, opts, callback) {
     $target.__animationIsRunning = true;
 
     var computedStyle = window.getComputedStyle($target);
+    console.log(computedStyle.display);
+    opts.classLib = opts.classLib || 'animated'; //Default animate.css
+
     // Now supports IE11
-    $target.classList.add('animated');
+    $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
 
     $target.__animationOriginDisplay = $target.style.display;
@@ -6624,7 +6630,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     function handleAnimationEnd() {
-        $target.classList.remove('animated');
+        $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
         $target.__animationIsRunning = false;

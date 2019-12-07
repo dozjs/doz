@@ -5,8 +5,8 @@
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - show animation</title>
-    <script src="../dist/doz.js?5897654888"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <script src="../dist/doz.js?58976549888"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magic/1.1.0/magic.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -16,7 +16,6 @@
         button {
             font-size: 20px;
         }
-
     </style>
 </head>
 <body>
@@ -33,7 +32,7 @@
             return h`
                 <button onclick="this.toggle()">SHOW/HIDE</button>
                 <p>should be ${this.props.show}</p>
-                <h1 style="color: red;" d-animate="${{show: 'flipInX', hide: 'flipOutX'}}" d-show="${this.props.show}">HELLO WORLD</h1>
+                <h1 style="color: red; text-align: center" d-animate="${{show: 'vanishIn', hide: 'vanishOut', classLib: 'magictime'}}" d-show="${this.props.show}">HELLO WORLD</h1>
             `;
         },
         toggle() {

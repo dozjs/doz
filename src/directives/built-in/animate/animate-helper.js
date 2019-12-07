@@ -10,8 +10,11 @@ function animateHelper($target, animationName, opts, callback) {
     $target.__animationIsRunning = true;
 
     let computedStyle = window.getComputedStyle($target);
+    console.log(computedStyle.display)
+    opts.classLib = opts.classLib || 'animated'; //Default animate.css
+
     // Now supports IE11
-    $target.classList.add('animated');
+    $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
 
     $target.__animationOriginDisplay = $target.style.display;
@@ -39,7 +42,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     function handleAnimationEnd() {
-        $target.classList.remove('animated');
+        $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
         $target.__animationIsRunning = false;
