@@ -90,7 +90,6 @@ directive('animate', {
             $target.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
             wait(() => {
-                //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
             }, () => {
                 if (!document.body.contains($target)) return;

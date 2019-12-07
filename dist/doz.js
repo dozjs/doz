@@ -6449,7 +6449,6 @@ directive('animate', {
             };
 
             wait(function () {
-                //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
             }, function () {
                 if (!document.body.contains($target)) return;
