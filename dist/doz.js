@@ -6288,12 +6288,12 @@ directive('show', {
                     $target.style.display = '';
                     $target.__animationShow(function () {
                         $target.style.display = '';
-                        resolve('');
+                        resolve();
                     });
                 } else {
                     $target.__animationHide(function () {
                         $target.style.display = 'none';
-                        resolve('none');
+                        resolve();
                     });
                 }
             });
