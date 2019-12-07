@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - show animation</title>
+    <script src="../dist/doz.js?5897654888"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            font-size: 20px;
+        }
+
+        h1 {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<h1>Player controls</h1>
+<div id="app"></div>
+
+<script>
+
+    Doz.component('my-component', {
+        props: {
+            show: true
+        },
+        template: function (h) {
+            return h`
+                <button onclick="this.toggle()">SHOW/HIDE</button>
+                <p>should be ${this.props.show}</p>
+                <h1 style="color: red;" d-animate="${{show: 'flipInX', hide: 'flipOutX'}}" d-show="${this.props.show}">HELLO WORLD</h1>
+            `;
+        },
+        toggle() {
+            this.props.show = !this.props.show;
+        }
+    });
+
+    new Doz({
+        root: '#app',
+        template(h) {
+            return h`<my-component/>`
+        }
+    });
+
+
+</script>
+</body>
+</html>

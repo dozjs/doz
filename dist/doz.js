@@ -6269,9 +6269,39 @@ module.exports = {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
+function queue($target, p) {
+    if (!p) return;
+    new Promise(p).then(function () {
+        return queue($target, $target.__animationsList.shift());
+    });
+}
+
 directive('show', {
     setVisible: function setVisible($target, value) {
-        $target.style.display = value === false ? 'none' : '';
+        var isAnimated = $target.__animationDirectiveValue;
+        if (isAnimated) {
+
+            if (!$target.__animationsList) $target.__animationsList = [];
+
+            $target.__animationsList.push(function (resolve) {
+                if (value) {
+                    $target.style.display = '';
+                    $target.__animationShow(function () {
+                        $target.style.display = '';
+                        resolve('');
+                    });
+                } else {
+                    $target.__animationHide(function () {
+                        $target.style.display = 'none';
+                        resolve('none');
+                    });
+                }
+            });
+
+            if (!$target.__animationIsRunning) queue($target, $target.__animationsList.shift());
+        } else {
+            $target.style.display = value === false ? 'none' : '';
+        }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
@@ -6448,6 +6478,11 @@ directive('animate', {
                 iterationCount: directiveValue.show.iterationCount
             };
 
+            //Add always an useful method for show
+            $target.__animationShow = function (cb) {
+                return instance.animate($target, directiveValue.show.name, optAnimation, cb);
+            };
+
             wait(function () {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
@@ -6456,6 +6491,8 @@ directive('animate', {
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
+                //Exclude if element is not displayed
+                if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
             });
         }
@@ -6467,6 +6504,17 @@ directive('animate', {
                     name: directiveValue.hide
                 };
             }
+
+            var _optAnimation = {
+                duration: directiveValue.hide.duration,
+                delay: directiveValue.hide.delay,
+                iterationCount: directiveValue.hide.iterationCount
+            };
+
+            //Add always an useful method for show
+            $target.__animationHide = function (cb) {
+                return instance.animate($target, directiveValue.hide.name, _optAnimation, cb);
+            };
 
             this.createLockRemoveInstanceByCallback(instance);
         }

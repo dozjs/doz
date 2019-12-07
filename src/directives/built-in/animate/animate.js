@@ -84,6 +84,9 @@ directive('animate', {
                 iterationCount: directiveValue.show.iterationCount,
             };
 
+            //Add always an useful method for show
+            $target.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
+
             wait(() => {
                 //console.log('wait enter', $target.__animationIsRunning, document.body.contains($target));
                 return !$target.__animationIsRunning;
@@ -92,6 +95,8 @@ directive('animate', {
                 if ($target.__animationOriginDisplay) {
                     $target.style.display = $target.__animationOriginDisplay;
                 }
+                //Exclude if element is not displayed
+                if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
             });
         }
@@ -103,6 +108,15 @@ directive('animate', {
                     name: directiveValue.hide
                 };
             }
+
+            let optAnimation = {
+                duration: directiveValue.hide.duration,
+                delay: directiveValue.hide.delay,
+                iterationCount: directiveValue.hide.iterationCount,
+            };
+
+            //Add always an useful method for show
+            $target.__animationHide = (cb) => instance.animate($target, directiveValue.hide.name, optAnimation, cb);
 
             this.createLockRemoveInstanceByCallback(instance)
         }
