@@ -6,12 +6,15 @@ function animate($target, animationName, opts, callback) {
     } else if (!opts) {
         opts = {};
     }
+
     $target.__animationIsRunning = true;
 
     let computedStyle = window.getComputedStyle($target);
     // Now supports IE11
     $target.classList.add('animated');
     $target.classList.add(animationName);
+
+    $target.__animationOriginDisplay = $target.style.display;
 
     if (computedStyle.display === 'inline') {
         $target.style.display = 'inline-block';
@@ -42,7 +45,6 @@ function animate($target, animationName, opts, callback) {
         $target.__animationIsRunning = false;
         $target.__animationEnterIsComplete = true;
         $target.__lockedForAnimation = false;
-        $target.__animationOriginDisplay = $target.style.display;
 
         $target.style.display = computedStyle.display;
         $target.style.animationDelay = '';

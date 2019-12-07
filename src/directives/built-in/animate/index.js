@@ -17,6 +17,46 @@ directive('animate', {
         });
     },
 
+    createLockRemoveInstanceByCallback(instance) {
+        instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {
+            if (instance.lockRemoveInstanceByCallbackIsCalled) return;
+            instance.lockRemoveInstanceByCallbackIsCalled = true;
+            let animationsEnd = [];
+            for (let [key, value] of instance.elementsWithAnimation) {
+                let $targetOfMap = key;
+                let directiveValueOfMap = value;
+
+                animationsEnd.push(
+                    new Promise(resolve => {
+                            wait(() => {
+                                return !$targetOfMap.__animationIsRunning;
+                            }, () => {
+                                if (!document.body.contains($targetOfMap)) return;
+                                let optAnimation = {
+                                    duration: directiveValueOfMap.hide.duration,
+                                    delay: directiveValueOfMap.hide.delay,
+                                    iterationCount: directiveValueOfMap.hide.iterationCount,
+                                };
+                                instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, () => {
+                                    $targetOfMap.style.display = 'none';
+                                    resolve();
+                                });
+                            });
+                        }
+                    )
+                );
+            }
+
+            Promise.all(animationsEnd).then(() => {
+                instance.lockRemoveInstanceByCallback = null;
+                instance.lockRemoveInstanceByCallbackIsCalled = false;
+                callerMethod.apply(instance, args);
+            }, reason => {
+                throw new Error(reason);
+            });
+        }
+    },
+
     createAnimations(instance, $target, directiveValue) {
         if ($target.__lockedForAnimation) return;
         $target.__lockedForAnimation = true;
@@ -64,44 +104,25 @@ directive('animate', {
                 };
             }
 
-            instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {
-                let animationsEnd = [];
-                for (let [key, value] of instance.elementsWithAnimation) {
-                    let $targetOfMap = key;
-                    let directiveValueOfMap = value;
-
-                    animationsEnd.push(
-                        new Promise(resolve => {
-                                wait(() => {
-                                    return !$targetOfMap.__animationIsRunning;
-                                }, () => {
-                                    if (!document.body.contains($targetOfMap)) return;
-                                    let optAnimation = {
-                                        duration: directiveValueOfMap.hide.duration,
-                                        delay: directiveValueOfMap.hide.delay,
-                                        iterationCount: directiveValueOfMap.hide.iterationCount,
-                                    };
-                                    instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, () => {
-                                        $targetOfMap.style.display = 'none';
-                                        resolve();
-                                    });
-                                });
-                            }
-                        )
-                    );
-                }
-
-                Promise.all(animationsEnd).then(() => {
-                    instance.lockRemoveInstanceByCallback = null;
-                    callerMethod.apply(instance, args);
-                }, reason => {
-                    throw new Error(reason);
-                });
-            }
+            this.createLockRemoveInstanceByCallback(instance)
         }
 
-        if (!instance.elementsWithAnimation.has($target))
-            instance.elementsWithAnimation.set($target, directiveValue);
+        instance.elementsWithAnimation.set($target, directiveValue);
+
+        setTimeout(() => {
+            Object.keys(instance.children).forEach(i => {
+                const childInstance = instance.children[i];
+                const $childTarget = childInstance.getHTMLElement();
+                const elementAnimation = instance.elementsWithAnimation.get($childTarget);
+                if (elementAnimation) {
+                    if (!childInstance.lockRemoveInstanceByCallback) {
+                        childInstance.elementsWithAnimation.set($childTarget, elementAnimation);
+                        this.createLockRemoveInstanceByCallback(childInstance)
+                    }
+                }
+            })
+        })
+
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {

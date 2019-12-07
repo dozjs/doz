@@ -6288,9 +6288,9 @@ directive('show', {
 "use strict";
 
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _require = __webpack_require__(0),
     directive = _require.directive;
@@ -6311,7 +6311,80 @@ directive('animate', {
             }
         });
     },
+    createLockRemoveInstanceByCallback: function createLockRemoveInstanceByCallback(instance) {
+        instance.lockRemoveInstanceByCallback = function (callerMethod) {
+            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                args[_key - 1] = arguments[_key];
+            }
+
+            if (instance.lockRemoveInstanceByCallbackIsCalled) return;
+            instance.lockRemoveInstanceByCallbackIsCalled = true;
+            var animationsEnd = [];
+
+            var _loop = function _loop(key, value) {
+                var $targetOfMap = key;
+                var directiveValueOfMap = value;
+
+                animationsEnd.push(new Promise(function (resolve) {
+                    wait(function () {
+                        return !$targetOfMap.__animationIsRunning;
+                    }, function () {
+                        if (!document.body.contains($targetOfMap)) return;
+                        var optAnimation = {
+                            duration: directiveValueOfMap.hide.duration,
+                            delay: directiveValueOfMap.hide.delay,
+                            iterationCount: directiveValueOfMap.hide.iterationCount
+                        };
+                        instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
+                            $targetOfMap.style.display = 'none';
+                            resolve();
+                        });
+                    });
+                }));
+            };
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = instance.elementsWithAnimation[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _ref = _step.value;
+
+                    var _ref2 = _slicedToArray(_ref, 2);
+
+                    var key = _ref2[0];
+                    var value = _ref2[1];
+
+                    _loop(key, value);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            Promise.all(animationsEnd).then(function () {
+                instance.lockRemoveInstanceByCallback = null;
+                instance.lockRemoveInstanceByCallbackIsCalled = false;
+                callerMethod.apply(instance, args);
+            }, function (reason) {
+                throw new Error(reason);
+            });
+        };
+    },
     createAnimations: function createAnimations(instance, $target, directiveValue) {
+        var _this = this;
+
         if ($target.__lockedForAnimation) return;
         $target.__lockedForAnimation = true;
 
@@ -6358,75 +6431,30 @@ directive('animate', {
                 };
             }
 
-            instance.lockRemoveInstanceByCallback = function (callerMethod) {
-                for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                    args[_key - 1] = arguments[_key];
-                }
-
-                var animationsEnd = [];
-
-                var _loop = function _loop(key, value) {
-                    var $targetOfMap = key;
-                    var directiveValueOfMap = value;
-
-                    animationsEnd.push(new Promise(function (resolve) {
-                        wait(function () {
-                            return !$targetOfMap.__animationIsRunning;
-                        }, function () {
-                            if (!document.body.contains($targetOfMap)) return;
-                            var optAnimation = {
-                                duration: directiveValueOfMap.hide.duration,
-                                delay: directiveValueOfMap.hide.delay,
-                                iterationCount: directiveValueOfMap.hide.iterationCount
-                            };
-                            instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
-                                $targetOfMap.style.display = 'none';
-                                resolve();
-                            });
-                        });
-                    }));
-                };
-
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
-
-                try {
-                    for (var _iterator = instance.elementsWithAnimation[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var _ref = _step.value;
-
-                        var _ref2 = _slicedToArray(_ref, 2);
-
-                        var key = _ref2[0];
-                        var value = _ref2[1];
-
-                        _loop(key, value);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-
-                Promise.all(animationsEnd).then(function () {
-                    instance.lockRemoveInstanceByCallback = null;
-                    callerMethod.apply(instance, args);
-                }, function (reason) {
-                    throw new Error(reason);
-                });
-            };
+            this.createLockRemoveInstanceByCallback(instance);
         }
 
-        if (!instance.elementsWithAnimation.has($target)) instance.elementsWithAnimation.set($target, directiveValue);
+        instance.elementsWithAnimation.set($target, directiveValue);
+
+        setTimeout(function () {
+            var _defined = function _defined(i) {
+                var childInstance = instance.children[i];
+                var $childTarget = childInstance.getHTMLElement();
+                var elementAnimation = instance.elementsWithAnimation.get($childTarget);
+                if (elementAnimation) {
+                    if (!childInstance.lockRemoveInstanceByCallback) {
+                        childInstance.elementsWithAnimation.set($childTarget, elementAnimation);
+                        _this.createLockRemoveInstanceByCallback(childInstance);
+                    }
+                }
+            };
+
+            var _defined2 = Object.keys(instance.children);
+
+            for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+                _defined(_defined2[_i2], _i2, _defined2);
+            }
+        });
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
         this.createAnimations(instance, $target, directiveValue);
@@ -6480,8 +6508,8 @@ function wait(what, callback) {
     var rid = void 0;
     var count = 0;
     var check = function check() {
-        if (count > maxCount) {
-            console.log('max cicles exceeded');
+        if (count >= maxCount) {
+            console.warn('wait, max cicles exceeded ' + maxCount);
             return;
         }
         if (!what()) {
@@ -6515,12 +6543,15 @@ function animate($target, animationName, opts, callback) {
     } else if (!opts) {
         opts = {};
     }
+
     $target.__animationIsRunning = true;
 
     var computedStyle = window.getComputedStyle($target);
     // Now supports IE11
     $target.classList.add('animated');
     $target.classList.add(animationName);
+
+    $target.__animationOriginDisplay = $target.style.display;
 
     if (computedStyle.display === 'inline') {
         $target.style.display = 'inline-block';
@@ -6551,7 +6582,6 @@ function animate($target, animationName, opts, callback) {
         $target.__animationIsRunning = false;
         $target.__animationEnterIsComplete = true;
         $target.__lockedForAnimation = false;
-        $target.__animationOriginDisplay = $target.style.display;
 
         $target.style.display = computedStyle.display;
         $target.style.animationDelay = '';
