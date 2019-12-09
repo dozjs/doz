@@ -142,7 +142,8 @@ module.exports = {
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
         MATCH_NLS: /\n\s+/gm,
         REPLACE_QUOT: /"/g,
-        REPLACE_D_DIRECTIVE: /^d[-:]/
+        REPLACE_D_DIRECTIVE: /^d[-:]/,
+        EXTRACT_STYLE_DISPLAY_PROPERTY: /display(?:\s+)?:(?:\s+)?([\w-]+)/
     },
     ATTR: {
         // Attributes for both
@@ -1592,7 +1593,8 @@ module.exports = composeStyleInner;
 
 
 var _require = __webpack_require__(1),
-    REGEX = _require.REGEX;
+    REGEX = _require.REGEX,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
 
 function extractDirectivesFromProps(cmp) {
     //let canBeDeleteProps = true;
@@ -1628,9 +1630,21 @@ function isDirective(name) {
     return REGEX.IS_DIRECTIVE.test(name);
 }
 
+function extractStyleDisplayFromDozProps($target) {
+    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
+
+    var match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
 module.exports = {
     isDirective: isDirective,
-    extractDirectivesFromProps: extractDirectivesFromProps
+    extractDirectivesFromProps: extractDirectivesFromProps,
+    extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
 };
 
 /***/ }),
@@ -6269,6 +6283,9 @@ module.exports = {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
+var _require2 = __webpack_require__(13),
+    extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
+
 function queue($target, p) {
     if (!p) return;
     new Promise(p).then(function () {
@@ -6279,8 +6296,8 @@ function queue($target, p) {
 directive('show', {
     setVisible: function setVisible($target, value) {
         var isAnimated = $target.__animationDirectiveValue;
-        $target.__showOriginDisplay = $target.__showOriginDisplay || '';
-        if ($target.__showOriginDisplay === 'none') $target.__showOriginDisplay = '';
+        $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+
         if (isAnimated) {
             if (!$target.__animationsList) $target.__animationsList = [];
 
@@ -6305,11 +6322,7 @@ directive('show', {
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        var computedStyle = window.getComputedStyle($target);
         this.setVisible($target, directiveValue);
-        setTimeout(function () {
-            $target.__showOriginDisplay = computedStyle.display;
-        });
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
@@ -6608,9 +6621,9 @@ function animateHelper($target, animationName, opts, callback) {
     $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
 
-    $target.__animationOriginDisplay = $target.style.display;
+    $target.__animationOriginDisplay = computedStyle.display;
 
-    if (computedStyle.display === 'inline') {
+    if ($target.__animationOriginDisplay === 'inline') {
         $target.style.display = 'inline-block';
     }
 
@@ -6639,7 +6652,7 @@ function animateHelper($target, animationName, opts, callback) {
         $target.__animationIsRunning = false;
         $target.__lockedForAnimation = false;
 
-        $target.style.display = computedStyle.display;
+        //$target.style.display = $target.__animationOriginDisplay;
         $target.style.animationDelay = '';
         $target.style.webkitAnimationDelay = '';
         $target.style.mozAnimationDelay = '';

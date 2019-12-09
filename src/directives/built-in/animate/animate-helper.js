@@ -16,9 +16,9 @@ function animateHelper($target, animationName, opts, callback) {
     $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
 
-    $target.__animationOriginDisplay = $target.style.display;
+    $target.__animationOriginDisplay = computedStyle.display;
 
-    if (computedStyle.display === 'inline') {
+    if ($target.__animationOriginDisplay === 'inline') {
         $target.style.display = 'inline-block';
     }
 
@@ -47,7 +47,7 @@ function animateHelper($target, animationName, opts, callback) {
         $target.__animationIsRunning = false;
         $target.__lockedForAnimation = false;
 
-        $target.style.display = computedStyle.display;
+        //$target.style.display = $target.__animationOriginDisplay;
         $target.style.animationDelay = '';
         $target.style.webkitAnimationDelay = '';
         $target.style.mozAnimationDelay = '';

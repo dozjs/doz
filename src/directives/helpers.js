@@ -1,4 +1,4 @@
-const {REGEX} = require('../constants.js');
+const {REGEX, PROPS_ATTRIBUTES} = require('../constants.js');
 
 function extractDirectivesFromProps(cmp) {
     //let canBeDeleteProps = true;
@@ -27,7 +27,19 @@ function isDirective(name) {
     return REGEX.IS_DIRECTIVE.test(name);
 }
 
+function extractStyleDisplayFromDozProps($target) {
+    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
+
+    let match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
 module.exports = {
     isDirective,
-    extractDirectivesFromProps
+    extractDirectivesFromProps,
+    extractStyleDisplayFromDozProps
 };

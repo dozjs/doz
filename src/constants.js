@@ -39,7 +39,8 @@ module.exports = {
         HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
         MATCH_NLS: /\n\s+/gm,
         REPLACE_QUOT: /"/g,
-        REPLACE_D_DIRECTIVE: /^d[-:]/
+        REPLACE_D_DIRECTIVE: /^d[-:]/,
+        EXTRACT_STYLE_DISPLAY_PROPERTY: /display(?:\s+)?:(?:\s+)?([\w-]+)/
     },
     ATTR: {
         // Attributes for both

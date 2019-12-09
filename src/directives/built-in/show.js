@@ -1,4 +1,5 @@
 const {directive} = require('../index');
+const {extractStyleDisplayFromDozProps} = require('../helpers');
 
 function queue($target, p) {
     if (!p) return;
@@ -9,8 +10,8 @@ directive('show', {
 
     setVisible($target, value) {
         const isAnimated = $target.__animationDirectiveValue;
-        $target.__showOriginDisplay = $target.__showOriginDisplay || '';
-        if ($target.__showOriginDisplay === 'none') $target.__showOriginDisplay = '';
+        $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+
         if (isAnimated) {
             if (!$target.__animationsList)
                 $target.__animationsList = [];
@@ -39,11 +40,7 @@ directive('show', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
-        let computedStyle = window.getComputedStyle($target);
         this.setVisible($target, directiveValue);
-        setTimeout(() => {
-            $target.__showOriginDisplay = computedStyle.display;
-        });
     },
 
     onComponentDOMElementUpdate(instance, $target, directiveValue) {
