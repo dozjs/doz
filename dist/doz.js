@@ -506,7 +506,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 //const castStringTo = require('../utils/cast-string-to');
-var dashToCamel = __webpack_require__(7);
+var dashToCamel = __webpack_require__(8);
 var isListener = __webpack_require__(14);
 
 var _require = __webpack_require__(1),
@@ -738,6 +738,68 @@ module.exports = {
 "use strict";
 
 
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
+
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    var props = void 0;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
+    var _defined
+    /*if (canBeDeleteProps)
+        delete props[key];*/
+    = function _defined(key) {
+        if (isDirective(key)) {
+            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    };
+
+    var _defined2 = Object.keys(props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+
+    return cmp._directiveProps;
+}
+
+function isDirective(name) {
+    return REGEX.IS_DIRECTIVE.test(name);
+}
+
+function extractStyleDisplayFromDozProps($target) {
+    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
+
+    var match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
+module.exports = {
+    isDirective: isDirective,
+    extractDirectivesFromProps: extractDirectivesFromProps,
+    extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function dashToCamel(s) {
     return s.replace(/(-\w)/g, function (m) {
         return m[1].toUpperCase();
@@ -747,7 +809,7 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1170,7 +1232,7 @@ module.exports = Component;
 module.exports._Component = Component;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1186,7 +1248,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var html = __webpack_require__(10);
+var html = __webpack_require__(11);
 var transformChildStyle = __webpack_require__(29);
 
 var _require = __webpack_require__(1),
@@ -1205,7 +1267,7 @@ var _require2 = __webpack_require__(6),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(35);
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var propsInit = __webpack_require__(22);
 var delay = __webpack_require__(4);
 var directive = __webpack_require__(0);
@@ -1467,7 +1529,7 @@ function createInstance() {
 module.exports = createInstance;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1512,13 +1574,13 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var composeStyleInner = __webpack_require__(12);
+var composeStyleInner = __webpack_require__(13);
 var createStyle = __webpack_require__(30);
 
 function scopedInner(cssContent, uId, tag, scoped) {
@@ -1532,7 +1594,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1584,68 +1646,6 @@ function composeStyleInner(cssContent, tag) {
 }
 
 module.exports = composeStyleInner;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(1),
-    REGEX = _require.REGEX,
-    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
-
-function extractDirectivesFromProps(cmp) {
-    //let canBeDeleteProps = true;
-    var props = void 0;
-
-    if (!Object.keys(cmp.props).length) {
-        props = cmp._rawProps;
-        //canBeDeleteProps = false;
-    } else {
-        props = cmp.props;
-    }
-
-    var _defined
-    /*if (canBeDeleteProps)
-        delete props[key];*/
-    = function _defined(key) {
-        if (isDirective(key)) {
-            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            cmp._directiveProps[keyWithoutD] = props[key];
-        }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-
-    return cmp._directiveProps;
-}
-
-function isDirective(name) {
-    return REGEX.IS_DIRECTIVE.test(name);
-}
-
-function extractStyleDisplayFromDozProps($target) {
-    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
-
-    var match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
-
-    if (match) {
-        return match[1];
-    }
-    return null;
-}
-
-module.exports = {
-    isDirective: isDirective,
-    extractDirectivesFromProps: extractDirectivesFromProps,
-    extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
-};
 
 /***/ }),
 /* 14 */
@@ -2776,7 +2776,7 @@ module.exports = {
 "use strict";
 
 
-var html = __webpack_require__(10);
+var html = __webpack_require__(11);
 
 function canDecode(str) {
     return (/&\w+;/.test(str) ? html.decode(str) : str
@@ -2814,7 +2814,7 @@ var mapper = __webpack_require__(3);
 var camelToDash = __webpack_require__(19);
 //const eventsAttributes = require('../utils/events-attributes');
 
-var _require2 = __webpack_require__(11),
+var _require2 = __webpack_require__(12),
     scopedInner = _require2.scopedInner;
 
 var _require3 = __webpack_require__(6),
@@ -3140,7 +3140,7 @@ var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
 var component = __webpack_require__(56);
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var mixin = __webpack_require__(57);
 var h = __webpack_require__(20);
 
@@ -3229,7 +3229,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bind = __webpack_require__(28);
-var createInstance = __webpack_require__(9);
+var createInstance = __webpack_require__(10);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -3540,7 +3540,7 @@ module.exports = bind;
 "use strict";
 
 
-var _require = __webpack_require__(11),
+var _require = __webpack_require__(12),
     scopedInner = _require.scopedInner;
 
 function transformChildStyle(child, parent) {
@@ -4026,7 +4026,7 @@ module.exports = {
 var _require = __webpack_require__(2),
     data = _require.data;
 
-var _require2 = __webpack_require__(13),
+var _require2 = __webpack_require__(7),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
     isDirective = _require2.isDirective;
 
@@ -4548,7 +4548,7 @@ var objectPath = __webpack_require__(42);
 var isListener = __webpack_require__(14);
 var mapper = __webpack_require__(3);
 
-var _require2 = __webpack_require__(13),
+var _require2 = __webpack_require__(7),
     isDirective = _require2.isDirective;
 
 var booleanAttributes = __webpack_require__(43);
@@ -4847,7 +4847,7 @@ function drawDynamic(instance) {
         var root = item.node.parentNode;
 
         //console.log('create dynamic', item.node, item.node.__dozProps)
-        var dynamicInstance = __webpack_require__(9)({
+        var dynamicInstance = __webpack_require__(10)({
             root: root,
             template: item.node,
             //template: item.node.outerHTML,
@@ -5094,8 +5094,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var canDecode = __webpack_require__(18);
-var composeStyleInner = __webpack_require__(12);
-var dashToCamel = __webpack_require__(7);
+var composeStyleInner = __webpack_require__(13);
+var dashToCamel = __webpack_require__(8);
 var Base = __webpack_require__(53);
 
 var _require = __webpack_require__(1),
@@ -5512,7 +5512,7 @@ module.exports = component;
 "use strict";
 
 
-var Component = __webpack_require__(8);
+var Component = __webpack_require__(9);
 var mixin = __webpack_require__(21);
 
 function globalMixin(obj) {
@@ -5939,7 +5939,7 @@ directive('ref', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var dashToCamel = __webpack_require__(7);
+var dashToCamel = __webpack_require__(8);
 
 directive('is', {
     hasDataIs: function hasDataIs($target) {
@@ -6283,7 +6283,7 @@ module.exports = {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var _require2 = __webpack_require__(13),
+var _require2 = __webpack_require__(7),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
 function queue($target, p) {
