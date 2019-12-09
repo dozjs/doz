@@ -6279,15 +6279,16 @@ function queue($target, p) {
 directive('show', {
     setVisible: function setVisible($target, value) {
         var isAnimated = $target.__animationDirectiveValue;
+        $target.__showOriginDisplay = $target.__showOriginDisplay || '';
+        if ($target.__showOriginDisplay === 'none') $target.__showOriginDisplay = '';
         if (isAnimated) {
-
             if (!$target.__animationsList) $target.__animationsList = [];
 
             $target.__animationsList.push(function (resolve) {
                 if (value) {
-                    $target.style.display = '';
+                    $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(function () {
-                        $target.style.display = '';
+                        $target.style.display = $target.__showOriginDisplay;
                         resolve();
                     });
                 } else {
@@ -6300,11 +6301,15 @@ directive('show', {
 
             if (!$target.__animationIsRunning) queue($target, $target.__animationsList.shift());
         } else {
-            $target.style.display = value === false ? 'none' : '';
+            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        var computedStyle = window.getComputedStyle($target);
         this.setVisible($target, directiveValue);
+        setTimeout(function () {
+            $target.__showOriginDisplay = computedStyle.display;
+        });
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
@@ -6632,7 +6637,6 @@ function animateHelper($target, animationName, opts, callback) {
         $target.classList.remove(animationName);
 
         $target.__animationIsRunning = false;
-        $target.__animationEnterIsComplete = true;
         $target.__lockedForAnimation = false;
 
         $target.style.display = computedStyle.display;

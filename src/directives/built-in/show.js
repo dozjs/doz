@@ -9,16 +9,17 @@ directive('show', {
 
     setVisible($target, value) {
         const isAnimated = $target.__animationDirectiveValue;
+        $target.__showOriginDisplay = $target.__showOriginDisplay || '';
+        if ($target.__showOriginDisplay === 'none') $target.__showOriginDisplay = '';
         if (isAnimated) {
-
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
             $target.__animationsList.push((resolve) => {
                 if (value) {
-                    $target.style.display = '';
+                    $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(() => {
-                        $target.style.display = '';
+                        $target.style.display = $target.__showOriginDisplay;
                         resolve();
                     });
                 } else {
@@ -33,12 +34,16 @@ directive('show', {
                 queue($target, $target.__animationsList.shift());
 
         } else {
-            $target.style.display = value === false ? 'none' : '';
+            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
+        let computedStyle = window.getComputedStyle($target);
         this.setVisible($target, directiveValue);
+        setTimeout(() => {
+            $target.__showOriginDisplay = computedStyle.display;
+        });
     },
 
     onComponentDOMElementUpdate(instance, $target, directiveValue) {
