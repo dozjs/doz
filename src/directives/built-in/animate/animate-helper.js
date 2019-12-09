@@ -45,7 +45,6 @@ function animateHelper($target, animationName, opts, callback) {
         $target.classList.remove(animationName);
 
         $target.__animationIsRunning = false;
-        $target.__animationEnterIsComplete = true;
         $target.__lockedForAnimation = false;
 
         $target.style.display = computedStyle.display;
