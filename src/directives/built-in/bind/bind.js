@@ -1,6 +1,6 @@
-const {directive} = require('../index');
-const castStringTo = require('../../utils/cast-string-to');
-const delay = require('../../utils/delay');
+const {directive} = require('../../index');
+const castStringTo = require('../../../utils/cast-string-to');
+const delay = require('../../../utils/delay');
 
 directive('bind', {
 

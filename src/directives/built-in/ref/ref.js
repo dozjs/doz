@@ -1,4 +1,4 @@
-const {directive} = require('../index');
+const {directive} = require('../../index');
 
 directive('ref', {
 

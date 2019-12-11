@@ -1,5 +1,5 @@
-const {directive} = require('../index');
-const {extractStyleDisplayFromDozProps} = require('../helpers');
+const {directive} = require('../../index');
+const {extractStyleDisplayFromDozProps} = require('../../helpers');
 
 function queue($target, p) {
     if (!p) return;
@@ -7,6 +7,21 @@ function queue($target, p) {
 }
 
 directive('show', {
+
+    onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            show: {
+                value: () => {},
+                writable: true,
+                enumerable: true
+            },
+            hide: {
+                value: () => {},
+                writable: true,
+                enumerable: true
+            }
+        });
+    },
 
     setVisible($target, value) {
         const isAnimated = $target.__animationDirectiveValue;

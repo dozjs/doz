@@ -10,7 +10,7 @@ const {compile} = require('./vdom/parser');
 const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
-require('./directives/built-in/_bootstrap');
+require('./directives/built-in/bootstrap');
 
 Object.defineProperties(Doz, {
     collection: {
