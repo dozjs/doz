@@ -1,10 +1,6 @@
 const {directive} = require('../../index');
 const {extractStyleDisplayFromDozProps} = require('../../helpers');
-
-function queue($target, p) {
-    if (!p) return;
-    new Promise(p).then(() => queue($target, $target.__animationsList.shift()));
-}
+const queue = require('../../../utils/queue');
 
 directive('show', {
 
@@ -24,10 +20,10 @@ directive('show', {
     },
 
     setVisible($target, value) {
-        const isAnimated = $target.__animationDirectiveValue;
+        const thereIsAnimateDirective = $target.__animationDirectiveValue;
         $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
 
-        if (isAnimated) {
+        if (thereIsAnimateDirective) {
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
@@ -46,8 +42,9 @@ directive('show', {
                 }
             });
 
-            if (!$target.__animationIsRunning)
-                queue($target, $target.__animationsList.shift());
+            if (!$target.__animationIsRunning) {
+                queue($target.__animationsList.shift(), $target.__animationsList);
+            }
 
         } else {
             $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;

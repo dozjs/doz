@@ -6286,19 +6286,28 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(7),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-function queue($target, p) {
-    if (!p) return;
-    new Promise(p).then(function () {
-        return queue($target, $target.__animationsList.shift());
-    });
-}
+var queue = __webpack_require__(78);
 
 directive('show', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            show: {
+                value: function value() {},
+                writable: true,
+                enumerable: true
+            },
+            hide: {
+                value: function value() {},
+                writable: true,
+                enumerable: true
+            }
+        });
+    },
     setVisible: function setVisible($target, value) {
-        var isAnimated = $target.__animationDirectiveValue;
+        var thereIsAnimateDirective = $target.__animationDirectiveValue;
         $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
 
-        if (isAnimated) {
+        if (thereIsAnimateDirective) {
             if (!$target.__animationsList) $target.__animationsList = [];
 
             $target.__animationsList.push(function (resolve) {
@@ -6316,7 +6325,9 @@ directive('show', {
                 }
             });
 
-            if (!$target.__animationIsRunning) queue($target, $target.__animationsList.shift());
+            if (!$target.__animationIsRunning) {
+                queue($target.__animationsList.shift(), $target.__animationsList);
+            }
         } else {
             $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
@@ -6671,6 +6682,22 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function queue(p, arrayOfP) {
+    if (!p) return;
+    new Promise(p).then(function () {
+        return queue(arrayOfP.shift(), arrayOfP);
+    });
+}
+
+module.exports = queue;
 
 /***/ })
 /******/ ]);
