@@ -2,17 +2,26 @@ const {directive} = require('../../index');
 const {extractStyleDisplayFromDozProps} = require('../../helpers');
 const queue = require('../../../utils/queue');
 
+function show($target, opt) {
+
+}
+
+function hide($target, opt) {
+
+}
+
+
 directive('show', {
 
     onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             show: {
-                value: () => {},
+                value: show,
                 writable: true,
                 enumerable: true
             },
             hide: {
-                value: () => {},
+                value: hide,
                 writable: true,
                 enumerable: true
             }

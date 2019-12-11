@@ -6288,16 +6288,20 @@ var _require2 = __webpack_require__(7),
 
 var queue = __webpack_require__(78);
 
+function show($target, opt) {}
+
+function hide($target, opt) {}
+
 directive('show', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
         Object.defineProperties(instance, {
             show: {
-                value: function value() {},
+                value: show,
                 writable: true,
                 enumerable: true
             },
             hide: {
-                value: function value() {},
+                value: hide,
                 writable: true,
                 enumerable: true
             }
