@@ -6647,6 +6647,13 @@ function animateHelper($target, animationName, opts, callback) {
         opts = {};
     }
 
+    if ($target.__animationIsRunning) {
+        $target.classList.remove($target.__lastAnimationName);
+        $target.__animationIsRunning = false;
+        $target.__lockedForAnimation = false;
+        $target.removeEventListener('animationend', $target.__handleAnimationEnd);
+    }
+
     $target.__animationIsRunning = true;
 
     var computedStyle = window.getComputedStyle($target);
@@ -6655,6 +6662,7 @@ function animateHelper($target, animationName, opts, callback) {
     // Now supports IE11
     $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
+    $target.__lastAnimationName = animationName;
 
     $target.__animationOriginDisplay = computedStyle.display;
 
@@ -6703,6 +6711,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     $target.addEventListener('animationend', handleAnimationEnd);
+    $target.__handleAnimationEnd = handleAnimationEnd;
 }
 
 module.exports = animateHelper;
