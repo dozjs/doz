@@ -36,7 +36,7 @@ directive('show', {
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
-            $target.__animationsList.push((resolve, reject) => {
+            $target.__animationsList.push((resolve) => {
                 if (value) {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(() => {

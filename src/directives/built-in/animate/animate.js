@@ -138,7 +138,6 @@ directive('animate', {
                 }
             })
         })
-
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
