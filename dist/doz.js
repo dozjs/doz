@@ -5551,7 +5551,7 @@ __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(67);
 __webpack_require__(74);
-__webpack_require__(75);
+__webpack_require__(76);
 
 /***/ }),
 /* 60 */
@@ -6286,7 +6286,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(7),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(78);
+var queue = __webpack_require__(75);
 
 function show($target, opt) {}
 
@@ -6314,7 +6314,7 @@ directive('show', {
         if (thereIsAnimateDirective) {
             if (!$target.__animationsList) $target.__animationsList = [];
 
-            $target.__animationsList.push(function (resolve) {
+            $target.__animationsList.push(function (resolve, reject) {
                 if (value) {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(function () {
@@ -6329,8 +6329,12 @@ directive('show', {
                 }
             });
 
-            if (!$target.__animationIsRunning) {
-                queue($target.__animationsList.shift(), $target.__animationsList);
+            if (thereIsAnimateDirective.queue) {
+                if (!$target.__animationIsRunning) {
+                    queue($target.__animationsList.shift(), $target.__animationsList);
+                }
+            } else {
+                new Promise($target.__animationsList.shift()).then();
             }
         } else {
             $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
@@ -6351,6 +6355,22 @@ directive('show', {
 "use strict";
 
 
+function queue(p, arrayOfP) {
+    if (!p) return;
+    new Promise(p).then(function () {
+        return queue(arrayOfP.shift(), arrayOfP);
+    });
+}
+
+module.exports = queue;
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -6358,8 +6378,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(76);
-var animateHelper = __webpack_require__(77);
+var wait = __webpack_require__(77);
+var animateHelper = __webpack_require__(78);
 
 directive('animate', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -6576,7 +6596,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6612,7 +6632,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6686,22 +6706,6 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function queue(p, arrayOfP) {
-    if (!p) return;
-    new Promise(p).then(function () {
-        return queue(arrayOfP.shift(), arrayOfP);
-    });
-}
-
-module.exports = queue;
 
 /***/ })
 /******/ ]);

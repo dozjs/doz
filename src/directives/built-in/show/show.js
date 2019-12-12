@@ -36,7 +36,7 @@ directive('show', {
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
-            $target.__animationsList.push((resolve) => {
+            $target.__animationsList.push((resolve, reject) => {
                 if (value) {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(() => {
@@ -51,8 +51,12 @@ directive('show', {
                 }
             });
 
-            if (!$target.__animationIsRunning) {
-                queue($target.__animationsList.shift(), $target.__animationsList);
+            if (thereIsAnimateDirective.queue) {
+                if (!$target.__animationIsRunning) {
+                    queue($target.__animationsList.shift(), $target.__animationsList);
+                }
+            } else {
+                new Promise($target.__animationsList.shift()).then();
             }
 
         } else {
