@@ -6314,7 +6314,7 @@ directive('show', {
         if (thereIsAnimateDirective) {
             if (!$target.__animationsList) $target.__animationsList = [];
 
-            $target.__animationsList.push(function (resolve, reject) {
+            $target.__animationsList.push(function (resolve) {
                 if (value) {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(function () {
