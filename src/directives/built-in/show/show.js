@@ -53,6 +53,7 @@ directive('show', {
 
             if (thereIsAnimateDirective.queue) {
                 if (!$target.__animationIsRunning) {
+                    // please don't use it
                     queue($target.__animationsList.shift(), $target.__animationsList);
                 }
             } else {

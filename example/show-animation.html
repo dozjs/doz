@@ -33,12 +33,20 @@
             return h`
                 <button onclick="this.toggle()">SHOW/HIDE</button>
                 <p>should be ${this.props.show}</p>
-                <h1 style="color: red;" d-animate="${{show: 'flipInX', hide: 'flipOutX'}}" d-show="${this.props.show}">HELLO WORLD</h1>
+                <h1 style="color: red;" d-animate="${{show: {name: 'flipInX', cb: this.onShowEnd}, hide: {name: 'flipOutX', cb: this.onHideEnd}}}" d-show="${this.props.show}">HELLO WORLD</h1>
             `;
         },
         toggle() {
             this.props.show = !this.props.show;
+        },
+        onShowEnd() {
+            console.log('onShowEnd')
+        },
+
+        onHideEnd() {
+            console.log('onHideEnd')
         }
+
     });
 
     new Doz({

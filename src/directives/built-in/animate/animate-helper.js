@@ -67,7 +67,8 @@ function animateHelper($target, animationName, opts, callback) {
         $target.style.mozAnimationIterationCount = '';
 
         $target.removeEventListener('animationend', handleAnimationEnd);
-        if (typeof callback === 'function') callback()
+        if (typeof callback === 'function') callback();
+        if (typeof opts.cb === 'function') opts.cb();
     }
 
     $target.addEventListener('animationend', handleAnimationEnd);

@@ -6331,6 +6331,7 @@ directive('show', {
 
             if (thereIsAnimateDirective.queue) {
                 if (!$target.__animationIsRunning) {
+                    // please don't use it
                     queue($target.__animationsList.shift(), $target.__animationsList);
                 }
             } else {
@@ -6417,6 +6418,7 @@ directive('animate', {
                             duration: directiveValueOfMap.hide.duration,
                             delay: directiveValueOfMap.hide.delay,
                             iterationCount: directiveValueOfMap.hide.iterationCount,
+                            cb: directiveValueOfMap.hide.cb,
                             classLib: directiveValueOfMap.classLib
                         };
                         instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
@@ -6493,6 +6495,7 @@ directive('animate', {
                 duration: directiveValue.show.duration,
                 delay: directiveValue.show.delay,
                 iterationCount: directiveValue.show.iterationCount,
+                cb: directiveValue.show.cb,
                 classLib: directiveValue.classLib
             };
 
@@ -6526,6 +6529,7 @@ directive('animate', {
                 duration: directiveValue.hide.duration,
                 delay: directiveValue.hide.delay,
                 iterationCount: directiveValue.hide.iterationCount,
+                cb: directiveValue.hide.cb,
                 classLib: directiveValue.classLib
             };
 
@@ -6708,6 +6712,7 @@ function animateHelper($target, animationName, opts, callback) {
 
         $target.removeEventListener('animationend', handleAnimationEnd);
         if (typeof callback === 'function') callback();
+        if (typeof opts.cb === 'function') opts.cb();
     }
 
     $target.addEventListener('animationend', handleAnimationEnd);
