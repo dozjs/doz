@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+- **Added** `d-animate` directive for animation
+- **Added** `animate` helper to Component
+- **Added** support for animation to `d-show`
+- **Improved** HTML boolean attribute support
+- **Improved** directive attributes, now supports also object
+
 ## [2.2.2] - 2019-11-25
 - **Removed** console log in directive `d-show`
 
