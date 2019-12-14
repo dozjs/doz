@@ -36,12 +36,14 @@ Below some basic concepts:
             - [d-ref](#d-ref)
             - [d-is](#d-is)
             - [d-show](#d-show)
-            - [Custom directives](#custom-directives)
+            - [d-animate](#d-animate)
         - [DOZ component](#doz-component)
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
+        - [Custom directives](#custom-directives)
+            
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
@@ -1051,7 +1053,8 @@ The directives are special attributes that are specified inside component tag.
 There are two types:
 
 #### HTML element
-Directives that works only on HTML element.
+Directives that usually work only with HTML elements but there are 
+exceptions such as `d-show` and `d-animate` which work with Doz components.
 
 ##### d-bind
 This directive bind an input element to a props:
@@ -1188,15 +1191,74 @@ new Doz({
 ```
 
 ---
-##### Custom directives
+##### d-animate
 
-**Since 1.25.0**
+**Since 2.3.0**
 
-If you need to create a custom directive please look this directory.
+This directive allows you to add CSS animations to components and HTML 
+elements. By default it is set to use the animate.css library but you 
+can also use custom animations or other libraries.
 
-[https://github.com/dozjs/doz/tree/master/src/directive/built-in](https://github.com/dozjs/doz/tree/master/src/directive/built-in)
+```javascript
+new Doz({
+    root: '#app',
+    template(h){
+        return h`
+            <h1>Welcome to my app:</h1>
+            <h2 d-animate="${{show: 'fadeIn'}}">Wow!</h2>
+        `
+    }
+});
+```
+
+The d-animate directive accepts an object as a configuration. The main 
+properties of the object are two: "show" and "hide".
+The show property defines the CSS class that will be used when an element 
+will be displayed in the DOM. While the hide property will be used when 
+an element will be hidden or removed from the DOM
+Both show and hide properties can accept values as a string (just animation name) or object.
+
+Below is an example of object configuration:
+
+```javascript
+
+const animationConfig = {
+    show: {
+        name: 'vanishIn',
+        duration: '500ms',
+        delay: '1000s',
+        cb: () => console.log('animation show ends')
+    },
+    hide: {
+        name: 'vanishOut',
+        duration: '500ms',
+        delay: '1000s',
+        cb: () => console.log('animation hide ends')
+    },
+    // classLib defines the css class name of the framework that use for animations.
+    // default is "animated", the class name of animate.css
+    classLib: 'magictime' // For example, it will use another animation framework and relative animation names
+};
+
+new Doz({
+    root: '#app',
+    template(h){
+        return h`
+            <h1>Welcome to my app:</h1>
+            <h2 d-animate="${animationConfig}">Wow!</h2>
+        `
+    }
+});
+```
+
+PS: `d-show` supports the animation with `d-directive`.
+
+**Important** Remember that to use animations you need to include CSS frameworks.
+
+[FOR DEMO](https://dozjs.github.io/doz/example/)
 
 ---
+
 
 #### DOZ component
 Directives that works only on component
@@ -1357,6 +1419,16 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/tkzv5obd/)
+
+---
+
+##### Custom directives
+
+**Since 1.25.0**
+
+If you need to create a custom directive please look this directory.
+
+[https://github.com/dozjs/doz/tree/master/src/directive/built-in](https://github.com/dozjs/doz/tree/master/src/directive/built-in)
 
 ---
 

@@ -30,6 +30,7 @@ Almost like writing in VanillaJS. For modern browser.
 - 😱‍ No extra syntax like JSX
 - 💣 No confusion with props and state
 - ⛏ Extensible through: plugins, mixin, components
+- 📽 CSS animation support
 
 ## Another framework?
 In the web there are many frameworks that do all the same things. But a lot of them are complex,
