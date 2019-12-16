@@ -50,13 +50,18 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
+    if(newVal !== oldVal) {
+        setAttribute($target, name, newVal, cmp);
+        cmp.$$afterAttributeUpdate($target, name, newVal);
+    }
+    /*
     if (newVal === '') {
-        //removeAttribute($target, name, cmp);
+        removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
-    }
+    }*/
 }
 
 function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
