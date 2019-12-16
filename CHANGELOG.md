@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.1] - 2019-12-16
+- **Fixed** when an attribute is empty it is removed
+
 ## [2.3.0] - 2019-12-14
 - **Added** `d-animate` directive for animation
 - **Added** `animate` helper to Component

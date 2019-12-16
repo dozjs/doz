@@ -51,7 +51,7 @@ function removeAttribute($target, name, cmp) {
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal === '') {
-        removeAttribute($target, name, cmp);
+        //removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
