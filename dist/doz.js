@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.0  
+// [DOZ]  Build version: 2.3.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3200,7 +3200,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.0',
+        value: '2.3.1',
         enumerable: true
     },
     tag: {
@@ -4597,7 +4597,7 @@ function removeAttribute($target, name, cmp) {
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal === '') {
-        removeAttribute($target, name, cmp);
+        //removeAttribute($target, name, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     } else if (oldVal === '' || newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
