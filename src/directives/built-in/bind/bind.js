@@ -1,5 +1,5 @@
 const {directive} = require('../../index');
-const castStringTo = require('../../../utils/cast-string-to');
+//const castStringTo = require('../../../utils/cast-string-to');
 const delay = require('../../../utils/delay');
 
 directive('bind', {
@@ -54,14 +54,16 @@ directive('bind', {
                     else {
                         const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
                         _value = [...inputs].map(input => input.value);
-                        instance.props[value] = castStringTo(_value);
+                        //instance.props[value] = castStringTo(_value);
+                        instance.props[value] = _value;
                     }
                 } else {
                     _value = this.value;
                     if (this.multiple) {
                         _value = [...this.options].filter(option => option.selected).map(option => option.value);
                     }
-                    instance.props[value] = castStringTo(_value);
+                    //instance.props[value] = castStringTo(_value);
+                    instance.props[value] = _value;
                 }
             });
         });

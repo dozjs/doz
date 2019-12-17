@@ -5975,8 +5975,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var _require = __webpack_require__(0),
     directive = _require.directive;
+//const castStringTo = require('../../../utils/cast-string-to');
 
-var castStringTo = __webpack_require__(68);
+
 var delay = __webpack_require__(4);
 
 directive('bind', {
@@ -6043,8 +6044,10 @@ directive('bind', {
                         for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
                             _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
                         }
+                        //instance.props[value] = castStringTo(_value);
 
-                        instance.props[value] = castStringTo(_value);
+
+                        instance.props[value] = _value;
                     }
                 } else {
                     _value = this.value;
@@ -6071,7 +6074,8 @@ directive('bind', {
                             _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
                         }
                     }
-                    instance.props[value] = castStringTo(_value);
+                    //instance.props[value] = castStringTo(_value);
+                    instance.props[value] = _value;
                 }
             });
         };
@@ -6171,114 +6175,12 @@ directive('bind', {
 });
 
 /***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var isJSON = __webpack_require__(69);
-var isNumber = __webpack_require__(70);
-var toJSON = __webpack_require__(71);
-var toNumber = __webpack_require__(72);
-var typesMap = __webpack_require__(73);
-
-function castStringTo(obj) {
-    //return obj;
-    if (typeof obj !== 'string') {
-        return obj;
-    }
-
-    if (typesMap.hasOwnProperty(obj)) {
-        return typesMap[obj];
-    } else if (isJSON(obj)) {
-        return toJSON(obj);
-    } else if (isNumber(obj)) {
-        return toNumber(obj);
-    }
-
-    return obj;
-}
-
-module.exports = castStringTo;
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isJSON(obj) {
-    return (/^[{\[]/.test(obj)
-    );
-};
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isNumber(obj) {
-    if (/^0{2,}/.test(obj)) return false;
-    return (/^[0-9]/.test(obj)
-    );
-};
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function toJSON(obj) {
-    try {
-        return JSON.parse(obj);
-    } catch (e) {
-        return obj;
-    }
-};
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function toNumber(obj) {
-    var num = parseFloat(obj);
-    if (!isNaN(num)) {
-        if (isFinite(obj)) {
-            if (obj.toLowerCase().indexOf('0x') === 0) {
-                return parseInt(obj, 16);
-            }
-            return num;
-        }
-    }
-    return obj;
-};
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-    'undefined': undefined,
-    'null': null,
-    'NaN': NaN,
-    'Infinity': Infinity,
-    'true': true,
-    'false': false
-};
-
-/***/ }),
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
