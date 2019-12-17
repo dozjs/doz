@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.2  
+// [DOZ]  Build version: 2.3.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3200,7 +3200,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.2',
+        value: '2.3.3',
         enumerable: true
     },
     tag: {
@@ -5555,8 +5555,8 @@ __webpack_require__(64);
 __webpack_require__(65);
 __webpack_require__(66);
 __webpack_require__(67);
-__webpack_require__(74);
-__webpack_require__(76);
+__webpack_require__(68);
+__webpack_require__(70);
 
 /***/ }),
 /* 60 */
@@ -6175,13 +6175,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6193,7 +6187,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(7),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(75);
+var queue = __webpack_require__(69);
 
 function show($target, opt) {}
 
@@ -6257,7 +6251,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 75 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6273,7 +6267,7 @@ function queue(p, arrayOfP) {
 module.exports = queue;
 
 /***/ }),
-/* 76 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6286,8 +6280,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(77);
-var animateHelper = __webpack_require__(78);
+var wait = __webpack_require__(71);
+var animateHelper = __webpack_require__(72);
 
 directive('animate', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -6507,7 +6501,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 77 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6543,7 +6537,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 78 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
