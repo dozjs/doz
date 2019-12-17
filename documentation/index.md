@@ -18,6 +18,8 @@ Below some basic concepts:
     - [Props convert](#props-convert)
     - [Delay props update](#delay-props-update)
     - [Load props](#load-props)
+    - [Props types](#props-types)
+        - [Types available](#types-available)
     - [Reusing components](#reusing-components)
     - [Methods](#methods)
     - [Handlers](#handlers)
@@ -373,6 +375,47 @@ new Doz({
     `
 });
 ```
+
+---
+
+### Props types
+
+**Since 1.20.0**
+
+When passing a prop via attribute, it is automatically converted to the most appropriate type. 
+Now, using the "propsType" object, you can define a type for each prop.
+
+```javascript
+Doz.component('my-types', {
+    propsType: {
+        myParam: 'string'
+    },
+    template() {
+        return `
+            <h3>This is number but string: ${this.props.myParam}</h3>
+        `
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <my-types my-param="10"/>
+        `
+    }
+});
+```
+---
+
+#### Types available
+
+- `string`
+- `number`
+- `boolean`
+- `object`
+- `array`
+- `date`
 
 ---
 
