@@ -382,8 +382,9 @@ new Doz({
 
 **Since 1.20.0**
 
-When passing a prop via attribute, it is automatically converted to the most appropriate type. 
-Now, using the "propsType" object, you can define a type for each prop.
+propsType allows you to convert a prop to a specific type. This is very 
+useful when using the d-bind directive since the value of the INPUT, 
+SELECT etc. elements is always a string.
 
 ```javascript
 Doz.component('my-types', {
