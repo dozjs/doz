@@ -259,7 +259,7 @@ module.exports = {
 
 
 var RND = Math.random();
-
+var MAX_ID = 9007199254740990;
 var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
 var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 
@@ -267,6 +267,8 @@ module.exports = {
     lastId: 0,
     data: {},
     set: function set(value, from) {
+        // Reset counter
+        if (this.lastId >= MAX_ID) this.lastId = 0;
         var id = ++this.lastId;
         id = '/*' + RND + '=%{' + id + '}%=*/';
         //console.log('--->', id, value, from)
