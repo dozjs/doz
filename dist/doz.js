@@ -3332,6 +3332,10 @@ var Doz = function () {
             _root: {
                 value: this.cfg.root
             },
+            appId: {
+                value: Math.random().toString(36).substring(2, 15),
+                enumerable: true
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -3490,7 +3494,7 @@ var Doz = function () {
     }, {
         key: 'generateUId',
         value: function generateUId() {
-            return ++this._lastUId;
+            return this.appId + '-' + ++this._lastUId;
         }
     }, {
         key: 'mainComponent',

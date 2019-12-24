@@ -85,6 +85,10 @@ class Doz {
             _root: {
                 value: this.cfg.root
             },
+            appId: {
+                value: Math.random().toString(36).substring(2, 15),
+                enumerable: true
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -218,7 +222,7 @@ class Doz {
     }
 
     generateUId() {
-        return ++this._lastUId;
+        return this.appId + '-' + (++this._lastUId);
     }
 }
 
