@@ -28,10 +28,10 @@ class Doz {
         }
 
         // Remove if already exists
-        const appNode = document.querySelector(TAG.APP);
+        /*const appNode = document.querySelector(TAG.APP);
         if (appNode) {
             appNode.parentNode.removeChild(appNode);
-        }
+        }*/
 
         this.cfg = Object.assign({}, {
             components: [],

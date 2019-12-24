@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.5] - 2019-12-24
+- **Fixed** multiple Doz apps can coexist
+
 ## [2.3.4] - 2019-12-22
 - **Added** max id safer for vdom mapper
 
