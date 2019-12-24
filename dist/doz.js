@@ -6037,7 +6037,7 @@ directive('bind', {
                 var _value = void 0;
                 if (this.type === 'checkbox') {
                     if (!this.defaultValue) instance.props[value] = this.checked;else {
-                        var inputs = document.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
+                        var inputs = instance.appRoot.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
 
                         var _defined2 = [].concat(_toConsumableArray(inputs));
 
@@ -6102,7 +6102,7 @@ directive('bind', {
         // Set first value
         // Why this delay? because I need to waiting options tag
         delay(function () {
-            _this4.updateBoundElement($target, instance.props[value]);
+            _this4.updateBoundElement($target, instance.props[value], instance);
         });
     },
     updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
@@ -6137,7 +6137,7 @@ directive('bind', {
 
         if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
             var _defined9 = function _defined9($target) {
-                _this6.updateBoundElement($target, value);
+                _this6.updateBoundElement($target, value, instance);
             };
 
             var _defined10 = instance._boundElements[property];
@@ -6147,10 +6147,10 @@ directive('bind', {
             }
         }
     },
-    updateBoundElement: function updateBoundElement($target, value) {
+    updateBoundElement: function updateBoundElement($target, value, instance) {
         if ($target.type === 'checkbox') {
             if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
-                var inputs = document.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
+                var inputs = instance.appRoot.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
 
                 var _defined11 = function _defined11(input) {
                     return input.checked = value.includes(input.value);

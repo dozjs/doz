@@ -52,7 +52,7 @@ directive('bind', {
                     if (!this.defaultValue)
                         instance.props[value] = this.checked;
                     else {
-                        const inputs = document.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
+                        const inputs = instance.appRoot.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
                         _value = [...inputs].map(input => input.value);
                         //instance.props[value] = castStringTo(_value);
                         instance.props[value] = _value;
@@ -78,7 +78,7 @@ directive('bind', {
         // Set first value
         // Why this delay? because I need to waiting options tag
         delay(() => {
-            this.updateBoundElement($target, instance.props[value]);
+            this.updateBoundElement($target, instance.props[value], instance);
         });
     },
 
@@ -108,17 +108,17 @@ directive('bind', {
     updateBoundElements(instance, value, property) {
         if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
             instance._boundElements[property].forEach($target => {
-                this.updateBoundElement($target, value);
+                this.updateBoundElement($target, value, instance);
             })
         }
     },
 
-    updateBoundElement($target, value) {
+    updateBoundElement($target, value, instance) {
         if ($target.type === 'checkbox') {
             if (!$target.defaultValue)
                 $target.checked = value;
             else if (Array.isArray(value)) {
-                const inputs = document.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                const inputs = instance.appRoot.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
                 [...inputs].forEach(input => input.checked = value.includes(input.value));
             }
         } else if ($target.type === 'radio') {
