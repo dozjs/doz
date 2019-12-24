@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.6] - 2019-12-24
+- **Added** `appId` property to Doz instance
+- **Improved** `d-bind` directive
+- **Changed** uId format, now also includes appId
+
 ## [2.3.5] - 2019-12-24
 - **Fixed** multiple Doz apps can coexist
 
