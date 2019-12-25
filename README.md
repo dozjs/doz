@@ -19,6 +19,7 @@ Almost like writing in VanillaJS. For modern browser.
 <img src="https://raw.githubusercontent.com/dozjs/doz/master/extra/login-form-example.gif" title="A login form built with Doz"/>
 <br/><br/>
 </div>
+
 ## Why
 - 🎼 Works with tagged template literals
 - 🎳 Component based
