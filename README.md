@@ -17,6 +17,8 @@ Almost like writing in VanillaJS. For modern browser.
 👉 <a href="https://play.xdevel.com/2">SEE A PROJECT BUILT WITH DOZ</a> 👈
 <br/><br/>
 <img src="https://raw.githubusercontent.com/dozjs/doz/master/extra/login-form-example.gif" title="A login form built with Doz"/>
+<br>
+<a href="https://codepen.io/fabioricali/pen/poveXwo">Look at the code on Codepen</a>
 <br/><br/>
 </div>
 
