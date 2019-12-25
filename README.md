@@ -16,8 +16,9 @@ Almost like writing in VanillaJS. For modern browser.
 <br/><br/>
 👉 <a href="https://play.xdevel.com/2">SEE A PROJECT BUILT WITH DOZ</a> 👈
 <br/><br/>
+<img src="https://raw.githubusercontent.com/dozjs/doz/master/extra/login-form-example.gif" title="A login form built with Doz"/>
+<br/><br/>
 </div>
-
 ## Why
 - 🎼 Works with tagged template literals
 - 🎳 Component based
