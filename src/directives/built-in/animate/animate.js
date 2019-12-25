@@ -28,10 +28,10 @@ directive('animate', {
 
                 animationsEnd.push(
                     new Promise(resolve => {
+                            if (!document.body.contains($targetOfMap)) return resolve();
                             wait(() => {
                                 return !$targetOfMap.__animationIsRunning;
                             }, () => {
-                                if (!document.body.contains($targetOfMap)) return;
                                 let optAnimation = {
                                     duration: directiveValueOfMap.hide.duration,
                                     delay: directiveValueOfMap.hide.delay,

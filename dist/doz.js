@@ -6317,10 +6317,10 @@ directive('animate', {
                 var directiveValueOfMap = value;
 
                 animationsEnd.push(new Promise(function (resolve) {
+                    if (!document.body.contains($targetOfMap)) return resolve();
                     wait(function () {
                         return !$targetOfMap.__animationIsRunning;
                     }, function () {
-                        if (!document.body.contains($targetOfMap)) return;
                         var optAnimation = {
                             duration: directiveValueOfMap.hide.duration,
                             delay: directiveValueOfMap.hide.delay,
