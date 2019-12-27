@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.7  
+// [DOZ]  Build version: 2.3.8  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3202,7 +3202,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.7',
+        value: '2.3.8',
         enumerable: true
     },
     tag: {
@@ -3268,11 +3268,12 @@ var Doz = function () {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
-        // Remove if already exists
-        /*const appNode = document.querySelector(TAG.APP);
-        if (appNode) {
+        var appNode = document.querySelector(TAG.APP);
+
+        // This fix double app rendering in SSR
+        if (appNode && !appNode.dozWalked) {
             appNode.parentNode.removeChild(appNode);
-        }*/
+        }
 
         this.cfg = Object.assign({}, {
             components: [],
