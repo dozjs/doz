@@ -48,7 +48,9 @@ describe('Doz.multiple.app', function () {
             setTimeout(() => {
                 be.err.not.null(document.getElementById(app1.appId + '-1--style'));
                 be.err.not.null(document.getElementById(app2.appId + '-1--style'));
-                console.log(document.head.innerHTML);
+                be.err.not.empty(document.getElementById('app1').innerHTML);
+                be.err.not.empty(document.getElementById('app2').innerHTML);
+                console.log(document.body.innerHTML);
                 done();
             }, 100);
         });
