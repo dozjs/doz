@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.9  
+// [DOZ]  Build version: 2.3.10  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -959,7 +959,9 @@ var Component = function (_DOMManipulation) {
     }, {
         key: 'toStyle',
         value: function toStyle(obj) {
-            return toInlineStyle(obj);
+            var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+            return toInlineStyle(obj, withStyle);
         }
     }, {
         key: 'render',
@@ -3202,7 +3204,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.9',
+        value: '2.3.10',
         enumerable: true
     },
     tag: {
