@@ -152,8 +152,8 @@ class Component extends DOMManipulation {
     }
 
     // noinspection JSMethodCanBeStatic
-    toStyle(obj) {
-        return toInlineStyle(obj)
+    toStyle(obj, withStyle = true) {
+        return toInlineStyle(obj, withStyle)
     }
 
     render(initial, changes = [], silentAfterRenderEvent = false) {
