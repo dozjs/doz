@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.8  
+// [DOZ]  Build version: 2.3.9  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -132,7 +132,7 @@ module.exports = {
         IS_PARENT_METHOD: /^parent.(.*)/,
         IS_STRING_QUOTED: /^"\w+"/,
         IS_SVG: /^svg$/,
-        IS_CLASS: /^(class\s|function\s+_class|function.*\s+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)/i,
+        IS_CLASS: /^(class\s|function\s+_class|function.*[\s\S]+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)/i,
         GET_LISTENER: /^this.(.*)\((.*)\)/,
         GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
         IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
@@ -3202,7 +3202,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.8',
+        value: '2.3.9',
         enumerable: true
     },
     tag: {
