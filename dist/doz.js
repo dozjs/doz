@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.10  
+// [DOZ]  Build version: 2.3.11  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -458,7 +458,7 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
     if (styleReset) {
-        style.parentNode.removeChild(styleReset);
+        styleReset.parentNode.removeChild(styleReset);
     }
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode) context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
@@ -3204,7 +3204,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.10',
+        value: '2.3.11',
         enumerable: true
     },
     tag: {
