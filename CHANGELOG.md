@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.11] - 2019-12-28
+- **Fixed** style reset error when removing a component
+
 ## [2.3.10] - 2019-12-28
 - **Changed** now exposed param `withStyle` for `toStyle` method
 

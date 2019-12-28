@@ -133,7 +133,7 @@ function callDestroy(context) {
         style.parentNode.removeChild(style);
     }
     if (styleReset) {
-        style.parentNode.removeChild(styleReset);
+        styleReset.parentNode.removeChild(styleReset);
     }
 
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
