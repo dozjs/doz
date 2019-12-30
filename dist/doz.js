@@ -258,6 +258,19 @@ module.exports = {
 "use strict";
 
 
+function delay(cb) {
+    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
+}
+
+module.exports = delay;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var RND = Math.random();
 var MAX_ID = 9007199254740990;
 var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
@@ -302,26 +315,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined) return window.requestAnimationFrame(cb);else return window.setTimeout(cb);
-}
-
-module.exports = delay;
-
-/***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var delay = __webpack_require__(4);
+var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
 
 function callBeforeCreate(context) {
@@ -519,7 +519,7 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
-var mapper = __webpack_require__(3);
+var mapper = __webpack_require__(4);
 //const eventsAttributes = require('../utils/events-attributes');
 
 var selfClosingElements = {
@@ -1273,7 +1273,7 @@ var _require2 = __webpack_require__(6),
 var hmr = __webpack_require__(35);
 var Component = __webpack_require__(9);
 var propsInit = __webpack_require__(22);
-var delay = __webpack_require__(4);
+var delay = __webpack_require__(3);
 var directive = __webpack_require__(0);
 var getComponentName = __webpack_require__(55);
 
@@ -1611,7 +1611,7 @@ module.exports = {
 // Add tag prefix to animation
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
-var mapper = __webpack_require__(3);
+var mapper = __webpack_require__(4);
 
 function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
@@ -1686,7 +1686,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *	understood as possible. Minifies down to roughly 3000 characters.
  */
 
-var delay = __webpack_require__(4);
+var delay = __webpack_require__(3);
 var stringDecoder = __webpack_require__(37);
 
 /**
@@ -2814,7 +2814,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
-var mapper = __webpack_require__(3);
+var mapper = __webpack_require__(4);
 var camelToDash = __webpack_require__(19);
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -3151,7 +3151,7 @@ var h = __webpack_require__(20);
 var _require3 = __webpack_require__(6),
     compile = _require3.compile;
 
-var mapper = __webpack_require__(3);
+var mapper = __webpack_require__(4);
 
 var _require4 = __webpack_require__(17),
     update = _require4.update;
@@ -4441,7 +4441,7 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var delay = __webpack_require__(4);
+var delay = __webpack_require__(3);
 
 function propsListener(instance, changes) {
 
@@ -4555,7 +4555,7 @@ var _require = __webpack_require__(1),
 
 var objectPath = __webpack_require__(42);
 var isListener = __webpack_require__(14);
-var mapper = __webpack_require__(3);
+var mapper = __webpack_require__(4);
 
 var _require2 = __webpack_require__(7),
     isDirective = _require2.isDirective;
@@ -5987,7 +5987,7 @@ var _require = __webpack_require__(0),
 //const castStringTo = require('../../../utils/cast-string-to');
 
 
-var delay = __webpack_require__(4);
+var delay = __webpack_require__(3);
 
 directive('bind', {
 
@@ -6197,6 +6197,7 @@ var _require2 = __webpack_require__(7),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
 var queue = __webpack_require__(69);
+var delay = __webpack_require__(3);
 
 function show($target, opt) {}
 
@@ -6252,10 +6253,20 @@ directive('show', {
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        this.setVisible($target, directiveValue);
+        var _this = this;
+
+        delay(function () {
+            return _this.setVisible($target, directiveValue);
+        });
+        //this.setVisible($target, directiveValue);
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        this.setVisible($target, directiveValue);
+        var _this2 = this;
+
+        delay(function () {
+            return _this2.setVisible($target, directiveValue);
+        });
+        //this.setVisible($target, directiveValue);
     }
 });
 

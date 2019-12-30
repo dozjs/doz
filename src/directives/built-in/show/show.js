@@ -1,6 +1,7 @@
 const {directive} = require('../../index');
 const {extractStyleDisplayFromDozProps} = require('../../helpers');
 const queue = require('../../../utils/queue');
+const delay = require('../../../utils/delay');
 
 function show($target, opt) {
 
@@ -66,11 +67,13 @@ directive('show', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
-        this.setVisible($target, directiveValue);
+        delay(() => this.setVisible($target, directiveValue));
+        //this.setVisible($target, directiveValue);
     },
 
     onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        this.setVisible($target, directiveValue);
+        delay(() => this.setVisible($target, directiveValue));
+        //this.setVisible($target, directiveValue);
     }
 
 });
