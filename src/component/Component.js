@@ -8,6 +8,7 @@ const toInlineStyle = require('../utils/to-inline-style');
 const queueReady = require('./helpers/queue-ready');
 const queueDraw = require('./helpers/queue-draw');
 const extendInstance = require('./helpers/extend-instance');
+const composeTemplateFunction = require('./helpers/compose-template-function');
 const removeAllAttributes = require('../utils/remove-all-attributes');
 const h = require('../vdom/h');
 const loadLocal = require('./helpers/load-local');
@@ -17,7 +18,7 @@ const propsInit = require('./helpers/props-init');
 const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
-const toLiteralString = require('../utils/to-literal-string');
+//const toLiteralString = require('../utils/to-literal-string');
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -318,13 +319,20 @@ class Component extends DOMManipulation {
             let contentTpl = opt.cmp.cfg.template;
             if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
                 opt.cmp.cfg.template = function () {
-                    let contentStr = toLiteralString(document.querySelector(contentTpl).innerHTML);
-                    return eval('`' + contentStr + '`')
+                    let contentStr = (document.querySelector(contentTpl).innerHTML);
+                    /*console.log(this.props)
+                    console.log(contentStr)
+                    let ev = eval('`' + contentStr + '`')
+                    console.log('ev', ev)
+                    return ev;*/
+                    //console.log(contentStr)
+                    return composeTemplateFunction(this, contentStr);
                 }
             } else {
                 opt.cmp.cfg.template = function () {
-                    contentTpl = toLiteralString(contentTpl);
-                    return eval('`' + contentTpl + '`');
+                    //contentTpl = toLiteralString(contentTpl);
+                    //return eval('`' + contentTpl + '`');
+                    return composeTemplateFunction(this, contentTpl);
                 }
             }
         }

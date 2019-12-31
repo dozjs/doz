@@ -2,6 +2,7 @@ const bind = require('./utils/bind');
 const createInstance = require('./component/create-instance');
 const {TAG, REGEX} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
+const composeTemplateFunction = require('./component/helpers/compose-template-function');
 const plugin = require('./plugin');
 const directive = require('./directives');
 
@@ -155,10 +156,12 @@ class Doz {
             tag: TAG.APP,
             cfg: {
                 template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    const contentStr = toLiteralString(cfg.template);
-                    if (/\${.*?}/g.test(contentStr))
-                        return eval('`' + contentStr + '`');
-                    else
+                    let contentStr = cfg.template;
+                    if (/{{.*?}}/g.test(contentStr)) {
+                        //console.log(contentStr)
+                        //console.log('----------')
+                        return composeTemplateFunction(this, contentStr);
+                    } else
                         return contentStr;
                 }
             }
