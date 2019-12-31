@@ -160,7 +160,14 @@ class Component extends DOMManipulation {
         if (this._renderPause) return;
 
         this.beginSafeRender();
-        const template = this.template(this.h, this.props);
+        const propsKeys = Object.keys(this.props);
+        const templateArgs = [this.h];
+
+        for (let i = 0; i < propsKeys.length; i++) {
+            templateArgs.push(this.props[propsKeys[i]]);
+        }
+
+        const template = this.template.apply(this, templateArgs);
         this.endSafeRender();
 
         let next = template && typeof template === 'object'
