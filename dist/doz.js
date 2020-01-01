@@ -972,7 +972,14 @@ var Component = function (_DOMManipulation) {
             if (this._renderPause) return;
 
             this.beginSafeRender();
-            var template = this.template(this.h, this.props);
+            var propsKeys = Object.keys(this.props);
+            var templateArgs = [this.h];
+
+            for (var i = 0; i < propsKeys.length; i++) {
+                templateArgs.push(this.props[propsKeys[i]]);
+            }
+
+            var template = this.template.apply(this, templateArgs);
             this.endSafeRender();
 
             var next = template && (typeof template === 'undefined' ? 'undefined' : _typeof(template)) === 'object' ? template : compile(template, this);
@@ -2424,6 +2431,7 @@ var _require2 = __webpack_require__(1),
 
 var canDecode = __webpack_require__(18);
 var hooks = __webpack_require__(5);
+var directive = __webpack_require__(0);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2494,6 +2502,8 @@ function update($parent, newNode, oldNode) {
     var initial = arguments[5];
     var cmpParent = arguments[6];
 
+
+    directive.callComponentVNodeTick(cmp, newNode, oldNode);
 
     if (newNode && newNode.cmp) cmp = newNode.cmp;
 
@@ -4295,6 +4305,28 @@ function callComponentDOMElementUpdate(instance, $target) {
     }
 }
 
+function callComponentVNodeTick(instance, newNode, oldNode) {
+
+    if (!newNode.props) return;
+    var method = 'onComponentVNodeTick';
+    var propsKey = Object.keys(newNode.props);
+    for (var i = 0; i < propsKey.length; i++) {
+        var attributeName = propsKey[i];
+
+        if (isDirective(attributeName)) {
+            var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = newNode.props[attributeName]; // || attribute.value;
+            //console.log('directiveValue',directiveName, directiveValue)
+            var directiveObj = data.directives[directiveName];
+            //console.log('aaaaaaa', attributeName, directiveObj)
+            if (directiveObj && directiveObj[method]) {
+                //delete newNode.props[attributeName];
+                directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue]);
+            }
+        }
+    }
+}
+
 module.exports = {
     callComponentBeforeCreate: callComponentBeforeCreate,
     callComponentCreate: callComponentCreate,
@@ -4310,7 +4342,8 @@ module.exports = {
     callComponentDestroy: callComponentDestroy,
     callComponentLoadProps: callComponentLoadProps,
     callComponentDOMElementCreate: callComponentDOMElementCreate,
-    callComponentDOMElementUpdate: callComponentDOMElementUpdate
+    callComponentDOMElementUpdate: callComponentDOMElementUpdate,
+    callComponentVNodeTick: callComponentVNodeTick
 };
 
 /***/ }),
@@ -6249,24 +6282,25 @@ directive('show', {
                 new Promise($target.__animationsList.shift()).then();
             }
         } else {
-            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            //$target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        var _this = this;
-
-        delay(function () {
-            return _this.setVisible($target, directiveValue);
-        });
-        //this.setVisible($target, directiveValue);
+        this.setVisible($target, directiveValue);
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        var _this2 = this;
-
-        delay(function () {
-            return _this2.setVisible($target, directiveValue);
-        });
-        //this.setVisible($target, directiveValue);
+        this.setVisible($target, directiveValue);
+    },
+    onComponentVNodeTick: function onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
+        //console.log('callComponentVNodeTick', newNode.props)
+        if (newNode.props['d-animate']) return;
+        if (newNode.props.style) {
+            if (!directiveValue) {
+                newNode.props.style += '; display: none';
+            }
+        } else {
+            newNode.props.style = directiveValue ? 'display: none' : '';
+        }
     }
 });
 

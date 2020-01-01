@@ -62,18 +62,28 @@ directive('show', {
             }
 
         } else {
-            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            //$target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
-        delay(() => this.setVisible($target, directiveValue));
-        //this.setVisible($target, directiveValue);
+        this.setVisible($target, directiveValue);
     },
 
     onComponentDOMElementUpdate(instance, $target, directiveValue) {
-        delay(() => this.setVisible($target, directiveValue));
-        //this.setVisible($target, directiveValue);
+        this.setVisible($target, directiveValue);
+    },
+
+    onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
+        //console.log('callComponentVNodeTick', newNode.props)
+        if (newNode.props['d-animate']) return;
+        if (newNode.props.style) {
+            if (!directiveValue) {
+                newNode.props.style += '; display: none';
+            }
+        } else {
+            newNode.props.style = directiveValue ? 'display: none' : '';
+        }
     }
 
 });
