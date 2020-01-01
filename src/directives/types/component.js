@@ -169,7 +169,7 @@ function callComponentDOMElementUpdate(instance, $target) {
 
 function callComponentVNodeTick(instance, newNode, oldNode) {
 
-    if (!newNode.props) return;
+    if (!newNode || !newNode.props) return;
     let method = 'onComponentVNodeTick';
     let propsKey = Object.keys(newNode.props);
     for (let i = 0; i < propsKey.length; i++) {
