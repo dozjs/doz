@@ -62,7 +62,7 @@ directive('show', {
             }
 
         } else {
-            //$target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
 
@@ -75,7 +75,7 @@ directive('show', {
     },
 
     // Per il momento gestisco con il virtual dom
-    onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
+    /*onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
         //console.log('callComponentVNodeTick', newNode.props)
         if (newNode.props['d-animate']) return;
         if (newNode.props.style) {
@@ -85,6 +85,6 @@ directive('show', {
         } else {
             newNode.props.style = directiveValue ? 'display: none' : '';
         }
-    }
+    }*/
 
 });
