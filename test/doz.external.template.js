@@ -16,7 +16,10 @@ describe('Doz.external.template', function () {
             document.body.innerHTML = `
                 <div id="app"></div>
                 <template id="salutation-tpl">
-                    <div>hello <b>{{title}}</b></div>
+                    <div>
+                        hello <b>{{ title }}</b>
+                        {{#each(records, record => <div>{{ record.name }}</div>)}}
+                    </div>
                 </template>
             `;
 
@@ -28,17 +31,24 @@ describe('Doz.external.template', function () {
                 root: '#app',
                 enableExternalTemplate: true,
                 props: {
-                    game: 'Mario Bros'
+                    game: 'Mario Bros',
+                    records: [
+                        {
+                            name: 'wow'
+                        }
+                    ]
                 },
                 template: `
                     <salutation-card
                         d:id="salutation1"
                         title="MR."
+                        records="{{records}}"
                         name="Doz">
                     </salutation-card>
                     <salutation-card
                         d:id="salutation2"
                         title="MRS."
+                        records="{{records}}"
                         name="Tina">
                     </salutation-card>
                     <div id="game-name">{{game}}</div>

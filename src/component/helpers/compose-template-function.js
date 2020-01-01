@@ -3,9 +3,19 @@ const {isDirective} = require('../../directives/helpers');
 
 function composeTemplateFunction(cmp, contentStr) {
 
+    console.log('BEFORE')
+    console.log(contentStr)
+
     contentStr = contentStr
         .replace(/{{/gm, '${')
-        .replace(/}}/gm, '}');
+        .replace(/}}/gm, '}')
+        .replace(/ =&gt; /gm, ' => h`')
+        .replace(/\)/gm, '`)')
+        .replace(/#/gm, 'this.')
+    ;
+
+    console.log('AFTER')
+    console.log(contentStr)
 
     let argsName = ['h'];
     let argsValue = [cmp.h];
@@ -17,7 +27,6 @@ function composeTemplateFunction(cmp, contentStr) {
         argsValue.push(cmp.props[propsKeys[i]]);
     }
     /*
-
     if (/<div>hello/.test(contentStr)) {
         console.log('argsName', argsName)
         console.log('argsValue', argsValue)
@@ -25,8 +34,8 @@ function composeTemplateFunction(cmp, contentStr) {
         console.log('cmp.tag', cmp.tag);
         console.log('-------------------');
     }
-*/
-    return  new Function(argsName, 'return h`' + contentStr + '`').apply(cmp, argsValue);
+    */
+    return new Function(argsName, 'return h`' + contentStr + '`').apply(cmp, argsValue);
 }
 
 module.exports = composeTemplateFunction;
