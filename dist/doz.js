@@ -6291,6 +6291,9 @@ directive('show', {
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
     },
+
+
+    // Per il momento gestisco con il virtual dom
     onComponentVNodeTick: function onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
         //console.log('callComponentVNodeTick', newNode.props)
         if (newNode.props['d-animate']) return;
