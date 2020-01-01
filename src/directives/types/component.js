@@ -167,6 +167,28 @@ function callComponentDOMElementUpdate(instance, $target) {
     }
 }
 
+function callComponentVNodeTick(instance, newNode, oldNode) {
+
+    if (!newNode.props) return;
+    let method = 'onComponentVNodeTick';
+    let propsKey = Object.keys(newNode.props);
+    for (let i = 0; i < propsKey.length; i++) {
+        let attributeName = propsKey[i];
+
+        if (isDirective(attributeName)) {
+            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let directiveValue = newNode.props[attributeName];// || attribute.value;
+            //console.log('directiveValue',directiveName, directiveValue)
+            let directiveObj = data.directives[directiveName];
+            //console.log('aaaaaaa', attributeName, directiveObj)
+            if (directiveObj && directiveObj[method]) {
+                //delete newNode.props[attributeName];
+                directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue])
+            }
+        }
+    }
+}
+
 module.exports = {
     callComponentBeforeCreate,
     callComponentCreate,
@@ -182,5 +204,6 @@ module.exports = {
     callComponentDestroy,
     callComponentLoadProps,
     callComponentDOMElementCreate,
-    callComponentDOMElementUpdate
+    callComponentDOMElementUpdate,
+    callComponentVNodeTick
 };
