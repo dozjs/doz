@@ -4307,7 +4307,7 @@ function callComponentDOMElementUpdate(instance, $target) {
 
 function callComponentVNodeTick(instance, newNode, oldNode) {
 
-    if (!newNode.props) return;
+    if (!newNode || !newNode.props) return;
     var method = 'onComponentVNodeTick';
     var propsKey = Object.keys(newNode.props);
     for (var i = 0; i < propsKey.length; i++) {
@@ -6282,7 +6282,7 @@ directive('show', {
                 new Promise($target.__animationsList.shift()).then();
             }
         } else {
-            //$target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
@@ -6290,22 +6290,23 @@ directive('show', {
     },
     onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
         this.setVisible($target, directiveValue);
-    },
-
-
-    // Per il momento gestisco con il virtual dom
-    onComponentVNodeTick: function onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
-        //console.log('callComponentVNodeTick', newNode.props)
-        if (newNode.props['d-animate']) return;
-        if (newNode.props.style) {
-            if (!directiveValue) {
-                newNode.props.style += '; display: none';
-            }
-        } else {
-            newNode.props.style = directiveValue ? 'display: none' : '';
-        }
     }
-});
+}
+
+// Per il momento gestisco con il virtual dom
+/*onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
+    //console.log('callComponentVNodeTick', newNode.props)
+    if (newNode.props['d-animate']) return;
+    if (newNode.props.style) {
+        if (!directiveValue) {
+            newNode.props.style += '; display: none';
+        }
+    } else {
+        newNode.props.style = directiveValue ? 'display: none' : '';
+    }
+}*/
+
+);
 
 /***/ }),
 /* 69 */
