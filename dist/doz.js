@@ -6282,7 +6282,9 @@ directive('show', {
                 new Promise($target.__animationsList.shift()).then();
             }
         } else {
-            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            delay(function () {
+                $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            });
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
