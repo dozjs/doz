@@ -25,7 +25,12 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !isDirective(name)) {
+    let hasDirective = isDirective(name);
+
+    if (hasDirective)
+        $target.__dozHasDirective = true;
+
+    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !hasDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -50,7 +55,7 @@ function removeAttribute($target, name, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if(newVal !== oldVal) {
+    if (newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     }
@@ -69,7 +74,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
     let updated = [];
 
     Object.keys(props).forEach(name => {
-        if(!$target || $target.nodeType !== 1) return;
+        if (!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
             let obj = {};
@@ -98,6 +103,7 @@ function extractEventName(name) {
 }
 
 function trimQuotes(str) {
+    if (str[1] === '/' && str[2] === '*') return str;
     return str.replace(REGEX.TRIM_QUOTES, '$1');
 }
 
@@ -220,25 +226,23 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     }
 }
 
-function attach($target, nodeProps, cmp, cmpParent) {
-
+function attach($target, nodeProps, cmp, cmpParent, nodePropsKeys) {
     let name;
 
-    const propsKeys = Object.keys(nodeProps);
+    const propsKeys = nodePropsKeys;// Object.keys(nodeProps);
 
-    for(let i = 0, len = propsKeys.length; i < len; i++) {
+    for (let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
-        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
-    const datasetArray = Object.keys($target.dataset);
-    for (let i = 0; i < datasetArray.length; i++) {
-        if (isListener(datasetArray[i]))
-            addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
-    }
-
+    /*for (let i in $target.dataset) {
+        if (!$target.dataset.hasOwnProperty(i)) continue;
+        if (isListener(i))
+            addEventListener($target, i, $target.dataset[i], cmp, cmpParent);
+    }*/
     //cmp.$$afterAttributesCreate($target, bindValue);
 }
 

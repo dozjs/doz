@@ -2,7 +2,7 @@ const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY} = require('../constants');
 const canDecode = require('../utils/can-decode');
 const hooks = require('../component/hooks');
-const directive = require('../directives');
+//const directive = require('../directives');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -13,10 +13,10 @@ function isChanged(nodeA, nodeB) {
         nodeA.type !== nodeB.type ||
         nodeA.props && nodeA.props.forceupdate;
 }
-
+//let j = 0;
 function create(node, cmp, initial, cmpParent) {
     if (typeof node === 'undefined') return;
-
+//console.log(++j, node)
     let nodeStored;
     let $el;
 
@@ -46,7 +46,8 @@ function create(node, cmp, initial, cmpParent) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
-    attach($el, node.props, cmp, cmpParent);
+    if (node.hasProps)
+        attach($el, node.props, cmp, cmpParent, node.propsKeys);
 
     // The children with keys will be created later
     if (!node.hasKeys) {
@@ -56,14 +57,14 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
-    //console.log(cmpParent)
+    //console.log(cmpParent);
 
     return $el;
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
-    directive.callComponentVNodeTick(cmp, newNode, oldNode);
+    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
 
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
@@ -208,6 +209,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
         }
 
+        if (oldKeyDoRemove.length) return ;
+
         let listOfElement = [];
 
         for (let i = 0; i < newNodeKeyList.length; i++) {
@@ -263,10 +266,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
         }
 
+        //console.log('$myListParent', $myListParent);
         // Reorder?
         for(let i = 0; i < listOfElement.length; i++) {
             let $currentElementAtPosition = $myListParent.childNodes[i];
             let $element = listOfElement[i];
+            //console.log('aaaaaaaa')
             //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
             //console.log('equal?', $element === $currentElementAtPosition)
             if ($element === $currentElementAtPosition)
@@ -321,7 +326,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 $parent[COMPONENT_INSTANCE] || cmpParent
             );
         }
-
+//console.log('update')
         clearDead();
     }
 }

@@ -1,5 +1,5 @@
 const {registerComponent} = require('../collection');
-const {REGEX} = require('../constants');
+const isCustomTag = require('../utils/is-custom-tag');
 
 function component(tag, cfg = {}) {
 
@@ -7,7 +7,7 @@ function component(tag, cfg = {}) {
         throw new TypeError('Tag must be a string');
     }
 
-    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
+    if (!isCustomTag(tag)) {
         throw new TypeError('Tag must contain a dash (-) like my-component');
     }
 

@@ -53,13 +53,21 @@ module.exports = function (strings, ...value) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        strings[i].split('').forEach(char => {
+        for (let x = 0; x < strings[i].length; x++) {
+            let char = strings[i][x];
+            if (char === LESSER)
+                allowTag = false;
+            if (char === GREATER)
+                allowTag = true;
+        }
+
+        /*strings[i].split('').forEach(char => {
             //console.log(char)
             if (char === LESSER)
                 allowTag = false;
             if (char === GREATER)
                 allowTag = true;
-        });
+        });*/
 
 
         if (strings[i].indexOf('<style') > -1) {

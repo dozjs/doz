@@ -197,6 +197,7 @@ function createInstance(cfg = {}) {
                     // that the component is mounted.
                     // This hack makes also the component that has keys
                     // Really this hack is very important :D :D
+                    /**/
                     delay(() => {
                         newElement.render(false, [], true)
                     });

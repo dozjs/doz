@@ -6,7 +6,7 @@ function printObj(obj) {
     console.log(JSON.stringify(obj, null, 2));
 }
 
-describe('parser2', function () {
+describe.skip('parser2', function () {
     it('should ok', function () {
 
         const root = h`

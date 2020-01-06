@@ -1,9 +1,11 @@
 //const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
 const isListener = require('../utils/is-listener');
+const isCustomTag = require('../utils/is-custom-tag');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directives');
+const {isDirective} = require('../directives/helpers');
 const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -44,14 +46,16 @@ function removeNLS(str) {
 
 class Element {
 
-    constructor(name, props, isSVG) {
+    constructor(name, props, isSVG, hasProps, propsKeys) {
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg';//REGEX.IS_SVG.test(name);
         if (props.key !== undefined)
             this.key = props.key;
         this.hasKeys = undefined;
+        this.hasProps = hasProps;
+        this.propsKeys = propsKeys;
     }
 
     appendChild(node) {
@@ -108,15 +112,21 @@ function compile(data, cmp) {
         if (!match[1]) {
             // not </ tags
             props = {};
+            let propsKeys = [];
+            let hasProps = false;
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                propsKeys.push(attMatch[2]);
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
                     attMatch[2],
                     props[attMatch[2]],
                     props,
                     null
-                )
+                );
+
+                if (!hasProps)
+                    hasProps = true;
             }
 
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
@@ -126,7 +136,7 @@ function compile(data, cmp) {
                 }
             }
 
-            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG, hasProps, propsKeys));
             stack.push(currentParent);
         }
 
@@ -185,14 +195,15 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-    let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    let _isDirective = isDirective(aName);
 
-    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
+    //let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
+    let propsName = isCustomTag(nName) && !_isDirective
         ? dashToCamel(aName)
         : aName;
 
     if ($node) {
-        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
     }

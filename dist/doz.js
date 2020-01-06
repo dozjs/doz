@@ -271,7 +271,7 @@ module.exports = delay;
 "use strict";
 
 
-var RND = Math.random();
+var RND = Math.random().toString(36).substring(2, 15);
 var MAX_ID = 9007199254740990;
 var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
 var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
@@ -279,6 +279,7 @@ var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
 module.exports = {
     lastId: 0,
     data: {},
+    count: 0,
     set: function set(value, from) {
         // Reset counter
         if (this.lastId >= MAX_ID) this.lastId = 0;
@@ -286,6 +287,7 @@ module.exports = {
         id = '/*' + RND + '=%{' + id + '}%=*/';
         //console.log('--->', id, value, from)
         this.data[id] = value;
+        this.count++;
         return id;
     },
     get: function get(id) {
@@ -293,12 +295,14 @@ module.exports = {
         id = id.trim();
         var res = this.data[id];
         delete this.data[id];
+        this.count--;
         //this.flush()
         return res;
     },
     getAll: function getAll(str) {
         var _this = this;
 
+        if (!this.count) return str;
         return str.replace(REGEX_1, function (match) {
             var objValue = _this.get(match);
             if (objValue !== undefined) {
@@ -510,6 +514,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 //const castStringTo = require('../utils/cast-string-to');
 var dashToCamel = __webpack_require__(8);
 var isListener = __webpack_require__(14);
+var isCustomTag = __webpack_require__(73);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -519,6 +524,10 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
+
+var _require2 = __webpack_require__(7),
+    isDirective = _require2.isDirective;
+
 var mapper = __webpack_require__(4);
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -558,15 +567,17 @@ function removeNLS(str) {
 }
 
 var Element = function () {
-    function Element(name, props, isSVG) {
+    function Element(name, props, isSVG, hasProps, propsKeys) {
         _classCallCheck(this, Element);
 
         this.type = name;
         this.props = props; //Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg'; //REGEX.IS_SVG.test(name);
         if (props.key !== undefined) this.key = props.key;
         this.hasKeys = undefined;
+        this.hasProps = hasProps;
+        this.propsKeys = propsKeys;
     }
 
     _createClass(Element, [{
@@ -625,9 +636,14 @@ function compile(data, cmp) {
         if (!match[1]) {
             // not </ tags
             props = {};
+            var propsKeys = [];
+            var hasProps = false;
             for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                propsKeys.push(attMatch[2]);
                 propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
+
+                if (!hasProps) hasProps = true;
             }
 
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
@@ -637,7 +653,7 @@ function compile(data, cmp) {
                 }
             }
 
-            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
+            currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG, hasProps, propsKeys));
             stack.push(currentParent);
         }
 
@@ -695,12 +711,13 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-    var isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    var _isDirective = isDirective(aName);
 
-    var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
+    //let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
+    var propsName = isCustomTag(nName) && !_isDirective ? dashToCamel(aName) : aName;
 
     if ($node) {
-        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, function (newPropsName) {
             propsName = newPropsName;
         });
     }
@@ -755,27 +772,21 @@ function extractDirectivesFromProps(cmp) {
         props = cmp.props;
     }
 
-    var _defined
-    /*if (canBeDeleteProps)
-        delete props[key];*/
-    = function _defined(key) {
+    Object.keys(props).forEach(function (key) {
         if (isDirective(key)) {
             var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
+            /*if (canBeDeleteProps)
+                delete props[key];*/
         }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
+    });
 
     return cmp._directiveProps;
 }
 
 function isDirective(name) {
-    return REGEX.IS_DIRECTIVE.test(name);
+    return name[0] === 'd' && (name[1] === '-' || name[1] === ':');
+    //return REGEX.IS_DIRECTIVE.test(name);
 }
 
 function extractStyleDisplayFromDozProps($target) {
@@ -803,6 +814,7 @@ module.exports = {
 
 
 function dashToCamel(s) {
+    if (s.indexOf('-') === -1) return s;
     return s.replace(/(-\w)/g, function (m) {
         return m[1].toUpperCase();
     });
@@ -943,12 +955,7 @@ var Component = function (_DOMManipulation) {
                         return stringEl.trim()
                     }
                 }).join('');*/
-                res = new Array(obj.length);
-
-                for (var _i2 = 0; _i2 <= obj.length - 1; _i2++) {
-                    res[_i2] = func(obj[_i2], _i2, obj);
-                }
-
+                res = obj.map(func);
                 if (safe) this.endSafeRender();
             }
             return res;
@@ -1034,15 +1041,9 @@ var Component = function (_DOMManipulation) {
 
                 hooks.callMount(this);
 
-                var _defined = function _defined(child) {
+                Object.keys(this.children).forEach(function (child) {
                     _this2.children[child].mount();
-                };
-
-                var _defined2 = Object.keys(this.children);
-
-                for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-                    _defined(_defined2[_i4], _i4, _defined2);
-                }
+                });
 
                 return this;
             } else if (template) {
@@ -1099,15 +1100,9 @@ var Component = function (_DOMManipulation) {
 
             if (!silently) hooks.callUnmount(this);
 
-            var _defined3 = function _defined3(child) {
+            Object.keys(this.children).forEach(function (child) {
                 _this3.children[child].unmount(onlyInstance, byDestroy, silently);
-            };
-
-            var _defined4 = Object.keys(this.children);
-
-            for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
-                _defined3(_defined4[_i6], _i6, _defined4);
-            }
+            });
 
             return this;
         }
@@ -1129,15 +1124,9 @@ var Component = function (_DOMManipulation) {
                 return;
             }
 
-            var _defined5 = function _defined5(child) {
+            Object.keys(this.children).forEach(function (child) {
                 _this4.children[child].destroy();
-            };
-
-            var _defined6 = Object.keys(this.children);
-
-            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                _defined5(_defined6[_i8], _i8, _defined6);
-            }
+            });
 
             hooks.callDestroy(this);
             return true;
@@ -1376,19 +1365,10 @@ function createInstance() {
 
                         $child.parentNode.replaceChild($newNodeChild, $child);
                         // Copy all attributes
-
-                        var _defined = function _defined(attr) {
+                        [].concat(_toConsumableArray($child.attributes)).forEach(function (attr) {
                             $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue);
-                        };
-
-                        var _defined2 = [].concat(_toConsumableArray($child.attributes));
-
-                        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-                            _defined(_defined2[_i2], _i2, _defined2);
-                        }
+                        });
                         // Copy all specials Doz properties attached to element
-
-
                         if ($child[COMPONENT_INSTANCE]) $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
                         if ($child[COMPONENT_DYNAMIC_INSTANCE]) $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
                         if ($child[COMPONENT_ROOT_INSTANCE]) $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
@@ -1483,6 +1463,7 @@ function createInstance() {
                         // that the component is mounted.
                         // This hack makes also the component that has keys
                         // Really this hack is very important :D :D
+                        /**/
                         delay(function () {
                             newElement.render(false, [], true);
                         });
@@ -1526,13 +1507,9 @@ function createInstance() {
 
     walk(cfg.template);
 
-    var _defined3 = function _defined3($child) {
+    trash.forEach(function ($child) {
         return $child.remove();
-    };
-
-    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
-        _defined3(trash[_i4], _i4, trash);
-    }
+    });
 
     return componentInstance;
 }
@@ -2431,7 +2408,7 @@ var _require2 = __webpack_require__(1),
 
 var canDecode = __webpack_require__(18);
 var hooks = __webpack_require__(5);
-var directive = __webpack_require__(0);
+//const directive = require('../directives');
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2439,10 +2416,10 @@ var deadChildren = [];
 function isChanged(nodeA, nodeB) {
     return (typeof nodeA === 'undefined' ? 'undefined' : _typeof(nodeA)) !== (typeof nodeB === 'undefined' ? 'undefined' : _typeof(nodeB)) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
-
+//let j = 0;
 function create(node, cmp, initial, cmpParent) {
     if (typeof node === 'undefined') return;
-
+    //console.log(++j, node)
     var nodeStored = void 0;
     var $el = void 0;
 
@@ -2469,29 +2446,17 @@ function create(node, cmp, initial, cmpParent) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
-    attach($el, node.props, cmp, cmpParent);
+    if (node.hasProps) attach($el, node.props, cmp, cmpParent, node.propsKeys);
 
     // The children with keys will be created later
     if (!node.hasKeys) {
-        var _defined2 = node.children;
-
-        var _defined3 = function _defined3(item) {
+        node.children.map(function (item) {
             return create(item, cmp, initial, cmpParent);
-        };
-
-        var _defined = new Array(_defined2.length);
-
-        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-            _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
-        }
-
-        for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
-            $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
-        }
+        }).forEach($el.appendChild.bind($el));
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
-    //console.log(cmpParent)
+    //console.log(cmpParent);
 
     return $el;
 }
@@ -2503,7 +2468,7 @@ function update($parent, newNode, oldNode) {
     var cmpParent = arguments[6];
 
 
-    directive.callComponentVNodeTick(cmp, newNode, oldNode);
+    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
 
     if (newNode && newNode.cmp) cmp = newNode.cmp;
 
@@ -2526,7 +2491,7 @@ function update($parent, newNode, oldNode) {
         }
 
         if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slots[propsSlot]) {
-            var _defined4 = function _defined4($slot) {
+            $parent[COMPONENT_INSTANCE]._slots[propsSlot].forEach(function ($slot) {
                 // Slot is on DOM
                 if ($slot.parentNode) {
                     newNode.isNewSlotEl = true;
@@ -2543,14 +2508,7 @@ function update($parent, newNode, oldNode) {
 
                     update($slot.__newSlotEl.parentNode, newNode, oldNode, indexNewSlotEl, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 }
-            };
-
-            var _defined5 = $parent[COMPONENT_INSTANCE]._slots[propsSlot];
-
-            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                _defined4(_defined5[_i6], _i6, _defined5);
-            }
-
+            });
             return;
         }
     }
@@ -2614,51 +2572,26 @@ function update($parent, newNode, oldNode) {
 
         var $myListParent = $parent.childNodes[index];
         //console.log(newNode.type, $myListParent);
-        var _defined6 = newNode.children;
-
-        var _defined7 = function _defined7(i) {
+        var newNodeKeyList = newNode.children.map(function (i) {
             return i.key;
-        };
-
-        var newNodeKeyList = new Array(_defined6.length);
-
-        for (var _i13 = 0; _i13 <= _defined6.length - 1; _i13++) {
-            newNodeKeyList[_i13] = _defined7(_defined6[_i13], _i13, _defined6);
-        }
-
-        var _defined8 = oldNode.children;
-
-        var _defined9 = function _defined9(i) {
+        });
+        var oldNodeKeyList = oldNode.children.map(function (i) {
             return i.key;
-        };
-
-        var oldNodeKeyList = new Array(_defined8.length);
+        });
         //console.log(newNodeKeyList);
         //console.log(oldNodeKeyList);
         // here my new logic for keys
 
         // Check if $myListParent has __dozKeyList
-
-        for (var _i14 = 0; _i14 <= _defined8.length - 1; _i14++) {
-            oldNodeKeyList[_i14] = _defined9(_defined8[_i14], _i14, _defined8);
-        }
-
         if ($myListParent.__dozKeyList === undefined) {
             $myListParent.__dozKeyList = new Map();
         }
 
-        var _defined10 = function _defined10(x) {
+        var oldKeyDoRemove = oldNodeKeyList.filter(function (x) {
             return !newNodeKeyList.includes(x);
-        };
-
-        var oldKeyDoRemove = [];
+        });
         //console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
-
-        for (var _i15 = 0; _i15 <= oldNodeKeyList.length - 1; _i15++) {
-            if (_defined10(oldNodeKeyList[_i15], _i15, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i15]);
-        }
-
         for (var i = 0; i < oldKeyDoRemove.length; i++) {
             if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
                 var _$oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
@@ -2672,16 +2605,18 @@ function update($parent, newNode, oldNode) {
             }
         }
 
+        if (oldKeyDoRemove.length) return;
+
         var listOfElement = [];
 
-        for (var _i10 = 0; _i10 < newNodeKeyList.length; _i10++) {
+        for (var _i = 0; _i < newNodeKeyList.length; _i++) {
             // This is the key of all
-            var theKey = newNodeKeyList[_i10];
+            var theKey = newNodeKeyList[_i];
             //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
             var $element = $myListParent.__dozKeyList.get(theKey);
             // Se non esiste creo il nodo
             if (!$element) {
-                var _$newElement2 = create(newNode.children[_i10], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                var _$newElement2 = create(newNode.children[_i], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 $myListParent.__dozKeyList.set(theKey, _$newElement2);
                 //console.log('elemento creato', $newElement);
                 // appendo per il momento
@@ -2705,18 +2640,20 @@ function update($parent, newNode, oldNode) {
                 //console.log(newChildByKey.children[i])
                 //console.log(oldChildByKey.children[i])
 
-                for (var _i11 = 0; _i11 < newChildByKeyLength || _i11 < oldChildByKeyLength; _i11++) {
-                    if (newChildByKey.children[_i11] === undefined && oldChildByKey.children[_i11] === undefined) continue;
+                for (var _i2 = 0; _i2 < newChildByKeyLength || _i2 < oldChildByKeyLength; _i2++) {
+                    if (newChildByKey.children[_i2] === undefined && oldChildByKey.children[_i2] === undefined) continue;
                     //console.log('aaaa')
-                    update($element, newChildByKey.children[_i11], oldChildByKey.children[_i11], _i11, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    update($element, newChildByKey.children[_i2], oldChildByKey.children[_i2], _i2, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 }
             }
         }
 
+        //console.log('$myListParent', $myListParent);
         // Reorder?
-        for (var _i12 = 0; _i12 < listOfElement.length; _i12++) {
-            var $currentElementAtPosition = $myListParent.childNodes[_i12];
-            var _$element = listOfElement[_i12];
+        for (var _i3 = 0; _i3 < listOfElement.length; _i3++) {
+            var $currentElementAtPosition = $myListParent.childNodes[_i3];
+            var _$element = listOfElement[_i3];
+            //console.log('aaaaaaaa')
             //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
             //console.log('equal?', $element === $currentElementAtPosition)
             if (_$element === $currentElementAtPosition) continue;
@@ -2750,10 +2687,10 @@ function update($parent, newNode, oldNode) {
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
-        for (var _i16 = 0; _i16 < newLength || _i16 < oldLength; _i16++) {
-            update($parent.childNodes[index], newNode.children[_i16], oldNode.children[_i16], _i16, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+        for (var _i4 = 0; _i4 < newLength || _i4 < oldLength; _i4++) {
+            update($parent.childNodes[index], newNode.children[_i4], oldNode.children[_i4], _i4, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         }
-
+        //console.log('update')
         clearDead();
     }
 }
@@ -2793,8 +2730,9 @@ module.exports = {
 var html = __webpack_require__(11);
 
 function canDecode(str) {
-    return (/&\w+;/.test(str) ? html.decode(str) : str
-    );
+    //console.log(str);
+    //return /&\w+;/.test(str)
+    return str.indexOf('&') > -1 ? html.decode(str) : str;
 }
 
 module.exports = canDecode;
@@ -2888,17 +2826,19 @@ module.exports = function (strings) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        var _defined = function _defined(char) {
-            //console.log(char)
+        for (var x = 0; x < strings[i].length; x++) {
+            var char = strings[i][x];
             if (char === LESSER) allowTag = false;
             if (char === GREATER) allowTag = true;
-        };
-
-        var _defined2 = strings[i].split('');
-
-        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-            _defined(_defined2[_i2], _i2, _defined2);
         }
+
+        /*strings[i].split('').forEach(char => {
+            //console.log(char)
+            if (char === LESSER)
+                allowTag = false;
+            if (char === GREATER)
+                allowTag = true;
+        });*/
 
         if (strings[i].indexOf('<style') > -1) {
             isInStyle = true;
@@ -3112,15 +3052,9 @@ function use(plugin) {
 }
 
 function load(app) {
-    var _defined = function _defined(func) {
+    data.plugins.forEach(function (func) {
         func(app.constructor, app, func.options);
-    };
-
-    var _defined2 = data.plugins;
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
+    });
 }
 
 module.exports = {
@@ -3319,17 +3253,11 @@ var Doz = function () {
             },
             _callAppReady: {
                 value: function value() {
-                    var _defined = function _defined(cb) {
+                    this._onAppReadyCB.forEach(function (cb) {
                         if (typeof cb === 'function' && cb._instance) {
                             cb.call(cb._instance);
                         }
-                    };
-
-                    var _defined2 = this._onAppReadyCB;
-
-                    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-                        _defined(_defined2[_i2], _i2, _defined2);
-                    }
+                    });
 
                     this._onAppReadyCB = [];
                 }
@@ -3398,30 +3326,18 @@ var Doz = function () {
         });
 
         if (Array.isArray(this.cfg.components)) {
-            var _defined3 = function _defined3(cmp) {
+            this.cfg.components.forEach(function (cmp) {
                 if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
                     _this._components[cmp.tag] = cmp;
                 }
-            };
-
-            var _defined4 = this.cfg.components;
-
-            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-                _defined3(_defined4[_i4], _i4, _defined4);
-            }
+            });
         } else if (_typeof(this.cfg.components) === 'object') {
-            var _defined5 = function _defined5(objName) {
+            Object.keys(this.cfg.components).forEach(function (objName) {
                 _this._components[objName] = {
                     tag: objName,
                     cfg: _this.cfg.components[objName]
                 };
-            };
-
-            var _defined6 = Object.keys(this.cfg.components);
-
-            for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
-                _defined5(_defined6[_i6], _i6, _defined6);
-            }
+            });
         }
 
         this._components[TAG.APP] = {
@@ -3434,15 +3350,9 @@ var Doz = function () {
             }
         };
 
-        var _defined7 = function _defined7(p) {
+        Object.keys(cfg).forEach(function (p) {
             if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
-        };
-
-        var _defined8 = Object.keys(cfg);
-
-        for (var _i8 = 0; _i8 <= _defined8.length - 1; _i8++) {
-            _defined7(_defined8[_i8], _i8, _defined8);
-        }
+        });
 
         plugin.load(this);
         directive.callAppInit(this);
@@ -3491,15 +3401,9 @@ var Doz = function () {
             }
 
             if (this._onAppCB[event]) {
-                var _defined9 = function _defined9(func) {
+                this._onAppCB[event].forEach(function (func) {
                     func.apply(_this2, args);
-                };
-
-                var _defined10 = this._onAppCB[event];
-
-                for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
-                    _defined9(_defined10[_i10], _i10, _defined10);
-                }
+                });
             }
 
             return this;
@@ -4070,7 +3974,7 @@ function callMethod() {
 
     var directivesKeyValue = extractDirectivesFromProps(cmp);
 
-    var _defined = function _defined(key) {
+    Object.keys(directivesKeyValue).forEach(function (key) {
 
         var keyArgumentsValues = [];
         var keyArguments = {};
@@ -4091,27 +3995,13 @@ function callMethod() {
             var outArgs = Object.assign([], args);
             // Add directive value
             outArgs.push(directivesKeyValue[originKey]);
-
-            var _defined3 = function _defined3(keyArg, i) {
+            directiveObj._keyArguments.forEach(function (keyArg, i) {
                 return keyArguments[keyArg] = keyArgumentsValues[i];
-            };
-
-            var _defined4 = directiveObj._keyArguments;
-
-            for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-                _defined3(_defined4[_i4], _i4, _defined4);
-            }
-
+            });
             outArgs.push(keyArguments);
             directiveObj[method].apply(directiveObj, outArgs);
         }
-    };
-
-    var _defined2 = Object.keys(directivesKeyValue);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
+    });
 }
 
 function callComponentBeforeCreate() {
@@ -4364,27 +4254,15 @@ function hmr(instance, _module) {
     window[NS_PROPS][id] = window[NS_PROPS][id] || new Map();
     window[NS_INIT_PROPS][id] = window[NS_INIT_PROPS][id] || new Map();
 
-    var _defined = function _defined(p) {
+    Object.keys(instance.props).forEach(function (p) {
         if (instance._initialProps[p] === window[NS_INIT_PROPS][id].get(p)) instance.props[p] = window[NS_PROPS][id].get(p) || instance.props[p];else instance.props[p] = instance._initialProps[p];
-    };
-
-    var _defined2 = Object.keys(instance.props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
+    });
 
     _module.hot.dispose(function () {
-        var _defined3 = function _defined3(p) {
+        Object.keys(instance.props).forEach(function (p) {
             window[NS_PROPS][id].set(p, instance.props[p]);
             window[NS_INIT_PROPS][id].set(p, instance._initialProps[p]);
-        };
-
-        var _defined4 = Object.keys(instance.props);
-
-        for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-            _defined3(_defined4[_i4], _i4, _defined4);
-        }
+        });
     });
 }
 
@@ -4614,7 +4492,11 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if ((isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') && !isDirective(name)) {
+    var hasDirective = isDirective(name);
+
+    if (hasDirective) $target.__dozHasDirective = true;
+
+    if ((isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') && !hasDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -4660,7 +4542,7 @@ function updateAttributes($target, newProps) {
     var props = Object.assign({}, newProps, oldProps);
     var updated = [];
 
-    var _defined = function _defined(name) {
+    Object.keys(props).forEach(function (name) {
         if (!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
@@ -4668,14 +4550,7 @@ function updateAttributes($target, newProps) {
             obj[name] = newProps[name];
             updated.push(obj);
         }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-
+    });
     return updated;
 }
 
@@ -4697,6 +4572,7 @@ function extractEventName(name) {
 }
 
 function trimQuotes(str) {
+    if (str[1] === '/' && str[2] === '*') return str;
     return str.replace(REGEX.TRIM_QUOTES, '$1');
 }
 
@@ -4722,22 +4598,14 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             var handler = match[1];
             var stringArgs = match[2];
             if (stringArgs) {
-                var _defined3 = stringArgs.split(',');
-
-                args = new Array(_defined3.length);
-
-                var _defined4 = function _defined4(item) {
+                args = stringArgs.split(',').map(function (item) {
                     item = trimQuotes(item.trim());
                     //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
                     var itemMap = mapper.get(item);
                     if (itemMap !== undefined) item = itemMap;
 
                     return item === 'scope' ? cmpParent : item;
-                };
-
-                for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                    args[_i4] = _defined4(_defined3[_i4], _i4, _defined3);
-                }
+                });
             }
 
             var method = objectPath(handler, cmpParent);
@@ -4753,21 +4621,13 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 var _handler = match[1];
                 var _stringArgs = match[2];
                 if (_stringArgs) {
-                    var _defined5 = _stringArgs.split(',');
-
-                    _args = new Array(_defined5.length);
-
-                    var _defined6 = function _defined6(item) {
+                    _args = _stringArgs.split(',').map(function (item) {
                         item = trimQuotes(item.trim());
                         var itemMap = mapper.get(item);
                         if (itemMap !== undefined) item = itemMap;
                         //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
                         return item === 'this' ? cmp : item;
-                    };
-
-                    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                        _args[_i6] = _defined6(_defined5[_i6], _i6, _defined5);
-                    }
+                    });
                 }
 
                 var isParentMethod = _handler.match(REGEX.IS_PARENT_METHOD);
@@ -4812,24 +4672,23 @@ function addEventListener($target, name, value, cmp, cmpParent) {
     }
 }
 
-function attach($target, nodeProps, cmp, cmpParent) {
-
+function attach($target, nodeProps, cmp, cmpParent, nodePropsKeys) {
     var name = void 0;
 
-    var propsKeys = Object.keys(nodeProps);
+    var propsKeys = nodePropsKeys; // Object.keys(nodeProps);
 
     for (var i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
-        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
-    var datasetArray = Object.keys($target.dataset);
-    for (var _i7 = 0; _i7 < datasetArray.length; _i7++) {
-        if (isListener(datasetArray[_i7])) addEventListener($target, datasetArray[_i7], $target.dataset[datasetArray[_i7]], cmp, cmpParent);
-    }
-
+    /*for (let i in $target.dataset) {
+        if (!$target.dataset.hasOwnProperty(i)) continue;
+        if (isListener(i))
+            addEventListener($target, i, $target.dataset[i], cmp, cmpParent);
+    }*/
     //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
@@ -4955,24 +4814,13 @@ var camelToDash = __webpack_require__(19);
 function toInlineStyle(obj) {
     var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-    var _defined = Object.entries(obj);
-
-    var _defined2 = function _defined2(styleString, _ref) {
+    obj = Object.entries(obj).reduce(function (styleString, _ref) {
         var _ref2 = _slicedToArray(_ref, 2),
             propName = _ref2[0],
             propValue = _ref2[1];
 
         return '' + styleString + camelToDash(propName) + ':' + propValue + ';';
-    };
-
-    var _acc = '';
-
-    for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
-        _acc = _defined2(_acc, _defined[_i2], _i2, _defined);
-    }
-
-    obj = _acc;
-
+    }, '');
     return withStyle ? 'style="' + obj + '"' : obj;
 }
 
@@ -5011,17 +4859,11 @@ function add(instance) {
 }
 
 function emit(instance, next, prev) {
-    var _defined = function _defined(cb) {
+    instance.app._onAppDrawCB.forEach(function (cb) {
         if (typeof cb === 'function' && cb._instance) {
             cb.call(cb._instance, next, prev, instance);
         }
-    };
-
-    var _defined2 = instance.app._onAppDrawCB;
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
+    });
 }
 
 module.exports = {
@@ -5076,33 +4918,19 @@ function loadLocal(instance) {
 
     // Add local components
     if (Array.isArray(instance.components)) {
-        var _defined = function _defined(cmp) {
+        instance.components.forEach(function (cmp) {
             if ((typeof cmp === 'undefined' ? 'undefined' : _typeof(cmp)) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
                 instance._components[cmp.tag] = cmp;
             }
-        };
-
-        var _defined2 = instance.components;
-
-        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-            _defined(_defined2[_i2], _i2, _defined2);
-        }
-
+        });
         delete instance.components;
     } else if (_typeof(instance.components) === 'object') {
-        var _defined3 = function _defined3(objName) {
+        Object.keys(instance.components).forEach(function (objName) {
             instance._components[objName] = {
                 tag: objName,
                 cfg: instance.components[objName]
             };
-        };
-
-        var _defined4 = Object.keys(instance.components);
-
-        for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-            _defined3(_defined4[_i4], _i4, _defined4);
-        }
-
+        });
         delete instance.components;
     }
 }
@@ -5155,6 +4983,9 @@ var _require = __webpack_require__(1),
 
 var directive = __webpack_require__(0);
 
+var _require2 = __webpack_require__(7),
+    isDirective = _require2.isDirective;
+
 var DOMManipulation = function (_Base) {
     _inherits(DOMManipulation, _Base);
 
@@ -5167,9 +4998,10 @@ var DOMManipulation = function (_Base) {
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
-            directive.callAppDOMElementCreate(this, $el, node, initial);
-            directive.callComponentDOMElementCreate(this, $el, initial);
-
+            if ($el.__dozHasDirective) {
+                directive.callAppDOMElementCreate(this, $el, node, initial);
+                directive.callComponentDOMElementCreate(this, $el, initial);
+            }
             if (typeof $el.hasAttribute === 'function') {
                 if (node.type.indexOf('-') !== -1 && !initial) {
                     this._processing.push({ node: $el, action: 'create' });
@@ -5232,21 +5064,11 @@ var DOMManipulation = function (_Base) {
                 var dynInstance = $parent.childNodes[index][COMPONENT_DYNAMIC_INSTANCE];
                 // Can update props of dynamic instances?
                 if (dynInstance && attributesUpdated.length) {
-                    var _defined = function _defined(props) {
-                        var _defined2 = function _defined2(name) {
+                    attributesUpdated.forEach(function (props) {
+                        Object.keys(props).forEach(function (name) {
                             dynInstance.props[name] = props[name];
-                        };
-
-                        var _defined3 = Object.keys(props);
-
-                        for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                            _defined2(_defined3[_i4], _i4, _defined3);
-                        }
-                    };
-
-                    for (var _i2 = 0; _i2 <= attributesUpdated.length - 1; _i2++) {
-                        _defined(attributesUpdated[_i2], _i2, attributesUpdated);
-                    }
+                        });
+                    });
 
                     return true;
                 }
@@ -5270,7 +5092,7 @@ var DOMManipulation = function (_Base) {
         key: '$$afterAttributeUpdate',
         value: function $$afterAttributeUpdate($target, name, value) {
             if (this.updateChildrenProps && $target) {
-                name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+                name = isDirective(name) ? name : dashToCamel(name);
                 var firstChild = $target.firstChild;
 
                 if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
@@ -5281,7 +5103,7 @@ var DOMManipulation = function (_Base) {
             }
 
             directive.callComponentDOMElementUpdate(this, $target);
-            if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+            if ($target && isDirective(name)) {
                 $target.removeAttribute(name);
             }
         }
@@ -5527,8 +5349,7 @@ module.exports = getComponentName;
 var _require = __webpack_require__(2),
     registerComponent = _require.registerComponent;
 
-var _require2 = __webpack_require__(1),
-    REGEX = _require2.REGEX;
+var isCustomTag = __webpack_require__(73);
 
 function component(tag) {
     var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5538,7 +5359,7 @@ function component(tag) {
         throw new TypeError('Tag must be a string');
     }
 
-    if (!REGEX.IS_CUSTOM_TAG.test(tag)) {
+    if (!isCustomTag(tag)) {
         throw new TypeError('Tag must contain a dash (-) like my-component');
     }
 
@@ -6068,67 +5889,34 @@ directive('bind', {
         // Add UI events
         var events = ['compositionstart', 'compositionend', 'input', 'change'];
 
-        var _defined = function _defined(event) {
+        events.forEach(function (event) {
             $target.addEventListener(event, function (e) {
                 var _value = void 0;
                 if (this.type === 'checkbox') {
                     if (!this.defaultValue) instance.props[value] = this.checked;else {
                         var inputs = instance.appRoot.querySelectorAll('input[name=' + this.name + '][type=checkbox]:checked');
-
-                        var _defined2 = [].concat(_toConsumableArray(inputs));
-
-                        _value = new Array(_defined2.length);
-
-                        var _defined3 = function _defined3(input) {
+                        _value = [].concat(_toConsumableArray(inputs)).map(function (input) {
                             return input.value;
-                        };
-
-                        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-                            _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
-                        }
+                        });
                         //instance.props[value] = castStringTo(_value);
-
-
                         instance.props[value] = _value;
                     }
                 } else {
                     _value = this.value;
                     if (this.multiple) {
-                        var _defined6 = [].concat(_toConsumableArray(this.options));
-
-                        var _defined7 = function _defined7(option) {
+                        _value = [].concat(_toConsumableArray(this.options)).filter(function (option) {
                             return option.selected;
-                        };
-
-                        var _defined4 = [];
-
-                        for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-                            if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
-                        }
-
-                        _value = new Array(_defined4.length);
-
-                        var _defined5 = function _defined5(option) {
+                        }).map(function (option) {
                             return option.value;
-                        };
-
-                        for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
-                            _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
-                        }
+                        });
                     }
                     //instance.props[value] = castStringTo(_value);
                     instance.props[value] = _value;
                 }
             });
-        };
-
-        for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
-            _defined(events[_i2], _i2, events);
-        }
+        });
 
         // Map $target element with prop name
-
-
         if (instance._boundElements[value] !== undefined) {
             instance._boundElements[value].push($target);
         } else {
@@ -6144,15 +5932,11 @@ directive('bind', {
     updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
         var _this5 = this;
 
-        var _defined8 = function _defined8(item) {
+        changes.forEach(function (item) {
             var value = item.newValue;
             var property = item.property;
             _this5.updateBoundElements(instance, value, property);
-        };
-
-        for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
-            _defined8(changes[_i10], _i10, changes);
-        }
+        });
     },
     updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
         var _this = this;
@@ -6172,44 +5956,25 @@ directive('bind', {
         var _this6 = this;
 
         if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
-            var _defined9 = function _defined9($target) {
+            instance._boundElements[property].forEach(function ($target) {
                 _this6.updateBoundElement($target, value, instance);
-            };
-
-            var _defined10 = instance._boundElements[property];
-
-            for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
-                _defined9(_defined10[_i12], _i12, _defined10);
-            }
+            });
         }
     },
     updateBoundElement: function updateBoundElement($target, value, instance) {
         if ($target.type === 'checkbox') {
             if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
                 var inputs = instance.appRoot.querySelectorAll('input[name=' + $target.name + '][type=checkbox]');
-
-                var _defined11 = function _defined11(input) {
+                [].concat(_toConsumableArray(inputs)).forEach(function (input) {
                     return input.checked = value.includes(input.value);
-                };
-
-                var _defined12 = [].concat(_toConsumableArray(inputs));
-
-                for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
-                    _defined11(_defined12[_i14], _i14, _defined12);
-                }
+                });
             }
         } else if ($target.type === 'radio') {
             $target.checked = $target.value === value;
         } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
-            var _defined13 = function _defined13(option) {
+            [].concat(_toConsumableArray($target.options)).forEach(function (option) {
                 return option.selected = value.includes(option.value);
-            };
-
-            var _defined14 = [].concat(_toConsumableArray($target.options));
-
-            for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
-                _defined13(_defined14[_i16], _i16, _defined14);
-            }
+            });
         } else {
             $target.value = value;
         }
@@ -6505,7 +6270,7 @@ directive('animate', {
         instance.elementsWithAnimation.set($target, directiveValue);
 
         setTimeout(function () {
-            var _defined = function _defined(i) {
+            Object.keys(instance.children).forEach(function (i) {
                 var childInstance = instance.children[i];
                 var $childTarget = childInstance.getHTMLElement();
                 var elementAnimation = instance.elementsWithAnimation.get($childTarget);
@@ -6515,13 +6280,7 @@ directive('animate', {
                         _this.createLockRemoveInstanceByCallback(childInstance);
                     }
                 }
-            };
-
-            var _defined2 = Object.keys(instance.children);
-
-            for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-                _defined(_defined2[_i2], _i2, _defined2);
-            }
+            });
         });
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
@@ -6681,6 +6440,20 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX;
+
+module.exports = function isCustomTag(tag) {
+    return REGEX.IS_CUSTOM_TAG.test(tag);
+};
 
 /***/ })
 /******/ ]);
