@@ -62,9 +62,9 @@ directive('show', {
             }
 
         } else {
-            delay(() => {
+            //delay(() => {
                 $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
-            });
+            //});
         }
     },
 
