@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.14  
+// [DOZ]  Build version: 2.3.15  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3214,7 +3214,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.14',
+        value: '2.3.15',
         enumerable: true
     },
     tag: {
@@ -6282,9 +6282,9 @@ directive('show', {
                 new Promise($target.__animationsList.shift()).then();
             }
         } else {
-            delay(function () {
-                $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
-            });
+            //delay(() => {
+            $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+            //});
         }
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
