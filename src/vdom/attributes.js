@@ -37,8 +37,11 @@ function setAttribute($target, name, value, cmp) {
         setBooleanAttribute($target, name, value);
     } else {
         if (value === undefined) value = '';
-        $target.setAttribute(name, value);
-        //$target[name] = value;
+        //$target.setAttribute(name, value);
+        if (name === 'class') {
+            $target.className = value;
+        } else
+            $target[name] = value;
     }
 }
 
@@ -86,9 +89,11 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (booleanAttributes.includes(name) && value === false) {
-        $target.removeAttribute(name);
+        //$target.removeAttribute(name);
+        delete $target[name];
     } else {
-        $target.setAttribute(name, value);
+        //$target.setAttribute(name, value);
+        $target[name] = value;
     }
     //$target[name] = value;
 }

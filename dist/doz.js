@@ -2470,24 +2470,25 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     attach($el, node.props, cmp, cmpParent);
-
     // The children with keys will be created later
     if (!node.hasKeys) {
-        var _defined2 = node.children;
+        /*let n = node.children
+            .map(item => create(item, cmp, initial, cmpParent))*/
+        //.forEach($el.appendChild.bind($el));
 
-        var _defined3 = function _defined3(item) {
-            return create(item, cmp, initial, cmpParent);
-        };
-
-        var _defined = new Array(_defined2.length);
-
-        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-            _defined[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+        //let fragment = document.createDocumentFragment();
+        //let html = '';
+        for (var i = 0; i < node.children.length; i++) {
+            var $childEl = create(node.children[i], cmp, initial, cmpParent);
+            /*console.log($childEl.outerHTML)
+            console.log($childEl.innerHTML)
+            console.log('------------------')*/
+            $el.appendChild($childEl);
+            //html += $childEl.outerHTML;
         }
-
-        for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
-            $el.appendChild.bind($el)(_defined[_i2], _i2, _defined);
-        }
+        //$el.innerHTML += html;
+        //console.log(fragment)
+        //$el.appendChild(fragment)
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
@@ -2526,7 +2527,7 @@ function update($parent, newNode, oldNode) {
         }
 
         if ((typeof newNode === 'undefined' ? 'undefined' : _typeof(newNode)) === 'object' && propsSlot && $parent[COMPONENT_INSTANCE]._slots[propsSlot]) {
-            var _defined4 = function _defined4($slot) {
+            var _defined = function _defined($slot) {
                 // Slot is on DOM
                 if ($slot.parentNode) {
                     newNode.isNewSlotEl = true;
@@ -2545,10 +2546,10 @@ function update($parent, newNode, oldNode) {
                 }
             };
 
-            var _defined5 = $parent[COMPONENT_INSTANCE]._slots[propsSlot];
+            var _defined2 = $parent[COMPONENT_INSTANCE]._slots[propsSlot];
 
-            for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                _defined4(_defined5[_i6], _i6, _defined5);
+            for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+                _defined(_defined2[_i2], _i2, _defined2);
             }
 
             return;
@@ -2614,40 +2615,40 @@ function update($parent, newNode, oldNode) {
 
         var $myListParent = $parent.childNodes[index];
         //console.log(newNode.type, $myListParent);
-        var _defined6 = newNode.children;
+        var _defined3 = newNode.children;
 
-        var _defined7 = function _defined7(i) {
+        var _defined4 = function _defined4(i) {
             return i.key;
         };
 
-        var newNodeKeyList = new Array(_defined6.length);
+        var newNodeKeyList = new Array(_defined3.length);
 
-        for (var _i13 = 0; _i13 <= _defined6.length - 1; _i13++) {
-            newNodeKeyList[_i13] = _defined7(_defined6[_i13], _i13, _defined6);
+        for (var _i9 = 0; _i9 <= _defined3.length - 1; _i9++) {
+            newNodeKeyList[_i9] = _defined4(_defined3[_i9], _i9, _defined3);
         }
 
-        var _defined8 = oldNode.children;
+        var _defined5 = oldNode.children;
 
-        var _defined9 = function _defined9(i) {
+        var _defined6 = function _defined6(i) {
             return i.key;
         };
 
-        var oldNodeKeyList = new Array(_defined8.length);
+        var oldNodeKeyList = new Array(_defined5.length);
         //console.log(newNodeKeyList);
         //console.log(oldNodeKeyList);
         // here my new logic for keys
 
         // Check if $myListParent has __dozKeyList
 
-        for (var _i14 = 0; _i14 <= _defined8.length - 1; _i14++) {
-            oldNodeKeyList[_i14] = _defined9(_defined8[_i14], _i14, _defined8);
+        for (var _i10 = 0; _i10 <= _defined5.length - 1; _i10++) {
+            oldNodeKeyList[_i10] = _defined6(_defined5[_i10], _i10, _defined5);
         }
 
         if ($myListParent.__dozKeyList === undefined) {
             $myListParent.__dozKeyList = new Map();
         }
 
-        var _defined10 = function _defined10(x) {
+        var _defined7 = function _defined7(x) {
             return !newNodeKeyList.includes(x);
         };
 
@@ -2655,8 +2656,8 @@ function update($parent, newNode, oldNode) {
         //console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
 
-        for (var _i15 = 0; _i15 <= oldNodeKeyList.length - 1; _i15++) {
-            if (_defined10(oldNodeKeyList[_i15], _i15, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i15]);
+        for (var _i11 = 0; _i11 <= oldNodeKeyList.length - 1; _i11++) {
+            if (_defined7(oldNodeKeyList[_i11], _i11, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i11]);
         }
 
         for (var i = 0; i < oldKeyDoRemove.length; i++) {
@@ -2674,14 +2675,14 @@ function update($parent, newNode, oldNode) {
 
         var listOfElement = [];
 
-        for (var _i10 = 0; _i10 < newNodeKeyList.length; _i10++) {
+        for (var _i6 = 0; _i6 < newNodeKeyList.length; _i6++) {
             // This is the key of all
-            var theKey = newNodeKeyList[_i10];
+            var theKey = newNodeKeyList[_i6];
             //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
             var $element = $myListParent.__dozKeyList.get(theKey);
             // Se non esiste creo il nodo
             if (!$element) {
-                var _$newElement2 = create(newNode.children[_i10], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                var _$newElement2 = create(newNode.children[_i6], cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 $myListParent.__dozKeyList.set(theKey, _$newElement2);
                 //console.log('elemento creato', $newElement);
                 // appendo per il momento
@@ -2705,18 +2706,18 @@ function update($parent, newNode, oldNode) {
                 //console.log(newChildByKey.children[i])
                 //console.log(oldChildByKey.children[i])
 
-                for (var _i11 = 0; _i11 < newChildByKeyLength || _i11 < oldChildByKeyLength; _i11++) {
-                    if (newChildByKey.children[_i11] === undefined && oldChildByKey.children[_i11] === undefined) continue;
+                for (var _i7 = 0; _i7 < newChildByKeyLength || _i7 < oldChildByKeyLength; _i7++) {
+                    if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue;
                     //console.log('aaaa')
-                    update($element, newChildByKey.children[_i11], oldChildByKey.children[_i11], _i11, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+                    update($element, newChildByKey.children[_i7], oldChildByKey.children[_i7], _i7, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
                 }
             }
         }
 
         // Reorder?
-        for (var _i12 = 0; _i12 < listOfElement.length; _i12++) {
-            var $currentElementAtPosition = $myListParent.childNodes[_i12];
-            var _$element = listOfElement[_i12];
+        for (var _i8 = 0; _i8 < listOfElement.length; _i8++) {
+            var $currentElementAtPosition = $myListParent.childNodes[_i8];
+            var _$element = listOfElement[_i8];
             //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
             //console.log('equal?', $element === $currentElementAtPosition)
             if (_$element === $currentElementAtPosition) continue;
@@ -2750,8 +2751,8 @@ function update($parent, newNode, oldNode) {
         var newLength = newNode.children.length;
         var oldLength = oldNode.children.length;
 
-        for (var _i16 = 0; _i16 < newLength || _i16 < oldLength; _i16++) {
-            update($parent.childNodes[index], newNode.children[_i16], oldNode.children[_i16], _i16, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
+        for (var _i12 = 0; _i12 < newLength || _i12 < oldLength; _i12++) {
+            update($parent.childNodes[index], newNode.children[_i12], oldNode.children[_i12], _i12, cmp, initial, $parent[COMPONENT_INSTANCE] || cmpParent);
         }
 
         clearDead();
@@ -4626,8 +4627,10 @@ function setAttribute($target, name, value, cmp) {
         setBooleanAttribute($target, name, value);
     } else {
         if (value === undefined) value = '';
-        $target.setAttribute(name, value);
-        //$target[name] = value;
+        //$target.setAttribute(name, value);
+        if (name === 'class') {
+            $target.className = value;
+        } else $target[name] = value;
     }
 }
 
@@ -4685,9 +4688,11 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (booleanAttributes.includes(name) && value === false) {
-        $target.removeAttribute(name);
+        //$target.removeAttribute(name);
+        delete $target[name];
     } else {
-        $target.setAttribute(name, value);
+        //$target.setAttribute(name, value);
+        $target[name] = value;
     }
     //$target[name] = value;
 }

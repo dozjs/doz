@@ -47,12 +47,27 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     attach($el, node.props, cmp, cmpParent);
-
     // The children with keys will be created later
     if (!node.hasKeys) {
-        node.children
-            .map(item => create(item, cmp, initial, cmpParent))
-            .forEach($el.appendChild.bind($el));
+        /*let n = node.children
+            .map(item => create(item, cmp, initial, cmpParent))*/
+            //.forEach($el.appendChild.bind($el));
+
+        //let fragment = document.createDocumentFragment();
+        //let html = '';
+        for (let i = 0; i < node.children.length; i++) {
+            let $childEl = create(node.children[i], cmp, initial, cmpParent);
+            /*console.log($childEl.outerHTML)
+            console.log($childEl.innerHTML)
+            console.log('------------------')*/
+            $el.appendChild($childEl)
+            //html += $childEl.outerHTML;
+
+        }
+        //$el.innerHTML += html;
+        //console.log(fragment)
+        //$el.appendChild(fragment)
+
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
