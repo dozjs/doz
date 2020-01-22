@@ -4628,9 +4628,12 @@ function setAttribute($target, name, value, cmp) {
     } else {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
+        //console.log('set', name, value)
         if (name === 'class') {
             $target.className = value;
-        } else $target[name] = value;
+        } else $target[name] = value; /**/
+
+        //console.log('get', name, $target[name])
     }
 }
 
@@ -4708,6 +4711,8 @@ function trimQuotes(str) {
 function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
+
+    //console.log('event attribute', name, value)
 
     var alreadyFunction = false;
 

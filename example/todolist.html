@@ -84,8 +84,8 @@
         },
 
         add() {
-            //console.log('add');
             const store = this.getStore('todo');
+            console.log('add', store);
             if (store.todo !== '') {
                 store.record.push({
                     time: Date.now(),
@@ -155,7 +155,7 @@
             title: 'string'
         },
         template(h) {
-            console.log('done', this.props.done)
+            //console.log('done', this.props.done)
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>&nbsp;
