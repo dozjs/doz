@@ -33,8 +33,8 @@ function setAttribute($target, name, value, cmp) {
         if (isEventAttribute(name) && typeof value === 'string') {
             mapper.getAll(value);
         }
-    } else if (typeof value === 'boolean') {
-        setBooleanAttribute($target, name, value);
+    /*} else if (typeof value === 'boolean') {
+        setBooleanAttribute($target, name, value);*/
     } else {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
@@ -92,11 +92,9 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (booleanAttributes.includes(name) && value === false) {
-        //$target.removeAttribute(name);
-        delete $target[name];
+        $target.removeAttribute(name);
     } else {
-        //$target.setAttribute(name, value);
-        $target[name] = value;
+        $target.setAttribute(name, value);
     }
     //$target[name] = value;
 }
@@ -243,11 +241,11 @@ function attach($target, nodeProps, cmp, cmpParent) {
         cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
-    const datasetArray = Object.keys($target.dataset);
+    /*const datasetArray = Object.keys($target.dataset);
     for (let i = 0; i < datasetArray.length; i++) {
         if (isListener(datasetArray[i]))
             addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
-    }
+    }*/
 
     //cmp.$$afterAttributesCreate($target, bindValue);
 }

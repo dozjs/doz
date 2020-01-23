@@ -2472,27 +2472,17 @@ function create(node, cmp, initial, cmpParent) {
     attach($el, node.props, cmp, cmpParent);
     // The children with keys will be created later
     if (!node.hasKeys) {
-        /*let n = node.children
-            .map(item => create(item, cmp, initial, cmpParent))*/
-        //.forEach($el.appendChild.bind($el));
-
-        //let fragment = document.createDocumentFragment();
-        //let html = '';
-        for (var i = 0; i < node.children.length; i++) {
-            var $childEl = create(node.children[i], cmp, initial, cmpParent);
-            /*console.log($childEl.outerHTML)
-            console.log($childEl.innerHTML)
-            console.log('------------------')*/
-            $el.appendChild($childEl);
-            //html += $childEl.outerHTML;
+        if (!node.children.length) {} else if (node.children.length === 1 && typeof node.children[0] === 'string') {
+            $el.textContent = canDecode(node.children[0]);
+        } else {
+            for (var i = 0; i < node.children.length; i++) {
+                var $childEl = create(node.children[i], cmp, initial, cmpParent);
+                $el.appendChild($childEl);
+            }
         }
-        //$el.innerHTML += html;
-        //console.log(fragment)
-        //$el.appendChild(fragment)
     }
 
     cmp.$$afterNodeElementCreate($el, node, initial);
-    //console.log(cmpParent)
 
     return $el;
 }
@@ -4273,16 +4263,18 @@ function callComponentLoadProps() {
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     var method = 'onComponentDOMElementCreate';
-    var i = $target.attributes.length;
-    while (i--) {
-        var attribute = $target.attributes[i];
-        if (isDirective(attribute.name)) {
-            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            var directiveValue = $target[PROPS_ATTRIBUTES][attribute.name]; // || attribute.value;
+    if (!$target.dozProps) return;
+    var keys = Object.keys($target.dozProps);
+    for (var i = 0; i < keys.length; i++) {
+        var attributeName = keys[i];
+        var attributeValue = $target.dozProps[keys[i]];
+        if (isDirective(attributeName)) {
+            var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attributeValue;
             //console.log('directiveValue', directiveValue)
             var directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
-                $target.removeAttribute(attribute.name);
+                //$target.removeAttribute(attribute.name);
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
             }
         }
@@ -4291,12 +4283,14 @@ function callComponentDOMElementCreate(instance, $target, initial) {
 
 function callComponentDOMElementUpdate(instance, $target) {
     var method = 'onComponentDOMElementUpdate';
-    var i = $target.attributes.length;
-    while (i--) {
-        var attribute = $target.attributes[i];
-        if (isDirective(attribute.name)) {
-            var directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            var directiveValue = $target[PROPS_ATTRIBUTES][attribute.name]; // || attribute.value;
+    if (!$target.dozProps) return;
+    var keys = Object.keys($target.dozProps);
+    for (var i = 0; i < keys.length; i++) {
+        var attributeName = keys[i];
+        var attributeValue = $target.dozProps[keys[i]];
+        if (isDirective(attributeName)) {
+            var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            var directiveValue = attributeValue;
             var directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);
@@ -4623,8 +4617,8 @@ function setAttribute($target, name, value, cmp) {
         if (isEventAttribute(name) && typeof value === 'string') {
             mapper.getAll(value);
         }
-    } else if (typeof value === 'boolean') {
-        setBooleanAttribute($target, name, value);
+        /*} else if (typeof value === 'boolean') {
+            setBooleanAttribute($target, name, value);*/
     } else {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
@@ -4691,11 +4685,9 @@ function isCustomAttribute(name) {
 
 function setBooleanAttribute($target, name, value) {
     if (booleanAttributes.includes(name) && value === false) {
-        //$target.removeAttribute(name);
-        delete $target[name];
+        $target.removeAttribute(name);
     } else {
-        //$target.setAttribute(name, value);
-        $target[name] = value;
+        $target.setAttribute(name, value);
     }
     //$target[name] = value;
 }
@@ -4835,10 +4827,11 @@ function attach($target, nodeProps, cmp, cmpParent) {
         cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
-    var datasetArray = Object.keys($target.dataset);
-    for (var _i7 = 0; _i7 < datasetArray.length; _i7++) {
-        if (isListener(datasetArray[_i7])) addEventListener($target, datasetArray[_i7], $target.dataset[datasetArray[_i7]], cmp, cmpParent);
-    }
+    /*const datasetArray = Object.keys($target.dataset);
+    for (let i = 0; i < datasetArray.length; i++) {
+        if (isListener(datasetArray[i]))
+            addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
+    }*/
 
     //cmp.$$afterAttributesCreate($target, bindValue);
 }
@@ -5186,7 +5179,7 @@ var DOMManipulation = function (_Base) {
                 }
 
                 if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                    var slotName = $el.getAttribute('name');
+                    var slotName = $el.dozProps ? $el.dozProps.name : null;
 
                     if (!slotName) {
                         this._defaultSlot = $el;

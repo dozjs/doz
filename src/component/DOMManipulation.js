@@ -20,7 +20,7 @@ class DOMManipulation extends Base {
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                let slotName = $el.getAttribute('name');
+                let slotName = $el.dozProps ? $el.dozProps.name : null;
 
                 if (!slotName) {
                     this._defaultSlot = $el;
