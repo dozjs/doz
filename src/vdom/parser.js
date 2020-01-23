@@ -4,6 +4,7 @@ const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directives');
+const {isDirective} = require('../directives/helpers');
 const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -48,7 +49,7 @@ class Element {
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg';//REGEX.IS_SVG.test(name);
         if (props.key !== undefined)
             this.key = props.key;
         this.hasKeys = undefined;
@@ -185,14 +186,17 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-    let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    //let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    let _isDirective = isDirective(aName);
 
-    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
+    //console.log('isDirective', isDirective, aName, aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':'));
+
+    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
         ? dashToCamel(aName)
         : aName;
 
     if ($node) {
-        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
     }

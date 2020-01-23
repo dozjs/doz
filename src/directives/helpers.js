@@ -23,8 +23,9 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 
-function isDirective(name) {
-    return REGEX.IS_DIRECTIVE.test(name);
+function isDirective(aName) {
+    //return REGEX.IS_DIRECTIVE.test(name);
+    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
 }
 
 function extractStyleDisplayFromDozProps($target) {

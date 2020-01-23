@@ -519,6 +519,10 @@ var _require = __webpack_require__(1),
 
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
+
+var _require2 = __webpack_require__(7),
+    isDirective = _require2.isDirective;
+
 var mapper = __webpack_require__(4);
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -564,7 +568,7 @@ var Element = function () {
         this.type = name;
         this.props = props; //Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg'; //REGEX.IS_SVG.test(name);
         if (props.key !== undefined) this.key = props.key;
         this.hasKeys = undefined;
     }
@@ -695,12 +699,15 @@ function propsFixer(nName, aName, aValue, props, $node) {
 
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue)) aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-    var isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    //let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    var _isDirective = isDirective(aName);
 
-    var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective ? dashToCamel(aName) : aName;
+    //console.log('isDirective', isDirective, aName, aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':'));
+
+    var propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective ? dashToCamel(aName) : aName;
 
     if ($node) {
-        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, function (newPropsName) {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, function (newPropsName) {
             propsName = newPropsName;
         });
     }
@@ -774,8 +781,9 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 
-function isDirective(name) {
-    return REGEX.IS_DIRECTIVE.test(name);
+function isDirective(aName) {
+    //return REGEX.IS_DIRECTIVE.test(name);
+    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
 }
 
 function extractStyleDisplayFromDozProps($target) {
@@ -5158,6 +5166,9 @@ var _require = __webpack_require__(1),
 
 var directive = __webpack_require__(0);
 
+var _require2 = __webpack_require__(7),
+    isDirective = _require2.isDirective;
+
 var DOMManipulation = function (_Base) {
     _inherits(DOMManipulation, _Base);
 
@@ -5272,8 +5283,10 @@ var DOMManipulation = function (_Base) {
     }, {
         key: '$$afterAttributeUpdate',
         value: function $$afterAttributeUpdate($target, name, value) {
+            var _isDirective = isDirective(name);
             if (this.updateChildrenProps && $target) {
-                name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+                //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+                name = _isDirective ? name : dashToCamel(name);
                 var firstChild = $target.firstChild;
 
                 if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
@@ -5284,7 +5297,8 @@ var DOMManipulation = function (_Base) {
             }
 
             directive.callComponentDOMElementUpdate(this, $target);
-            if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+            //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+            if ($target && _isDirective) {
                 $target.removeAttribute(name);
             }
         }

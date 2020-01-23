@@ -4,6 +4,7 @@ const dashToCamel = require('../utils/dash-to-camel');
 const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
+const {isDirective} = require('../directives/helpers');
 
 class DOMManipulation extends Base {
     constructor(opt) {
@@ -91,8 +92,10 @@ class DOMManipulation extends Base {
     }
 
     $$afterAttributeUpdate($target, name, value) {
+        let _isDirective = isDirective(name);
         if (this.updateChildrenProps && $target) {
-            name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            name = _isDirective ? name : dashToCamel(name);
             const firstChild = $target.firstChild;
 
             if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
@@ -103,7 +106,8 @@ class DOMManipulation extends Base {
         }
 
         directive.callComponentDOMElementUpdate(this, $target);
-        if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        if ($target && _isDirective) {
             $target.removeAttribute(name);
         }
     }
