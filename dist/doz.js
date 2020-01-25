@@ -2888,17 +2888,19 @@ module.exports = function (strings) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        var _defined = function _defined(char) {
-            //console.log(char)
+        for (var x = 0; x < strings[i].length; x++) {
+            var char = strings[i][x];
             if (char === LESSER) allowTag = false;
             if (char === GREATER) allowTag = true;
-        };
-
-        var _defined2 = strings[i].split('');
-
-        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-            _defined(_defined2[_i2], _i2, _defined2);
         }
+
+        /*strings[i].split('').forEach(char => {
+            //console.log(char)
+            if (char === LESSER)
+                allowTag = false;
+            if (char === GREATER)
+                allowTag = true;
+        });*/
 
         if (strings[i].indexOf('<style') > -1) {
             isInStyle = true;
@@ -2969,7 +2971,10 @@ module.exports = function (strings) {
             }
         }
 
-        if (allowTag) result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];else {
+        if (allowTag) {
+            //console.log('aaaaaaaaaaaaaaaaddd', tagText, value[i])
+            result += '<' + tagText + '>' + value[i] + '</' + tagText + '>' + strings[i + 1];
+        } else {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
@@ -2980,7 +2985,11 @@ module.exports = function (strings) {
         }
     }
 
-    result = result.replace(regOpen, LESSER).replace(regClose, GREATER);
+    // Funziona anche senza?
+    /*
+            result = result
+                .replace(regOpen, LESSER)
+                .replace(regClose, GREATER);*/
 
     if (isBoundedToComponent) {
         // Now get style from complete string

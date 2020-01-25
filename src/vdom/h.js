@@ -53,13 +53,21 @@ module.exports = function (strings, ...value) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        strings[i].split('').forEach(char => {
+        for (let x = 0; x < strings[i].length; x++) {
+            let char = strings[i][x];
+            if (char === LESSER)
+                allowTag = false;
+            if (char === GREATER)
+                allowTag = true;
+        }
+
+        /*strings[i].split('').forEach(char => {
             //console.log(char)
             if (char === LESSER)
                 allowTag = false;
             if (char === GREATER)
                 allowTag = true;
-        });
+        });*/
 
 
         if (strings[i].indexOf('<style') > -1) {
@@ -131,9 +139,10 @@ module.exports = function (strings, ...value) {
             }
         }
 
-        if(allowTag)
+        if(allowTag) {
+            //console.log('aaaaaaaaaaaaaaaaddd', tagText, value[i])
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        else {
+        } else {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
@@ -144,9 +153,11 @@ module.exports = function (strings, ...value) {
         }
     }
 
-    result = result
-        .replace(regOpen, LESSER)
-        .replace(regClose, GREATER);
+    // Funziona anche senza?
+    /*
+            result = result
+                .replace(regOpen, LESSER)
+                .replace(regClose, GREATER);*/
 
     if (isBoundedToComponent) {
         // Now get style from complete string
