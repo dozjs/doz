@@ -30,6 +30,7 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
+    let thereIsStyle = false;
     let isBoundedToComponent = !!this._components;
 
     for (let i = 0; i < value.length; ++i) {
@@ -72,6 +73,7 @@ module.exports = function (strings, ...value) {
 
         if (strings[i].indexOf('<style') > -1) {
             isInStyle = true;
+            thereIsStyle = true;
         }
 
         if (strings[i].indexOf('</style') > -1) {
@@ -161,21 +163,22 @@ module.exports = function (strings, ...value) {
 
     if (isBoundedToComponent) {
         // Now get style from complete string
-        result = result.replace(regStyle, (match, p1) => {
-            if (!this._rootElement || p1 === this._currentStyle) return '';
-            if (match && p1) {
-                // Here should be create the tag style
-                this._currentStyle = p1;
-                let isScoped = /scoped/.test(match);
-                const dataSetUId = this.uId;
-                this.getHTMLElement().dataset.uid = this.uId;
-                let tagByData = `[data-uid="${dataSetUId}"]`;
+        if (thereIsStyle)
+            result = result.replace(regStyle, (match, p1) => {
+                if (!this._rootElement || p1 === this._currentStyle) return '';
+                if (match && p1) {
+                    // Here should be create the tag style
+                    this._currentStyle = p1;
+                    let isScoped = /scoped/.test(match);
+                    const dataSetUId = this.uId;
+                    this.getHTMLElement().dataset.uid = this.uId;
+                    let tagByData = `[data-uid="${dataSetUId}"]`;
 
-                scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-            }
+                    scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                }
 
-            return '';
-        });
+                return '';
+            });
     }
 
     result = result.trim();

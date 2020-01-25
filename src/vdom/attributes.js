@@ -45,9 +45,11 @@ function setAttribute($target, name, value, cmp) {
         //console.log('set', name, value)
         if (name === 'class') {
             $target.className = value;
-        } else
+        } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role') {
+            $target.setAttribute(name, value);
+        } else {
             $target[name] = value;/**/
-
+        }
         //console.log('get', name, $target[name])
     }
 }
