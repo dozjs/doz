@@ -4622,7 +4622,11 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if ((isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') && !isDirective(name)) {
+    var _isDirective = isDirective(name);
+
+    if (_isDirective) $target.__dozHasDirective = true;
+
+    if ((isCustomAttribute(name) || typeof value === 'function' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -4737,10 +4741,12 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 value = args ? method.bind.apply(method, [cmpParent].concat(_toConsumableArray(args))) : method.bind(cmpParent);
             }
         } else {
-
+            /*return;
+            console.log('bbb')*/
             match = value.match(REGEX.GET_LISTENER);
 
             if (match) {
+                //console.log('aaaaa')
                 var _args = null;
                 var _handler = match[1];
                 var _stringArgs = match[2];
@@ -5153,8 +5159,10 @@ var DOMManipulation = function (_Base) {
     _createClass(DOMManipulation, [{
         key: '$$afterNodeElementCreate',
         value: function $$afterNodeElementCreate($el, node, initial) {
-            directive.callAppDOMElementCreate(this, $el, node, initial);
-            directive.callComponentDOMElementCreate(this, $el, initial);
+            if ($el.__dozHasDirective) {
+                directive.callAppDOMElementCreate(this, $el, node, initial);
+                directive.callComponentDOMElementCreate(this, $el, initial);
+            }
 
             if (typeof $el.hasAttribute === 'function') {
                 if (node.type.indexOf('-') !== -1 && !initial) {

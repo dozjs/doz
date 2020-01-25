@@ -25,7 +25,11 @@ function setAttribute($target, name, value, cmp) {
         return;
     }
 
-    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !isDirective(name)) {
+    let _isDirective = isDirective(name);
+
+    if (_isDirective) $target.__dozHasDirective = true;
+
+    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -128,10 +132,12 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             }
 
         } else {
-
+            /*return;
+            console.log('bbb')*/
             match = value.match(REGEX.GET_LISTENER);
 
             if (match) {
+                //console.log('aaaaa')
                 let args = null;
                 let handler = match[1];
                 let stringArgs = match[2];
