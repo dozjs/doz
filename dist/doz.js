@@ -240,6 +240,7 @@ function registerDirective(name) {
     if (Object.prototype.hasOwnProperty.call(data.directives, name)) console.warn('Doz', 'directive ' + name + ' overwritten');
 
     data.directives[name] = cfg;
+    if (!data.directivesKeys.includes(name)) data.directivesKeys.push(name);
 }
 
 module.exports = {
@@ -316,6 +317,69 @@ module.exports = {
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(1),
+    REGEX = _require.REGEX,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
+
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    var props = void 0;
+
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    } else {
+        props = cmp.props;
+    }
+
+    var _defined
+    /*if (canBeDeleteProps)
+        delete props[key];*/
+    = function _defined(key) {
+        if (isDirective(key)) {
+            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    };
+
+    var _defined2 = Object.keys(props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+    }
+
+    return cmp._directiveProps;
+}
+
+function isDirective(aName) {
+    //return REGEX.IS_DIRECTIVE.test(name);
+    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
+}
+
+function extractStyleDisplayFromDozProps($target) {
+    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
+
+    var match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
+module.exports = {
+    isDirective: isDirective,
+    extractDirectivesFromProps: extractDirectivesFromProps,
+    extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
+};
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -497,7 +561,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -520,7 +584,7 @@ var _require = __webpack_require__(1),
 var regExcludeSpecial = new RegExp('</?(' + TAG.TEXT_NODE_PLACE + '|' + TAG.ITERATE_NODE_PLACE + ')?>$');
 var directive = __webpack_require__(0);
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(5),
     isDirective = _require2.isDirective;
 
 var mapper = __webpack_require__(4);
@@ -741,69 +805,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _require = __webpack_require__(1),
-    REGEX = _require.REGEX,
-    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES;
-
-function extractDirectivesFromProps(cmp) {
-    //let canBeDeleteProps = true;
-    var props = void 0;
-
-    if (!Object.keys(cmp.props).length) {
-        props = cmp._rawProps;
-        //canBeDeleteProps = false;
-    } else {
-        props = cmp.props;
-    }
-
-    var _defined
-    /*if (canBeDeleteProps)
-        delete props[key];*/
-    = function _defined(key) {
-        if (isDirective(key)) {
-            var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            cmp._directiveProps[keyWithoutD] = props[key];
-        }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-    }
-
-    return cmp._directiveProps;
-}
-
-function isDirective(aName) {
-    //return REGEX.IS_DIRECTIVE.test(name);
-    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
-}
-
-function extractStyleDisplayFromDozProps($target) {
-    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
-
-    var match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
-
-    if (match) {
-        return match[1];
-    }
-    return null;
-}
-
-module.exports = {
-    isDirective: isDirective,
-    extractDirectivesFromProps: extractDirectivesFromProps,
-    extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
-};
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -841,7 +842,7 @@ var _require = __webpack_require__(1),
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(36);
-var hooks = __webpack_require__(5);
+var hooks = __webpack_require__(6);
 var update = __webpack_require__(40).updateElement;
 var drawDynamic = __webpack_require__(44);
 var proxy = __webpack_require__(15);
@@ -854,7 +855,7 @@ var h = __webpack_require__(20);
 var loadLocal = __webpack_require__(50);
 var localMixin = __webpack_require__(51);
 
-var _require2 = __webpack_require__(6),
+var _require2 = __webpack_require__(7),
     compile = _require2.compile;
 
 var propsInit = __webpack_require__(22);
@@ -1280,9 +1281,9 @@ var _require = __webpack_require__(1),
     REGEX = _require.REGEX;
 
 var collection = __webpack_require__(2);
-var hooks = __webpack_require__(5);
+var hooks = __webpack_require__(6);
 
-var _require2 = __webpack_require__(6),
+var _require2 = __webpack_require__(7),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(35);
@@ -2438,7 +2439,7 @@ var _require2 = __webpack_require__(1),
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
 var canDecode = __webpack_require__(18);
-var hooks = __webpack_require__(5);
+var hooks = __webpack_require__(6);
 var directive = __webpack_require__(0);
 
 var storeElementNode = Object.create(null);
@@ -2830,7 +2831,7 @@ var camelToDash = __webpack_require__(19);
 var _require2 = __webpack_require__(12),
     scopedInner = _require2.scopedInner;
 
-var _require3 = __webpack_require__(6),
+var _require3 = __webpack_require__(7),
     compile = _require3.compile,
     Element = _require3.Element;
 
@@ -3157,7 +3158,7 @@ var Component = __webpack_require__(9);
 var mixin = __webpack_require__(57);
 var h = __webpack_require__(20);
 
-var _require3 = __webpack_require__(6),
+var _require3 = __webpack_require__(7),
     compile = _require3.compile;
 
 var mapper = __webpack_require__(4);
@@ -3656,7 +3657,8 @@ module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', '
 module.exports = {
     components: {},
     plugins: [],
-    directives: {}
+    directives: {},
+    directivesKeys: []
 };
 
 /***/ }),
@@ -3679,7 +3681,7 @@ function callMethod() {
     }
 
     var method = args.shift();
-    var oKeys = Object.keys(data.directives);
+    var oKeys = data.directivesKeys; // Object.keys(data.directives);
     var callback = void 0;
 
     // Search for a possible callback
@@ -3692,11 +3694,15 @@ function callMethod() {
 
     for (var _i = 0; _i < oKeys.length; _i++) {
         var key = oKeys[_i];
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            var res = data.directives[key][method].apply(data.directives[key], args);
-            // If res returns something, fire the callback
-            if (res !== undefined && callback) callback(res);
-        }
+        if (data.directives[key] /*!== undefined*/) {
+                //if (typeof data.directives[key][method] === 'function') {
+                if (data.directives[key][method] /*!== undefined*/) {
+                        //console.log(method)
+                        var res = data.directives[key][method].apply(data.directives[key], args);
+                        // If res returns something, fire the callback
+                        if (res !== undefined && callback) callback(res);
+                    }
+            }
     }
 }
 
@@ -4044,7 +4050,7 @@ module.exports = {
 var _require = __webpack_require__(2),
     data = _require.data;
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(5),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
     isDirective = _require2.isDirective;
 
@@ -4271,11 +4277,11 @@ function callComponentLoadProps() {
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     var method = 'onComponentDOMElementCreate';
-    if (!$target.dozProps) return;
-    var keys = Object.keys($target.dozProps);
+    if (!$target[PROPS_ATTRIBUTES]) return;
+    var keys = Object.keys($target[PROPS_ATTRIBUTES]);
     for (var i = 0; i < keys.length; i++) {
         var attributeName = keys[i];
-        var attributeValue = $target.dozProps[keys[i]];
+        var attributeValue = $target[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
             var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             var directiveValue = attributeValue;
@@ -4291,11 +4297,11 @@ function callComponentDOMElementCreate(instance, $target, initial) {
 
 function callComponentDOMElementUpdate(instance, $target) {
     var method = 'onComponentDOMElementUpdate';
-    if (!$target.dozProps) return;
-    var keys = Object.keys($target.dozProps);
+    if (!$target[PROPS_ATTRIBUTES]) return;
+    var keys = Object.keys($target[PROPS_ATTRIBUTES]);
     for (var i = 0; i < keys.length; i++) {
         var attributeName = keys[i];
-        var attributeValue = $target.dozProps[keys[i]];
+        var attributeValue = $target[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
             var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             var directiveValue = attributeValue;
@@ -4401,7 +4407,7 @@ module.exports = hmr;
 
 
 var proxy = __webpack_require__(15);
-var events = __webpack_require__(5);
+var events = __webpack_require__(6);
 var propsListener = __webpack_require__(38);
 var manipulate = __webpack_require__(16);
 
@@ -4593,10 +4599,9 @@ var objectPath = __webpack_require__(42);
 var isListener = __webpack_require__(14);
 var mapper = __webpack_require__(4);
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(5),
     isDirective = _require2.isDirective;
-
-var booleanAttributes = __webpack_require__(43);
+//const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -4639,25 +4644,11 @@ function setAttribute($target, name, value, cmp) {
     }
 }
 
-function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || !$target) {} else {
-        $target.removeAttribute(name);
-    }
-}
-
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if (newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     }
-    /*
-    if (newVal === '') {
-        removeAttribute($target, name, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    } else if (oldVal === '' || newVal !== oldVal) {
-        setAttribute($target, name, newVal, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    }*/
 }
 
 function updateAttributes($target, newProps) {
@@ -4689,15 +4680,6 @@ function updateAttributes($target, newProps) {
 
 function isCustomAttribute(name) {
     return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
-}
-
-function setBooleanAttribute($target, name, value) {
-    if (booleanAttributes.includes(name) && value === false) {
-        $target.removeAttribute(name);
-    } else {
-        $target.setAttribute(name, value);
-    }
-    //$target[name] = value;
 }
 
 function extractEventName(name) {
@@ -4832,7 +4814,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
-        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     /*const datasetArray = Object.keys($target.dataset);
@@ -4840,8 +4822,6 @@ function attach($target, nodeProps, cmp, cmpParent) {
         if (isListener(datasetArray[i]))
             addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
     }*/
-
-    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
@@ -4875,15 +4855,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = ['async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'challenge', 'checked', 'compact', 'contenteditable', 'controls', 'default', 'defer', 'disabled', 'formNoValidate', 'frameborder', 'hidden', 'indeterminate', 'ismap', 'loop', 'multiple', 'muted', 'nohref', 'noresize', 'noshade', 'novalidate', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'scrolling', 'seamless', 'selected', 'sortable', 'spellcheck', 'translate'];
-
-/***/ }),
+/* 43 */,
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5160,13 +5132,13 @@ var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
-    REGEX = _require.REGEX,
+    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES,
     DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
     TAG = _require.TAG;
 
 var directive = __webpack_require__(0);
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(5),
     isDirective = _require2.isDirective;
 
 var DOMManipulation = function (_Base) {
@@ -5190,7 +5162,7 @@ var DOMManipulation = function (_Base) {
                 }
 
                 if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                    var slotName = $el.dozProps ? $el.dozProps.name : null;
+                    var slotName = $el[PROPS_ATTRIBUTES] ? $el[PROPS_ATTRIBUTES].name : null;
 
                     if (!slotName) {
                         this._defaultSlot = $el;
@@ -5270,16 +5242,13 @@ var DOMManipulation = function (_Base) {
         }
 
         // noinspection JSMethodCanBeStatic
-
-    }, {
-        key: '$$afterAttributeCreate',
-        value: function $$afterAttributeCreate($target, name, value, nodeProps) {}
+        /*$$afterAttributeCreate($target, name, value, nodeProps) {
+        }*/
 
         // noinspection JSMethodCanBeStatic
+        /*$$afterAttributesCreate($target, bindValue) {
+        }*/
 
-    }, {
-        key: '$$afterAttributesCreate',
-        value: function $$afterAttributesCreate($target, bindValue) {}
     }, {
         key: '$$afterAttributeUpdate',
         value: function $$afterAttributeUpdate($target, name, value) {
@@ -6243,7 +6212,7 @@ directive('bind', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(5),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
 var queue = __webpack_require__(69);

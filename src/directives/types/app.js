@@ -6,7 +6,7 @@ const {data} = require('../../collection');
 
 function callMethod(...args) {
     let method = args.shift();
-    let oKeys = Object.keys(data.directives);
+    let oKeys = data.directivesKeys;// Object.keys(data.directives);
     let callback;
 
     // Search for a possible callback
@@ -19,11 +19,15 @@ function callMethod(...args) {
 
     for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-        if (data.directives[key] !== undefined && typeof data.directives[key][method] === 'function') {
-            let res = data.directives[key][method].apply(data.directives[key], args);
-            // If res returns something, fire the callback
-            if (res !== undefined && callback)
-                callback(res);
+        if (data.directives[key] /*!== undefined*/) {
+            //if (typeof data.directives[key][method] === 'function') {
+            if (data.directives[key][method] /*!== undefined*/) {
+                //console.log(method)
+                let res = data.directives[key][method].apply(data.directives[key], args);
+                // If res returns something, fire the callback
+                if (res !== undefined && callback)
+                    callback(res);
+            }
         }
     }
 }

@@ -134,11 +134,11 @@ function callComponentLoadProps(...args) {
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     let method = 'onComponentDOMElementCreate';
-    if(!$target.dozProps) return;
-    let keys = Object.keys($target.dozProps);
+    if(!$target[PROPS_ATTRIBUTES]) return;
+    let keys = Object.keys($target[PROPS_ATTRIBUTES]);
     for(let i = 0; i < keys.length; i++) {
         let attributeName = keys[i];
-        let attributeValue = $target.dozProps[keys[i]];
+        let attributeValue = $target[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
             let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attributeValue;
@@ -154,11 +154,11 @@ function callComponentDOMElementCreate(instance, $target, initial) {
 
 function callComponentDOMElementUpdate(instance, $target) {
     let method = 'onComponentDOMElementUpdate';
-    if(!$target.dozProps) return;
-    let keys = Object.keys($target.dozProps);
+    if(!$target[PROPS_ATTRIBUTES]) return;
+    let keys = Object.keys($target[PROPS_ATTRIBUTES]);
     for(let i = 0; i < keys.length; i++) {
         let attributeName = keys[i];
-        let attributeValue = $target.dozProps[keys[i]];
+        let attributeValue = $target[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
             let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attributeValue;

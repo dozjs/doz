@@ -2,7 +2,7 @@ const canDecode = require('../utils/can-decode');
 const composeStyleInner = require('../utils/compose-style-inner');
 const dashToCamel = require('../utils/dash-to-camel');
 const Base = require('./Base');
-const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
+const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
 
@@ -21,7 +21,7 @@ class DOMManipulation extends Base {
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                let slotName = $el.dozProps ? $el.dozProps.name : null;
+                let slotName = $el[PROPS_ATTRIBUTES] ? $el[PROPS_ATTRIBUTES].name : null;
 
                 if (!slotName) {
                     this._defaultSlot = $el;
@@ -84,12 +84,12 @@ class DOMManipulation extends Base {
     }
 
     // noinspection JSMethodCanBeStatic
-    $$afterAttributeCreate($target, name, value, nodeProps) {
-    }
+    /*$$afterAttributeCreate($target, name, value, nodeProps) {
+    }*/
 
     // noinspection JSMethodCanBeStatic
-    $$afterAttributesCreate($target, bindValue) {
-    }
+    /*$$afterAttributesCreate($target, bindValue) {
+    }*/
 
     $$afterAttributeUpdate($target, name, value) {
         let _isDirective = isDirective(name);

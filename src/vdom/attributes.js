@@ -4,7 +4,7 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-const booleanAttributes = require('../utils/boolean-attributes');
+//const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -48,26 +48,11 @@ function setAttribute($target, name, value, cmp) {
     }
 }
 
-function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || !$target) {
-    } else {
-        $target.removeAttribute(name);
-    }
-}
-
 function updateAttribute($target, name, newVal, oldVal, cmp) {
     if(newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     }
-    /*
-    if (newVal === '') {
-        removeAttribute($target, name, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    } else if (oldVal === '' || newVal !== oldVal) {
-        setAttribute($target, name, newVal, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    }*/
 }
 
 function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
@@ -88,15 +73,6 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
 
 function isCustomAttribute(name) {
     return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
-}
-
-function setBooleanAttribute($target, name, value) {
-    if (booleanAttributes.includes(name) && value === false) {
-        $target.removeAttribute(name);
-    } else {
-        $target.setAttribute(name, value);
-    }
-    //$target[name] = value;
 }
 
 function extractEventName(name) {
@@ -238,7 +214,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
-        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
     /*const datasetArray = Object.keys($target.dataset);
@@ -246,8 +222,6 @@ function attach($target, nodeProps, cmp, cmpParent) {
         if (isListener(datasetArray[i]))
             addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
     }*/
-
-    //cmp.$$afterAttributesCreate($target, bindValue);
 }
 
 module.exports = {
