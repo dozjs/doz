@@ -2505,7 +2505,7 @@ function update($parent, newNode, oldNode) {
     var cmpParent = arguments[6];
 
 
-    directive.callComponentVNodeTick(cmp, newNode, oldNode);
+    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
 
     if (newNode && newNode.cmp) cmp = newNode.cmp;
 

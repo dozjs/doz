@@ -67,7 +67,7 @@ function create(node, cmp, initial, cmpParent) {
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
-    directive.callComponentVNodeTick(cmp, newNode, oldNode);
+    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
 
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
