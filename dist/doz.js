@@ -4679,22 +4679,28 @@ function updateAttributes($target, newProps) {
     var props = Object.assign({}, newProps, oldProps);
     var updated = [];
 
-    var _defined = function _defined(name) {
-        if (!$target || $target.nodeType !== 1) return;
+    var propsKeys = Object.keys(props);
+
+    for (var i = 0; i < propsKeys.length; i++) {
+        var name = propsKeys[i];
+        if (!$target || $target.nodeType !== 1) continue;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
             var obj = {};
             obj[name] = newProps[name];
             updated.push(obj);
         }
-    };
-
-    var _defined2 = Object.keys(props);
-
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
     }
 
+    /*Object.keys(props).forEach(name => {
+        if(!$target || $target.nodeType !== 1) return;
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
+        if (newProps[name] !== oldProps[name]) {
+            let obj = {};
+            obj[name] = newProps[name];
+            updated.push(obj);
+        }
+    });*/
     return updated;
 }
 
@@ -4734,11 +4740,11 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             var handler = match[1];
             var stringArgs = match[2];
             if (stringArgs) {
-                var _defined3 = stringArgs.split(',');
+                var _defined = stringArgs.split(',');
 
-                args = new Array(_defined3.length);
+                args = new Array(_defined.length);
 
-                var _defined4 = function _defined4(item) {
+                var _defined2 = function _defined2(item) {
                     item = trimQuotes(item.trim());
                     //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
                     var itemMap = mapper.get(item);
@@ -4747,8 +4753,8 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                     return item === 'scope' ? cmpParent : item;
                 };
 
-                for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-                    args[_i4] = _defined4(_defined3[_i4], _i4, _defined3);
+                for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
+                    args[_i2] = _defined2(_defined[_i2], _i2, _defined);
                 }
             }
 
@@ -4767,11 +4773,11 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 var _handler = match[1];
                 var _stringArgs = match[2];
                 if (_stringArgs) {
-                    var _defined5 = _stringArgs.split(',');
+                    var _defined3 = _stringArgs.split(',');
 
-                    _args = new Array(_defined5.length);
+                    _args = new Array(_defined3.length);
 
-                    var _defined6 = function _defined6(item) {
+                    var _defined4 = function _defined4(item) {
                         item = trimQuotes(item.trim());
                         var itemMap = mapper.get(item);
                         if (itemMap !== undefined) item = itemMap;
@@ -4779,8 +4785,8 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                         return item === 'this' ? cmp : item;
                     };
 
-                    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-                        _args[_i6] = _defined6(_defined5[_i6], _i6, _defined5);
+                    for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+                        _args[_i4] = _defined4(_defined3[_i4], _i4, _defined3);
                     }
                 }
 

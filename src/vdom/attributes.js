@@ -65,7 +65,20 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
 
-    Object.keys(props).forEach(name => {
+    let propsKeys = Object.keys(props);
+
+    for (let i = 0; i < propsKeys.length; i++) {
+        let name = propsKeys[i];
+        if(!$target || $target.nodeType !== 1) continue;
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
+        if (newProps[name] !== oldProps[name]) {
+            let obj = {};
+            obj[name] = newProps[name];
+            updated.push(obj);
+        }
+    }
+
+    /*Object.keys(props).forEach(name => {
         if(!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
@@ -73,7 +86,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
             obj[name] = newProps[name];
             updated.push(obj);
         }
-    });
+    });*/
     return updated;
 }
 
