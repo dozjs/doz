@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.15  
+// [DOZ]  Build version: 2.3.16  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3214,7 +3214,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.15',
+        value: '2.3.16',
         enumerable: true
     },
     tag: {
@@ -6238,7 +6238,7 @@ function hide($target, opt) {}
 
 directive('show', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
-        Object.defineProperties(instance, {
+        /*Object.defineProperties(instance, {
             show: {
                 value: show,
                 writable: true,
@@ -6249,7 +6249,7 @@ directive('show', {
                 writable: true,
                 enumerable: true
             }
-        });
+        });*/
     },
     setVisible: function setVisible($target, value) {
         var thereIsAnimateDirective = $target.__animationDirectiveValue;
