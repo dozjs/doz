@@ -15,7 +15,7 @@ function hide($target, opt) {
 directive('show', {
 
     onAppComponentCreate(instance) {
-        Object.defineProperties(instance, {
+        /*Object.defineProperties(instance, {
             show: {
                 value: show,
                 writable: true,
@@ -26,7 +26,7 @@ directive('show', {
                 writable: true,
                 enumerable: true
             }
-        });
+        });*/
     },
 
     setVisible($target, value) {

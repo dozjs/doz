@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.16] - 2020-02-12
+- **Removed** empty methods `show` and `hide` from directive `d-show`
+
 ## [2.3.14] - 2020-01-02
 - **Fixed** issue on Edge when using `d-ref` and `d-show` together
 
