@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.16  
+// [DOZ]  Build version: 2.3.17  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3214,7 +3214,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.16',
+        value: '2.3.17',
         enumerable: true
     },
     tag: {
@@ -3346,7 +3346,7 @@ var Doz = function () {
                 value: this.cfg.root
             },
             appId: {
-                value: Math.random().toString(36).substring(2, 15),
+                value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
                 enumerable: true
             },
             action: {
