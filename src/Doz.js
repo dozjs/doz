@@ -87,7 +87,7 @@ class Doz {
                 value: this.cfg.root
             },
             appId: {
-                value: Math.random().toString(36).substring(2, 15),
+                value: window.__DOZ_APP_ID__ || Math.random().toString(36).substring(2, 15),
                 enumerable: true
             },
             action: {
