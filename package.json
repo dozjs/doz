@@ -58,7 +58,7 @@
         "bejs": "^2.0.1",
         "chai": "^4.1.2",
         "compression-webpack-plugin": "^1.1.11",
-        "doz-router": "^1.4.1",
+        "doz-router": "^1.6.4",
         "faster.js": "^1.1.0",
         "jsdom": "^11.6.2",
         "jsdom-global": "^3.0.2",

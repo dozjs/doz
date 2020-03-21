@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.15  
+// [DOZ]  Build version: 2.3.16  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1359,8 +1359,11 @@ function createInstance() {
                 var _ret = function () {
 
                     if (parent.cmp) {
+
                         var rawChild = $child.outerHTML;
                         parent.cmp.rawChildren.push(rawChild);
+                        //console.log(parent)
+                        //console.log('--->', $child.dozElementChildren)
                     }
 
                     // For node created by mount method
@@ -1460,6 +1463,8 @@ function createInstance() {
                         $child = $child.nextSibling;
                         return 'continue';
                     }
+
+                    newElement.rawChildrenObject = $child.dozElementChildren;
 
                     if (_typeof(newElement.module) === 'object') {
                         hmr(newElement, newElement.module);
@@ -2471,6 +2476,8 @@ function create(node, cmp, initial, cmpParent) {
         return document.createComment('slot(' + node.props.slot + ')');
     }
 
+    //console.log(node.type, node.props, cmp.tag)
+
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
         $el = nodeStored.cloneNode();
@@ -2492,6 +2499,8 @@ function create(node, cmp, initial, cmpParent) {
             }
         }
     }
+
+    $el.dozElementChildren = node.children;
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
@@ -3227,7 +3236,7 @@ Object.defineProperties(Doz, {
         value: mapper
     },
     version: {
-        value: '2.3.15',
+        value: '2.3.16',
         enumerable: true
     },
     tag: {
@@ -3359,7 +3368,7 @@ var Doz = function () {
                 value: this.cfg.root
             },
             appId: {
-                value: Math.random().toString(36).substring(2, 15),
+                value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
                 enumerable: true
             },
             action: {
@@ -5461,6 +5470,10 @@ var Base = function Base() {
             value: [],
             enumerable: true
         },
+        rawChildrenVnode: {
+            value: [],
+            enumerable: true
+        },
         autoCreateChildren: {
             value: true,
             enumerable: true,
@@ -6253,7 +6266,7 @@ function hide($target, opt) {}
 
 directive('show', {
     onAppComponentCreate: function onAppComponentCreate(instance) {
-        Object.defineProperties(instance, {
+        /*Object.defineProperties(instance, {
             show: {
                 value: show,
                 writable: true,
@@ -6264,7 +6277,7 @@ directive('show', {
                 writable: true,
                 enumerable: true
             }
-        });
+        });*/
     },
     setVisible: function setVisible($target, value) {
         var thereIsAnimateDirective = $target.__animationDirectiveValue;

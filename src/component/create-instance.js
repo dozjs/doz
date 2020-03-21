@@ -74,8 +74,11 @@ function createInstance(cfg = {}) {
             if (cmp) {
 
                 if (parent.cmp) {
+
                     const rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
+                    //console.log(parent)
+                    //console.log('--->', $child.dozElementChildren)
                 }
 
                 // For node created by mount method
@@ -163,6 +166,8 @@ function createInstance(cfg = {}) {
                     $child = $child.nextSibling;
                     continue;
                 }
+
+                newElement.rawChildrenObject = $child.dozElementChildren;
 
                 if (typeof newElement.module === 'object') {
                     hmr(newElement, newElement.module);

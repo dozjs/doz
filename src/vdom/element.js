@@ -35,6 +35,8 @@ function create(node, cmp, initial, cmpParent) {
         return  document.createComment(`slot(${node.props.slot})`);
     }
 
+    //console.log(node.type, node.props, cmp.tag)
+
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
         $el = nodeStored.cloneNode();
@@ -59,6 +61,8 @@ function create(node, cmp, initial, cmpParent) {
             }
         }
     }
+
+    $el.dozElementChildren = node.children;
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
