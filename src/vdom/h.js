@@ -161,6 +161,7 @@ module.exports = function (strings, ...value) {
                 .replace(regOpen, LESSER)
                 .replace(regClose, GREATER);*/
 
+    /*
     if (isBoundedToComponent) {
         // Now get style from complete string
         if (thereIsStyle)
@@ -180,6 +181,7 @@ module.exports = function (strings, ...value) {
                 return '';
             });
     }
+    */
 
     result = result.trim();
     //console.log(result);

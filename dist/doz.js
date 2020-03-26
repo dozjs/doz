@@ -2862,7 +2862,6 @@ var regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
  * @returns {*}
  */
 module.exports = function (strings) {
-    var _this = this;
 
     //hCache.get(strings, value);
     //console.log('val', value);
@@ -3004,24 +3003,25 @@ module.exports = function (strings) {
                 .replace(regOpen, LESSER)
                 .replace(regClose, GREATER);*/
 
+    /*
     if (isBoundedToComponent) {
         // Now get style from complete string
-        if (thereIsStyle) result = result.replace(regStyle, function (match, p1) {
-            if (!_this._rootElement || p1 === _this._currentStyle) return '';
-            if (match && p1) {
-                // Here should be create the tag style
-                _this._currentStyle = p1;
-                var isScoped = /scoped/.test(match);
-                var dataSetUId = _this.uId;
-                _this.getHTMLElement().dataset.uid = _this.uId;
-                var tagByData = '[data-uid="' + dataSetUId + '"]';
-
-                scopedInner(_this._currentStyle, dataSetUId, tagByData, isScoped);
-            }
-
-            return '';
-        });
+        if (thereIsStyle)
+            result = result.replace(regStyle, (match, p1) => {
+                if (!this._rootElement || p1 === this._currentStyle) return '';
+                if (match && p1) {
+                    // Here should be create the tag style
+                    this._currentStyle = p1;
+                    let isScoped = /scoped/.test(match);
+                    const dataSetUId = this.uId;
+                    this.getHTMLElement().dataset.uid = this.uId;
+                    let tagByData = `[data-uid="${dataSetUId}"]`;
+                      scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                }
+                  return '';
+            });
     }
+    */
 
     result = result.trim();
     //console.log(result);
