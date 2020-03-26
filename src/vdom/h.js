@@ -148,6 +148,9 @@ module.exports = function (strings, ...value) {
         .replace(regOpen, LESSER)
         .replace(regClose, GREATER);
 
+    // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
+    // il tag script con il tipo text/style
+    /*
     if (isBoundedToComponent) {
         // Now get style from complete string
         result = result.replace(regStyle, (match, p1) => {
@@ -166,6 +169,7 @@ module.exports = function (strings, ...value) {
             return '';
         });
     }
+    */
 
     result = result.trim();
     //console.log(result);

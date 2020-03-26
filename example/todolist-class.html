@@ -153,6 +153,11 @@
     Doz.define('doz-todo-item', class extends Doz.Component{
         template(h) {
             return h`
+                <style>
+                    .todo-item {
+                        background: ${this.props.done ? 'green' : 'red'}
+                    }
+                </style>
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
                     <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
