@@ -3003,6 +3003,8 @@ module.exports = function (strings) {
                 .replace(regOpen, LESSER)
                 .replace(regClose, GREATER);*/
 
+    // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
+    // il tag script con il tipo text/style
     /*
     if (isBoundedToComponent) {
         // Now get style from complete string
