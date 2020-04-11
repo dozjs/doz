@@ -92,7 +92,7 @@ directive('animate', {
             $target.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
             wait(() => {
-                console.log($target.__animationIsRunning)
+                //console.log($target.__animationIsRunning)
                 return !$target.__animationIsRunning;
             }, () => {
                 if (!document.body.contains($target)) return;
@@ -145,12 +145,12 @@ directive('animate', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
-        console.log('onComponentDOMElementCreate', 'animation', $target);
+        //console.log('onComponentDOMElementCreate', 'animation', $target);
         this.createAnimations(instance, $target, directiveValue)
     },
 
     onAppComponentMount(instance) {
-        console.log('onAppComponentMount', 'animation');
+        //console.log('onAppComponentMount', 'animation');
         for (let [key, value] of instance.elementsWithAnimation) {
             this.createAnimations(instance, key, value)
         }

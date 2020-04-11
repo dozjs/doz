@@ -49,7 +49,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     function handleAnimationEnd() {
-        console.log('call animation end')
+        //console.log('call animation end')
         $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
@@ -72,8 +72,8 @@ function animateHelper($target, animationName, opts, callback) {
         if (typeof opts.cb === 'function') opts.cb();
     }
 
-    console.log('set animation end to', $target);
-    console.log('body contains', document.body.contains($target));
+    //console.log('set animation end to', $target);
+    //console.log('body contains', document.body.contains($target));
     $target.addEventListener('animationend', handleAnimationEnd);
     $target.__handleAnimationEnd = handleAnimationEnd;
 

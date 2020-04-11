@@ -64,6 +64,8 @@ function createInstance(cfg = {}) {
                 localComponents = parent.cmp._components;
             }
 
+            //console.log('_______', cmpName);
+
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
@@ -93,6 +95,8 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
+                // Disable this because animation doesn't works
+                /*
                 // Replace possible child name generated automatically
                 // Tags generated automatically are like my-tag-1-0
                 // This block transforms to original tag like my-tag
@@ -124,6 +128,7 @@ function createInstance(cfg = {}) {
 
                     $child = $newNodeChild;
                 }
+                */
 
                 const props = serializeProps($child);
 

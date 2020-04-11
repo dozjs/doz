@@ -115,6 +115,8 @@ module.exports = function (strings, ...value) {
 
                 let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
+
+
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
                 } else {
@@ -136,7 +138,7 @@ module.exports = function (strings, ...value) {
                         cfg: cmp
                     };
                 }
-
+                //console.log('---------->', tagCmp);
                 value[i] = tagCmp;
             }
         }

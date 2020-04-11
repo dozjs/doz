@@ -1268,8 +1268,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var html = __webpack_require__(11);
 var transformChildStyle = __webpack_require__(29);
 
@@ -1351,6 +1349,8 @@ function createInstance() {
                 localComponents = parent.cmp._components;
             }
 
+            //console.log('_______', cmpName);
+
             var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
 
             var parentElement = void 0;
@@ -1378,40 +1378,37 @@ function createInstance() {
                         return 'continue';
                     }
 
+                    // Disable this because animation doesn't works
+                    /*
                     // Replace possible child name generated automatically
                     // Tags generated automatically are like my-tag-1-0
                     // This block transforms to original tag like my-tag
                     if (cmp.tag && cmpName !== cmp.tag) {
-                        var $newNodeChild = document.createElement(cmp.tag);
-
-                        while ($child.childNodes.length > 0) {
+                        let $newNodeChild = document.createElement(cmp.tag);
+                          while ($child.childNodes.length > 0) {
                             $newNodeChild.appendChild($child.childNodes[0]);
                         }
-
-                        $child.parentNode.replaceChild($newNodeChild, $child);
+                          $child.parentNode.replaceChild($newNodeChild, $child);
                         // Copy all attributes
-
-                        var _defined = function _defined(attr) {
-                            $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue);
-                        };
-
-                        var _defined2 = [].concat(_toConsumableArray($child.attributes));
-
-                        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-                            _defined(_defined2[_i2], _i2, _defined2);
-                        }
+                        [...$child.attributes].forEach(attr => {
+                            $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue)
+                        });
                         // Copy all specials Doz properties attached to element
-
-
-                        if ($child[COMPONENT_INSTANCE]) $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
-                        if ($child[COMPONENT_DYNAMIC_INSTANCE]) $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
-                        if ($child[COMPONENT_ROOT_INSTANCE]) $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
-                        if ($child[PROPS_ATTRIBUTES]) $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
-                        if ($child[ALREADY_WALKED]) $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
-                        if ($child[DEFAULT_SLOT_KEY]) $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
-
-                        $child = $newNodeChild;
+                        if ($child[COMPONENT_INSTANCE])
+                            $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
+                        if ($child[COMPONENT_DYNAMIC_INSTANCE])
+                            $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
+                        if ($child[COMPONENT_ROOT_INSTANCE])
+                            $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
+                        if ($child[PROPS_ATTRIBUTES])
+                            $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
+                        if ($child[ALREADY_WALKED])
+                            $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
+                        if ($child[DEFAULT_SLOT_KEY])
+                            $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
+                          $child = $newNodeChild;
                     }
+                    */
 
                     var props = serializeProps($child);
 
@@ -1542,12 +1539,12 @@ function createInstance() {
 
     walk(cfg.template);
 
-    var _defined3 = function _defined3($child) {
+    var _defined = function _defined($child) {
         return $child.remove();
     };
 
-    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
-        _defined3(trash[_i4], _i4, trash);
+    for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
+        _defined(trash[_i2], _i2, trash);
     }
 
     return componentInstance;
@@ -2978,7 +2975,7 @@ module.exports = function (strings) {
                         cfg: cmp
                     };
                 }
-
+                //console.log('---------->', tagCmp);
                 value[i] = tagCmp;
             }
         }
@@ -6496,7 +6493,7 @@ directive('animate', {
             };
 
             wait(function () {
-                console.log($target.__animationIsRunning);
+                //console.log($target.__animationIsRunning)
                 return !$target.__animationIsRunning;
             }, function () {
                 if (!document.body.contains($target)) return;
@@ -6556,11 +6553,11 @@ directive('animate', {
         });
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-        console.log('onComponentDOMElementCreate', 'animation', $target);
+        //console.log('onComponentDOMElementCreate', 'animation', $target);
         this.createAnimations(instance, $target, directiveValue);
     },
     onAppComponentMount: function onAppComponentMount(instance) {
-        console.log('onAppComponentMount', 'animation');
+        //console.log('onAppComponentMount', 'animation');
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -6688,7 +6685,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     function handleAnimationEnd() {
-        console.log('call animation end');
+        //console.log('call animation end')
         $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
@@ -6711,8 +6708,8 @@ function animateHelper($target, animationName, opts, callback) {
         if (typeof opts.cb === 'function') opts.cb();
     }
 
-    console.log('set animation end to', $target);
-    console.log('body contains', document.body.contains($target));
+    //console.log('set animation end to', $target);
+    //console.log('body contains', document.body.contains($target));
     $target.addEventListener('animationend', handleAnimationEnd);
     $target.__handleAnimationEnd = handleAnimationEnd;
 }
