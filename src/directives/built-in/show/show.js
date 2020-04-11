@@ -32,12 +32,18 @@ directive('show', {
     setVisible($target, value) {
         const thereIsAnimateDirective = $target.__animationDirectiveValue;
         $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+        //$target.__animationWasUsed =
+        //console.dir($target);
 
-        if (thereIsAnimateDirective) {
+        if (thereIsAnimateDirective && $target.__animationWasUsedByShowDirective) {
+            //console.log($target.__animationIsRunning)
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
+            $target.__animationWasUsedByShowDirective = true;
+
             $target.__animationsList.push((resolve) => {
+                //console.log('value', value)
                 if (value) {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(() => {
@@ -52,6 +58,8 @@ directive('show', {
                 }
             });
 
+            //console.log($target.__animationsList)
+
             if (thereIsAnimateDirective.queue) {
                 if (!$target.__animationIsRunning) {
                     // please don't use it
@@ -62,6 +70,8 @@ directive('show', {
             }
 
         } else {
+            if (thereIsAnimateDirective)
+                $target.__animationWasUsedByShowDirective = true;
             //delay(() => {
                 $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
             //});
