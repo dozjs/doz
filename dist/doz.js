@@ -4666,7 +4666,7 @@ function setAttribute($target, name, value, cmp) {
         //console.log('set', name, value)
         if (name === 'class') {
             $target.className = value;
-        } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role') {
+        } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for') {
             $target.setAttribute(name, value);
         } else {
             $target[name] = value; /**/
@@ -6416,7 +6416,7 @@ directive('animate', {
                             $targetOfMap.style.display = 'none';
                             resolve();
                         });
-                    });
+                    }, 1000, 'a');
                 }));
             };
 
@@ -6496,6 +6496,7 @@ directive('animate', {
             };
 
             wait(function () {
+                console.log($target.__animationIsRunning);
                 return !$target.__animationIsRunning;
             }, function () {
                 if (!document.body.contains($target)) return;
@@ -6505,7 +6506,7 @@ directive('animate', {
                 //Exclude if element is not displayed
                 if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
-            });
+            }, 1000, 'b');
         }
 
         if (directiveValue.hide) {
@@ -6555,9 +6556,11 @@ directive('animate', {
         });
     },
     onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+        console.log('onComponentDOMElementCreate', 'animation', $target);
         this.createAnimations(instance, $target, directiveValue);
     },
     onAppComponentMount: function onAppComponentMount(instance) {
+        console.log('onAppComponentMount', 'animation');
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -6602,12 +6605,13 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout
 
 function wait(what, callback) {
     var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
+    var message = arguments[3];
 
     var rid = void 0;
     var count = 0;
     var check = function check() {
         if (count >= maxCount) {
-            console.warn('wait, max cicles exceeded ' + maxCount);
+            console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
             return;
         }
         if (!what()) {
@@ -6684,6 +6688,7 @@ function animateHelper($target, animationName, opts, callback) {
     }
 
     function handleAnimationEnd() {
+        console.log('call animation end');
         $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
@@ -6706,6 +6711,8 @@ function animateHelper($target, animationName, opts, callback) {
         if (typeof opts.cb === 'function') opts.cb();
     }
 
+    console.log('set animation end to', $target);
+    console.log('body contains', document.body.contains($target));
     $target.addEventListener('animationend', handleAnimationEnd);
     $target.__handleAnimationEnd = handleAnimationEnd;
 }

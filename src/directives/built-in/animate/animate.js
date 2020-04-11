@@ -43,7 +43,7 @@ directive('animate', {
                                     $targetOfMap.style.display = 'none';
                                     resolve();
                                 });
-                            });
+                            }, 1000, 'a');
                         }
                     )
                 );
@@ -92,6 +92,7 @@ directive('animate', {
             $target.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
             wait(() => {
+                console.log($target.__animationIsRunning)
                 return !$target.__animationIsRunning;
             }, () => {
                 if (!document.body.contains($target)) return;
@@ -101,7 +102,7 @@ directive('animate', {
                 //Exclude if element is not displayed
                 if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
-            });
+            }, 1000, 'b');
         }
 
         if (directiveValue.hide) {
@@ -144,10 +145,12 @@ directive('animate', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
+        console.log('onComponentDOMElementCreate', 'animation', $target);
         this.createAnimations(instance, $target, directiveValue)
     },
 
     onAppComponentMount(instance) {
+        console.log('onAppComponentMount', 'animation');
         for (let [key, value] of instance.elementsWithAnimation) {
             this.createAnimations(instance, key, value)
         }
