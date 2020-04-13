@@ -35,7 +35,7 @@ directive('show', {
         //$target.__animationWasUsed =
         //console.dir($target);
 
-        if (thereIsAnimateDirective && $target.__animationWasUsedByShowDirective) {
+        if (thereIsAnimateDirective && $target.__prevValueOfShow !== value && $target.__animationWasUsedByShowDirective) {
             //console.log($target.__animationIsRunning)
             if (!$target.__animationsList)
                 $target.__animationsList = [];
@@ -48,11 +48,13 @@ directive('show', {
                     $target.style.display = $target.__showOriginDisplay;
                     $target.__animationShow(() => {
                         $target.style.display = $target.__showOriginDisplay;
+                        $target.__prevValueOfShow = value;
                         resolve();
                     });
                 } else {
                     $target.__animationHide(() => {
                         $target.style.display = 'none';
+                        $target.__prevValueOfShow = value;
                         resolve();
                     });
                 }
@@ -70,10 +72,11 @@ directive('show', {
             }
 
         } else {
+            $target.__prevValueOfShow = value;
             if (thereIsAnimateDirective)
                 $target.__animationWasUsedByShowDirective = true;
             //delay(() => {
-                $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+                $target.style.display = !value /*=== false*/ ? 'none' : $target.__showOriginDisplay;
             //});
         }
     },
