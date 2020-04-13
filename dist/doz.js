@@ -4622,6 +4622,7 @@ var mapper = __webpack_require__(4);
 
 var _require2 = __webpack_require__(5),
     isDirective = _require2.isDirective;
+
 //const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
@@ -4661,11 +4662,12 @@ function setAttribute($target, name, value, cmp) {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
         //console.log('set', name, value)
-        if (name === 'class') {
-            $target.className = value;
-        } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for') {
+        if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || $target.toString().includes('SVG')) {
             $target.setAttribute(name, value);
+        } else if (name === 'class') {
+            $target.className = value;
         } else {
+            //console.log($target instanceof SVGSVGElement);
             $target[name] = value; /**/
         }
         //console.log('get', name, $target[name])

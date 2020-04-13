@@ -4,6 +4,7 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
+
 //const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
@@ -37,17 +38,22 @@ function setAttribute($target, name, value, cmp) {
         if (isEventAttribute(name) && typeof value === 'string') {
             mapper.getAll(value);
         }
-    /*} else if (typeof value === 'boolean') {
-        setBooleanAttribute($target, name, value);*/
+        /*} else if (typeof value === 'boolean') {
+            setBooleanAttribute($target, name, value);*/
     } else {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
         //console.log('set', name, value)
-        if (name === 'class') {
-            $target.className = value;
-        } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for') {
+        if (name.startsWith('data-')
+            || name.startsWith('aria-')
+            || name === 'role'
+            || name === 'for'
+            || $target.toString().includes('SVG')) {
             $target.setAttribute(name, value);
+        } else if (name === 'class') {
+            $target.className = value;
         } else {
+            //console.log($target instanceof SVGSVGElement);
             $target[name] = value;/**/
         }
         //console.log('get', name, $target[name])
@@ -55,7 +61,7 @@ function setAttribute($target, name, value, cmp) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if(newVal !== oldVal) {
+    if (newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     }
@@ -69,7 +75,7 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
 
     for (let i = 0; i < propsKeys.length; i++) {
         let name = propsKeys[i];
-        if(!$target || $target.nodeType !== 1) continue;
+        if (!$target || $target.nodeType !== 1) continue;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
             let obj = {};
@@ -231,7 +237,7 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     const propsKeys = Object.keys(nodeProps);
 
-    for(let i = 0, len = propsKeys.length; i < len; i++) {
+    for (let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
