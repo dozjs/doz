@@ -2834,6 +2834,7 @@ module.exports = function (strings) {
 
     if (isInStyle) {
       allowTag = false;
+      result = result.replace(/ scoped>/, ' data-scoped>');
     } //
 
 
@@ -3188,14 +3189,15 @@ var Doz = /*#__PURE__*/function () {
 
     Object.defineProperty(Node.prototype, '_dozAttach', {
       get: function get() {
-        if (!this._dozContainer) this._dozContainer = {};
-        return this._dozContainer;
+        if (!this._dozAttachObject) this._dozAttachObject = {};
+        return this._dozAttachObject;
       },
       set: function set(k, v) {
-        if (!this._dozContainer) this._dozContainer = {};
-        this._dozContainer[k] = v;
-        return this._dozContainer;
+        if (!this._dozAttachObject) this._dozAttachObject = {};
+        this._dozAttachObject[k] = v;
+        return this._dozAttachObject;
       },
+      enumerable: true,
       configurable: true
     });
     this.baseTemplate = "<".concat(TAG.APP, "></").concat(TAG.APP, ">");
@@ -3462,17 +3464,19 @@ function transformChildStyle(child, parent) {
   parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId; //child.removeAttribute('scoped');
 
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
-  var isScoped = child.hasAttribute('scoped');
+  var isScoped = child.hasAttribute('data-scoped'); //console.log(child.outerHTML)
+
   scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
   var emptyStyle = document.createElement('script');
   emptyStyle.type = 'text/style';
   emptyStyle.textContent = ' ';
-  emptyStyle.dataset.id = dataSetUId + '--style';
-  emptyStyle.dataset.owner = dataSetUId;
-  emptyStyle.dataset.ownerByData = tagByData;
+  emptyStyle._dozAttach.styleData = {};
+  emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
+  emptyStyle._dozAttach.styleData.owner = dataSetUId;
+  emptyStyle._dozAttach.styleData.ownerByData = tagByData;
 
   if (isScoped) {
-    emptyStyle.dataset.scoped = 'true';
+    emptyStyle._dozAttach.styleData.scoped = 'true';
   } //console.log(emptyStyle);
 
 
@@ -5001,8 +5005,8 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
       if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
         if ($parent.nodeName === 'SCRIPT') {
           // it could be heavy
-          if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner && document.getElementById($parent.dataset.id)) {
-            document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
+          if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
+            document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
           }
         } else {
           $oldElement.textContent = canDecode(newNode);

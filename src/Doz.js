@@ -11,16 +11,17 @@ class Doz {
 
         Object.defineProperty(Node.prototype, '_dozAttach', {
             get: function () {
-                if (!this._dozContainer)
-                    this._dozContainer = {};
-                return this._dozContainer;
+                if (!this._dozAttachObject)
+                    this._dozAttachObject = {};
+                return this._dozAttachObject;
             },
             set: function (k, v) {
-                if (!this._dozContainer)
-                    this._dozContainer = {};
-                this._dozContainer[k] = v;
-                return this._dozContainer;
+                if (!this._dozAttachObject)
+                    this._dozAttachObject = {};
+                this._dozAttachObject[k] = v;
+                return this._dozAttachObject;
             },
+            enumerable: true,
             configurable: true
         });
 

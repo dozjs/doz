@@ -8,19 +8,21 @@ function transformChildStyle(child, parent) {
     parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId;
     //child.removeAttribute('scoped');
     let tagByData = `[data-uid="${dataSetUId}"]`;
-    let isScoped = child.hasAttribute('scoped');
+    let isScoped = child.hasAttribute('data-scoped');
+    //console.log(child.outerHTML)
 
     scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
 
     const emptyStyle = document.createElement('script');
     emptyStyle.type = 'text/style';
     emptyStyle.textContent = ' ';
-    emptyStyle.dataset.id = dataSetUId + '--style';
-    emptyStyle.dataset.owner = dataSetUId;
-    emptyStyle.dataset.ownerByData = tagByData;
+    emptyStyle._dozAttach.styleData = {};
+    emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
+    emptyStyle._dozAttach.styleData.owner = dataSetUId;
+    emptyStyle._dozAttach.styleData.ownerByData = tagByData;
 
     if(isScoped) {
-        emptyStyle.dataset.scoped = 'true';
+        emptyStyle._dozAttach.styleData.scoped = 'true';
     }
     //console.log(emptyStyle);
 

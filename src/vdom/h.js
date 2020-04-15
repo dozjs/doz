@@ -82,6 +82,8 @@ module.exports = function (strings, ...value) {
 
         if(isInStyle) {
             allowTag = false;
+            result = result
+                .replace(/ scoped>/, ' data-scoped>');
         }
 
         //

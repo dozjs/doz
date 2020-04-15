@@ -46,8 +46,8 @@ class DOMManipulation extends Base {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
-                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner && document.getElementById($parent.dataset.id)) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
+                if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
+                    document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
                 }
             } else {
                 $oldElement.textContent = canDecode(newNode);
