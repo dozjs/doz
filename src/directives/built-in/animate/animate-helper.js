@@ -7,14 +7,14 @@ function animateHelper($target, animationName, opts, callback) {
         opts = {};
     }
 
-    if($target.__animationIsRunning) {
-        $target.classList.remove($target.__lastAnimationName);
-        $target.__animationIsRunning = false;
-        $target.__lockedForAnimation = false;
-        $target.removeEventListener('animationend', $target.__handleAnimationEnd);
+    if($target._dozAttach.__animationIsRunning) {
+        $target.classList.remove($target._dozAttach.__lastAnimationName);
+        $target._dozAttach.__animationIsRunning = false;
+        $target._dozAttach.__lockedForAnimation = false;
+        $target.removeEventListener('animationend', $target._dozAttach.__handleAnimationEnd);
     }
 
-    $target.__animationIsRunning = true;
+    $target._dozAttach.__animationIsRunning = true;
 
     let computedStyle = window.getComputedStyle($target);
     opts.classLib = opts.classLib || 'animated'; //Default animate.css
@@ -22,11 +22,11 @@ function animateHelper($target, animationName, opts, callback) {
     // Now supports IE11
     $target.classList.add(opts.classLib);
     $target.classList.add(animationName);
-    $target.__lastAnimationName = animationName;
+    $target._dozAttach.__lastAnimationName = animationName;
 
-    $target.__animationOriginDisplay = computedStyle.display;
+    $target._dozAttach.__animationOriginDisplay = computedStyle.display;
 
-    if ($target.__animationOriginDisplay === 'inline') {
+    if ($target._dozAttach.__animationOriginDisplay === 'inline') {
         $target.style.display = 'inline-block';
     }
 
@@ -53,10 +53,10 @@ function animateHelper($target, animationName, opts, callback) {
         $target.classList.remove(opts.classLib);
         $target.classList.remove(animationName);
 
-        $target.__animationIsRunning = false;
-        $target.__lockedForAnimation = false;
+        $target._dozAttach.__animationIsRunning = false;
+        $target._dozAttach.__lockedForAnimation = false;
 
-        //$target.style.display = $target.__animationOriginDisplay;
+        //$target.style.display = $target._dozAttach.__animationOriginDisplay;
         $target.style.animationDelay = '';
         $target.style.webkitAnimationDelay = '';
         $target.style.mozAnimationDelay = '';
@@ -75,7 +75,7 @@ function animateHelper($target, animationName, opts, callback) {
     //console.log('set animation end to', $target);
     //console.log('body contains', document.body.contains($target));
     $target.addEventListener('animationend', handleAnimationEnd);
-    $target.__handleAnimationEnd = handleAnimationEnd;
+    $target._dozAttach.__handleAnimationEnd = handleAnimationEnd;
 
 
 }

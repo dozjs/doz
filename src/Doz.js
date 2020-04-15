@@ -19,7 +19,7 @@ class Doz {
                 if (!this._dozContainer)
                     this._dozContainer = {};
                 this._dozContainer[k] = v;
-                return this._dozContainer = {};
+                return this._dozContainer;
             },
             configurable: true
         });

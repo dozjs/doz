@@ -28,7 +28,7 @@ function setAttribute($target, name, value, cmp) {
 
     let _isDirective = isDirective(name);
 
-    if (_isDirective) $target.__dozHasDirective = true;
+    if (_isDirective) $target._dozAttach.__dozHasDirective = true;
 
     if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes

@@ -30,31 +30,31 @@ directive('show', {
     },
 
     setVisible($target, value) {
-        const thereIsAnimateDirective = $target.__animationDirectiveValue;
-        $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+        const thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
+        $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
         //$target.__animationWasUsed =
         //console.dir($target);
 
-        if (thereIsAnimateDirective && $target.__prevValueOfShow !== value && $target.__animationWasUsedByShowDirective) {
-            //console.log($target.__animationIsRunning)
+        if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
+            //console.log($target._dozAttach.__animationIsRunning)
             if (!$target.__animationsList)
                 $target.__animationsList = [];
 
-            $target.__animationWasUsedByShowDirective = true;
+            $target._dozAttach.__animationWasUsedByShowDirective = true;
 
             $target.__animationsList.push((resolve) => {
                 //console.log('value', value)
                 if (value) {
-                    $target.style.display = $target.__showOriginDisplay;
-                    $target.__animationShow(() => {
-                        $target.style.display = $target.__showOriginDisplay;
-                        $target.__prevValueOfShow = value;
+                    $target.style.display = $target._dozAttach.__showOriginDisplay;
+                    $target._dozAttach.__animationShow(() => {
+                        $target.style.display = $target._dozAttach.__showOriginDisplay;
+                        $target._dozAttach.__prevValueOfShow = value;
                         resolve();
                     });
                 } else {
-                    $target.__animationHide(() => {
+                    $target._dozAttach.__animationHide(() => {
                         $target.style.display = 'none';
-                        $target.__prevValueOfShow = value;
+                        $target._dozAttach.__prevValueOfShow = value;
                         resolve();
                     });
                 }
@@ -63,7 +63,7 @@ directive('show', {
             //console.log($target.__animationsList)
 
             if (thereIsAnimateDirective.queue) {
-                if (!$target.__animationIsRunning) {
+                if (!$target._dozAttach.__animationIsRunning) {
                     // please don't use it
                     queue($target.__animationsList.shift(), $target.__animationsList);
                 }
@@ -72,11 +72,11 @@ directive('show', {
             }
 
         } else {
-            $target.__prevValueOfShow = value;
+            $target._dozAttach.__prevValueOfShow = value;
             if (thereIsAnimateDirective)
-                $target.__animationWasUsedByShowDirective = true;
+                $target._dozAttach.__animationWasUsedByShowDirective = true;
             //delay(() => {
-                $target.style.display = !value /*=== false*/ ? 'none' : $target.__showOriginDisplay;
+                $target.style.display = !value /*=== false*/ ? 'none' : $target._dozAttach.__showOriginDisplay;
             //});
         }
     },

@@ -3194,7 +3194,7 @@ var Doz = /*#__PURE__*/function () {
       set: function set(k, v) {
         if (!this._dozContainer) this._dozContainer = {};
         this._dozContainer[k] = v;
-        return this._dozContainer = {};
+        return this._dozContainer;
       },
       configurable: true
     });
@@ -4471,7 +4471,7 @@ function setAttribute($target, name, value, cmp) {
 
   var _isDirective = isDirective(name);
 
-  if (_isDirective) $target.__dozHasDirective = true;
+  if (_isDirective) $target._dozAttach.__dozHasDirective = true;
 
   if ((isCustomAttribute(name) || typeof value === 'function' || _typeof(value) === 'object') && !_isDirective) {
     // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
@@ -4965,7 +4965,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
   _createClass(DOMManipulation, [{
     key: "$$afterNodeElementCreate",
     value: function $$afterNodeElementCreate($el, node, initial) {
-      if ($el.__dozHasDirective) {
+      if ($el._dozAttach.__dozHasDirective) {
         directive.callAppDOMElementCreate(this, $el, node, initial);
         directive.callComponentDOMElementCreate(this, $el, initial);
       }
@@ -5943,29 +5943,29 @@ directive('show', {
     });*/
   },
   setVisible: function setVisible($target, value) {
-    var thereIsAnimateDirective = $target.__animationDirectiveValue;
-    $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || ''; //$target.__animationWasUsed =
+    var thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
+    $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || ''; //$target.__animationWasUsed =
     //console.dir($target);
 
-    if (thereIsAnimateDirective && $target.__prevValueOfShow !== value && $target.__animationWasUsedByShowDirective) {
-      //console.log($target.__animationIsRunning)
+    if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
+      //console.log($target._dozAttach.__animationIsRunning)
       if (!$target.__animationsList) $target.__animationsList = [];
-      $target.__animationWasUsedByShowDirective = true;
+      $target._dozAttach.__animationWasUsedByShowDirective = true;
 
       $target.__animationsList.push(function (resolve) {
         //console.log('value', value)
         if (value) {
-          $target.style.display = $target.__showOriginDisplay;
+          $target.style.display = $target._dozAttach.__showOriginDisplay;
 
-          $target.__animationShow(function () {
-            $target.style.display = $target.__showOriginDisplay;
-            $target.__prevValueOfShow = value;
+          $target._dozAttach.__animationShow(function () {
+            $target.style.display = $target._dozAttach.__showOriginDisplay;
+            $target._dozAttach.__prevValueOfShow = value;
             resolve();
           });
         } else {
-          $target.__animationHide(function () {
+          $target._dozAttach.__animationHide(function () {
             $target.style.display = 'none';
-            $target.__prevValueOfShow = value;
+            $target._dozAttach.__prevValueOfShow = value;
             resolve();
           });
         }
@@ -5973,7 +5973,7 @@ directive('show', {
 
 
       if (thereIsAnimateDirective.queue) {
-        if (!$target.__animationIsRunning) {
+        if (!$target._dozAttach.__animationIsRunning) {
           // please don't use it
           queue($target.__animationsList.shift(), $target.__animationsList);
         }
@@ -5981,12 +5981,12 @@ directive('show', {
         new Promise($target.__animationsList.shift()).then();
       }
     } else {
-      $target.__prevValueOfShow = value;
-      if (thereIsAnimateDirective) $target.__animationWasUsedByShowDirective = true; //delay(() => {
+      $target._dozAttach.__prevValueOfShow = value;
+      if (thereIsAnimateDirective) $target._dozAttach.__animationWasUsedByShowDirective = true; //delay(() => {
 
       $target.style.display = !value
       /*=== false*/
-      ? 'none' : $target.__showOriginDisplay; //});
+      ? 'none' : $target._dozAttach.__showOriginDisplay; //});
     }
   },
   onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
@@ -6087,7 +6087,7 @@ directive('animate', {
           animationsEnd.push(new Promise(function (resolve) {
             if (!document.body.contains($targetOfMap)) return resolve();
             wait(function () {
-              return !$targetOfMap.__animationIsRunning;
+              return !$targetOfMap._dozAttach.__animationIsRunning;
             }, function () {
               var optAnimation = {
                 duration: directiveValueOfMap.hide.duration,
@@ -6125,8 +6125,8 @@ directive('animate', {
   createAnimations: function createAnimations(instance, $target, directiveValue) {
     var _this = this;
 
-    if ($target.__lockedForAnimation) return;
-    $target.__lockedForAnimation = true;
+    if ($target._dozAttach.__lockedForAnimation) return;
+    $target._dozAttach.__lockedForAnimation = true;
 
     if (typeof directiveValue === 'string') {
       directiveValue = {
@@ -6135,7 +6135,7 @@ directive('animate', {
       };
     }
 
-    $target.__animationDirectiveValue = directiveValue;
+    $target._dozAttach.__animationDirectiveValue = directiveValue;
 
     if (directiveValue.show) {
       if (_typeof(directiveValue.show) !== 'object') {
@@ -6152,18 +6152,18 @@ directive('animate', {
         classLib: directiveValue.classLib
       }; //Add always an useful method for show
 
-      $target.__animationShow = function (cb) {
+      $target._dozAttach.__animationShow = function (cb) {
         return instance.animate($target, directiveValue.show.name, optAnimation, cb);
       };
 
       wait(function () {
-        //console.log($target.__animationIsRunning)
-        return !$target.__animationIsRunning;
+        //console.log($target._dozAttach.__animationIsRunning)
+        return !$target._dozAttach.__animationIsRunning;
       }, function () {
         if (!document.body.contains($target)) return;
 
-        if ($target.__animationOriginDisplay) {
-          $target.style.display = $target.__animationOriginDisplay;
+        if ($target._dozAttach.__animationOriginDisplay) {
+          $target.style.display = $target._dozAttach.__animationOriginDisplay;
         } //Exclude if element is not displayed
 
 
@@ -6187,7 +6187,7 @@ directive('animate', {
         classLib: directiveValue.classLib
       }; //Add always an useful method for show
 
-      $target.__animationHide = function (cb) {
+      $target._dozAttach.__animationHide = function (cb) {
         return instance.animate($target, directiveValue.hide.name, _optAnimation, cb);
       };
 
@@ -6285,24 +6285,24 @@ function animateHelper($target, animationName, opts, callback) {
     opts = {};
   }
 
-  if ($target.__animationIsRunning) {
-    $target.classList.remove($target.__lastAnimationName);
-    $target.__animationIsRunning = false;
-    $target.__lockedForAnimation = false;
-    $target.removeEventListener('animationend', $target.__handleAnimationEnd);
+  if ($target._dozAttach.__animationIsRunning) {
+    $target.classList.remove($target._dozAttach.__lastAnimationName);
+    $target._dozAttach.__animationIsRunning = false;
+    $target._dozAttach.__lockedForAnimation = false;
+    $target.removeEventListener('animationend', $target._dozAttach.__handleAnimationEnd);
   }
 
-  $target.__animationIsRunning = true;
+  $target._dozAttach.__animationIsRunning = true;
   var computedStyle = window.getComputedStyle($target);
   opts.classLib = opts.classLib || 'animated'; //Default animate.css
   // Now supports IE11
 
   $target.classList.add(opts.classLib);
   $target.classList.add(animationName);
-  $target.__lastAnimationName = animationName;
-  $target.__animationOriginDisplay = computedStyle.display;
+  $target._dozAttach.__lastAnimationName = animationName;
+  $target._dozAttach.__animationOriginDisplay = computedStyle.display;
 
-  if ($target.__animationOriginDisplay === 'inline') {
+  if ($target._dozAttach.__animationOriginDisplay === 'inline') {
     $target.style.display = 'inline-block';
   }
 
@@ -6328,8 +6328,8 @@ function animateHelper($target, animationName, opts, callback) {
     //console.log('call animation end')
     $target.classList.remove(opts.classLib);
     $target.classList.remove(animationName);
-    $target.__animationIsRunning = false;
-    $target.__lockedForAnimation = false; //$target.style.display = $target.__animationOriginDisplay;
+    $target._dozAttach.__animationIsRunning = false;
+    $target._dozAttach.__lockedForAnimation = false; //$target.style.display = $target._dozAttach.__animationOriginDisplay;
 
     $target.style.animationDelay = '';
     $target.style.webkitAnimationDelay = '';
@@ -6348,7 +6348,7 @@ function animateHelper($target, animationName, opts, callback) {
 
 
   $target.addEventListener('animationend', handleAnimationEnd);
-  $target.__handleAnimationEnd = handleAnimationEnd;
+  $target._dozAttach.__handleAnimationEnd = handleAnimationEnd;
 }
 
 module.exports = animateHelper;
