@@ -20,15 +20,15 @@ function setAttribute($target, name, value, cmp) {
     $target._dozAttach[PROPS_ATTRIBUTES][name] = value;
 
     if (name === 'key') {
-        if ($target.__dozKey === undefined) {
-            $target.__dozKey = value;
+        if ($target._dozAttach.key === undefined) {
+            $target._dozAttach.key = value;
         }
         return;
     }
 
     let _isDirective = isDirective(name);
 
-    if (_isDirective) $target._dozAttach.__dozHasDirective = true;
+    if (_isDirective) $target._dozAttach.hasDirective = true;
 
     if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
@@ -44,19 +44,23 @@ function setAttribute($target, name, value, cmp) {
         if (value === undefined) value = '';
         //$target.setAttribute(name, value);
         //console.log('set', name, value)
-        if (name.startsWith('data-')
+
+        //Bisogna migliorare questa condizione, messa come prima rende più lento il tutto
+
+        if (name === 'class') {
+            $target.className = value;
+            //Imposto solo se la proprietà esiste...
+        } else if ($target[name] !== undefined){
+            //console.log($target instanceof SVGSVGElement);
+            $target[name] = value;/**/
+        } else if (name.startsWith('data-')
             || name.startsWith('aria-')
             || name === 'role'
             || name === 'for'
             || $target.toString().includes('SVG')) {
             $target.setAttribute(name, value);
-        } else if (name === 'class') {
-            $target.className = value;
-        } else {
-            //console.log($target instanceof SVGSVGElement);
-            $target[name] = value;/**/
+            //console.log('get', name, $target[name])
         }
-        //console.log('get', name, $target[name])
     }
 }
 

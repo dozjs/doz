@@ -12,7 +12,7 @@ class DOMManipulation extends Base {
     }
 
     $$afterNodeElementCreate($el, node, initial) {
-        if ($el._dozAttach.__dozHasDirective) {
+        if ($el._dozAttach.hasDirective) {
             directive.callAppDOMElementCreate(this, $el, node, initial);
             directive.callComponentDOMElementCreate(this, $el, initial);
         }

@@ -319,14 +319,21 @@ function extractDirectivesFromProps(cmp) {
     props = cmp.props;
   }
 
-  Object.keys(props).forEach(function (key) {
+  var _defined = function _defined(key) {
     if (isDirective(key)) {
       var keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
       cmp._directiveProps[keyWithoutD] = props[key];
       /*if (canBeDeleteProps)
           delete props[key];*/
     }
-  });
+  };
+
+  var _defined2 = Object.keys(props);
+
+  for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+    _defined(_defined2[_i2], _i2, _defined2);
+  }
+
   return cmp._directiveProps;
 }
 
@@ -995,7 +1002,12 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
             }
         }).join('');*/
 
-        res = obj.map(func);
+        res = new Array(obj.length);
+
+        for (var _i2 = 0; _i2 <= obj.length - 1; _i2++) {
+          res[_i2] = func(obj[_i2], _i2, obj);
+        }
+
         if (safe) this.endSafeRender();
       }
 
@@ -1070,9 +1082,17 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         this._unmountedParentNode = null;
         this._unmountedPlaceholder = null;
         hooks.callMount(this);
-        Object.keys(this.children).forEach(function (child) {
+
+        var _defined = function _defined(child) {
           _this2.children[child].mount();
-        });
+        };
+
+        var _defined2 = Object.keys(this.children);
+
+        for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+          _defined(_defined2[_i4], _i4, _defined2);
+        }
+
         return this;
       } else if (template) {
         if (this._rootElement.nodeType !== 1) {
@@ -1123,9 +1143,17 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
       this._unmounted = !byDestroy;
       if (!silently) hooks.callUnmount(this);
-      Object.keys(this.children).forEach(function (child) {
+
+      var _defined3 = function _defined3(child) {
         _this3.children[child].unmount(onlyInstance, byDestroy, silently);
-      });
+      };
+
+      var _defined4 = Object.keys(this.children);
+
+      for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+        _defined3(_defined4[_i6], _i6, _defined4);
+      }
+
       return this;
     }
   }, {
@@ -1148,9 +1176,16 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         return;
       }
 
-      Object.keys(this.children).forEach(function (child) {
+      var _defined5 = function _defined5(child) {
         _this4.children[child].destroy();
-      });
+      };
+
+      var _defined6 = Object.keys(this.children);
+
+      for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+        _defined5(_defined6[_i8], _i8, _defined6);
+      }
+
       hooks.callDestroy(this);
       return true;
     } // noinspection JSMethodCanBeStatic
@@ -1533,9 +1568,15 @@ function createInstance() {
   }
 
   walk(cfg.template);
-  trash.forEach(function ($child) {
+
+  var _defined = function _defined($child) {
     return $child.remove();
-  });
+  };
+
+  for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
+    _defined(trash[_i2], _i2, trash);
+  }
+
   return componentInstance;
 }
 
@@ -2494,7 +2535,7 @@ function update($parent, newNode, oldNode) {
     }
 
     if (_typeof(newNode) === 'object' && propsSlot && $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot]) {
-      $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot].forEach(function ($slot) {
+      var _defined = function _defined($slot) {
         // Slot is on DOM
         if ($slot.parentNode) {
           newNode.isNewSlotEl = true;
@@ -2510,7 +2551,13 @@ function update($parent, newNode, oldNode) {
           var indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
           update($slot.__newSlotEl.parentNode, newNode, oldNode, indexNewSlotEl, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
-      });
+      };
+
+      var _defined2 = $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot];
+
+      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+      }
 
       return;
     }
@@ -2570,28 +2617,51 @@ function update($parent, newNode, oldNode) {
     // The content of the "LI" tag will be processed by the normal "update" function
     var $myListParent = $parent.childNodes[index]; //console.log(newNode.type, $myListParent);
 
-    var newNodeKeyList = newNode.children.map(function (i) {
-      return i.key;
-    });
-    var oldNodeKeyList = oldNode.children.map(function (i) {
-      return i.key;
-    }); //console.log(newNodeKeyList);
-    //console.log(oldNodeKeyList);
-    // here my new logic for keys
-    // Check if $myListParent has __dozKeyList
+    var _defined3 = newNode.children;
 
-    if ($myListParent.__dozKeyList === undefined) {
-      $myListParent.__dozKeyList = new Map();
+    var _defined4 = function _defined4(i) {
+      return i.key;
+    };
+
+    var newNodeKeyList = new Array(_defined3.length);
+
+    for (var _i9 = 0; _i9 <= _defined3.length - 1; _i9++) {
+      newNodeKeyList[_i9] = _defined4(_defined3[_i9], _i9, _defined3);
     }
 
-    var oldKeyDoRemove = oldNodeKeyList.filter(function (x) {
+    var _defined5 = oldNode.children;
+
+    var _defined6 = function _defined6(i) {
+      return i.key;
+    };
+
+    var oldNodeKeyList = new Array(_defined5.length); //console.log(newNodeKeyList);
+    //console.log(oldNodeKeyList);
+    // here my new logic for keys
+    // Check if $myListParent has _dozAttach.keyList
+
+    for (var _i10 = 0; _i10 <= _defined5.length - 1; _i10++) {
+      oldNodeKeyList[_i10] = _defined6(_defined5[_i10], _i10, _defined5);
+    }
+
+    if ($myListParent._dozAttach.keyList === undefined) {
+      $myListParent._dozAttach.keyList = new Map();
+    }
+
+    var _defined7 = function _defined7(x) {
       return !newNodeKeyList.includes(x);
-    }); //console.log('diff', oldKeyDoRemove)
+    };
+
+    var oldKeyDoRemove = []; //console.log('diff', oldKeyDoRemove)
     // Ci sono key da rimuovere?
 
+    for (var _i11 = 0; _i11 <= oldNodeKeyList.length - 1; _i11++) {
+      if (_defined7(oldNodeKeyList[_i11], _i11, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i11]);
+    }
+
     for (var i = 0; i < oldKeyDoRemove.length; i++) {
-      if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
-        var _$oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]); //console.log('da rimuovere', $oldElement);
+      if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
+        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]); //console.log('da rimuovere', $oldElement);
 
 
         if (_$oldElement._dozAttach[COMPONENT_INSTANCE]) {
@@ -2600,23 +2670,23 @@ function update($parent, newNode, oldNode) {
           $myListParent.removeChild(_$oldElement);
         }
 
-        $myListParent.__dozKeyList["delete"](oldKeyDoRemove[i]);
+        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[i]);
       }
     }
 
     var listOfElement = [];
 
-    for (var _i = 0; _i < newNodeKeyList.length; _i++) {
+    for (var _i6 = 0; _i6 < newNodeKeyList.length; _i6++) {
       // This is the key of all
-      var theKey = newNodeKeyList[_i]; //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
+      var theKey = newNodeKeyList[_i6]; //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
-      var $element = $myListParent.__dozKeyList.get(theKey); // Se non esiste creo il nodo
+      var $element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
 
 
       if (!$element) {
-        var _$newElement2 = create(newNode.children[_i], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+        var _$newElement2 = create(newNode.children[_i6], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
-        $myListParent.__dozKeyList.set(theKey, _$newElement2); //console.log('elemento creato', $newElement);
+        $myListParent._dozAttach.keyList.set(theKey, _$newElement2); //console.log('elemento creato', $newElement);
         // appendo per il momento
 
 
@@ -2635,18 +2705,18 @@ function update($parent, newNode, oldNode) {
         var oldChildByKeyLength = oldChildByKey.children.length; //console.log(newChildByKey.children[i])
         //console.log(oldChildByKey.children[i])
 
-        for (var _i2 = 0; _i2 < newChildByKeyLength || _i2 < oldChildByKeyLength; _i2++) {
-          if (newChildByKey.children[_i2] === undefined && oldChildByKey.children[_i2] === undefined) continue; //console.log('aaaa')
+        for (var _i7 = 0; _i7 < newChildByKeyLength || _i7 < oldChildByKeyLength; _i7++) {
+          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; //console.log('aaaa')
 
-          update($element, newChildByKey.children[_i2], oldChildByKey.children[_i2], _i2, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+          update($element, newChildByKey.children[_i7], oldChildByKey.children[_i7], _i7, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
     } // Reorder?
 
 
-    for (var _i3 = 0; _i3 < listOfElement.length; _i3++) {
-      var $currentElementAtPosition = $myListParent.childNodes[_i3];
-      var _$element = listOfElement[_i3]; //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
+    for (var _i8 = 0; _i8 < listOfElement.length; _i8++) {
+      var $currentElementAtPosition = $myListParent.childNodes[_i8];
+      var _$element = listOfElement[_i8]; //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
       //console.log('equal?', $element === $currentElementAtPosition)
 
       if (_$element === $currentElementAtPosition) continue;
@@ -2679,8 +2749,8 @@ function update($parent, newNode, oldNode) {
     var newLength = newNode.children.length;
     var oldLength = oldNode.children.length;
 
-    for (var _i4 = 0; _i4 < newLength || _i4 < oldLength; _i4++) {
-      update($parent.childNodes[index], newNode.children[_i4], oldNode.children[_i4], _i4, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    for (var _i12 = 0; _i12 < newLength || _i12 < oldLength; _i12++) {
+      update($parent.childNodes[index], newNode.children[_i12], oldNode.children[_i12], _i12, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
     }
 
     clearDead();
@@ -3035,9 +3105,15 @@ function use(plugin) {
 }
 
 function load(app) {
-  data.plugins.forEach(function (func) {
+  var _defined = function _defined(func) {
     func(app.constructor, app, func.options);
-  });
+  };
+
+  var _defined2 = data.plugins;
+
+  for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+    _defined(_defined2[_i2], _i2, _defined2);
+  }
 }
 
 module.exports = {
@@ -3179,6 +3255,19 @@ var plugin = __webpack_require__(24);
 
 var directive = __webpack_require__(0);
 
+Object.defineProperty(Node.prototype, '_dozAttach', {
+  get: function get() {
+    if (!this._dozAttachObject) this._dozAttachObject = Object.create(null);
+    return this._dozAttachObject;
+  },
+  set: function set(k, v) {
+    this._dozAttachObject[k] = v;
+    return this._dozAttachObject;
+  },
+  enumerable: true,
+  configurable: true
+});
+
 var Doz = /*#__PURE__*/function () {
   function Doz() {
     var _this = this;
@@ -3187,19 +3276,11 @@ var Doz = /*#__PURE__*/function () {
 
     _classCallCheck(this, Doz);
 
-    Object.defineProperty(Node.prototype, '_dozAttach', {
-      get: function get() {
-        if (!this._dozAttachObject) this._dozAttachObject = {};
-        return this._dozAttachObject;
-      },
-      set: function set(k, v) {
-        if (!this._dozAttachObject) this._dozAttachObject = {};
-        this._dozAttachObject[k] = v;
-        return this._dozAttachObject;
-      },
-      enumerable: true,
-      configurable: true
-    });
+    //Object.defineProperty(Node.prototype, '_dozAttachObject', {value: {}});
+    //Node.prototype._dozAttachObject = {};
+    //console.log(Node.__proto__)
+    //console.log(Node.prototype)
+    //Node.prototype.addEventListener('')
     this.baseTemplate = "<".concat(TAG.APP, "></").concat(TAG.APP, ">");
 
     if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
@@ -3256,11 +3337,17 @@ var Doz = /*#__PURE__*/function () {
       },
       _callAppReady: {
         value: function value() {
-          this._onAppReadyCB.forEach(function (cb) {
+          var _defined = function _defined(cb) {
             if (typeof cb === 'function' && cb._instance) {
               cb.call(cb._instance);
             }
-          });
+          };
+
+          var _defined2 = this._onAppReadyCB;
+
+          for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+            _defined(_defined2[_i2], _i2, _defined2);
+          }
 
           this._onAppReadyCB = [];
         }
@@ -3327,18 +3414,30 @@ var Doz = /*#__PURE__*/function () {
     });
 
     if (Array.isArray(this.cfg.components)) {
-      this.cfg.components.forEach(function (cmp) {
+      var _defined3 = function _defined3(cmp) {
         if (_typeof(cmp) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
           _this._components[cmp.tag] = cmp;
         }
-      });
+      };
+
+      var _defined4 = this.cfg.components;
+
+      for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+        _defined3(_defined4[_i4], _i4, _defined4);
+      }
     } else if (_typeof(this.cfg.components) === 'object') {
-      Object.keys(this.cfg.components).forEach(function (objName) {
+      var _defined5 = function _defined5(objName) {
         _this._components[objName] = {
           tag: objName,
           cfg: _this.cfg.components[objName]
         };
-      });
+      };
+
+      var _defined6 = Object.keys(this.cfg.components);
+
+      for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
+        _defined5(_defined6[_i6], _i6, _defined6);
+      }
     }
 
     this._components[TAG.APP] = {
@@ -3350,9 +3449,17 @@ var Doz = /*#__PURE__*/function () {
         }
       }
     };
-    Object.keys(cfg).forEach(function (p) {
+
+    var _defined7 = function _defined7(p) {
       if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
-    });
+    };
+
+    var _defined8 = Object.keys(cfg);
+
+    for (var _i8 = 0; _i8 <= _defined8.length - 1; _i8++) {
+      _defined7(_defined8[_i8], _i8, _defined8);
+    }
+
     plugin.load(this);
     directive.callAppInit(this);
     if (this.cfg.autoDraw) this.draw();
@@ -3398,9 +3505,15 @@ var Doz = /*#__PURE__*/function () {
       }
 
       if (this._onAppCB[event]) {
-        this._onAppCB[event].forEach(function (func) {
+        var _defined9 = function _defined9(func) {
           func.apply(_this2, args);
-        });
+        };
+
+        var _defined10 = this._onAppCB[event];
+
+        for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
+          _defined9(_defined10[_i10], _i10, _defined10);
+        }
       }
 
       return this;
@@ -3951,7 +4064,8 @@ function callMethod() {
   args.shift(); //console.warn(cmp.tag, method, cmp.props)
 
   var directivesKeyValue = extractDirectivesFromProps(cmp);
-  Object.keys(directivesKeyValue).forEach(function (key) {
+
+  var _defined = function _defined(key) {
     var keyArgumentsValues = [];
     var keyArguments = {};
     var originKey = key;
@@ -3972,14 +4086,26 @@ function callMethod() {
 
       outArgs.push(directivesKeyValue[originKey]);
 
-      directiveObj._keyArguments.forEach(function (keyArg, i) {
+      var _defined3 = function _defined3(keyArg, i) {
         return keyArguments[keyArg] = keyArgumentsValues[i];
-      });
+      };
+
+      var _defined4 = directiveObj._keyArguments;
+
+      for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+        _defined3(_defined4[_i4], _i4, _defined4);
+      }
 
       outArgs.push(keyArguments);
       directiveObj[method].apply(directiveObj, outArgs);
     }
-  });
+  };
+
+  var _defined2 = Object.keys(directivesKeyValue);
+
+  for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+    _defined(_defined2[_i2], _i2, _defined2);
+  }
 }
 
 function callComponentBeforeCreate() {
@@ -4238,15 +4364,28 @@ function hmr(instance, _module) {
   var id = _module.id;
   window[NS_PROPS][id] = window[NS_PROPS][id] || new Map();
   window[NS_INIT_PROPS][id] = window[NS_INIT_PROPS][id] || new Map();
-  Object.keys(instance.props).forEach(function (p) {
+
+  var _defined = function _defined(p) {
     if (instance._initialProps[p] === window[NS_INIT_PROPS][id].get(p)) instance.props[p] = window[NS_PROPS][id].get(p) || instance.props[p];else instance.props[p] = instance._initialProps[p];
-  });
+  };
+
+  var _defined2 = Object.keys(instance.props);
+
+  for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+    _defined(_defined2[_i2], _i2, _defined2);
+  }
 
   _module.hot.dispose(function () {
-    Object.keys(instance.props).forEach(function (p) {
+    var _defined3 = function _defined3(p) {
       window[NS_PROPS][id].set(p, instance.props[p]);
       window[NS_INIT_PROPS][id].set(p, instance._initialProps[p]);
-    });
+    };
+
+    var _defined4 = Object.keys(instance.props);
+
+    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+      _defined3(_defined4[_i4], _i4, _defined4);
+    }
   });
 }
 
@@ -4466,8 +4605,8 @@ function setAttribute($target, name, value, cmp) {
   $target._dozAttach[PROPS_ATTRIBUTES][name] = value;
 
   if (name === 'key') {
-    if ($target.__dozKey === undefined) {
-      $target.__dozKey = value;
+    if ($target._dozAttach.key === undefined) {
+      $target._dozAttach.key = value;
     }
 
     return;
@@ -4475,7 +4614,7 @@ function setAttribute($target, name, value, cmp) {
 
   var _isDirective = isDirective(name);
 
-  if (_isDirective) $target._dozAttach.__dozHasDirective = true;
+  if (_isDirective) $target._dozAttach.hasDirective = true;
 
   if ((isCustomAttribute(name) || typeof value === 'function' || _typeof(value) === 'object') && !_isDirective) {
     // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
@@ -4491,17 +4630,17 @@ function setAttribute($target, name, value, cmp) {
   } else {
     if (value === undefined) value = ''; //$target.setAttribute(name, value);
     //console.log('set', name, value)
+    //Bisogna migliorare questa condizione, messa come prima rende più lento il tutto
 
-    if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || $target.toString().includes('SVG')) {
-      $target.setAttribute(name, value);
-    } else if (name === 'class') {
-      $target.className = value;
-    } else {
+    if (name === 'class') {
+      $target.className = value; //Imposto solo se la proprietà esiste...
+    } else if ($target[name] !== undefined) {
       //console.log($target instanceof SVGSVGElement);
       $target[name] = value;
       /**/
-    } //console.log('get', name, $target[name])
-
+    } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || $target.toString().includes('SVG')) {
+      $target.setAttribute(name, value); //console.log('get', name, $target[name])
+    }
   }
 }
 
@@ -4577,13 +4716,21 @@ function addEventListener($target, name, value, cmp, cmpParent) {
       var stringArgs = match[2];
 
       if (stringArgs) {
-        args = stringArgs.split(',').map(function (item) {
+        var _defined = stringArgs.split(',');
+
+        args = new Array(_defined.length);
+
+        var _defined2 = function _defined2(item) {
           item = trimQuotes(item.trim()); //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
 
           var itemMap = mapper.get(item);
           if (itemMap !== undefined) item = itemMap;
           return item === 'scope' ? cmpParent : item;
-        });
+        };
+
+        for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
+          args[_i2] = _defined2(_defined[_i2], _i2, _defined);
+        }
       }
 
       var method = objectPath(handler, cmpParent);
@@ -4603,13 +4750,21 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         var _stringArgs = match[2];
 
         if (_stringArgs) {
-          _args = _stringArgs.split(',').map(function (item) {
+          var _defined3 = _stringArgs.split(',');
+
+          _args = new Array(_defined3.length);
+
+          var _defined4 = function _defined4(item) {
             item = trimQuotes(item.trim());
             var itemMap = mapper.get(item);
             if (itemMap !== undefined) item = itemMap; //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
 
             return item === 'this' ? cmp : item;
-          });
+          };
+
+          for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+            _args[_i4] = _defined4(_defined3[_i4], _i4, _defined3);
+          }
         }
 
         var isParentMethod = _handler.match(REGEX.IS_PARENT_METHOD);
@@ -4786,13 +4941,24 @@ var camelToDash = __webpack_require__(19);
 
 function toInlineStyle(obj) {
   var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  obj = Object.entries(obj).reduce(function (styleString, _ref) {
+
+  var _defined = Object.entries(obj);
+
+  var _defined2 = function _defined2(styleString, _ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         propName = _ref2[0],
         propValue = _ref2[1];
 
     return "".concat(styleString).concat(camelToDash(propName), ":").concat(propValue, ";");
-  }, '');
+  };
+
+  var _acc = '';
+
+  for (var _i2 = 0; _i2 <= _defined.length - 1; _i2++) {
+    _acc = _defined2(_acc, _defined[_i2], _i2, _defined);
+  }
+
+  obj = _acc;
   return withStyle ? "style=\"".concat(obj, "\"") : obj;
 }
 
@@ -4827,11 +4993,17 @@ function add(instance) {
 }
 
 function emit(instance, next, prev) {
-  instance.app._onAppDrawCB.forEach(function (cb) {
+  var _defined = function _defined(cb) {
     if (typeof cb === 'function' && cb._instance) {
       cb.call(cb._instance, next, prev, instance);
     }
-  });
+  };
+
+  var _defined2 = instance.app._onAppDrawCB;
+
+  for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+    _defined(_defined2[_i2], _i2, _defined2);
+  }
 }
 
 module.exports = {
@@ -4876,19 +5048,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 function loadLocal(instance) {
   // Add local components
   if (Array.isArray(instance.components)) {
-    instance.components.forEach(function (cmp) {
+    var _defined = function _defined(cmp) {
       if (_typeof(cmp) === 'object' && typeof cmp.tag === 'string' && _typeof(cmp.cfg) === 'object') {
         instance._components[cmp.tag] = cmp;
       }
-    });
+    };
+
+    var _defined2 = instance.components;
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+      _defined(_defined2[_i2], _i2, _defined2);
+    }
+
     delete instance.components;
   } else if (_typeof(instance.components) === 'object') {
-    Object.keys(instance.components).forEach(function (objName) {
+    var _defined3 = function _defined3(objName) {
       instance._components[objName] = {
         tag: objName,
         cfg: instance.components[objName]
       };
-    });
+    };
+
+    var _defined4 = Object.keys(instance.components);
+
+    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+      _defined3(_defined4[_i4], _i4, _defined4);
+    }
+
     delete instance.components;
   }
 }
@@ -4969,7 +5155,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
   _createClass(DOMManipulation, [{
     key: "$$afterNodeElementCreate",
     value: function $$afterNodeElementCreate($el, node, initial) {
-      if ($el._dozAttach.__dozHasDirective) {
+      if ($el._dozAttach.hasDirective) {
         directive.callAppDOMElementCreate(this, $el, node, initial);
         directive.callComponentDOMElementCreate(this, $el, initial);
       }
@@ -5034,11 +5220,22 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
         var dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE]; // Can update props of dynamic instances?
 
         if (dynInstance && attributesUpdated.length) {
-          attributesUpdated.forEach(function (props) {
-            Object.keys(props).forEach(function (name) {
+          var _defined = function _defined(props) {
+            var _defined2 = function _defined2(name) {
               dynInstance.props[name] = props[name];
-            });
-          });
+            };
+
+            var _defined3 = Object.keys(props);
+
+            for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+              _defined2(_defined3[_i4], _i4, _defined3);
+            }
+          };
+
+          for (var _i2 = 0; _i2 <= attributesUpdated.length - 1; _i2++) {
+            _defined(attributesUpdated[_i2], _i2, attributesUpdated);
+          }
+
           return true;
         }
       }
@@ -5814,16 +6011,27 @@ directive('bind', {
     if (instance.props[value] === undefined) return; // Add UI events
 
     var events = ['compositionstart', 'compositionend', 'input', 'change'];
-    events.forEach(function (event) {
+
+    var _defined = function _defined(event) {
       $target.addEventListener(event, function (e) {
         var _value;
 
         if (this.type === 'checkbox') {
           if (!this.defaultValue) instance.props[value] = this.checked;else {
             var inputs = instance.appRoot.querySelectorAll("input[name=".concat(this.name, "][type=checkbox]:checked"));
-            _value = _toConsumableArray(inputs).map(function (input) {
+
+            var _defined2 = _toConsumableArray(inputs);
+
+            _value = new Array(_defined2.length);
+
+            var _defined3 = function _defined3(input) {
               return input.value;
-            }); //instance.props[value] = castStringTo(_value);
+            };
+
+            for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+              _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+            } //instance.props[value] = castStringTo(_value);
+
 
             instance.props[value] = _value;
           }
@@ -5831,18 +6039,39 @@ directive('bind', {
           _value = this.value;
 
           if (this.multiple) {
-            _value = _toConsumableArray(this.options).filter(function (option) {
+            var _defined6 = _toConsumableArray(this.options);
+
+            var _defined7 = function _defined7(option) {
               return option.selected;
-            }).map(function (option) {
+            };
+
+            var _defined4 = [];
+
+            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+              if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
+            }
+
+            _value = new Array(_defined4.length);
+
+            var _defined5 = function _defined5(option) {
               return option.value;
-            });
+            };
+
+            for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+              _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
+            }
           } //instance.props[value] = castStringTo(_value);
 
 
           instance.props[value] = _value;
         }
       });
-    }); // Map $target element with prop name
+    };
+
+    for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
+      _defined(events[_i2], _i2, events);
+    } // Map $target element with prop name
+
 
     if (instance._boundElements[value] !== undefined) {
       instance._boundElements[value].push($target);
@@ -5859,12 +6088,16 @@ directive('bind', {
   updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
     var _this5 = this;
 
-    changes.forEach(function (item) {
+    var _defined8 = function _defined8(item) {
       var value = item.newValue;
       var property = item.property;
 
       _this5.updateBoundElements(instance, value, property);
-    });
+    };
+
+    for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
+      _defined8(changes[_i10], _i10, changes);
+    }
   },
   updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
     var _this = this;
@@ -5887,9 +6120,15 @@ directive('bind', {
     var _this6 = this;
 
     if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
-      instance._boundElements[property].forEach(function ($target) {
+      var _defined9 = function _defined9($target) {
         _this6.updateBoundElement($target, value, instance);
-      });
+      };
+
+      var _defined10 = instance._boundElements[property];
+
+      for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
+        _defined9(_defined10[_i12], _i12, _defined10);
+      }
     }
   },
   updateBoundElement: function updateBoundElement($target, value, instance) {
@@ -5897,16 +6136,28 @@ directive('bind', {
       if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
         var inputs = instance.appRoot.querySelectorAll("input[name=".concat($target.name, "][type=checkbox]"));
 
-        _toConsumableArray(inputs).forEach(function (input) {
+        var _defined11 = function _defined11(input) {
           return input.checked = value.includes(input.value);
-        });
+        };
+
+        var _defined12 = _toConsumableArray(inputs);
+
+        for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
+          _defined11(_defined12[_i14], _i14, _defined12);
+        }
       }
     } else if ($target.type === 'radio') {
       $target.checked = $target.value === value;
     } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
-      _toConsumableArray($target.options).forEach(function (option) {
+      var _defined13 = function _defined13(option) {
         return option.selected = value.includes(option.value);
-      });
+      };
+
+      var _defined14 = _toConsumableArray($target.options);
+
+      for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
+        _defined13(_defined14[_i16], _i16, _defined14);
+      }
     } else {
       $target.value = value;
     }
@@ -5953,10 +6204,10 @@ directive('show', {
 
     if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
       //console.log($target._dozAttach.__animationIsRunning)
-      if (!$target.__animationsList) $target.__animationsList = [];
+      if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = [];
       $target._dozAttach.__animationWasUsedByShowDirective = true;
 
-      $target.__animationsList.push(function (resolve) {
+      $target._dozAttach.__animationsList.push(function (resolve) {
         //console.log('value', value)
         if (value) {
           $target.style.display = $target._dozAttach.__showOriginDisplay;
@@ -5973,16 +6224,16 @@ directive('show', {
             resolve();
           });
         }
-      }); //console.log($target.__animationsList)
+      }); //console.log($target._dozAttach.__animationsList)
 
 
       if (thereIsAnimateDirective.queue) {
         if (!$target._dozAttach.__animationIsRunning) {
           // please don't use it
-          queue($target.__animationsList.shift(), $target.__animationsList);
+          queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
         }
       } else {
-        new Promise($target.__animationsList.shift()).then();
+        new Promise($target._dozAttach.__animationsList.shift()).then();
       }
     } else {
       $target._dozAttach.__prevValueOfShow = value;
@@ -6200,7 +6451,7 @@ directive('animate', {
 
     instance.elementsWithAnimation.set($target, directiveValue);
     setTimeout(function () {
-      Object.keys(instance.children).forEach(function (i) {
+      var _defined = function _defined(i) {
         var childInstance = instance.children[i];
         var $childTarget = childInstance.getHTMLElement();
         var elementAnimation = instance.elementsWithAnimation.get($childTarget);
@@ -6212,7 +6463,13 @@ directive('animate', {
             _this.createLockRemoveInstanceByCallback(childInstance);
           }
         }
-      });
+      };
+
+      var _defined2 = Object.keys(instance.children);
+
+      for (var _i3 = 0; _i3 <= _defined2.length - 1; _i3++) {
+        _defined(_defined2[_i3], _i3, _defined2);
+      }
     });
   },
   onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {

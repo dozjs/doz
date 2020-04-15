@@ -195,24 +195,24 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log(oldNodeKeyList);
         // here my new logic for keys
 
-        // Check if $myListParent has __dozKeyList
-        if ($myListParent.__dozKeyList === undefined) {
-            $myListParent.__dozKeyList = new Map();
+        // Check if $myListParent has _dozAttach.keyList
+        if ($myListParent._dozAttach.keyList === undefined) {
+            $myListParent._dozAttach.keyList = new Map();
         }
 
         let oldKeyDoRemove = oldNodeKeyList.filter(x => !newNodeKeyList.includes(x));
         //console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
         for (let i = 0; i < oldKeyDoRemove.length; i++) {
-            if ($myListParent.__dozKeyList.has(oldKeyDoRemove[i])) {
-                let $oldElement = $myListParent.__dozKeyList.get(oldKeyDoRemove[i]);
+            if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
+                let $oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]);
                 //console.log('da rimuovere', $oldElement);
                 if($oldElement._dozAttach[COMPONENT_INSTANCE]) {
                     $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
                 } else {
                     $myListParent.removeChild($oldElement);
                 }
-                $myListParent.__dozKeyList.delete(oldKeyDoRemove[i]);
+                $myListParent._dozAttach.keyList.delete(oldKeyDoRemove[i]);
             }
         }
 
@@ -221,12 +221,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         for (let i = 0; i < newNodeKeyList.length; i++) {
             // This is the key of all
             let theKey = newNodeKeyList[i];
-            //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent.__dozKeyList.has(newNode.children[i].props.key))
-            let $element = $myListParent.__dozKeyList.get(theKey);
+            //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+            let $element = $myListParent._dozAttach.keyList.get(theKey);
             // Se non esiste creo il nodo
             if (!$element) {
                 let $newElement = create(newNode.children[i], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-                $myListParent.__dozKeyList.set(theKey, $newElement);
+                $myListParent._dozAttach.keyList.set(theKey, $newElement);
                 //console.log('elemento creato', $newElement);
                 // appendo per il momento
                 listOfElement.push($newElement);

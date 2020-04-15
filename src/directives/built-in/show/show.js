@@ -37,12 +37,12 @@ directive('show', {
 
         if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
             //console.log($target._dozAttach.__animationIsRunning)
-            if (!$target.__animationsList)
-                $target.__animationsList = [];
+            if (!$target._dozAttach.__animationsList)
+                $target._dozAttach.__animationsList = [];
 
             $target._dozAttach.__animationWasUsedByShowDirective = true;
 
-            $target.__animationsList.push((resolve) => {
+            $target._dozAttach.__animationsList.push((resolve) => {
                 //console.log('value', value)
                 if (value) {
                     $target.style.display = $target._dozAttach.__showOriginDisplay;
@@ -60,15 +60,15 @@ directive('show', {
                 }
             });
 
-            //console.log($target.__animationsList)
+            //console.log($target._dozAttach.__animationsList)
 
             if (thereIsAnimateDirective.queue) {
                 if (!$target._dozAttach.__animationIsRunning) {
                     // please don't use it
-                    queue($target.__animationsList.shift(), $target.__animationsList);
+                    queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
                 }
             } else {
-                new Promise($target.__animationsList.shift()).then();
+                new Promise($target._dozAttach.__animationsList.shift()).then();
             }
 
         } else {
