@@ -24,8 +24,8 @@ function drawDynamic(instance) {
             //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
             /*// Assign props attributes to new child
             //console.log('Assign props attributes to new child')
-            if(item.node[PROPS_ATTRIBUTES]) {
-                dynamicInstance._rootElement.parentNode[PROPS_ATTRIBUTES] = item.node[PROPS_ATTRIBUTES];
+            if(item.node._dozAttach[PROPS_ATTRIBUTES]) {
+                dynamicInstance._rootElement.parentNode._dozAttach[PROPS_ATTRIBUTES] = item.node._dozAttach[PROPS_ATTRIBUTES];
             }*/
 
             //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
@@ -38,7 +38,7 @@ function drawDynamic(instance) {
                 item.node.appendChild(dynamicInstance._rootElement);
             }
 
-            dynamicInstance._rootElement.parentNode[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
+            dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
             instance._processing.splice(index, 1);
             let n = Object.keys(instance.children).length;
             instance.children[n++] = dynamicInstance;

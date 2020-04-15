@@ -232,7 +232,7 @@ class Component extends DOMManipulation {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                 this._rootElement = newElement;
-                this._rootElement[COMPONENT_ROOT_INSTANCE] = this;
+                this._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = this;
             }
 
             let root = this._rootElement;

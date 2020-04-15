@@ -1,6 +1,6 @@
 const bind = require('./utils/bind');
 const createInstance = require('./component/create-instance');
-const {TAG, REGEX} = require('./constants');
+const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
@@ -8,6 +8,22 @@ const directive = require('./directives');
 class Doz {
 
     constructor(cfg = {}) {
+
+        Object.defineProperty(Node.prototype, '_dozAttach', {
+            get: function () {
+                if (!this._dozContainer)
+                    this._dozContainer = {};
+                return this._dozContainer;
+            },
+            set: function (k, v) {
+                if (!this._dozContainer)
+                    this._dozContainer = {};
+                this._dozContainer[k] = v;
+                return this._dozContainer = {};
+            },
+            configurable: true
+        });
+
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
@@ -30,7 +46,7 @@ class Doz {
         const appNode = document.querySelector(TAG.APP);
 
         // This fix double app rendering in SSR
-        if (appNode && !appNode.dozWalked) {
+        if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
             appNode.parentNode.removeChild(appNode);
         }
 

@@ -14,10 +14,10 @@ function isEventAttribute(name) {
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
 
-    if (!$target[PROPS_ATTRIBUTES]) {
-        $target[PROPS_ATTRIBUTES] = {};
+    if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
+        $target._dozAttach[PROPS_ATTRIBUTES] = {};
     }
-    $target[PROPS_ATTRIBUTES][name] = value;
+    $target._dozAttach[PROPS_ATTRIBUTES][name] = value;
 
     if (name === 'key') {
         if ($target.__dozKey === undefined) {

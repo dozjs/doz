@@ -23,7 +23,7 @@ class DOMManipulation extends Base {
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                let slotName = $el[PROPS_ATTRIBUTES] ? $el[PROPS_ATTRIBUTES].name : null;
+                let slotName = $el._dozAttach[PROPS_ATTRIBUTES] ? $el._dozAttach[PROPS_ATTRIBUTES].name : null;
 
                 if (!slotName) {
                     this._defaultSlot = $el;
@@ -59,17 +59,17 @@ class DOMManipulation extends Base {
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
         //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
-        if ($oldElement[COMPONENT_ROOT_INSTANCE]) {
-            $newElement[COMPONENT_ROOT_INSTANCE] = $oldElement[COMPONENT_ROOT_INSTANCE];
-            $newElement[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
-            $newElement[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[COMPONENT_ROOT_INSTANCE].uId;
+        if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
         }
     };
 
     // noinspection JSMethodCanBeStatic
     $$beforeNodeWalk($parent, index, attributesUpdated) {
         if ($parent.childNodes[index]) {
-            const dynInstance = $parent.childNodes[index][COMPONENT_DYNAMIC_INSTANCE];
+            const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
             // Can update props of dynamic instances?
             if (dynInstance && attributesUpdated.length) {
                 attributesUpdated.forEach(props => {
@@ -100,10 +100,10 @@ class DOMManipulation extends Base {
             name = _isDirective ? name : dashToCamel(name);
             const firstChild = $target.firstChild;
 
-            if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
-                firstChild[COMPONENT_ROOT_INSTANCE].props[name] = value;
-            } else if($target[COMPONENT_INSTANCE]){
-                $target[COMPONENT_INSTANCE].props[name] = value;
+            if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
+                firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
+            } else if($target._dozAttach[COMPONENT_INSTANCE]){
+                $target._dozAttach[COMPONENT_INSTANCE].props[name] = value;
             }
         }
 

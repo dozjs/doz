@@ -36,8 +36,8 @@ function createInstance(cfg = {}) {
         while ($child) {
 
             // Non bella ma funziona
-            if (!$child[ALREADY_WALKED]) {
-                $child[ALREADY_WALKED] = true;
+            if (!$child._dozAttach[ALREADY_WALKED]) {
+                $child._dozAttach[ALREADY_WALKED] = true;
             } else {
                 $child = $child.nextSibling;
                 continue;
@@ -113,18 +113,18 @@ function createInstance(cfg = {}) {
                         $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue)
                     });
                     // Copy all specials Doz properties attached to element
-                    if ($child[COMPONENT_INSTANCE])
-                        $newNodeChild[COMPONENT_INSTANCE] = $child[COMPONENT_INSTANCE];
-                    if ($child[COMPONENT_DYNAMIC_INSTANCE])
-                        $newNodeChild[COMPONENT_DYNAMIC_INSTANCE] = $child[COMPONENT_DYNAMIC_INSTANCE];
-                    if ($child[COMPONENT_ROOT_INSTANCE])
-                        $newNodeChild[COMPONENT_ROOT_INSTANCE] = $child[COMPONENT_ROOT_INSTANCE];
-                    if ($child[PROPS_ATTRIBUTES])
-                        $newNodeChild[PROPS_ATTRIBUTES] = $child[PROPS_ATTRIBUTES];
-                    if ($child[ALREADY_WALKED])
-                        $newNodeChild[ALREADY_WALKED] = $child[ALREADY_WALKED];
-                    if ($child[DEFAULT_SLOT_KEY])
-                        $newNodeChild[DEFAULT_SLOT_KEY] = $child[DEFAULT_SLOT_KEY];
+                    if ($child._dozAttach[COMPONENT_INSTANCE])
+                        $newNodeChild._dozAttach[COMPONENT_INSTANCE] = $child._dozAttach[COMPONENT_INSTANCE];
+                    if ($child._dozAttach[COMPONENT_DYNAMIC_INSTANCE])
+                        $newNodeChild._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = $child._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
+                    if ($child._dozAttach[COMPONENT_ROOT_INSTANCE])
+                        $newNodeChild._dozAttach[COMPONENT_ROOT_INSTANCE] = $child._dozAttach[COMPONENT_ROOT_INSTANCE];
+                    if ($child._dozAttach[PROPS_ATTRIBUTES])
+                        $newNodeChild._dozAttach[PROPS_ATTRIBUTES] = $child._dozAttach[PROPS_ATTRIBUTES];
+                    if ($child._dozAttach[ALREADY_WALKED])
+                        $newNodeChild._dozAttach[ALREADY_WALKED] = $child._dozAttach[ALREADY_WALKED];
+                    if ($child._dozAttach[DEFAULT_SLOT_KEY])
+                        $newNodeChild._dozAttach[DEFAULT_SLOT_KEY] = $child._dozAttach[DEFAULT_SLOT_KEY];
 
                     $child = $newNodeChild;
                 }
@@ -172,7 +172,7 @@ function createInstance(cfg = {}) {
                     continue;
                 }
 
-                newElement.rawChildrenObject = $child.dozElementChildren;
+                newElement.rawChildrenObject = $child._dozAttach.elementChildren;
 
                 if (typeof newElement.module === 'object') {
                     hmr(newElement, newElement.module);
@@ -191,8 +191,8 @@ function createInstance(cfg = {}) {
                         componentInstance = newElement;
                     }
 
-                    newElement._rootElement[COMPONENT_ROOT_INSTANCE] = newElement;
-                    newElement.getHTMLElement()[COMPONENT_INSTANCE] = newElement;
+                    newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
+                    newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
 
                     // Replace first element child if defaultSlot exists with a slot comment
                     if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
