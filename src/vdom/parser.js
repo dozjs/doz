@@ -79,9 +79,10 @@ function compile(data, cmp) {
     while (match = REGEX.HTML_MARKUP.exec(data)) {
 
         if (lastTextPos > -1) {
-            if (lastTextPos > -1 && lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
+            if (/*lastTextPos > -1 && */lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
                 const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+                //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
                     let possibleCompiled = mapper.get(text.trim());
@@ -110,7 +111,10 @@ function compile(data, cmp) {
             // not </ tags
             props = {};
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-                props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                //console.log('attMatch[5]', attMatch[5])
+                //console.log('attMatch[7]', attMatch[7])
+                props[attMatch[2]] = attMatch[5] || attMatch[6] || attMatch[7] || '';
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
                     attMatch[2],

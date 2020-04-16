@@ -693,9 +693,12 @@ function compile(data, cmp) {
 
   while (match = REGEX.HTML_MARKUP.exec(data)) {
     if (lastTextPos > -1) {
-      if (lastTextPos > -1 && lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
+      if (
+      /*lastTextPos > -1 && */
+      lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
         // remove new line space
-        var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length)); // if has content
+        var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length)); //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+        // if has content
 
         if (text) {
           var possibleCompiled = mapper.get(text.trim());
@@ -724,7 +727,10 @@ function compile(data, cmp) {
       props = {};
 
       for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-        props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+        //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+        //console.log('attMatch[5]', attMatch[5])
+        //console.log('attMatch[7]', attMatch[7])
+        props[attMatch[2]] = attMatch[5] || attMatch[6] || attMatch[7] || '';
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
 
@@ -2856,7 +2862,9 @@ module.exports = function (strings) {
     value[_key - 1] = arguments[_key];
   }
 
-  for (var i = 0; i < value.length; ++i) {
+  var valueLength = value.length;
+
+  for (var i = 0; i < valueLength; ++i) {
     var isComponentConstructor = false;
 
     if (Array.isArray(value[i])) {
@@ -2877,28 +2885,34 @@ module.exports = function (strings) {
       value[i] = mapper.set(value[i]);
     } //console.log(strings[i].split(''));
     //console.log([...strings[i]]);
+    //let char;
+    //console.log(strings[i])
 
 
-    for (var x = 0; x < strings[i].length; x++) {
-      var _char = strings[i][x];
-      if (_char === LESSER) allowTag = false;
-      if (_char === GREATER) allowTag = true;
+    var stringsI = strings[i];
+    var stringLength = stringsI.length;
+
+    for (var x = 0; x < stringLength; x++) {
+      //char = strings[i][x];
+      if (stringsI[x] === LESSER) {
+        //console.log('a', strings[i][x], x)
+        allowTag = false; //continue
+      } else if (stringsI[x] === GREATER) {
+        //console.log('b', strings[i][x], x)
+        allowTag = true;
+      }
     }
-    /*strings[i].split('').forEach(char => {
-        //console.log(char)
-        if (char === LESSER)
-            allowTag = false;
-        if (char === GREATER)
-            allowTag = true;
-    });*/
+    /*console.log('---------------')
+    console.log('-a', strings[i].indexOf(LESSER));
+    console.log('-b', strings[i].indexOf(GREATER));*/
 
 
-    if (strings[i].indexOf('<style') > -1) {
+    if (stringsI.indexOf('<style') > -1) {
       isInStyle = true;
       thereIsStyle = true;
     }
 
-    if (strings[i].indexOf('</style') > -1) {
+    if (stringsI.indexOf('</style') > -1) {
       isInStyle = false;
     }
 
@@ -2912,7 +2926,7 @@ module.exports = function (strings) {
 
     if (typeof value[i] === 'function' || _typeof(value[i]) === 'object') {
       //for (let x = 0; x < eventsAttributes.length; x++) {
-      var r = strings[i].split("=");
+      var r = stringsI.split("=");
 
       if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
         isInHandler = true;

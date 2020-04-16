@@ -83,7 +83,8 @@ describe('parser2', function () {
         `);
 
         //printObj(root);
-        assert.strictEqual(root.props.style, 'min-width: 100px;height: 20px;');
+        //assert.strictEqual(root.props.style, 'min-width: 100px;height: 20px;');
+        assert.strictEqual(root.props.style, '\n            min-width: 100px;\n            height: 20px;\n            ');
     });
 
 });

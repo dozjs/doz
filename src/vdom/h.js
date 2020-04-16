@@ -33,7 +33,8 @@ module.exports = function (strings, ...value) {
     let thereIsStyle = false;
     let isBoundedToComponent = !!this._components;
 
-    for (let i = 0; i < value.length; ++i) {
+    let valueLength = value.length;
+    for (let i = 0; i < valueLength; ++i) {
         let isComponentConstructor = false;
         if (Array.isArray(value[i])) {
             let newValueString = '';
@@ -54,29 +55,32 @@ module.exports = function (strings, ...value) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        for (let x = 0; x < strings[i].length; x++) {
-            let char = strings[i][x];
-            if (char === LESSER)
+        //let char;
+        //console.log(strings[i])
+        let stringsI = strings[i];
+        let stringLength = stringsI.length;
+        for (let x = 0; x < stringLength; x++) {
+            //char = strings[i][x];
+            if (stringsI[x] === LESSER) {
+                //console.log('a', strings[i][x], x)
                 allowTag = false;
-            if (char === GREATER)
+                //continue
+            } else if (stringsI[x] === GREATER) {
+                //console.log('b', strings[i][x], x)
                 allowTag = true;
+            }
         }
-
-        /*strings[i].split('').forEach(char => {
-            //console.log(char)
-            if (char === LESSER)
-                allowTag = false;
-            if (char === GREATER)
-                allowTag = true;
-        });*/
+        /*console.log('---------------')
+        console.log('-a', strings[i].indexOf(LESSER));
+        console.log('-b', strings[i].indexOf(GREATER));*/
 
 
-        if (strings[i].indexOf('<style') > -1) {
+        if (stringsI.indexOf('<style') > -1) {
             isInStyle = true;
             thereIsStyle = true;
         }
 
-        if (strings[i].indexOf('</style') > -1) {
+        if (stringsI.indexOf('</style') > -1) {
             isInStyle = false;
         }
 
@@ -91,7 +95,7 @@ module.exports = function (strings, ...value) {
         // Check if value is a function and is after an event attribute like onclick for example.
         if (typeof value[i] === 'function' || typeof value[i] === 'object') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
-                let r = strings[i].split(`=`);
+                let r = stringsI.split(`=`);
                 if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
                     isInHandler = true;
                 }
