@@ -3,6 +3,7 @@ const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY} =
 const canDecode = require('../utils/can-decode');
 const hooks = require('../component/hooks');
 const directive = require('../directives');
+const createAttachElement = require('../component/create-attach-element');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -61,6 +62,8 @@ function create(node, cmp, initial, cmpParent) {
             }
         }
     }
+
+    createAttachElement($el);
 
     $el._dozAttach.elementChildren = node.children;
 
@@ -134,6 +137,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         if ($parent.childNodes.length) {
             // If last node is a root, insert before
             let $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
+            createAttachElement($lastNode);
             if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
                 $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 $parent.insertBefore($newElement, $lastNode);
@@ -144,6 +148,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         //console.log(newNode)
 
+        createAttachElement($parent);
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
         $parent.appendChild($newElement);

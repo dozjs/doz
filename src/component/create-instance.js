@@ -10,6 +10,7 @@ const propsInit = require('./helpers/props-init');
 const delay = require('../utils/delay');
 const directive = require('../directives');
 const getComponentName = require('./helpers/get-component-name');
+const createAttachElement = require('./create-attach-element');
 
 function createInstance(cfg = {}) {
 
@@ -34,6 +35,8 @@ function createInstance(cfg = {}) {
 
     function walk($child, parent = {}) {
         while ($child) {
+
+            createAttachElement($child);
 
             // Non bella ma funziona
             if (!$child._dozAttach[ALREADY_WALKED]) {

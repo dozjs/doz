@@ -16,7 +16,9 @@ function transformChildStyle(child, parent) {
     const emptyStyle = document.createElement('script');
     emptyStyle.type = 'text/style';
     emptyStyle.textContent = ' ';
-    emptyStyle._dozAttach.styleData = {};
+    emptyStyle._dozAttach = {
+        styleData: {}
+    };
     emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
     emptyStyle._dozAttach.styleData.owner = dataSetUId;
     emptyStyle._dozAttach.styleData.ownerByData = tagByData;

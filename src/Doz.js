@@ -4,7 +4,7 @@ const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
-Object.defineProperty(Node.prototype, '_dozAttach', {
+/*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)
             this._dozAttachObject = Object.create(null);
@@ -16,7 +16,7 @@ Object.defineProperty(Node.prototype, '_dozAttach', {
     },
     enumerable: true,
     configurable: true
-});
+});*/
 class Doz {
 
     constructor(cfg = {}) {

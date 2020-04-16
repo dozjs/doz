@@ -4,7 +4,7 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-
+const createAttachElement = require('../component/create-attach-element');
 //const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
@@ -13,6 +13,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
+    createAttachElement($target);
 
     if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
         $target._dozAttach[PROPS_ATTRIBUTES] = {};

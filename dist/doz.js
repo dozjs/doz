@@ -922,7 +922,9 @@ var directive = __webpack_require__(0);
 
 var cloneObject = __webpack_require__(53);
 
-var toLiteralString = __webpack_require__(23); //const mapCompiled = require('../vdom/map-compiled');
+var toLiteralString = __webpack_require__(23);
+
+var createAttachElement = __webpack_require__(72); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1053,6 +1055,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
       if (!this._rootElement && rootElement) {
         this._rootElement = rootElement;
+        createAttachElement(this._rootElement);
         this._parentElement = rootElement.parentNode;
       }
 
@@ -1103,6 +1106,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       } else if (template) {
         if (this._rootElement.nodeType !== 1) {
           var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+          newElement._dozAttach = {};
 
           this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
 
@@ -1343,6 +1347,8 @@ var directive = __webpack_require__(0);
 
 var getComponentName = __webpack_require__(54);
 
+var createAttachElement = __webpack_require__(72);
+
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (!cfg.root) return;
@@ -1364,7 +1370,8 @@ function createInstance() {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     while ($child) {
-      // Non bella ma funziona
+      createAttachElement($child); // Non bella ma funziona
+
       if (!$child._dozAttach[ALREADY_WALKED]) {
         $child._dozAttach[ALREADY_WALKED] = true;
       } else {
@@ -2463,6 +2470,8 @@ var hooks = __webpack_require__(6);
 
 var directive = __webpack_require__(0);
 
+var createAttachElement = __webpack_require__(72);
+
 var storeElementNode = Object.create(null);
 var deadChildren = [];
 
@@ -2511,6 +2520,7 @@ function create(node, cmp, initial, cmpParent) {
     }
   }
 
+  createAttachElement($el);
   $el._dozAttach.elementChildren = node.children;
   cmp.$$afterNodeElementCreate($el, node, initial);
   return $el;
@@ -2577,6 +2587,7 @@ function update($parent, newNode, oldNode) {
     if ($parent.childNodes.length) {
       // If last node is a root, insert before
       var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
+      createAttachElement($lastNode);
 
       if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
@@ -2587,6 +2598,7 @@ function update($parent, newNode, oldNode) {
     } //console.log(newNode)
 
 
+    createAttachElement($parent);
     $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
     $parent.appendChild($newElement);
     return $newElement;
@@ -3268,19 +3280,20 @@ var toLiteralString = __webpack_require__(23);
 var plugin = __webpack_require__(24);
 
 var directive = __webpack_require__(0);
+/*Object.defineProperty(Node.prototype, '_dozAttach', {
+    get() {
+        if (!this._dozAttachObject)
+            this._dozAttachObject = Object.create(null);
+        return this._dozAttachObject;
+    },
+    set(k, v) {
+        this._dozAttachObject[k] = v;
+        return this._dozAttachObject;
+    },
+    enumerable: true,
+    configurable: true
+});*/
 
-Object.defineProperty(Node.prototype, '_dozAttach', {
-  get: function get() {
-    if (!this._dozAttachObject) this._dozAttachObject = Object.create(null);
-    return this._dozAttachObject;
-  },
-  set: function set(k, v) {
-    this._dozAttachObject[k] = v;
-    return this._dozAttachObject;
-  },
-  enumerable: true,
-  configurable: true
-});
 
 var Doz = /*#__PURE__*/function () {
   function Doz() {
@@ -3597,7 +3610,9 @@ function transformChildStyle(child, parent) {
   var emptyStyle = document.createElement('script');
   emptyStyle.type = 'text/style';
   emptyStyle.textContent = ' ';
-  emptyStyle._dozAttach.styleData = {};
+  emptyStyle._dozAttach = {
+    styleData: {}
+  };
   emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
   emptyStyle._dozAttach.styleData.owner = dataSetUId;
   emptyStyle._dozAttach.styleData.ownerByData = tagByData;
@@ -4603,7 +4618,9 @@ var isListener = __webpack_require__(14);
 var mapper = __webpack_require__(4);
 
 var _require2 = __webpack_require__(5),
-    isDirective = _require2.isDirective; //const booleanAttributes = require('../utils/boolean-attributes');
+    isDirective = _require2.isDirective;
+
+var createAttachElement = __webpack_require__(72); //const booleanAttributes = require('../utils/boolean-attributes');
 
 
 function isEventAttribute(name) {
@@ -4612,6 +4629,8 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
   //console.log('setAttribute', $target, name, value)
+  createAttachElement($target);
+
   if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
     $target._dozAttach[PROPS_ATTRIBUTES] = {};
   }
@@ -6627,6 +6646,14 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+module.exports = function ($target) {
+  if (!$target._dozAttach) $target._dozAttach = {};
+};
 
 /***/ })
 /******/ ]);

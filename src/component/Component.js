@@ -18,6 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
+const createAttachElement = require('./create-attach-element');
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -184,6 +185,7 @@ class Component extends DOMManipulation {
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
+            createAttachElement(this._rootElement);
             this._parentElement = rootElement.parentNode;
         }
         this._prev = next;
@@ -230,6 +232,7 @@ class Component extends DOMManipulation {
         } else if (template) {
             if (this._rootElement.nodeType !== 1) {
                 const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                newElement._dozAttach = {};
                 this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
                 this._rootElement = newElement;
                 this._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = this;
