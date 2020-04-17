@@ -206,6 +206,14 @@ class Component extends DOMManipulation {
             this.render();
     }
 
+    prepareCommit() {
+        this.renderPause();
+    }
+
+    commit() {
+        requestAnimationFrame(() => this.renderResume());
+    }
+
     get isRenderPause() {
         return this._renderPause;
     }

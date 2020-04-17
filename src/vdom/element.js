@@ -241,6 +241,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 let newChildByKey = getChildByKey(theKey, newNode.children);
                 let oldChildByKey = getChildByKey(theKey, oldNode.children);
 
+                //console.log('aaaaaaaaaaa')
                 listOfElement.push($element);
                 // Update attributes?
                 // Remember that the operation must be on the key and not on the index
@@ -277,13 +278,18 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         // Reorder?
+        /**/
+        //let $myListParentCloned = $myListParent.cloneNode(true);
         for(let i = 0; i < listOfElement.length; i++) {
+            //let $currentElementAtPosition = $myListParent.childNodes[i];
             let $currentElementAtPosition = $myListParent.childNodes[i];
             let $element = listOfElement[i];
-            //console.log('->', $element.outerHTML, $currentElementAtPosition.outerHTML)
+            if ($element && $currentElementAtPosition)
+            //console.log('->', $element.outerHTML === $currentElementAtPosition.outerHTML)
             //console.log('equal?', $element === $currentElementAtPosition)
             if ($element === $currentElementAtPosition)
                 continue;
+            //console.log('insertbefore')
             $myListParent.insertBefore($element, $currentElementAtPosition);
         }
 

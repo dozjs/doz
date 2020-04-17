@@ -39,21 +39,23 @@ const actions = {
     },
 
     swapRows() {
+        this.mainComponent.prepareCommit();
         const data = this.getStore('records').data;
         if (data.length > 998) {
             const tmp = data[1];
             data[1] = data[998];
             data[998] = tmp;
         }
+        this.mainComponent.commit();
     },
 
     update() {
-        //this.mainComponent.renderPause();
+        this.mainComponent.prepareCommit();
         const data = this.getStore('records').data;
         for (let i = 0; i < data.length; i += 10) {
             data[i].label += ' !!!';
         }
-        //requestAnimationFrame(() => this.mainComponent.renderResume());
+        this.mainComponent.commit();
     }
 };
 
