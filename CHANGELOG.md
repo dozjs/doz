@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.19] - 2020-04-18
+- **Fixed** several issues using keyed elements
+- **Improved** performance about 2x
+- **Added** `prepareCommit` method to component instance
+- **Added** `commit` method to component instance
+- **Added** support to attributes without quotes
+
 ## [2.3.18] - 2020-03-26
 - **Fixed** reflow issue using script tag instead style tag
 
