@@ -9,7 +9,6 @@ function transformChildStyle(child, parent) {
     //child.removeAttribute('scoped');
     let tagByData = `[data-uid="${dataSetUId}"]`;
     let isScoped = child.hasAttribute('data-scoped');
-    //console.log(child.outerHTML)
 
     scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
 
