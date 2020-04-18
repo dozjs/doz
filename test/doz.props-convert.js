@@ -173,5 +173,53 @@ describe('Doz.props-convert', function () {
             }, 100);
 
         });
+
+        it('should be ok with props number', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            const result = [];
+
+            Doz.define('sum-card', class extends Doz.Component{
+
+                constructor(o) {
+                    super(o);
+
+                    this.propsConvert = {
+                        myNumber: function(value) {
+                            let res = value * 2;
+                            result.push(res);
+                            return res;
+                        }
+                    };
+                }
+
+                template() {
+                    return `
+                        <div>The sum is ${this.props.myNumber}</div>
+                    `
+                }
+            });
+
+            new Doz({
+                root: '#app',
+
+                template(h) {
+                    return h`
+                        <div>
+                            <sum-card
+                                my-number="${5}">
+                            </sum-card>
+                        </div>
+                    `
+                }
+            });
+
+            setTimeout(() => {
+                console.log(document.body.innerHTML);
+                be.err(done).equal(result, [10])
+            }, 100);
+
+        });
     });
 });

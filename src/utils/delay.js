@@ -1,8 +1,7 @@
-function delay(cb) {
-    if (window.requestAnimationFrame !== undefined)
-        return window.requestAnimationFrame(cb);
-    else
-        return window.setTimeout(cb);
-}
+const raf = window.requestAnimationFrame || window.setTimeout;
 
-module.exports = delay;
+/*function delay(cb) {
+        return raf(cb);
+}*/
+
+module.exports = raf;

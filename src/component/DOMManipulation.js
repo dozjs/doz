@@ -2,8 +2,10 @@ const canDecode = require('../utils/can-decode');
 const composeStyleInner = require('../utils/compose-style-inner');
 const dashToCamel = require('../utils/dash-to-camel');
 const Base = require('./Base');
-const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, REGEX, DEFAULT_SLOT_KEY, TAG} = require('../constants');
+const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
+const {isDirective} = require('../directives/helpers');
+const createAttachElement = require('./create-attach-element');
 
 class DOMManipulation extends Base {
     constructor(opt) {
@@ -11,8 +13,10 @@ class DOMManipulation extends Base {
     }
 
     $$afterNodeElementCreate($el, node, initial) {
-        directive.callAppDOMElementCreate(this, $el, node, initial);
-        directive.callComponentDOMElementCreate(this, $el, initial);
+        if ($el._dozAttach.hasDirective) {
+            directive.callAppDOMElementCreate(this, $el, node, initial);
+            directive.callComponentDOMElementCreate(this, $el, initial);
+        }
 
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1 && !initial) {
@@ -20,7 +24,7 @@ class DOMManipulation extends Base {
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                let slotName = $el.getAttribute('name');
+                let slotName = $el._dozAttach[PROPS_ATTRIBUTES] ? $el._dozAttach[PROPS_ATTRIBUTES].name : null;
 
                 if (!slotName) {
                     this._defaultSlot = $el;
@@ -43,8 +47,8 @@ class DOMManipulation extends Base {
         if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
             if($parent.nodeName === 'SCRIPT') {
                 // it could be heavy
-                if ($parent.type === 'text/style' && $parent.dataset.id && $parent.dataset.owner && document.getElementById($parent.dataset.id)) {
-                    document.getElementById($parent.dataset.id).textContent = composeStyleInner(newNode, $parent.dataset.ownerByData);
+                if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
+                    document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
                 }
             } else {
                 $oldElement.textContent = canDecode(newNode);
@@ -55,18 +59,21 @@ class DOMManipulation extends Base {
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
+        createAttachElement($oldElement);
+        createAttachElement($newElement);
         //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
-        if ($oldElement[COMPONENT_ROOT_INSTANCE]) {
-            $newElement[COMPONENT_ROOT_INSTANCE] = $oldElement[COMPONENT_ROOT_INSTANCE];
-            $newElement[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
-            $newElement[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement[COMPONENT_ROOT_INSTANCE].uId;
+        if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
         }
     };
 
     // noinspection JSMethodCanBeStatic
     $$beforeNodeWalk($parent, index, attributesUpdated) {
         if ($parent.childNodes[index]) {
-            const dynInstance = $parent.childNodes[index][COMPONENT_DYNAMIC_INSTANCE];
+            createAttachElement($parent.childNodes[index]);
+            const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
             // Can update props of dynamic instances?
             if (dynInstance && attributesUpdated.length) {
                 attributesUpdated.forEach(props => {
@@ -83,27 +90,30 @@ class DOMManipulation extends Base {
     }
 
     // noinspection JSMethodCanBeStatic
-    $$afterAttributeCreate($target, name, value, nodeProps) {
-    }
+    /*$$afterAttributeCreate($target, name, value, nodeProps) {
+    }*/
 
     // noinspection JSMethodCanBeStatic
-    $$afterAttributesCreate($target, bindValue) {
-    }
+    /*$$afterAttributesCreate($target, bindValue) {
+    }*/
 
     $$afterAttributeUpdate($target, name, value) {
+        let _isDirective = isDirective(name);
         if (this.updateChildrenProps && $target) {
-            name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            name = _isDirective ? name : dashToCamel(name);
             const firstChild = $target.firstChild;
-
-            if (firstChild && firstChild[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
-                firstChild[COMPONENT_ROOT_INSTANCE].props[name] = value;
-            } else if($target[COMPONENT_INSTANCE]){
-                $target[COMPONENT_INSTANCE].props[name] = value;
+            createAttachElement(firstChild);
+            if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
+                firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
+            } else if($target._dozAttach[COMPONENT_INSTANCE]){
+                $target._dozAttach[COMPONENT_INSTANCE].props[name] = value;
             }
         }
 
         directive.callComponentDOMElementUpdate(this, $target);
-        if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        if ($target && _isDirective) {
             $target.removeAttribute(name);
         }
     }

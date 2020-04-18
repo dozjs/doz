@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - player controls">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - show animation component variable</title>
+    <script src="../dist/doz.js?5897654y55263485888"></script>
+    <d-script src="https://unpkg.com/doz/dist/doz.min.js"></d-script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Player controls</h1>
+<div id="app"></div>
+
+<script>
+
+    const TitleH1 = class extends Doz.Component {
+        template(h) {
+            return h`
+            <style>
+                :component {
+                    display: block;
+                }
+            </style>
+            <h1 style="color: red;" >HELLO WORLD</h1>
+           `
+        }
+    };
+
+    Doz.component('my-component', {
+        props: {
+            show: true
+        },
+        template: function (h) {
+            return h`
+                <button onclick="this.toggle()">SHOW/HIDE</button>
+                <p>should be ${this.props.show}</p>
+                <${TitleH1} d-animate="${{show: {name: 'flipInX', cb: this.onShowEnd}, hide: {name: 'flipOutX', cb: this.onHideEnd}}}" d-show="${this.props.show}"/>
+            `;
+        },
+        toggle() {
+            this.props.show = !this.props.show;
+        },
+        onShowEnd() {
+            console.log('onShowEnd')
+        },
+
+        onHideEnd() {
+            console.log('onHideEnd')
+        }
+
+    });
+
+    new Doz({
+        root: '#app',
+        template(h) {
+            return h`<my-component/>`
+        }
+    });
+
+
+</script>
+</body>
+</html>

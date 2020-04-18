@@ -23,14 +23,15 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 
-function isDirective(name) {
-    return REGEX.IS_DIRECTIVE.test(name);
+function isDirective(aName) {
+    //return REGEX.IS_DIRECTIVE.test(name);
+    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
 }
 
 function extractStyleDisplayFromDozProps($target) {
-    if (!$target[PROPS_ATTRIBUTES] || !$target[PROPS_ATTRIBUTES].style) return null;
+    if (!$target._dozAttach[PROPS_ATTRIBUTES] || !$target._dozAttach[PROPS_ATTRIBUTES].style) return null;
 
-    let match = $target[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+    let match = $target._dozAttach[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
 
     if (match) {
         return match[1];

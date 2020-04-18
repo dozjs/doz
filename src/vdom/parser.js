@@ -4,6 +4,7 @@ const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directives');
+const {isDirective} = require('../directives/helpers');
 const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 
@@ -42,13 +43,21 @@ function removeNLS(str) {
     return str.replace(REGEX.MATCH_NLS, '');
 }
 
+function removeDoubleQuotes(str) {
+    if (typeof str === 'string') {
+        if (str === '""' || str === "''")
+            return '';
+    }
+    return str;
+}
+
 class Element {
 
     constructor(name, props, isSVG) {
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
-        this.isSVG = isSVG || REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg';//REGEX.IS_SVG.test(name);
         if (props.key !== undefined)
             this.key = props.key;
         this.hasKeys = undefined;
@@ -78,9 +87,10 @@ function compile(data, cmp) {
     while (match = REGEX.HTML_MARKUP.exec(data)) {
 
         if (lastTextPos > -1) {
-            if (lastTextPos > -1 && lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
+            if (/*lastTextPos > -1 && */lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
                 const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+                //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
                     let possibleCompiled = mapper.get(text.trim());
@@ -109,7 +119,10 @@ function compile(data, cmp) {
             // not </ tags
             props = {};
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-                props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
+                //console.log('attMatch[5]', attMatch[5])
+                //console.log('attMatch[7]', attMatch[7])
+                props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
                     attMatch[2],
@@ -165,10 +178,10 @@ function compile(data, cmp) {
 function serializeProps($node) {
     const props = {};
 
-    if ($node[PROPS_ATTRIBUTES]) {
-        let keys = Object.keys($node[PROPS_ATTRIBUTES]);
+    if ($node._dozAttach[PROPS_ATTRIBUTES]) {
+        let keys = Object.keys($node._dozAttach[PROPS_ATTRIBUTES]);
         for (let i = 0; i < keys.length; i++) {
-            propsFixer($node.nodeName, keys[i], $node[PROPS_ATTRIBUTES][keys[i]], props, $node);
+            propsFixer($node.nodeName, keys[i], $node._dozAttach[PROPS_ATTRIBUTES][keys[i]], props, $node);
         }
     } else if ($node.attributes) {
         const attributes = Array.from($node.attributes);
@@ -185,14 +198,17 @@ function propsFixer(nName, aName, aValue, props, $node) {
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
 
-    let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    //let isDirective = REGEX.IS_DIRECTIVE.test(aName);
+    let _isDirective = isDirective(aName);
 
-    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !isDirective
+    //console.log('isDirective', isDirective, aName, aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':'));
+
+    let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
         ? dashToCamel(aName)
         : aName;
 
     if ($node) {
-        directive.callAppComponentPropsAssignName($node, aName, aValue, isDirective, props, newPropsName => {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
     }

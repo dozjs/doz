@@ -30,40 +30,53 @@ directive('show', {
     },
 
     setVisible($target, value) {
-        const thereIsAnimateDirective = $target.__animationDirectiveValue;
-        $target.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+        const thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
+        $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+        //$target.__animationWasUsed =
+        //console.dir($target);
 
-        if (thereIsAnimateDirective) {
-            if (!$target.__animationsList)
-                $target.__animationsList = [];
+        if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
+            //console.log($target._dozAttach.__animationIsRunning)
+            if (!$target._dozAttach.__animationsList)
+                $target._dozAttach.__animationsList = [];
 
-            $target.__animationsList.push((resolve) => {
+            $target._dozAttach.__animationWasUsedByShowDirective = true;
+
+            $target._dozAttach.__animationsList.push((resolve) => {
+                //console.log('value', value)
                 if (value) {
-                    $target.style.display = $target.__showOriginDisplay;
-                    $target.__animationShow(() => {
-                        $target.style.display = $target.__showOriginDisplay;
+                    $target.style.display = $target._dozAttach.__showOriginDisplay;
+                    $target._dozAttach.__animationShow(() => {
+                        $target.style.display = $target._dozAttach.__showOriginDisplay;
+                        $target._dozAttach.__prevValueOfShow = value;
                         resolve();
                     });
                 } else {
-                    $target.__animationHide(() => {
+                    $target._dozAttach.__animationHide(() => {
                         $target.style.display = 'none';
+                        $target._dozAttach.__prevValueOfShow = value;
                         resolve();
                     });
                 }
             });
 
+            //console.log($target._dozAttach.__animationsList)
+
             if (thereIsAnimateDirective.queue) {
-                if (!$target.__animationIsRunning) {
+                if (!$target._dozAttach.__animationIsRunning) {
                     // please don't use it
-                    queue($target.__animationsList.shift(), $target.__animationsList);
+                    queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
                 }
             } else {
-                new Promise($target.__animationsList.shift()).then();
+                new Promise($target._dozAttach.__animationsList.shift()).then();
             }
 
         } else {
+            $target._dozAttach.__prevValueOfShow = value;
+            if (thereIsAnimateDirective)
+                $target._dozAttach.__animationWasUsedByShowDirective = true;
             //delay(() => {
-                $target.style.display = value === false ? 'none' : $target.__showOriginDisplay;
+                $target.style.display = !value /*=== false*/ ? 'none' : $target._dozAttach.__showOriginDisplay;
             //});
         }
     },

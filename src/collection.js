@@ -76,6 +76,8 @@ function registerDirective(name, cfg = {}) {
         console.warn('Doz', `directive ${name} overwritten`);
 
     data.directives[name] = cfg;
+    if (!data.directivesKeys.includes(name))
+        data.directivesKeys.push(name);
 }
 
 module.exports = {

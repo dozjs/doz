@@ -20,8 +20,8 @@ module.exports = {
             test: /\.js?$/,
             loader: 'babel-loader',
             options: {
-                presets: ['env'],
-                plugins: ['faster.js']
+                presets: ['@babel/preset-env'],
+                plugins: ['module:faster.js']
             }
         }]
     },

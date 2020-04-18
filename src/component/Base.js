@@ -141,6 +141,10 @@ class Base {
                 value: [],
                 enumerable: true
             },
+            rawChildrenVnode: {
+                value: [],
+                enumerable: true
+            },
             autoCreateChildren: {
                 value: true,
                 enumerable: true,

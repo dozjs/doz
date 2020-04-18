@@ -30,7 +30,7 @@ directive('animate', {
                     new Promise(resolve => {
                             if (!document.body.contains($targetOfMap)) return resolve();
                             wait(() => {
-                                return !$targetOfMap.__animationIsRunning;
+                                return !$targetOfMap._dozAttach.__animationIsRunning;
                             }, () => {
                                 let optAnimation = {
                                     duration: directiveValueOfMap.hide.duration,
@@ -43,7 +43,7 @@ directive('animate', {
                                     $targetOfMap.style.display = 'none';
                                     resolve();
                                 });
-                            });
+                            }, 1000, 'a');
                         }
                     )
                 );
@@ -60,8 +60,8 @@ directive('animate', {
     },
 
     createAnimations(instance, $target, directiveValue) {
-        if ($target.__lockedForAnimation) return;
-        $target.__lockedForAnimation = true;
+        if ($target._dozAttach.__lockedForAnimation) return;
+        $target._dozAttach.__lockedForAnimation = true;
 
         if (typeof directiveValue === 'string') {
             directiveValue = {
@@ -70,7 +70,7 @@ directive('animate', {
             }
         }
 
-        $target.__animationDirectiveValue = directiveValue;
+        $target._dozAttach.__animationDirectiveValue = directiveValue;
 
         if (directiveValue.show) {
 
@@ -89,19 +89,20 @@ directive('animate', {
             };
 
             //Add always an useful method for show
-            $target.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
+            $target._dozAttach.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
             wait(() => {
-                return !$target.__animationIsRunning;
+                //console.log($target._dozAttach.__animationIsRunning)
+                return !$target._dozAttach.__animationIsRunning;
             }, () => {
                 if (!document.body.contains($target)) return;
-                if ($target.__animationOriginDisplay) {
-                    $target.style.display = $target.__animationOriginDisplay;
+                if ($target._dozAttach.__animationOriginDisplay) {
+                    $target.style.display = $target._dozAttach.__animationOriginDisplay;
                 }
                 //Exclude if element is not displayed
                 if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
-            });
+            }, 1000, 'b');
         }
 
         if (directiveValue.hide) {
@@ -121,7 +122,7 @@ directive('animate', {
             };
 
             //Add always an useful method for show
-            $target.__animationHide = (cb) => instance.animate($target, directiveValue.hide.name, optAnimation, cb);
+            $target._dozAttach.__animationHide = (cb) => instance.animate($target, directiveValue.hide.name, optAnimation, cb);
 
             this.createLockRemoveInstanceByCallback(instance)
         }
@@ -144,10 +145,12 @@ directive('animate', {
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue) {
+        //console.log('onComponentDOMElementCreate', 'animation', $target);
         this.createAnimations(instance, $target, directiveValue)
     },
 
     onAppComponentMount(instance) {
+        //console.log('onAppComponentMount', 'animation');
         for (let [key, value] of instance.elementsWithAnimation) {
             this.createAnimations(instance, key, value)
         }

@@ -134,16 +134,18 @@ function callComponentLoadProps(...args) {
 
 function callComponentDOMElementCreate(instance, $target, initial) {
     let method = 'onComponentDOMElementCreate';
-    let i = $target.attributes.length;
-    while(i--) {
-        let attribute = $target.attributes[i];
-        if (isDirective(attribute.name)) {
-            let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            let directiveValue = $target[PROPS_ATTRIBUTES][attribute.name];// || attribute.value;
+    if(!$target._dozAttach[PROPS_ATTRIBUTES]) return;
+    let keys = Object.keys($target._dozAttach[PROPS_ATTRIBUTES]);
+    for(let i = 0; i < keys.length; i++) {
+        let attributeName = keys[i];
+        let attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
+        if (isDirective(attributeName)) {
+            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let directiveValue = attributeValue;
             //console.log('directiveValue', directiveValue)
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
-                $target.removeAttribute(attribute.name);
+                //$target.removeAttribute(attribute.name);
                 directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial])
             }
         }
@@ -152,12 +154,14 @@ function callComponentDOMElementCreate(instance, $target, initial) {
 
 function callComponentDOMElementUpdate(instance, $target) {
     let method = 'onComponentDOMElementUpdate';
-    let i = $target.attributes.length;
-    while(i--) {
-        let attribute = $target.attributes[i];
-        if (isDirective(attribute.name)) {
-            let directiveName = attribute.name.replace(REGEX.REPLACE_D_DIRECTIVE, '');
-            let directiveValue = $target[PROPS_ATTRIBUTES][attribute.name];// || attribute.value;
+    if(!$target._dozAttach[PROPS_ATTRIBUTES]) return;
+    let keys = Object.keys($target._dozAttach[PROPS_ATTRIBUTES]);
+    for(let i = 0; i < keys.length; i++) {
+        let attributeName = keys[i];
+        let attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
+        if (isDirective(attributeName)) {
+            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let directiveValue = attributeValue;
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);

@@ -206,7 +206,7 @@ describe('Doz.store', function () {
             setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
-                //console.log(app);
+                console.log(html);
                 be.err.true(/nested/g.test(html));
                 be.err.true(/bye/g.test(html));
                 be.err(done).true(/I'M CALLER/g.test(html));

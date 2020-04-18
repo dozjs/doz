@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p1254p8464542544GFd441425055444234"></script>
+    <script src="../dist/doz.js?p1254p8464542544GF5d441r557547r425055444234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -84,8 +84,8 @@
         },
 
         add() {
-            //console.log('add');
             const store = this.getStore('todo');
+            console.log('add', store);
             if (store.todo !== '') {
                 store.record.push({
                     time: Date.now(),
@@ -155,7 +155,7 @@
             title: 'string'
         },
         template(h) {
-            console.log('done', this.props.done)
+            //console.log('done', this.props.done)
             return h`
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
                     <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>&nbsp;

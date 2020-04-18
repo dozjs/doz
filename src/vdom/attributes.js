@@ -4,7 +4,8 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-const booleanAttributes = require('../utils/boolean-attributes');
+const createAttachElement = require('../component/create-attach-element');
+//const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -12,20 +13,25 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp) {
     //console.log('setAttribute', $target, name, value)
+    createAttachElement($target);
 
-    if (!$target[PROPS_ATTRIBUTES]) {
-        $target[PROPS_ATTRIBUTES] = {};
+    if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
+        $target._dozAttach[PROPS_ATTRIBUTES] = {};
     }
-    $target[PROPS_ATTRIBUTES][name] = value;
+    $target._dozAttach[PROPS_ATTRIBUTES][name] = value;
 
     if (name === 'key') {
-        if ($target.__dozKey === undefined) {
-            $target.__dozKey = value;
+        if ($target._dozAttach.key === undefined) {
+            $target._dozAttach.key = value;
         }
         return;
     }
 
-    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !isDirective(name)) {
+    let _isDirective = isDirective(name);
+
+    if (_isDirective) $target._dozAttach.hasDirective = true;
+
+    if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
@@ -33,42 +39,57 @@ function setAttribute($target, name, value, cmp) {
         if (isEventAttribute(name) && typeof value === 'string') {
             mapper.getAll(value);
         }
-    } else if (typeof value === 'boolean') {
-        setBooleanAttribute($target, name, value);
+        /*} else if (typeof value === 'boolean') {
+            setBooleanAttribute($target, name, value);*/
     } else {
         if (value === undefined) value = '';
-        $target.setAttribute(name, value);
-        //$target[name] = value;
-    }
-}
+        //$target.setAttribute(name, value);
+        //console.log('set', name, value)
 
-function removeAttribute($target, name, cmp) {
-    if (isCustomAttribute(name) || !$target) {
-    } else {
-        $target.removeAttribute(name);
+        //Bisogna migliorare questa condizione, messa come prima rende più lento il tutto
+
+        if (name === 'class') {
+            $target.className = value;
+            //Imposto solo se la proprietà esiste...
+        } else if ($target[name] !== undefined){
+            //console.log($target instanceof SVGSVGElement);
+            $target[name] = value;/**/
+        } else if (name.startsWith('data-')
+            || name.startsWith('aria-')
+            || name === 'role'
+            || name === 'for'
+            || $target.toString().includes('SVG')) {
+            $target.setAttribute(name, value);
+            //console.log('get', name, $target[name])
+        }
     }
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp) {
-    if(newVal !== oldVal) {
+    if (newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp);
         cmp.$$afterAttributeUpdate($target, name, newVal);
     }
-    /*
-    if (newVal === '') {
-        removeAttribute($target, name, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    } else if (oldVal === '' || newVal !== oldVal) {
-        setAttribute($target, name, newVal, cmp);
-        cmp.$$afterAttributeUpdate($target, name, newVal);
-    }*/
 }
 
 function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
     const props = Object.assign({}, newProps, oldProps);
     let updated = [];
 
-    Object.keys(props).forEach(name => {
+    let propsKeys = Object.keys(props);
+
+    for (let i = 0; i < propsKeys.length; i++) {
+        let name = propsKeys[i];
+        if (!$target || $target.nodeType !== 1) continue;
+        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
+        if (newProps[name] !== oldProps[name]) {
+            let obj = {};
+            obj[name] = newProps[name];
+            updated.push(obj);
+        }
+    }
+
+    /*Object.keys(props).forEach(name => {
         if(!$target || $target.nodeType !== 1) return;
         updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
         if (newProps[name] !== oldProps[name]) {
@@ -76,21 +97,12 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent) {
             obj[name] = newProps[name];
             updated.push(obj);
         }
-    });
+    });*/
     return updated;
 }
 
 function isCustomAttribute(name) {
     return isEventAttribute(name) || name === ATTR.FORCE_UPDATE;
-}
-
-function setBooleanAttribute($target, name, value) {
-    if (booleanAttributes.includes(name) && value === false) {
-        $target.removeAttribute(name);
-    } else {
-        $target.setAttribute(name, value);
-    }
-    //$target[name] = value;
 }
 
 function extractEventName(name) {
@@ -104,6 +116,8 @@ function trimQuotes(str) {
 function addEventListener($target, name, value, cmp, cmpParent) {
 
     if (!isEventAttribute(name)) return;
+
+    //console.log('event attribute', name, value)
 
     let alreadyFunction = false;
 
@@ -144,10 +158,12 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             }
 
         } else {
-
+            /*return;
+            console.log('bbb')*/
             match = value.match(REGEX.GET_LISTENER);
 
             if (match) {
+                //console.log('aaaaa')
                 let args = null;
                 let handler = match[1];
                 let stringArgs = match[2];
@@ -226,20 +242,18 @@ function attach($target, nodeProps, cmp, cmpParent) {
 
     const propsKeys = Object.keys(nodeProps);
 
-    for(let i = 0, len = propsKeys.length; i < len; i++) {
+    for (let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent);
-        cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
     }
 
-    const datasetArray = Object.keys($target.dataset);
+    /*const datasetArray = Object.keys($target.dataset);
     for (let i = 0; i < datasetArray.length; i++) {
         if (isListener(datasetArray[i]))
             addEventListener($target, datasetArray[i], $target.dataset[datasetArray[i]], cmp, cmpParent);
-    }
-
-    //cmp.$$afterAttributesCreate($target, bindValue);
+    }*/
 }
 
 module.exports = {

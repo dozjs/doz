@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - benchmark</title>
-    <script src="../../dist/doz.js?589635558454r4445545468858486"></script>
+    <script src="../../dist/doz.js?589635558454r444554546855f858486"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 <table class="table table-hover table-striped test-data">
-                    ${this.each(this.props.record, (row, i) => h`
+                    ${this.props.record.map((row, i) => h`
                         <tr d-key="${row.key}" onclick="${(e) => console.log(e)}">
                             <td class="col-md-1">${row.key}</td>
                             <td class="col-md-4">${row.label}</td>

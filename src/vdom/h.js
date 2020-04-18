@@ -30,9 +30,11 @@ module.exports = function (strings, ...value) {
     let result = strings[0];
     let allowTag = false;
     let isInStyle = false;
+    let thereIsStyle = false;
     let isBoundedToComponent = !!this._components;
 
-    for (let i = 0; i < value.length; ++i) {
+    let valueLength = value.length;
+    for (let i = 0; i < valueLength; ++i) {
         let isComponentConstructor = false;
         if (Array.isArray(value[i])) {
             let newValueString = '';
@@ -53,25 +55,39 @@ module.exports = function (strings, ...value) {
         //console.log(strings[i].split(''));
         //console.log([...strings[i]]);
 
-        strings[i].split('').forEach(char => {
-            //console.log(char)
-            if (char === LESSER)
+        //let char;
+        //console.log(strings[i])
+        let stringsI = strings[i];
+        let stringLength = stringsI.length;
+        for (let x = 0; x < stringLength; x++) {
+            //char = strings[i][x];
+            if (stringsI[x] === LESSER) {
+                //console.log('a', strings[i][x], x)
                 allowTag = false;
-            if (char === GREATER)
+                //continue
+            } else if (stringsI[x] === GREATER) {
+                //console.log('b', strings[i][x], x)
                 allowTag = true;
-        });
+            }
+        }
+        /*console.log('---------------')
+        console.log('-a', strings[i].indexOf(LESSER));
+        console.log('-b', strings[i].indexOf(GREATER));*/
 
 
-        if (strings[i].indexOf('<style') > -1) {
+        if (stringsI.indexOf('<style') > -1) {
             isInStyle = true;
+            thereIsStyle = true;
         }
 
-        if (strings[i].indexOf('</style') > -1) {
+        if (stringsI.indexOf('</style') > -1) {
             isInStyle = false;
         }
 
         if(isInStyle) {
             allowTag = false;
+            result = result
+                .replace(/ scoped>/, ' data-scoped>');
         }
 
         //
@@ -79,7 +95,7 @@ module.exports = function (strings, ...value) {
         // Check if value is a function and is after an event attribute like onclick for example.
         if (typeof value[i] === 'function' || typeof value[i] === 'object') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
-                let r = strings[i].split(`=`);
+                let r = stringsI.split(`=`);
                 if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
                     isInHandler = true;
                 }
@@ -105,6 +121,8 @@ module.exports = function (strings, ...value) {
 
                 let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
+
+
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
                 } else {
@@ -126,14 +144,15 @@ module.exports = function (strings, ...value) {
                         cfg: cmp
                     };
                 }
-
+                //console.log('---------->', tagCmp);
                 value[i] = tagCmp;
             }
         }
 
-        if(allowTag)
+        if(allowTag) {
+            //console.log('aaaaaaaaaaaaaaaaddd', tagText, value[i])
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        else {
+        } else {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
@@ -144,30 +163,34 @@ module.exports = function (strings, ...value) {
         }
     }
 
-    result = result
-        .replace(regOpen, LESSER)
-        .replace(regClose, GREATER);
+    // Funziona anche senza?
+    /*
+            result = result
+                .replace(regOpen, LESSER)
+                .replace(regClose, GREATER);*/
+
 
     // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
     // il tag script con il tipo text/style
     /*
     if (isBoundedToComponent) {
         // Now get style from complete string
-        result = result.replace(regStyle, (match, p1) => {
-            if (!this._rootElement || p1 === this._currentStyle) return '';
-            if (match && p1) {
-                // Here should be create the tag style
-                this._currentStyle = p1;
-                let isScoped = /scoped/.test(match);
-                const dataSetUId = this.uId;
-                this.getHTMLElement().dataset.uid = this.uId;
-                let tagByData = `[data-uid="${dataSetUId}"]`;
+        if (thereIsStyle)
+            result = result.replace(regStyle, (match, p1) => {
+                if (!this._rootElement || p1 === this._currentStyle) return '';
+                if (match && p1) {
+                    // Here should be create the tag style
+                    this._currentStyle = p1;
+                    let isScoped = /scoped/.test(match);
+                    const dataSetUId = this.uId;
+                    this.getHTMLElement().dataset.uid = this.uId;
+                    let tagByData = `[data-uid="${dataSetUId}"]`;
 
-                scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-            }
+                    scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                }
 
-            return '';
-        });
+                return '';
+            });
     }
     */
 

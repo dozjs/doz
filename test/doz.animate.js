@@ -22,7 +22,7 @@ describe('Doz.animate', function () {
                 },
                 onMount() {
                     setTimeout(() => {
-                        be.err.equal(this.ref.myDiv.__animationDirectiveValue, {
+                        be.err.equal(this.ref.myDiv._dozAttach.__animationDirectiveValue, {
                             show: {name: 'fadeIn'},
                             hide: {name: 'fadeIn'}
                         });
@@ -50,7 +50,7 @@ describe('Doz.animate', function () {
                 },
                 onMount() {
                     setTimeout(() => {
-                        be.err.equal(this.ref.myDiv.__animationDirectiveValue, {
+                        be.err.equal(this.ref.myDiv._dozAttach.__animationDirectiveValue, {
                             show: {name: 'fadeIn'},
                             hide: {name: 'fadeIn'}
                         });
