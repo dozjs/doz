@@ -661,6 +661,14 @@ function removeNLS(str) {
   return str.replace(REGEX.MATCH_NLS, '');
 }
 
+function removeDoubleQuotes(str) {
+  if (typeof str === 'string') {
+    if (str === '""' || str === "''") return '';
+  }
+
+  return str;
+}
+
 var Element = /*#__PURE__*/function () {
   function Element(name, props, isSVG) {
     _classCallCheck(this, Element);
@@ -738,7 +746,7 @@ function compile(data, cmp) {
         //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
         //console.log('attMatch[5]', attMatch[5])
         //console.log('attMatch[7]', attMatch[7])
-        props[attMatch[2]] = attMatch[5] || attMatch[6] || attMatch[7] || '';
+        props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
 
