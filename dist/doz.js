@@ -365,7 +365,7 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = function ($target) {
-  if (!$target._dozAttach) $target._dozAttach = {};
+  if ($target && !$target._dozAttach) $target._dozAttach = {};
 };
 
 /***/ }),
