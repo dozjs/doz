@@ -59,8 +59,8 @@ class DOMManipulation extends Base {
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
-        /*createAttachElement($oldElement);
-        createAttachElement($newElement);*/
+        createAttachElement($oldElement);
+        createAttachElement($newElement);
         //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
         if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
             $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
@@ -103,7 +103,7 @@ class DOMManipulation extends Base {
             //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
             name = _isDirective ? name : dashToCamel(name);
             const firstChild = $target.firstChild;
-
+            createAttachElement(firstChild);
             if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
                 firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
             } else if($target._dozAttach[COMPONENT_INSTANCE]){
