@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.3.19] - 2020-04-18
 - **Fixed** several issues using keyed elements
+- **Fixed** possible delay when use style inside component
 - **Improved** performance about 2x
 - **Added** `prepareCommit` method to component instance
 - **Added** `commit` method to component instance
