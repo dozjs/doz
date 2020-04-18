@@ -173,4 +173,14 @@ export class Component {
      * Destroy component and his children.
      */
     destroy(): void
+
+    /**
+     * After calling this method, the component will be not updated if props change
+     */
+    prepareCommit():void
+
+    /**
+     * This method disable prepareCommit status and call render with a delay
+     */
+    commit():void
 }
