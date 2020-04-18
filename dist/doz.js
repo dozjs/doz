@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.3.16  
+// [DOZ]  Build version: 2.4.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3278,7 +3278,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '2.3.16',
+    value: '2.4.0',
     enumerable: true
   },
   tag: {
@@ -3654,8 +3654,7 @@ function transformChildStyle(child, parent) {
   parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId; //child.removeAttribute('scoped');
 
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
-  var isScoped = child.hasAttribute('data-scoped'); //console.log(child.outerHTML)
-
+  var isScoped = child.hasAttribute('data-scoped');
   scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
   var emptyStyle = document.createElement('script');
   emptyStyle.type = 'text/style';
