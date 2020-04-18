@@ -362,6 +362,14 @@ module.exports = {
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+module.exports = function ($target) {
+  if (!$target._dozAttach) $target._dozAttach = {};
+};
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var delay = __webpack_require__(3);
@@ -562,7 +570,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -843,14 +851,6 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-module.exports = function ($target) {
-  if (!$target._dozAttach) $target._dozAttach = {};
-};
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports) {
 
@@ -895,7 +895,7 @@ var _require = __webpack_require__(1),
 
 var observer = __webpack_require__(37);
 
-var hooks = __webpack_require__(6);
+var hooks = __webpack_require__(7);
 
 var update = __webpack_require__(41).updateElement;
 
@@ -919,7 +919,7 @@ var loadLocal = __webpack_require__(50);
 
 var localMixin = __webpack_require__(51);
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(8),
     compile = _require2.compile;
 
 var propsInit = __webpack_require__(23);
@@ -932,7 +932,7 @@ var cloneObject = __webpack_require__(54);
 
 var toLiteralString = __webpack_require__(24);
 
-var createAttachElement = __webpack_require__(8); //const mapCompiled = require('../vdom/map-compiled');
+var createAttachElement = __webpack_require__(6); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1352,9 +1352,9 @@ var _require = __webpack_require__(1),
 
 var collection = __webpack_require__(2);
 
-var hooks = __webpack_require__(6);
+var hooks = __webpack_require__(7);
 
-var _require2 = __webpack_require__(7),
+var _require2 = __webpack_require__(8),
     serializeProps = _require2.serializeProps;
 
 var hmr = __webpack_require__(36);
@@ -1369,7 +1369,7 @@ var directive = __webpack_require__(0);
 
 var getComponentName = __webpack_require__(55);
 
-var createAttachElement = __webpack_require__(8);
+var createAttachElement = __webpack_require__(6);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -2488,11 +2488,11 @@ var _require2 = __webpack_require__(1),
 
 var canDecode = __webpack_require__(19);
 
-var hooks = __webpack_require__(6);
+var hooks = __webpack_require__(7);
 
 var directive = __webpack_require__(0);
 
-var createAttachElement = __webpack_require__(8);
+var createAttachElement = __webpack_require__(6);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2879,7 +2879,7 @@ var camelToDash = __webpack_require__(20); //const eventsAttributes = require('.
 var _require2 = __webpack_require__(13),
     scopedInner = _require2.scopedInner;
 
-var _require3 = __webpack_require__(7),
+var _require3 = __webpack_require__(8),
     compile = _require3.compile,
     Element = _require3.Element;
 
@@ -3213,7 +3213,7 @@ var mixin = __webpack_require__(57);
 
 var h = __webpack_require__(21);
 
-var _require3 = __webpack_require__(7),
+var _require3 = __webpack_require__(8),
     compile = _require3.compile;
 
 var mapper = __webpack_require__(4);
@@ -3318,6 +3318,8 @@ var toLiteralString = __webpack_require__(24);
 var plugin = __webpack_require__(25);
 
 var directive = __webpack_require__(0);
+
+var createAttachElement = __webpack_require__(6);
 /*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)
@@ -3366,6 +3368,8 @@ var Doz = /*#__PURE__*/function () {
     }
 
     var appNode = document.querySelector(TAG.APP); // This fix double app rendering in SSR
+
+    createAttachElement(appNode);
 
     if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
       appNode.parentNode.removeChild(appNode);
@@ -4464,7 +4468,7 @@ module.exports = hmr;
 
 var proxy = __webpack_require__(16);
 
-var events = __webpack_require__(6);
+var events = __webpack_require__(7);
 
 var propsListener = __webpack_require__(39);
 
@@ -4658,7 +4662,7 @@ var mapper = __webpack_require__(4);
 var _require2 = __webpack_require__(5),
     isDirective = _require2.isDirective;
 
-var createAttachElement = __webpack_require__(8); //const booleanAttributes = require('../utils/boolean-attributes');
+var createAttachElement = __webpack_require__(6); //const booleanAttributes = require('../utils/boolean-attributes');
 
 
 function isEventAttribute(name) {
