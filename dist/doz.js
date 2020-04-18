@@ -2749,7 +2749,7 @@ function update($parent, newNode, oldNode) {
         /**/
 
         for (var _i7 = 0; _i7 < newChildByKeyLength || _i7 < oldChildByKeyLength; _i7++) {
-          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; ////console.log('aaaa')
+          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; //console.log('000')
 
           update($element, newChildByKey.children[_i7], oldChildByKey.children[_i7], _i7, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
@@ -2762,15 +2762,16 @@ function update($parent, newNode, oldNode) {
       }
 
       return;
-    }
+    } //console.log('aaa');
+
 
     var diff = 0;
 
     for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
       var $currentElementAtPosition = $myListParent.childNodes[_i9 + diff];
-      var _$element = listOfElement[_i9]; //if (!$currentElementAtPosition) continue;
+      var _$element = listOfElement[_i9];
 
-      if ($currentElementAtPosition && _$element && $currentElementAtPosition._dozAttach.key === _$element._dozAttach.key) {
+      if ($currentElementAtPosition && _$element && $currentElementAtPosition._dozAttach.key === _$element._dozAttach.key || Array.from($myListParent.childNodes).indexOf(_$element) === _i9) {
         continue;
       }
 

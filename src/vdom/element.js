@@ -264,7 +264,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 /**/
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
                     if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
-                    ////console.log('aaaa')
+                    //console.log('000')
                     update(
                         $element,
                         newChildByKey.children[i],
@@ -285,12 +285,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return ;
         }
 
+        //console.log('aaa');
+
         let diff = 0;
         for (let i = 0; i < listOfElement.length; i++) {
             let $currentElementAtPosition = $myListParent.childNodes[i + diff];
             let $element = listOfElement[i];
-            //if (!$currentElementAtPosition) continue;
-            if ($currentElementAtPosition && $element && $currentElementAtPosition._dozAttach.key === $element._dozAttach.key) {
+            if (
+                ($currentElementAtPosition && $element && $currentElementAtPosition._dozAttach.key === $element._dozAttach.key)
+                || Array.from($myListParent.childNodes).indexOf($element) === i) {
                 continue;
             }
             diff++;
