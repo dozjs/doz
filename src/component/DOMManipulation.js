@@ -5,6 +5,7 @@ const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
+const createAttachElement = require('./create-attach-element');
 
 class DOMManipulation extends Base {
     constructor(opt) {
@@ -58,6 +59,8 @@ class DOMManipulation extends Base {
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
+        /*createAttachElement($oldElement);
+        createAttachElement($newElement);*/
         //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
         if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
             $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
@@ -69,6 +72,7 @@ class DOMManipulation extends Base {
     // noinspection JSMethodCanBeStatic
     $$beforeNodeWalk($parent, index, attributesUpdated) {
         if ($parent.childNodes[index]) {
+            createAttachElement($parent.childNodes[index]);
             const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
             // Can update props of dynamic instances?
             if (dynInstance && attributesUpdated.length) {
