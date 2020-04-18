@@ -36,7 +36,7 @@ function create(node, cmp, initial, cmpParent) {
         return  document.createComment(`slot(${node.props.slot})`);
     }
 
-    //console.log(node.type, node.props, cmp.tag)
+    ////console.log(node.type, node.props, cmp.tag)
 
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
@@ -141,12 +141,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
                 $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 $parent.insertBefore($newElement, $lastNode);
-                //console.log('$newElement', $newElement)
+                ////console.log('$newElement', $newElement)
                 return $newElement;
             }
         }
 
-        //console.log(newNode)
+        ////console.log(newNode)
 
         createAttachElement($parent);
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
@@ -193,11 +193,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // The content of the "LI" tag will be processed by the normal "update" function
 
         let $myListParent = $parent.childNodes[index];
-        //console.log(newNode.type, $myListParent);
+        ////console.log(newNode.type, $myListParent);
         let newNodeKeyList = newNode.children.map(i => i.key);
         let oldNodeKeyList = oldNode.children.map(i => i.key);
-        //console.log(newNodeKeyList);
-        //console.log(oldNodeKeyList);
+        ////console.log(newNodeKeyList);
+        ////console.log(oldNodeKeyList);
         // here my new logic for keys
 
         // Check if $myListParent has _dozAttach.keyList
@@ -206,12 +206,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         let oldKeyDoRemove = oldNodeKeyList.filter(x => !newNodeKeyList.includes(x));
-        //console.log('diff', oldKeyDoRemove)
+        ////console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
         for (let i = 0; i < oldKeyDoRemove.length; i++) {
             if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
                 let $oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]);
-                //console.log('da rimuovere', $oldElement);
+                ////console.log('da rimuovere', $oldElement);
                 if($oldElement._dozAttach[COMPONENT_INSTANCE]) {
                     $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
                 } else {
@@ -226,13 +226,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         for (let i = 0; i < newNodeKeyList.length; i++) {
             // This is the key of all
             let theKey = newNodeKeyList[i];
-            //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+            ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
             let $element = $myListParent._dozAttach.keyList.get(theKey);
             // Se non esiste creo il nodo
             if (!$element) {
                 let $newElement = create(newNode.children[i], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 $myListParent._dozAttach.keyList.set(theKey, $newElement);
-                //console.log('elemento creato', $newElement);
+                ////console.log('elemento creato', $newElement);
                 // appendo per il momento
                 listOfElement.push($newElement);
                 //$myListParent.appendChild($newElement);
@@ -241,7 +241,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 let newChildByKey = getChildByKey(theKey, newNode.children);
                 let oldChildByKey = getChildByKey(theKey, oldNode.children);
 
-                //console.log('aaaaaaaaaaa')
+                ////console.log('aaaaaaaaaaa')
                 listOfElement.push($element);
                 // Update attributes?
                 // Remember that the operation must be on the key and not on the index
@@ -258,12 +258,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 const newChildByKeyLength = newChildByKey.children.length;
                 const oldChildByKeyLength = oldChildByKey.children.length;
 
-                //console.log(newChildByKey.children[i])
-                //console.log(oldChildByKey.children[i])
+                ////console.log(newChildByKey.children[i])
+                ////console.log(oldChildByKey.children[i])
 
+                /**/
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
                     if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
-                    //console.log('aaaa')
+                    ////console.log('aaaa')
                     update(
                         $element,
                         newChildByKey.children[i],
@@ -277,24 +278,27 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
         }
 
-        // Reorder?
-        /**/
-        //let $myListParentCloned = $myListParent.cloneNode(true);
-        for(let i = 0; i < listOfElement.length; i++) {
-            //let $currentElementAtPosition = $myListParent.childNodes[i];
-            let $currentElementAtPosition = $myListParent.childNodes[i];
+        if (!$myListParent.childNodes.length) {
+            for (let i = 0; i < listOfElement.length; i++) {
+                $myListParent.appendChild(listOfElement[i]);
+            }
+            return ;
+        }
+
+        let diff = 0;
+        for (let i = 0; i < listOfElement.length; i++) {
+            let $currentElementAtPosition = $myListParent.childNodes[i + diff];
             let $element = listOfElement[i];
-            if ($element && $currentElementAtPosition)
-            //console.log('->', $element.outerHTML === $currentElementAtPosition.outerHTML)
-            //console.log('equal?', $element === $currentElementAtPosition)
-            if ($element === $currentElementAtPosition)
+            //if (!$currentElementAtPosition) continue;
+            if ($currentElementAtPosition && $element && $currentElementAtPosition._dozAttach.key === $element._dozAttach.key) {
                 continue;
-            //console.log('insertbefore')
+            }
+            diff++;
             $myListParent.insertBefore($element, $currentElementAtPosition);
         }
 
     } else if (newNode.type) {
-        //console.log('bbbbbbb', newNode.type)
+        //console.log('walk node', newNode.type)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:

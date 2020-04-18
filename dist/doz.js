@@ -2517,7 +2517,7 @@ function create(node, cmp, initial, cmpParent) {
 
   if (node.props && node.props.slot && !node.isNewSlotEl) {
     return document.createComment("slot(".concat(node.props.slot, ")"));
-  } //console.log(node.type, node.props, cmp.tag)
+  } ////console.log(node.type, node.props, cmp.tag)
 
 
   nodeStored = storeElementNode[node.type];
@@ -2613,11 +2613,11 @@ function update($parent, newNode, oldNode) {
 
       if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-        $parent.insertBefore($newElement, $lastNode); //console.log('$newElement', $newElement)
+        $parent.insertBefore($newElement, $lastNode); ////console.log('$newElement', $newElement)
 
         return $newElement;
       }
-    } //console.log(newNode)
+    } ////console.log(newNode)
 
 
     createAttachElement($parent);
@@ -2655,7 +2655,7 @@ function update($parent, newNode, oldNode) {
     // </ul>
     // Only the "LI" tags will be processed with this algorithm.
     // The content of the "LI" tag will be processed by the normal "update" function
-    var $myListParent = $parent.childNodes[index]; //console.log(newNode.type, $myListParent);
+    var $myListParent = $parent.childNodes[index]; ////console.log(newNode.type, $myListParent);
 
     var _defined3 = newNode.children;
 
@@ -2665,8 +2665,8 @@ function update($parent, newNode, oldNode) {
 
     var newNodeKeyList = new Array(_defined3.length);
 
-    for (var _i9 = 0; _i9 <= _defined3.length - 1; _i9++) {
-      newNodeKeyList[_i9] = _defined4(_defined3[_i9], _i9, _defined3);
+    for (var _i10 = 0; _i10 <= _defined3.length - 1; _i10++) {
+      newNodeKeyList[_i10] = _defined4(_defined3[_i10], _i10, _defined3);
     }
 
     var _defined5 = oldNode.children;
@@ -2675,13 +2675,13 @@ function update($parent, newNode, oldNode) {
       return i.key;
     };
 
-    var oldNodeKeyList = new Array(_defined5.length); //console.log(newNodeKeyList);
-    //console.log(oldNodeKeyList);
+    var oldNodeKeyList = new Array(_defined5.length); ////console.log(newNodeKeyList);
+    ////console.log(oldNodeKeyList);
     // here my new logic for keys
     // Check if $myListParent has _dozAttach.keyList
 
-    for (var _i10 = 0; _i10 <= _defined5.length - 1; _i10++) {
-      oldNodeKeyList[_i10] = _defined6(_defined5[_i10], _i10, _defined5);
+    for (var _i11 = 0; _i11 <= _defined5.length - 1; _i11++) {
+      oldNodeKeyList[_i11] = _defined6(_defined5[_i11], _i11, _defined5);
     }
 
     if ($myListParent._dozAttach.keyList === undefined) {
@@ -2692,16 +2692,16 @@ function update($parent, newNode, oldNode) {
       return !newNodeKeyList.includes(x);
     };
 
-    var oldKeyDoRemove = []; //console.log('diff', oldKeyDoRemove)
+    var oldKeyDoRemove = []; ////console.log('diff', oldKeyDoRemove)
     // Ci sono key da rimuovere?
 
-    for (var _i11 = 0; _i11 <= oldNodeKeyList.length - 1; _i11++) {
-      if (_defined7(oldNodeKeyList[_i11], _i11, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i11]);
+    for (var _i12 = 0; _i12 <= oldNodeKeyList.length - 1; _i12++) {
+      if (_defined7(oldNodeKeyList[_i12], _i12, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i12]);
     }
 
     for (var i = 0; i < oldKeyDoRemove.length; i++) {
       if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
-        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]); //console.log('da rimuovere', $oldElement);
+        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]); ////console.log('da rimuovere', $oldElement);
 
 
         if (_$oldElement._dozAttach[COMPONENT_INSTANCE]) {
@@ -2718,7 +2718,7 @@ function update($parent, newNode, oldNode) {
 
     for (var _i6 = 0; _i6 < newNodeKeyList.length; _i6++) {
       // This is the key of all
-      var theKey = newNodeKeyList[_i6]; //console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+      var theKey = newNodeKeyList[_i6]; ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
       var $element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
 
@@ -2726,7 +2726,7 @@ function update($parent, newNode, oldNode) {
       if (!$element) {
         var _$newElement2 = create(newNode.children[_i6], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
-        $myListParent._dozAttach.keyList.set(theKey, _$newElement2); //console.log('elemento creato', $newElement);
+        $myListParent._dozAttach.keyList.set(theKey, _$newElement2); ////console.log('elemento creato', $newElement);
         // appendo per il momento
 
 
@@ -2734,7 +2734,7 @@ function update($parent, newNode, oldNode) {
       } else {
         // Get the child from newNode and oldNode by the same key
         var newChildByKey = getChildByKey(theKey, newNode.children);
-        var oldChildByKey = getChildByKey(theKey, oldNode.children); //console.log('aaaaaaaaaaa')
+        var oldChildByKey = getChildByKey(theKey, oldNode.children); ////console.log('aaaaaaaaaaa')
 
         listOfElement.push($element); // Update attributes?
         // Remember that the operation must be on the key and not on the index
@@ -2743,33 +2743,42 @@ function update($parent, newNode, oldNode) {
         // update(...
 
         var newChildByKeyLength = newChildByKey.children.length;
-        var oldChildByKeyLength = oldChildByKey.children.length; //console.log(newChildByKey.children[i])
-        //console.log(oldChildByKey.children[i])
+        var oldChildByKeyLength = oldChildByKey.children.length; ////console.log(newChildByKey.children[i])
+        ////console.log(oldChildByKey.children[i])
+
+        /**/
 
         for (var _i7 = 0; _i7 < newChildByKeyLength || _i7 < oldChildByKeyLength; _i7++) {
-          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; //console.log('aaaa')
+          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; ////console.log('aaaa')
 
           update($element, newChildByKey.children[_i7], oldChildByKey.children[_i7], _i7, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
-    } // Reorder?
+    }
 
-    /**/
-    //let $myListParentCloned = $myListParent.cloneNode(true);
+    if (!$myListParent.childNodes.length) {
+      for (var _i8 = 0; _i8 < listOfElement.length; _i8++) {
+        $myListParent.appendChild(listOfElement[_i8]);
+      }
 
+      return;
+    }
 
-    for (var _i8 = 0; _i8 < listOfElement.length; _i8++) {
-      //let $currentElementAtPosition = $myListParent.childNodes[i];
-      var $currentElementAtPosition = $myListParent.childNodes[_i8];
-      var _$element = listOfElement[_i8];
-      if (_$element && $currentElementAtPosition) //console.log('->', $element.outerHTML === $currentElementAtPosition.outerHTML)
-        //console.log('equal?', $element === $currentElementAtPosition)
-        if (_$element === $currentElementAtPosition) continue; //console.log('insertbefore')
+    var diff = 0;
 
+    for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
+      var $currentElementAtPosition = $myListParent.childNodes[_i9 + diff];
+      var _$element = listOfElement[_i9]; //if (!$currentElementAtPosition) continue;
+
+      if ($currentElementAtPosition && _$element && $currentElementAtPosition._dozAttach.key === _$element._dozAttach.key) {
+        continue;
+      }
+
+      diff++;
       $myListParent.insertBefore(_$element, $currentElementAtPosition);
     }
   } else if (newNode.type) {
-    //console.log('bbbbbbb', newNode.type)
+    //console.log('walk node', newNode.type)
     // walk node
 
     /*
@@ -2795,8 +2804,8 @@ function update($parent, newNode, oldNode) {
     var newLength = newNode.children.length;
     var oldLength = oldNode.children.length;
 
-    for (var _i12 = 0; _i12 < newLength || _i12 < oldLength; _i12++) {
-      update($parent.childNodes[index], newNode.children[_i12], oldNode.children[_i12], _i12, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    for (var _i13 = 0; _i13 < newLength || _i13 < oldLength; _i13++) {
+      update($parent.childNodes[index], newNode.children[_i13], oldNode.children[_i13], _i13, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
     }
 
     clearDead();
