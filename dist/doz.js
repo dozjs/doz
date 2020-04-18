@@ -5282,9 +5282,9 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
     key: "$$afterNodeChange",
     // noinspection JSMethodCanBeStatic
     value: function $$afterNodeChange($newElement, $oldElement) {
-      /*createAttachElement($oldElement);
-      createAttachElement($newElement);*/
-      //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+      createAttachElement($oldElement);
+      createAttachElement($newElement); //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+
       if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
@@ -5339,6 +5339,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
         //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
         name = _isDirective ? name : dashToCamel(name);
         var firstChild = $target.firstChild;
+        createAttachElement(firstChild);
 
         if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
           firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
