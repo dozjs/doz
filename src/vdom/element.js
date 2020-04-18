@@ -49,7 +49,7 @@ function create(node, cmp, initial, cmpParent) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
-    attach($el, node.props, cmp, cmpParent);
+    attach($el, node.props, cmp, cmpParent, node.isSVG);
     // The children with keys will be created later
     if (!node.hasKeys) {
         if (!node.children.length) {
@@ -250,7 +250,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     newChildByKey.props,
                     oldChildByKey.props,
                     cmp,
-                    $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent
+                    $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent,
+                    newChildByKey.isSVG
                 );
                 // Here also update function using the key
                 // update(...
@@ -328,7 +329,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             newNode.props,
             oldNode.props,
             cmp,
-            $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent
+            $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent,
+            newNode.isSVG
         );
 
         if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;

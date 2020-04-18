@@ -744,8 +744,6 @@ function compile(data, cmp) {
 
       for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
         //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-        //console.log('attMatch[5]', attMatch[5])
-        //console.log('attMatch[7]', attMatch[7])
         props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
@@ -2537,7 +2535,7 @@ function create(node, cmp, initial, cmpParent) {
     storeElementNode[node.type] = $el.cloneNode(true);
   }
 
-  attach($el, node.props, cmp, cmpParent); // The children with keys will be created later
+  attach($el, node.props, cmp, cmpParent, node.isSVG); // The children with keys will be created later
 
   if (!node.hasKeys) {
     if (!node.children.length) {} else if (node.children.length === 1 && typeof node.children[0] === 'string') {
@@ -2747,7 +2745,7 @@ function update($parent, newNode, oldNode) {
         listOfElement.push($element); // Update attributes?
         // Remember that the operation must be on the key and not on the index
 
-        updateAttributes($element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent); // Here also update function using the key
+        updateAttributes($element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newChildByKey.isSVG); // Here also update function using the key
         // update(...
 
         var newChildByKeyLength = newChildByKey.children.length;
@@ -2808,7 +2806,7 @@ function update($parent, newNode, oldNode) {
       if ($parent.childNodes[lastIndex]._dozAttach[COMPONENT_ROOT_INSTANCE]) index += lastIndex;
     }
 
-    var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newNode.isSVG);
     if (cmp.$$beforeNodeWalk($parent, index, attributesUpdated)) return;
     var newLength = newNode.children.length;
     var oldLength = oldNode.children.length;
@@ -4676,7 +4674,7 @@ function isEventAttribute(name) {
   return isListener(name);
 }
 
-function setAttribute($target, name, value, cmp) {
+function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
   //console.log('setAttribute', $target, name, value)
   createAttachElement($target);
 
@@ -4711,24 +4709,21 @@ function setAttribute($target, name, value, cmp) {
 
   } else {
     if (value === undefined) value = ''; //$target.setAttribute(name, value);
-    //console.log('set', name, value)
-    //Bisogna migliorare questa condizione, messa come prima rende più lento il tutto
+    //let isSVG = $target.toString().includes('SVG');
 
-    if (name === 'class') {
+    if (name === 'class' && !isSVG) {
       $target.className = value; //Imposto solo se la proprietà esiste...
-    } else if ($target[name] !== undefined) {
-      //console.log($target instanceof SVGSVGElement);
+    } else if ($target[name] !== undefined && !isSVG) {
       $target[name] = value;
-      /**/
-    } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || $target.toString().includes('SVG')) {
-      $target.setAttribute(name, value); //console.log('get', name, $target[name])
+    } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || isSVG) {
+      $target.setAttribute(name, value);
     }
   }
 }
 
-function updateAttribute($target, name, newVal, oldVal, cmp) {
+function updateAttribute($target, name, newVal, oldVal, cmp, cmpParent, isSVG) {
   if (newVal !== oldVal) {
-    setAttribute($target, name, newVal, cmp);
+    setAttribute($target, name, newVal, cmp, cmpParent, isSVG);
     cmp.$$afterAttributeUpdate($target, name, newVal);
   }
 }
@@ -4737,6 +4732,7 @@ function updateAttributes($target, newProps) {
   var oldProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var cmp = arguments.length > 3 ? arguments[3] : undefined;
   var cmpParent = arguments.length > 4 ? arguments[4] : undefined;
+  var isSVG = arguments.length > 5 ? arguments[5] : undefined;
   var props = Object.assign({}, newProps, oldProps);
   var updated = [];
   var propsKeys = Object.keys(props);
@@ -4744,7 +4740,7 @@ function updateAttributes($target, newProps) {
   for (var i = 0; i < propsKeys.length; i++) {
     var name = propsKeys[i];
     if (!$target || $target.nodeType !== 1) continue;
-    updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent);
+    updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent, isSVG);
 
     if (newProps[name] !== oldProps[name]) {
       var obj = {};
@@ -4893,14 +4889,14 @@ function addEventListener($target, name, value, cmp, cmpParent) {
   }
 }
 
-function attach($target, nodeProps, cmp, cmpParent) {
+function attach($target, nodeProps, cmp, cmpParent, isSVG) {
   var name;
   var propsKeys = Object.keys(nodeProps);
 
   for (var i = 0, len = propsKeys.length; i < len; i++) {
     name = propsKeys[i];
     addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-    setAttribute($target, name, nodeProps[name], cmp, cmpParent); //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+    setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG); //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
   }
   /*const datasetArray = Object.keys($target.dataset);
   for (let i = 0; i < datasetArray.length; i++) {
