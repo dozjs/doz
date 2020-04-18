@@ -258,6 +258,14 @@ module.exports = raf;
 /* 4 */
 /***/ (function(module, exports) {
 
+module.exports = function ($target) {
+  if ($target && !$target._dozAttach) $target._dozAttach = {};
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
 var RND = Math.random();
 var MAX_ID = 9007199254740990;
 var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
@@ -302,7 +310,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(1),
@@ -358,14 +366,6 @@ module.exports = {
   isDirective: isDirective,
   extractDirectivesFromProps: extractDirectivesFromProps,
   extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-module.exports = function ($target) {
-  if ($target && !$target._dozAttach) $target._dozAttach = {};
 };
 
 /***/ }),
@@ -594,10 +594,10 @@ var regExcludeSpecial = new RegExp("</?(".concat(TAG.TEXT_NODE_PLACE, "|").conca
 
 var directive = __webpack_require__(0);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     isDirective = _require2.isDirective;
 
-var mapper = __webpack_require__(4); //const eventsAttributes = require('../utils/events-attributes');
+var mapper = __webpack_require__(5); //const eventsAttributes = require('../utils/events-attributes');
 
 
 var selfClosingElements = {
@@ -932,7 +932,7 @@ var cloneObject = __webpack_require__(54);
 
 var toLiteralString = __webpack_require__(24);
 
-var createAttachElement = __webpack_require__(6); //const mapCompiled = require('../vdom/map-compiled');
+var createAttachElement = __webpack_require__(4); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1369,7 +1369,7 @@ var directive = __webpack_require__(0);
 
 var getComponentName = __webpack_require__(55);
 
-var createAttachElement = __webpack_require__(6);
+var createAttachElement = __webpack_require__(4);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1685,7 +1685,7 @@ module.exports = {
 // Add tag prefix to animation
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
-var mapper = __webpack_require__(4);
+var mapper = __webpack_require__(5);
 
 function composeStyleInner(cssContent, tag) {
   if (typeof cssContent !== 'string') return;
@@ -2492,7 +2492,7 @@ var hooks = __webpack_require__(7);
 
 var directive = __webpack_require__(0);
 
-var createAttachElement = __webpack_require__(6);
+var createAttachElement = __webpack_require__(4);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2871,7 +2871,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
 
-var mapper = __webpack_require__(4);
+var mapper = __webpack_require__(5);
 
 var camelToDash = __webpack_require__(20); //const eventsAttributes = require('../utils/events-attributes');
 
@@ -3216,7 +3216,7 @@ var h = __webpack_require__(21);
 var _require3 = __webpack_require__(8),
     compile = _require3.compile;
 
-var mapper = __webpack_require__(4);
+var mapper = __webpack_require__(5);
 
 var _require4 = __webpack_require__(18),
     update = _require4.update;
@@ -3319,7 +3319,7 @@ var plugin = __webpack_require__(25);
 
 var directive = __webpack_require__(0);
 
-var createAttachElement = __webpack_require__(6);
+var createAttachElement = __webpack_require__(4);
 /*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)
@@ -4115,7 +4115,7 @@ module.exports = {
 var _require = __webpack_require__(2),
     data = _require.data;
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
     isDirective = _require2.isDirective;
 
@@ -4657,12 +4657,12 @@ var objectPath = __webpack_require__(43);
 
 var isListener = __webpack_require__(15);
 
-var mapper = __webpack_require__(4);
+var mapper = __webpack_require__(5);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     isDirective = _require2.isDirective;
 
-var createAttachElement = __webpack_require__(6); //const booleanAttributes = require('../utils/boolean-attributes');
+var createAttachElement = __webpack_require__(4); //const booleanAttributes = require('../utils/boolean-attributes');
 
 
 function isEventAttribute(name) {
@@ -5213,8 +5213,10 @@ var _require = __webpack_require__(1),
 
 var directive = __webpack_require__(0);
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     isDirective = _require2.isDirective;
+
+var createAttachElement = __webpack_require__(4);
 
 var DOMManipulation = /*#__PURE__*/function (_Base) {
   _inherits(DOMManipulation, _Base);
@@ -5280,6 +5282,8 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
     key: "$$afterNodeChange",
     // noinspection JSMethodCanBeStatic
     value: function $$afterNodeChange($newElement, $oldElement) {
+      /*createAttachElement($oldElement);
+      createAttachElement($newElement);*/
       //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
       if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
@@ -5292,6 +5296,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
     // noinspection JSMethodCanBeStatic
     value: function $$beforeNodeWalk($parent, index, attributesUpdated) {
       if ($parent.childNodes[index]) {
+        createAttachElement($parent.childNodes[index]);
         var dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE]; // Can update props of dynamic instances?
 
         if (dynInstance && attributesUpdated.length) {
@@ -6246,7 +6251,7 @@ directive('bind', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var _require2 = __webpack_require__(5),
+var _require2 = __webpack_require__(6),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
 var queue = __webpack_require__(69);
