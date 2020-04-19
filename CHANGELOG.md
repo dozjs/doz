@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.2] - 2020-04-19
+- **Fixed** conflict between directives `d-show` and `d-animate`
+- **Removed** for the moment "support to attributes without quotes" :(, so many problems
+
 ## [2.4.1] - 2020-04-18
 - **Fixed** SVG elements are malformed
 

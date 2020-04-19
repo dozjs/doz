@@ -2,16 +2,18 @@ const {TAG} = require('../constants');
 const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
 //const eventsAttributes = require('../utils/events-attributes');
-const {scopedInner} = require('../component/helpers/style');
+//const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
 
+/*
 const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
 const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
+*/
 
 /**
  * This method add special tag to value placeholder
