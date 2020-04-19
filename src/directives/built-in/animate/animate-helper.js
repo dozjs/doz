@@ -7,6 +7,11 @@ function animateHelper($target, animationName, opts, callback) {
         opts = {};
     }
 
+    if (opts.mode === 'hide' && $target.style.display === 'none') {
+        console.log('already hidden');
+        return;
+    }
+
     if($target._dozAttach.__animationIsRunning) {
         $target.classList.remove($target._dozAttach.__lastAnimationName);
         $target._dozAttach.__animationIsRunning = false;

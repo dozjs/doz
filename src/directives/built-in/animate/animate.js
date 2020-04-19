@@ -87,13 +87,14 @@ directive('animate', {
                 delay: directiveValue.show.delay,
                 iterationCount: directiveValue.show.iterationCount,
                 cb: directiveValue.show.cb,
-                classLib: directiveValue.classLib
+                classLib: directiveValue.classLib,
+                mode: 'show'
             };
 
             //Add always an useful method for show
             $target._dozAttach.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
-            (function ($target, directiveValue, instance) {
+            //(function ($target, directiveValue, instance) {
                 wait(() => {
                     //console.log($target._dozAttach.__animationIsRunning)
                     return !$target._dozAttach.__animationIsRunning;
@@ -108,7 +109,7 @@ directive('animate', {
                 }, 1000, () => {
                     $target._dozAttach.__animationReset();
                 });
-            })($target, directiveValue, instance);
+            //})($target, directiveValue, instance);
 
         }
 
@@ -126,6 +127,7 @@ directive('animate', {
                 iterationCount: directiveValue.hide.iterationCount,
                 cb: directiveValue.hide.cb,
                 classLib: directiveValue.classLib,
+                mode: 'hide'
             };
 
             //Add always an useful method for show

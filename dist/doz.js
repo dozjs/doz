@@ -6501,31 +6501,31 @@ directive('animate', {
         delay: directiveValue.show.delay,
         iterationCount: directiveValue.show.iterationCount,
         cb: directiveValue.show.cb,
-        classLib: directiveValue.classLib
+        classLib: directiveValue.classLib,
+        mode: 'show'
       }; //Add always an useful method for show
 
       $target._dozAttach.__animationShow = function (cb) {
         return instance.animate($target, directiveValue.show.name, optAnimation, cb);
-      };
-
-      (function ($target, directiveValue, instance) {
-        wait(function () {
-          //console.log($target._dozAttach.__animationIsRunning)
-          return !$target._dozAttach.__animationIsRunning;
-        }, function () {
-          if (!document.body.contains($target)) return;
-
-          if ($target._dozAttach.__animationOriginDisplay) {
-            $target.style.display = $target._dozAttach.__animationOriginDisplay;
-          } //Exclude if element is not displayed
+      }; //(function ($target, directiveValue, instance) {
 
 
-          if ($target.style.display === 'none') return;
-          instance.animate($target, directiveValue.show.name, optAnimation);
-        }, 1000, function () {
-          $target._dozAttach.__animationReset();
-        });
-      })($target, directiveValue, instance);
+      wait(function () {
+        //console.log($target._dozAttach.__animationIsRunning)
+        return !$target._dozAttach.__animationIsRunning;
+      }, function () {
+        if (!document.body.contains($target)) return;
+
+        if ($target._dozAttach.__animationOriginDisplay) {
+          $target.style.display = $target._dozAttach.__animationOriginDisplay;
+        } //Exclude if element is not displayed
+
+
+        if ($target.style.display === 'none') return;
+        instance.animate($target, directiveValue.show.name, optAnimation);
+      }, 1000, function () {
+        $target._dozAttach.__animationReset();
+      }); //})($target, directiveValue, instance);
     }
 
     if (directiveValue.hide) {
@@ -6540,7 +6540,8 @@ directive('animate', {
         delay: directiveValue.hide.delay,
         iterationCount: directiveValue.hide.iterationCount,
         cb: directiveValue.hide.cb,
-        classLib: directiveValue.classLib
+        classLib: directiveValue.classLib,
+        mode: 'hide'
       }; //Add always an useful method for show
 
       $target._dozAttach.__animationHide = function (cb) {
@@ -6646,6 +6647,11 @@ function animateHelper($target, animationName, opts, callback) {
     opts = {};
   } else if (!opts) {
     opts = {};
+  }
+
+  if (opts.mode === 'hide' && $target.style.display === 'none') {
+    console.log('already hidden');
+    return;
   }
 
   if ($target._dozAttach.__animationIsRunning) {
