@@ -1,12 +1,14 @@
 window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
 
-function wait(what, callback, maxCount = 1000, message) {
+function wait(what, callback, maxCount = 1000, exceededCallback) {
     let rid;
     let count = 0;
     let check = function() {
         if (count >= maxCount) {
-            console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+            //console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+            if (typeof exceededCallback === 'function')
+                exceededCallback();
             return;
         }
         if (!what()) {

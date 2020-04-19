@@ -76,7 +76,7 @@ function animateHelper($target, animationName, opts, callback) {
     //console.log('body contains', document.body.contains($target));
     $target.addEventListener('animationend', handleAnimationEnd);
     $target._dozAttach.__handleAnimationEnd = handleAnimationEnd;
-
+    $target._dozAttach.__animationReset = () => handleAnimationEnd();
 
 }
 

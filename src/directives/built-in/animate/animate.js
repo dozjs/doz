@@ -43,7 +43,9 @@ directive('animate', {
                                     $targetOfMap.style.display = 'none';
                                     resolve();
                                 });
-                            }, 1000, 'a');
+                            }, 1000, () => {
+                                $targetOfMap._dozAttach.__animationReset();
+                            });
                         }
                     )
                 );
@@ -102,7 +104,9 @@ directive('animate', {
                 //Exclude if element is not displayed
                 if ($target.style.display === 'none') return;
                 instance.animate($target, directiveValue.show.name, optAnimation);
-            }, 1000, 'b');
+            }, 1000, () => {
+                $target._dozAttach.__animationReset();
+            });
         }
 
         if (directiveValue.hide) {

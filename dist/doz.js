@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.4.1  
+// [DOZ]  Build version: 2.4.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3276,7 +3276,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '2.4.1',
+    value: '2.4.0',
     enumerable: true
   },
   tag: {
@@ -6283,10 +6283,19 @@ directive('show', {
   },
   setVisible: function setVisible($target, value) {
     var thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
-    $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || ''; //$target.__animationWasUsed =
+    $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+    var lockAnimation = false;
+
+    if ($target._dozAttach.__showInitialValue === undefined) {
+      $target._dozAttach.__showInitialValue = value;
+      lockAnimation = value === false;
+    } //$target.__animationWasUsed =
     //console.dir($target);
 
-    if (thereIsAnimateDirective && $target._dozAttach.__prevValueOfShow !== value && $target._dozAttach.__animationWasUsedByShowDirective) {
+
+    if (thereIsAnimateDirective && !lockAnimation
+    /*&& $target._dozAttach.__prevValueOfShow !== value*/
+    && $target._dozAttach.__animationWasUsedByShowDirective) {
       //console.log($target._dozAttach.__animationIsRunning)
       if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = [];
       $target._dozAttach.__animationWasUsedByShowDirective = true;
@@ -6297,14 +6306,14 @@ directive('show', {
           $target.style.display = $target._dozAttach.__showOriginDisplay;
 
           $target._dozAttach.__animationShow(function () {
-            $target.style.display = $target._dozAttach.__showOriginDisplay;
-            $target._dozAttach.__prevValueOfShow = value;
+            $target.style.display = $target._dozAttach.__showOriginDisplay; //$target._dozAttach.__prevValueOfShow = value;
+
             resolve();
           });
         } else {
           $target._dozAttach.__animationHide(function () {
-            $target.style.display = 'none';
-            $target._dozAttach.__prevValueOfShow = value;
+            $target.style.display = 'none'; //$target._dozAttach.__prevValueOfShow = value;
+
             resolve();
           });
         }
@@ -6320,8 +6329,10 @@ directive('show', {
         new Promise($target._dozAttach.__animationsList.shift()).then();
       }
     } else {
-      $target._dozAttach.__prevValueOfShow = value;
-      if (thereIsAnimateDirective) $target._dozAttach.__animationWasUsedByShowDirective = true; //delay(() => {
+      //$target._dozAttach.__prevValueOfShow = value;
+      if (thereIsAnimateDirective) $target._dozAttach.__animationWasUsedByShowDirective = true;
+      /**/
+      //delay(() => {
 
       $target.style.display = !value
       /*=== false*/
@@ -6439,7 +6450,9 @@ directive('animate', {
                 $targetOfMap.style.display = 'none';
                 resolve();
               });
-            }, 1000, 'a');
+            }, 1000, function () {
+              $targetOfMap._dozAttach.__animationReset();
+            });
           }));
         };
 
@@ -6508,7 +6521,9 @@ directive('animate', {
 
         if ($target.style.display === 'none') return;
         instance.animate($target, directiveValue.show.name, optAnimation);
-      }, 1000, 'b');
+      }, 1000, function () {
+        $target._dozAttach.__animationReset();
+      });
     }
 
     if (directiveValue.hide) {
@@ -6590,13 +6605,14 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout
 
 function wait(what, callback) {
   var maxCount = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
-  var message = arguments.length > 3 ? arguments[3] : undefined;
+  var exceededCallback = arguments.length > 3 ? arguments[3] : undefined;
   var rid;
   var count = 0;
 
   var check = function check() {
     if (count >= maxCount) {
-      console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+      //console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+      if (typeof exceededCallback === 'function') exceededCallback();
       return;
     }
 
@@ -6694,6 +6710,10 @@ function animateHelper($target, animationName, opts, callback) {
 
   $target.addEventListener('animationend', handleAnimationEnd);
   $target._dozAttach.__handleAnimationEnd = handleAnimationEnd;
+
+  $target._dozAttach.__animationReset = function () {
+    return handleAnimationEnd();
+  };
 }
 
 module.exports = animateHelper;

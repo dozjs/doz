@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Login</title>
+    <script src="../../dist/doz.js?58965495084175622"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <style>
+        body {
+            font-family: "Arial", "sans-serif";
+            text-align: center;
+            background: #1f0c70;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+    (function () {
+
+        const SIGNIN = 'SIGNIN';
+        const SIGNUP = 'SIGNUP';
+        const FORGOT = 'FORGOT';
+
+        const animationFlip = {
+            show: {name: 'flipInX', duration: '800ms'},
+            hide: {name: 'flipOutX', duration: '500ms'}
+        };
+
+        const Logo = function(h) {
+            return h`
+        <style>
+          .logo {
+            width: 180px;
+          }
+        </style>
+
+        <img
+          class="logo"
+          src="https://raw.githubusercontent.com/dozjs/doz/master/extra/doz.png"/>
+      `
+        };
+
+        const Header = function(h) {
+            return h`
+        <style>
+          .header {
+            color: #fff;
+            font-size: 20px;
+            margin: 0 0 60px;
+            height: 22px;
+            overflow: hidden;
+            position: relative;
+          }
+
+          .header span {
+            position: absolute;
+            width: 100%;
+            display: block;
+            left: 0;
+          }
+        </style>
+
+        <div class="header">
+          <span
+            d-animate="${animationFlip}"
+            d-show="${this.props.mode === SIGNIN}"
+          >Sign in to your account</span>
+          <span
+            d-animate="${animationFlip}"
+            d-show="${this.props.mode === SIGNUP}"
+          >Create a new account</span>
+          <span
+            d-animate="${animationFlip}"
+            d-show="${this.props.mode === FORGOT}"
+          >Reset your password</span>
+        </div>
+      `
+        };
+
+        const Actions = function(h) {
+            return h`
+        <style>
+          .actions {
+            display: flex;
+            align-items: center;
+            width: 320px;
+            margin-bottom: 20px;
+            font-size: 12px;
+          }
+
+          .actions li {
+            cursor: pointer;
+            color: #fff;
+            opacity: 0.5;
+          }
+
+          .actions li.active {
+            opacity: 1;
+          }
+
+          .actions > li:nth-of-type(2) {
+            margin-left: 15px;
+          }
+
+          .actions > li:last-of-type {
+            margin-left: auto;
+          }
+        </style>
+
+        <ul class="actions">
+          <li
+            class="${this.props.mode === SIGNIN ? 'active': ''}"
+            onclick="${()=> this.getStore('form').mode = SIGNIN}">Sign in</li>
+          <li
+            class="${this.props.mode === SIGNUP ? 'active': ''}"
+            onclick="${()=> this.getStore('form').mode = SIGNUP}">Sign up</li>
+          <li
+            class="${this.props.mode === FORGOT ? 'active': ''}"
+            onclick="${()=> this.getStore('form').mode = FORGOT}">Forgot</li>
+        </ul>
+      `
+        };
+
+        const Form = class extends Doz.Component {
+
+            constructor(o) {
+                super(o);
+
+                this.props = {
+                    mode: SIGNIN,
+                    submitText: 'Sign in',
+                    showPassword: true,
+                    showRepeatPassword: false,
+                    formFieldHeight: '110px'
+                };
+
+                this.config = {
+                    store: 'form'
+                };
+
+                this.propsListener = {
+                    mode(v) {
+                        switch(v) {
+                            case SIGNIN:
+                                this.props.submitText = 'Sign in';
+                                this.props.showPassword = true;
+                                this.props.showRepeatPassword = false;
+                                this.props.formFieldHeight = '110px';
+                                break;
+                            case SIGNUP:
+                                this.props.submitText = 'Sign up';
+                                this.props.showPassword = true;
+                                this.props.showRepeatPassword = true;
+                                this.props.formFieldHeight = '165px';
+                                break;
+                            case FORGOT:
+                                this.props.submitText = 'Reset password';
+                                this.props.showPassword = false;
+                                this.props.showRepeatPassword = false;
+                                this.props.formFieldHeight = '55px';
+                                break;
+                        }
+                    }
+                }
+            }
+
+            template(h) {
+                return h`
+          <style>
+            .container {
+              overflow: hidden;
+              margin: auto;
+              max-width: 320px;
+            }
+
+            form, .form-fields {
+              display: flex;
+              flex-direction: column;
+            }
+
+            .form-fields {
+              height: ${this.props.formFieldHeight};
+              overflow: hidden;
+              transition: all 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86)
+            }
+
+            input {
+              padding: 15px;
+              border-radius: 5px;
+              margin-bottom: 10px;
+              border: 0;
+            }
+
+            .submit-button {
+              padding: 15px;
+              border-radius: 5px;
+              border: 0;
+              background: #3F51B5;
+              color: #fff;
+              font-size: 18px;
+              transition: all 300ms;
+              cursor: pointer;
+            }
+
+            .submit-button:hover {
+              background: #03A9F4;
+            }
+          </style>
+
+          <div class="container">
+            <${Logo}/>
+            <${Header} mode="${this.props.mode}"/>
+            <${Actions} mode="${this.props.mode}"/>
+            <form>
+              <div class="form-fields">
+                <input
+                  required
+                  d-animate="${animationFlip}"
+                  placeholder="E-mail"
+                  type="email"/>
+                <input
+                  required="${this.props.showPassword}"
+                  d-animate="${animationFlip}"
+                  d-show="${this.props.showPassword}"
+                  placeholder="Password"
+                  type="password"/>
+                <input
+                  required="${this.props.showRepeatPassword}"
+                  d-animate="${animationFlip}"
+                  d-show="${this.props.showRepeatPassword}"
+                  placeholder="Repeat password"
+                  type="password"/>
+              </div>
+              <button class="submit-button" type="submit">${this.props.submitText}</button>
+            </form>
+          </div>
+        `
+            }
+        };
+
+        new Doz({
+            root: '#app',
+            template(h) {
+                return h`
+          <${Form}/>
+        `
+            }
+        });
+    })();
+</script>
+</body>
+</html>
