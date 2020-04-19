@@ -35,17 +35,18 @@ directive('show', {
         let lockAnimation = false;
         if ($target._dozAttach.__showInitialValue === undefined) {
             $target._dozAttach.__showInitialValue = value;
-            lockAnimation = value === false;
+            lockAnimation = !value;
         }
         //$target.__animationWasUsed =
         //console.dir($target);
 
-        if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
+        //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
+        if (thereIsAnimateDirective && !lockAnimation) {
             //console.log($target._dozAttach.__animationIsRunning)
             if (!$target._dozAttach.__animationsList)
                 $target._dozAttach.__animationsList = [];
 
-            $target._dozAttach.__animationWasUsedByShowDirective = true;
+            //$target._dozAttach.__animationWasUsedByShowDirective = true;
 
             $target._dozAttach.__animationsList.push((resolve) => {
                 //console.log('value', value)
@@ -78,8 +79,8 @@ directive('show', {
 
         } else {
             //$target._dozAttach.__prevValueOfShow = value;
-            if (thereIsAnimateDirective)
-                $target._dozAttach.__animationWasUsedByShowDirective = true;/**/
+            //if (thereIsAnimateDirective)
+                //$target._dozAttach.__animationWasUsedByShowDirective = true;/**/
             //delay(() => {
                 $target.style.display = !value /*=== false*/ ? 'none' : $target._dozAttach.__showOriginDisplay;
             //});
