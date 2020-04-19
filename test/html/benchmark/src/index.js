@@ -117,7 +117,7 @@ new Doz({
   <table class="table table-hover table-striped test-data">
     <tbody>${this.props.data.map(
             item => h`
-      <tr key="${item.id}" class=${item.selected ? 'danger' : ''} >
+      <tr key="${item.id}" onclick="${() => this.action.select(item.id)}" class=${item.selected ? 'danger' : ''} >
         <td class="col-md-1">${item.id}</td>
         <td class="col-md-4" >
           <a>${item.label}</a>
