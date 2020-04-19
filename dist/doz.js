@@ -6647,7 +6647,7 @@ function animateHelper($target, animationName, opts, callback) {
   }
 
   if (opts.mode === 'hide' && $target.style.display === 'none') {
-    console.log('already hidden');
+    //console.log('already hidden');
     return;
   }
 
