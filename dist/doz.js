@@ -6508,22 +6508,24 @@ directive('animate', {
         return instance.animate($target, directiveValue.show.name, optAnimation, cb);
       };
 
-      wait(function () {
-        //console.log($target._dozAttach.__animationIsRunning)
-        return !$target._dozAttach.__animationIsRunning;
-      }, function () {
-        if (!document.body.contains($target)) return;
+      (function ($target, directiveValue, instance) {
+        wait(function () {
+          //console.log($target._dozAttach.__animationIsRunning)
+          return !$target._dozAttach.__animationIsRunning;
+        }, function () {
+          if (!document.body.contains($target)) return;
 
-        if ($target._dozAttach.__animationOriginDisplay) {
-          $target.style.display = $target._dozAttach.__animationOriginDisplay;
-        } //Exclude if element is not displayed
+          if ($target._dozAttach.__animationOriginDisplay) {
+            $target.style.display = $target._dozAttach.__animationOriginDisplay;
+          } //Exclude if element is not displayed
 
 
-        if ($target.style.display === 'none') return;
-        instance.animate($target, directiveValue.show.name, optAnimation);
-      }, 1000, function () {
-        $target._dozAttach.__animationReset();
-      });
+          if ($target.style.display === 'none') return;
+          instance.animate($target, directiveValue.show.name, optAnimation);
+        }, 1000, function () {
+          $target._dozAttach.__animationReset();
+        });
+      })($target, directiveValue, instance);
     }
 
     if (directiveValue.hide) {
@@ -6611,7 +6613,7 @@ function wait(what, callback) {
 
   var check = function check() {
     if (count >= maxCount) {
-      //console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+      console.warn('wait, max cycles exceeded ' + maxCount);
       if (typeof exceededCallback === 'function') exceededCallback();
       return;
     }

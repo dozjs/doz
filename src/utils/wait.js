@@ -6,7 +6,7 @@ function wait(what, callback, maxCount = 1000, exceededCallback) {
     let count = 0;
     let check = function() {
         if (count >= maxCount) {
-            //console.warn('wait, max cicles exceeded ' + maxCount + ', ' + message);
+            console.warn('wait, max cycles exceeded ' + maxCount);
             if (typeof exceededCallback === 'function')
                 exceededCallback();
             return;

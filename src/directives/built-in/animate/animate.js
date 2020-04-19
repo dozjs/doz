@@ -93,20 +93,23 @@ directive('animate', {
             //Add always an useful method for show
             $target._dozAttach.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
 
-            wait(() => {
-                //console.log($target._dozAttach.__animationIsRunning)
-                return !$target._dozAttach.__animationIsRunning;
-            }, () => {
-                if (!document.body.contains($target)) return;
-                if ($target._dozAttach.__animationOriginDisplay) {
-                    $target.style.display = $target._dozAttach.__animationOriginDisplay;
-                }
-                //Exclude if element is not displayed
-                if ($target.style.display === 'none') return;
-                instance.animate($target, directiveValue.show.name, optAnimation);
-            }, 1000, () => {
-                $target._dozAttach.__animationReset();
-            });
+            (function ($target, directiveValue, instance) {
+                wait(() => {
+                    //console.log($target._dozAttach.__animationIsRunning)
+                    return !$target._dozAttach.__animationIsRunning;
+                }, () => {
+                    if (!document.body.contains($target)) return;
+                    if ($target._dozAttach.__animationOriginDisplay) {
+                        $target.style.display = $target._dozAttach.__animationOriginDisplay;
+                    }
+                    //Exclude if element is not displayed
+                    if ($target.style.display === 'none') return;
+                    instance.animate($target, directiveValue.show.name, optAnimation);
+                }, 1000, () => {
+                    $target._dozAttach.__animationReset();
+                });
+            })($target, directiveValue, instance);
+
         }
 
         if (directiveValue.hide) {
