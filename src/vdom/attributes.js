@@ -48,6 +48,7 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
             $target.className = value;
             //Imposto solo se la proprietà esiste...
         } else if ($target[name] !== undefined && !isSVG) {
+            //console.log(name, value, typeof value)
             // Support for boolean attributes like required, disabled etc..
             if (value === '') {
                 if (booleanAttributes.indexOf(name) > -1)
