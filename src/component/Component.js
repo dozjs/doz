@@ -18,7 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
-const createAttachElement = require('./make-sure-attach');
+const makeSureAttach = require('./make-sure-attach');
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -185,7 +185,7 @@ class Component extends DOMManipulation {
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
-            createAttachElement(this._rootElement);
+            makeSureAttach(this._rootElement);
             this._parentElement = rootElement.parentNode;
         }
         this._prev = next;

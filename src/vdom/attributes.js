@@ -4,7 +4,7 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-const createAttachElement = require('../component/make-sure-attach');
+const makeSureAttach = require('../component/make-sure-attach');
 const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
@@ -13,7 +13,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
     //console.log('setAttribute', $target, name, value)
-    createAttachElement($target);
+    makeSureAttach($target);
 
     if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
         $target._dozAttach[PROPS_ATTRIBUTES] = {};

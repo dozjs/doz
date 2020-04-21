@@ -4,7 +4,7 @@ const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
-const createAttachElement = require('./component/make-sure-attach');
+const makeSureAttach = require('./component/make-sure-attach');
 /*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)
@@ -51,7 +51,7 @@ class Doz {
         const appNode = document.querySelector(TAG.APP);
 
         // This fix double app rendering in SSR
-        createAttachElement(appNode);
+        makeSureAttach(appNode);
         if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
             appNode.parentNode.removeChild(appNode);
         }
