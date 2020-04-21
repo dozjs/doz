@@ -5,7 +5,7 @@ const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
-const createAttachElement = require('./create-attach-element');
+const createAttachElement = require('./make-sure-attach');
 
 class DOMManipulation extends Base {
     constructor(opt) {

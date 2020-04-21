@@ -4,9 +4,8 @@ const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
 const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-const createAttachElement = require('../component/create-attach-element');
-
-//const booleanAttributes = require('../utils/boolean-attributes');
+const createAttachElement = require('../component/make-sure-attach');
+const booleanAttributes = require('../utils/boolean-attributes');
 
 function isEventAttribute(name) {
     return isListener(name);
@@ -52,6 +51,10 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
             $target.className = value;
             //Imposto solo se la proprietà esiste...
         } else if ($target[name] !== undefined && !isSVG) {
+            if (value === '') {
+                if (booleanAttributes.indexOf(name) > -1)
+                    value = true;
+            }
             $target[name] = value;
         } else if (name.startsWith('data-')
             || name.startsWith('aria-')

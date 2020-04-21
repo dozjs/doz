@@ -4,7 +4,7 @@ const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
-const createAttachElement = require('./component/create-attach-element');
+const createAttachElement = require('./component/make-sure-attach');
 /*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)

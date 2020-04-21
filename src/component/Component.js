@@ -18,7 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
-const createAttachElement = require('./create-attach-element');
+const createAttachElement = require('./make-sure-attach');
 
 //const mapCompiled = require('../vdom/map-compiled');
 

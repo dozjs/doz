@@ -3,7 +3,7 @@ const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY} =
 const canDecode = require('../utils/can-decode');
 const hooks = require('../component/hooks');
 const directive = require('../directives');
-const createAttachElement = require('../component/create-attach-element');
+const createAttachElement = require('../component/make-sure-attach');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
