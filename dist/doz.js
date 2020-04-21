@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 2.4.2  
+// [DOZ]  Build version: 2.4.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -906,40 +906,40 @@ var hooks = __webpack_require__(7);
 
 var update = __webpack_require__(41).updateElement;
 
-var drawDynamic = __webpack_require__(44);
+var drawDynamic = __webpack_require__(45);
 
 var proxy = __webpack_require__(15);
 
-var toInlineStyle = __webpack_require__(45);
+var toInlineStyle = __webpack_require__(46);
 
-var queueReady = __webpack_require__(46);
+var queueReady = __webpack_require__(47);
 
-var queueDraw = __webpack_require__(47);
+var queueDraw = __webpack_require__(48);
 
-var extendInstance = __webpack_require__(48);
+var extendInstance = __webpack_require__(49);
 
-var removeAllAttributes = __webpack_require__(49);
+var removeAllAttributes = __webpack_require__(50);
 
 var h = __webpack_require__(20);
 
-var loadLocal = __webpack_require__(50);
+var loadLocal = __webpack_require__(51);
 
-var localMixin = __webpack_require__(51);
+var localMixin = __webpack_require__(52);
 
 var _require2 = __webpack_require__(8),
     compile = _require2.compile;
 
 var propsInit = __webpack_require__(22);
 
-var DOMManipulation = __webpack_require__(52);
+var DOMManipulation = __webpack_require__(53);
 
 var directive = __webpack_require__(0);
 
-var cloneObject = __webpack_require__(54);
+var cloneObject = __webpack_require__(55);
 
 var toLiteralString = __webpack_require__(23);
 
-var createAttachElement = __webpack_require__(4); //const mapCompiled = require('../vdom/map-compiled');
+var makeSureAttach = __webpack_require__(4); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1070,7 +1070,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
       if (!this._rootElement && rootElement) {
         this._rootElement = rootElement;
-        createAttachElement(this._rootElement);
+        makeSureAttach(this._rootElement);
         this._parentElement = rootElement.parentNode;
       }
 
@@ -1374,9 +1374,9 @@ var delay = __webpack_require__(3);
 
 var directive = __webpack_require__(0);
 
-var getComponentName = __webpack_require__(55);
+var getComponentName = __webpack_require__(56);
 
-var createAttachElement = __webpack_require__(4);
+var makeSureAttach = __webpack_require__(4);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1399,7 +1399,7 @@ function createInstance() {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     while ($child) {
-      createAttachElement($child); // Non bella ma funziona
+      makeSureAttach($child); // Non bella ma funziona
 
       if (!$child._dozAttach[ALREADY_WALKED]) {
         $child._dozAttach[ALREADY_WALKED] = true;
@@ -2481,7 +2481,7 @@ var hooks = __webpack_require__(7);
 
 var directive = __webpack_require__(0);
 
-var createAttachElement = __webpack_require__(4);
+var makeSureAttach = __webpack_require__(4);
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -2531,7 +2531,7 @@ function create(node, cmp, initial, cmpParent) {
     }
   }
 
-  createAttachElement($el);
+  makeSureAttach($el);
   $el._dozAttach.elementChildren = node.children;
   cmp.$$afterNodeElementCreate($el, node, initial);
   return $el;
@@ -2598,7 +2598,7 @@ function update($parent, newNode, oldNode) {
     if ($parent.childNodes.length) {
       // If last node is a root, insert before
       var $lastNode = $parent.childNodes[$parent.childNodes.length - 1];
-      createAttachElement($lastNode);
+      makeSureAttach($lastNode);
 
       if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
@@ -2609,7 +2609,7 @@ function update($parent, newNode, oldNode) {
     } ////console.log(newNode)
 
 
-    createAttachElement($parent);
+    makeSureAttach($parent);
     $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
     $parent.appendChild($newElement);
     return $newElement;
@@ -3195,11 +3195,11 @@ var _require = __webpack_require__(24),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(56);
+var component = __webpack_require__(57);
 
 var Component = __webpack_require__(10);
 
-var mixin = __webpack_require__(57);
+var mixin = __webpack_require__(58);
 
 var h = __webpack_require__(20);
 
@@ -3211,9 +3211,9 @@ var mapper = __webpack_require__(5);
 var _require4 = __webpack_require__(17),
     update = _require4.update;
 
-var tag = __webpack_require__(58);
+var tag = __webpack_require__(59);
 
-__webpack_require__(59);
+__webpack_require__(60);
 
 Object.defineProperties(Doz, {
   collection: {
@@ -3260,7 +3260,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '2.4.2',
+    value: '2.4.3',
     enumerable: true
   },
   tag: {
@@ -3309,7 +3309,7 @@ var plugin = __webpack_require__(24);
 
 var directive = __webpack_require__(0);
 
-var createAttachElement = __webpack_require__(4);
+var makeSureAttach = __webpack_require__(4);
 /*Object.defineProperty(Node.prototype, '_dozAttach', {
     get() {
         if (!this._dozAttachObject)
@@ -3359,7 +3359,7 @@ var Doz = /*#__PURE__*/function () {
 
     var appNode = document.querySelector(TAG.APP); // This fix double app rendering in SSR
 
-    createAttachElement(appNode);
+    makeSureAttach(appNode);
 
     if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
       appNode.parentNode.removeChild(appNode);
@@ -4669,8 +4669,9 @@ var mapper = __webpack_require__(5);
 var _require2 = __webpack_require__(6),
     isDirective = _require2.isDirective;
 
-var createAttachElement = __webpack_require__(4); //const booleanAttributes = require('../utils/boolean-attributes');
+var makeSureAttach = __webpack_require__(4);
 
+var booleanAttributes = __webpack_require__(44);
 
 function isEventAttribute(name) {
   return isListener(name);
@@ -4678,7 +4679,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
   //console.log('setAttribute', $target, name, value)
-  createAttachElement($target);
+  makeSureAttach($target);
 
   if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
     $target._dozAttach[PROPS_ATTRIBUTES] = {};
@@ -4710,12 +4711,17 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
         setBooleanAttribute($target, name, value);*/
 
   } else {
-    if (value === undefined) value = ''; //$target.setAttribute(name, value);
-    //let isSVG = $target.toString().includes('SVG');
+    if (value === undefined) value = '';
 
     if (name === 'class' && !isSVG) {
       $target.className = value; //Imposto solo se la proprietà esiste...
     } else if ($target[name] !== undefined && !isSVG) {
+      //console.log(name, value, typeof value)
+      // Support for boolean attributes like required, disabled etc..
+      if (value === '') {
+        if (booleanAttributes.indexOf(name) > -1) value = true;
+      }
+
       $target[name] = value;
     } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || isSVG) {
       $target.setAttribute(name, value);
@@ -4938,6 +4944,12 @@ module.exports.getLast = getLast;
 
 /***/ }),
 /* 44 */
+/***/ (function(module, exports) {
+
+module.exports = ['async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'challenge', 'checked', 'compact', 'contenteditable', 'controls', 'default', 'defer', 'disabled', 'formNoValidate', 'frameborder', 'hidden', 'indeterminate', 'ismap', 'loop', 'multiple', 'muted', 'nohref', 'noresize', 'noshade', 'novalidate', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'scrolling', 'seamless', 'selected', 'sortable', 'spellcheck', 'translate'];
+
+/***/ }),
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(1),
@@ -5002,7 +5014,7 @@ function drawDynamic(instance) {
 module.exports = drawDynamic;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -5045,7 +5057,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 function add(instance) {
@@ -5061,7 +5073,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 function add(instance) {
@@ -5092,7 +5104,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 function extendInstance(instance, cfg, dProps) {
@@ -5102,7 +5114,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports) {
 
 function removeAllAttributes(el) {
@@ -5120,7 +5132,7 @@ function removeAllAttributes(el) {
 module.exports = removeAllAttributes;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -5162,7 +5174,7 @@ function loadLocal(instance) {
 module.exports = loadLocal;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var mixin = __webpack_require__(21);
@@ -5175,7 +5187,7 @@ function localMixin(instance) {
 module.exports = localMixin;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -5206,7 +5218,7 @@ var composeStyleInner = __webpack_require__(13);
 
 var dashToCamel = __webpack_require__(9);
 
-var Base = __webpack_require__(53);
+var Base = __webpack_require__(54);
 
 var _require = __webpack_require__(1),
     COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
@@ -5221,7 +5233,7 @@ var directive = __webpack_require__(0);
 var _require2 = __webpack_require__(6),
     isDirective = _require2.isDirective;
 
-var createAttachElement = __webpack_require__(4);
+var makeSureAttach = __webpack_require__(4);
 
 var DOMManipulation = /*#__PURE__*/function (_Base) {
   _inherits(DOMManipulation, _Base);
@@ -5287,8 +5299,8 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
     key: "$$afterNodeChange",
     // noinspection JSMethodCanBeStatic
     value: function $$afterNodeChange($newElement, $oldElement) {
-      createAttachElement($oldElement);
-      createAttachElement($newElement); //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+      makeSureAttach($oldElement);
+      makeSureAttach($newElement); //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
 
       if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
@@ -5301,7 +5313,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
     // noinspection JSMethodCanBeStatic
     value: function $$beforeNodeWalk($parent, index, attributesUpdated) {
       if ($parent.childNodes[index]) {
-        createAttachElement($parent.childNodes[index]);
+        makeSureAttach($parent.childNodes[index]);
         var dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE]; // Can update props of dynamic instances?
 
         if (dynInstance && attributesUpdated.length) {
@@ -5344,7 +5356,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
         //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
         name = _isDirective ? name : dashToCamel(name);
         var firstChild = $target.firstChild;
-        createAttachElement(firstChild);
+        makeSureAttach(firstChild);
 
         if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
           firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
@@ -5367,7 +5379,7 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
 module.exports = DOMManipulation;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5565,7 +5577,7 @@ var Base = function Base() {
 module.exports = Base;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports) {
 
 function cloneObject(obj) {
@@ -5575,7 +5587,7 @@ function cloneObject(obj) {
 module.exports = cloneObject;
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports) {
 
 function getComponentName(child) {
@@ -5585,7 +5597,7 @@ function getComponentName(child) {
 module.exports = getComponentName;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(2),
@@ -5615,7 +5627,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(10);
@@ -5629,7 +5641,7 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 module.exports = function tag(name) {
@@ -5639,10 +5651,8 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(60);
 
 __webpack_require__(61);
 
@@ -5660,10 +5670,12 @@ __webpack_require__(67);
 
 __webpack_require__(68);
 
-__webpack_require__(70);
+__webpack_require__(69);
+
+__webpack_require__(71);
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -5735,7 +5747,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -5800,7 +5812,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -5846,7 +5858,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -5886,7 +5898,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -5985,7 +5997,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6007,7 +6019,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6037,7 +6049,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -6251,7 +6263,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6260,7 +6272,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(6),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(69);
+var queue = __webpack_require__(70);
 
 var delay = __webpack_require__(3);
 
@@ -6360,7 +6372,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports) {
 
 function queue(p, arrayOfP) {
@@ -6373,7 +6385,7 @@ function queue(p, arrayOfP) {
 module.exports = queue;
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -6395,9 +6407,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(71);
+var wait = __webpack_require__(72);
 
-var animateHelper = __webpack_require__(72);
+var animateHelper = __webpack_require__(73);
 
 directive('animate', {
   onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -6599,7 +6611,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports) {
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
@@ -6637,7 +6649,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports) {
 
 function animateHelper($target, animationName, opts, callback) {
