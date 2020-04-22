@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.5] - 2020-04-22
+- **Fixed** issue using a class with constructor in production with doz-cli
+
 ## [2.4.4] - 2020-04-21
 - **Fixed** "Cannot call a class as a function" in production with doz-cli
 
