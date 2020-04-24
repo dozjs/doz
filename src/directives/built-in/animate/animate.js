@@ -29,7 +29,11 @@ directive('animate', {
                 animationsEnd.push(
                     new Promise(resolve => {
                             if (!document.body.contains($targetOfMap)) return resolve();
-                            wait(() => {
+                            wait((cancelWait) => {
+                                if($targetOfMap._dozAttach.__animationUsedByShowDirective) {
+                                    cancelWait();
+                                    return true;
+                                }
                                 return !$targetOfMap._dozAttach.__animationIsRunning;
                             }, () => {
                                 let optAnimation = {
@@ -62,6 +66,7 @@ directive('animate', {
     },
 
     createAnimations(instance, $target, directiveValue) {
+
         if ($target._dozAttach.__lockedForAnimation) return;
         $target._dozAttach.__lockedForAnimation = true;
 
@@ -75,7 +80,7 @@ directive('animate', {
         $target._dozAttach.__animationDirectiveValue = directiveValue;
 
         if (directiveValue.show) {
-
+/**/
             if (typeof directiveValue.show !== 'object') {
                 directiveValue.show = {
                     name: directiveValue.show
@@ -93,10 +98,15 @@ directive('animate', {
 
             //Add always an useful method for show
             $target._dozAttach.__animationShow = (cb) => instance.animate($target, directiveValue.show.name, optAnimation, cb);
-
+/**/
             //(function ($target, directiveValue, instance) {
-                wait(() => {
+                wait((cancelWait) => {
                     //console.log($target._dozAttach.__animationIsRunning)
+                    if($target._dozAttach.__animationUsedByShowDirective) {
+                        cancelWait();
+                        return true;
+                    }
+
                     return !$target._dozAttach.__animationIsRunning;
                 }, () => {
                     if (!document.body.contains($target)) return;
@@ -112,6 +122,7 @@ directive('animate', {
             //})($target, directiveValue, instance);
 
         }
+
 
         if (directiveValue.hide) {
 

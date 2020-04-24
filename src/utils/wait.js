@@ -4,6 +4,10 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout
 function wait(what, callback, maxCount = 1000, exceededCallback) {
     let rid;
     let count = 0;
+    let cancelWait = function() {
+        window.cancelAnimationFrame(rid);
+        rid = null;
+    }
     let check = function() {
         if (count >= maxCount) {
             console.warn('wait, max cycles exceeded ' + maxCount);
@@ -11,13 +15,14 @@ function wait(what, callback, maxCount = 1000, exceededCallback) {
                 exceededCallback();
             return;
         }
-        if (!what()) {
+        if (!what(cancelWait)) {
             count ++;
             rid = window.requestAnimationFrame(check);
         } else {
             if (rid) {
-                window.cancelAnimationFrame(rid);
-                rid = null;
+                cancelWait();
+                /*window.cancelAnimationFrame(rid);
+                rid = null;*/
             }
             callback();
         }

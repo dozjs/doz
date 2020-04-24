@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="description" content="DOZ - player controls">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Doz - show animation component</title>
-    <script src="../dist/doz.js?58976gf75"></script>
-    <d-script src="https://unpkg.com/doz/dist/doz.min.js"></d-script>
+    <title>Doz - show animation dynamic component</title>
+    <script src="../dist/doz.js?5894765"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -41,14 +40,17 @@
 
     Doz.component('my-component', {
         props: {
-            show: false
+            show: true
         },
         template: function (h) {
             return h`
                 <button onclick="this.toggle()">SHOW/HIDE</button>
                 <p>should be ${this.props.show}</p>
-                <title-h1 d-animate="${{show: {name: 'flipInX', cb: this.onShowEnd}, hide: {name: 'flipOutX', cb: this.onHideEnd}}}" d-show="${this.props.show}"/>
+                <title-h1 d-animate="${{show: {name: 'flipInX', cb: this.onShowEnd, delay: this.props.v + '00ms'}, hide: {name: 'flipOutX', cb: this.onHideEnd}}}" d-show="${this.props.show}"/>
             `;
+        },
+        onMount() {
+            console.log('mount')
         },
         toggle() {
             this.props.show = !this.props.show;
@@ -56,7 +58,6 @@
         onShowEnd() {
             console.log('onShowEnd')
         },
-
         onHideEnd() {
             console.log('onHideEnd')
         }
@@ -66,11 +67,24 @@
     new Doz({
         root: '#app',
         template(h) {
-            return h`<my-component/>`
+            return h`
+                <div>
+                    ${Array.from(Array(3).keys()).map((i) => h`<my-component v="${i + 1}"/>`)}
+                </div>`
         }
     });
 
+    /*for (let i = 0; i < 3; i++) {
+        let el = document.createElement('div');
+        el.className = 'animated flipInX';
+        el.innerHTML = 'CIAO';
+        document.getElementById('app').appendChild(el);
+    }*/
 
 </script>
+<div class="animated flipInX">CIAO</div>
+<div class="animated flipInX">CIAO</div>
+<div class="animated flipInX">CIAO</div>
+
 </body>
 </html>

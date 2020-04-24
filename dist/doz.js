@@ -6310,7 +6310,8 @@ directive('show', {
 
     if (thereIsAnimateDirective && !lockAnimation) {
       //console.log($target._dozAttach.__animationIsRunning)
-      if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = []; //$target._dozAttach.__animationWasUsedByShowDirective = true;
+      if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = [];
+      $target._dozAttach.__animationUsedByShowDirective = true;
 
       $target._dozAttach.__animationsList.push(function (resolve) {
         //console.log('value', value)
@@ -6320,12 +6321,14 @@ directive('show', {
           $target._dozAttach.__animationShow(function () {
             $target.style.display = $target._dozAttach.__showOriginDisplay; //$target._dozAttach.__prevValueOfShow = value;
 
+            $target._dozAttach.__animationUsedByShowDirective = false;
             resolve();
           });
         } else {
           $target._dozAttach.__animationHide(function () {
             $target.style.display = 'none'; //$target._dozAttach.__prevValueOfShow = value;
 
+            $target._dozAttach.__animationUsedByShowDirective = false;
             resolve();
           });
         }
@@ -6447,7 +6450,12 @@ directive('animate', {
           var directiveValueOfMap = value;
           animationsEnd.push(new Promise(function (resolve) {
             if (!document.body.contains($targetOfMap)) return resolve();
-            wait(function () {
+            wait(function (cancelWait) {
+              if ($targetOfMap._dozAttach.__animationUsedByShowDirective) {
+                cancelWait();
+                return true;
+              }
+
               return !$targetOfMap._dozAttach.__animationIsRunning;
             }, function () {
               var optAnimation = {
@@ -6501,6 +6509,7 @@ directive('animate', {
     $target._dozAttach.__animationDirectiveValue = directiveValue;
 
     if (directiveValue.show) {
+      /**/
       if (_typeof(directiveValue.show) !== 'object') {
         directiveValue.show = {
           name: directiveValue.show
@@ -6518,11 +6527,18 @@ directive('animate', {
 
       $target._dozAttach.__animationShow = function (cb) {
         return instance.animate($target, directiveValue.show.name, optAnimation, cb);
-      }; //(function ($target, directiveValue, instance) {
+      };
+      /**/
+      //(function ($target, directiveValue, instance) {
 
 
-      wait(function () {
+      wait(function (cancelWait) {
         //console.log($target._dozAttach.__animationIsRunning)
+        if ($target._dozAttach.__animationUsedByShowDirective) {
+          cancelWait();
+          return true;
+        }
+
         return !$target._dozAttach.__animationIsRunning;
       }, function () {
         if (!document.body.contains($target)) return;
@@ -6623,6 +6639,11 @@ function wait(what, callback) {
   var rid;
   var count = 0;
 
+  var cancelWait = function cancelWait() {
+    window.cancelAnimationFrame(rid);
+    rid = null;
+  };
+
   var check = function check() {
     if (count >= maxCount) {
       console.warn('wait, max cycles exceeded ' + maxCount);
@@ -6630,13 +6651,14 @@ function wait(what, callback) {
       return;
     }
 
-    if (!what()) {
+    if (!what(cancelWait)) {
       count++;
       rid = window.requestAnimationFrame(check);
     } else {
       if (rid) {
-        window.cancelAnimationFrame(rid);
-        rid = null;
+        cancelWait();
+        /*window.cancelAnimationFrame(rid);
+        rid = null;*/
       }
 
       callback();

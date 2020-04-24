@@ -46,7 +46,7 @@ directive('show', {
             if (!$target._dozAttach.__animationsList)
                 $target._dozAttach.__animationsList = [];
 
-            //$target._dozAttach.__animationWasUsedByShowDirective = true;
+            $target._dozAttach.__animationUsedByShowDirective = true;
 
             $target._dozAttach.__animationsList.push((resolve) => {
                 //console.log('value', value)
@@ -55,12 +55,14 @@ directive('show', {
                     $target._dozAttach.__animationShow(() => {
                         $target.style.display = $target._dozAttach.__showOriginDisplay;
                         //$target._dozAttach.__prevValueOfShow = value;
+                        $target._dozAttach.__animationUsedByShowDirective = false;
                         resolve();
                     });
                 } else {
                     $target._dozAttach.__animationHide(() => {
                         $target.style.display = 'none';
                         //$target._dozAttach.__prevValueOfShow = value;
+                        $target._dozAttach.__animationUsedByShowDirective = false;
                         resolve();
                     });
                 }
