@@ -6305,8 +6305,10 @@ directive('show', {
       lockAnimation = !value;
     } //$target.__animationWasUsed =
     //console.dir($target);
-    //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
 
+
+    if ($target._dozAttach.__prevValueOfShow === value) return;
+    $target._dozAttach.__prevValueOfShow = value; //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
 
     if (thereIsAnimateDirective && !lockAnimation) {
       //console.log($target._dozAttach.__animationIsRunning)

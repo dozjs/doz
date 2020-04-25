@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.4.6] - 2020-04-25
+## [2.4.7] - 2020-04-25
 - **Improved** animation directive
 
 ## [2.4.5] - 2020-04-22
