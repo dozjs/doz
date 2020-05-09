@@ -19,19 +19,19 @@
     const {component, createExtWebComponent} = Doz;
 
     component('doz-clock', {
-        template(h){
+        template(h) {
             return h`
-                <style>
-                    div {
-                        font-size: 35px;
-                        padding: 20px;
-                        text-align: center;
-                    }
-                </style>
-                <div style="color: ${this.props.color}">
-                    ${this.props.title}: ${this.props.time}
-                </div>
-            `
+                    <style>
+                        div {
+                            font-size: 35px;
+                            padding: 20px;
+                            text-align: center;
+                        }
+                    </style>
+                    <div style="color: ${this.props.color}">
+                        ${this.props.title}: ${this.props.time}
+                    </div>
+                `
         },
         props: {
             title: 'the time',
@@ -50,9 +50,9 @@
     let myText = {
         template(h) {
             return h`
-                <div>Hello</div>
-                <button onclick="this.myClick()">get ext wc</button>
-            `
+                    <div>Hello</div>
+                    <button onclick="this.myClick()">get ext wc</button>
+                `
         },
         myClick() {
             this.getExtWebComponentById('my-instance').props.title = Math.random();
