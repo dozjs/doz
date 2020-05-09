@@ -40,7 +40,7 @@ class Doz {
             cfg.template = cfg.template.innerHTML;
         }
 
-        if (!(cfg.root instanceof HTMLElement)) {
+        if (!(cfg.root instanceof HTMLElement || cfg.root instanceof ShadowRoot)) {
             throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
 

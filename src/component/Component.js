@@ -19,6 +19,7 @@ const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
 const makeSureAttach = require('./make-sure-attach');
+const data = require('../data')
 
 //const mapCompiled = require('../vdom/map-compiled');
 
@@ -363,6 +364,13 @@ class Component extends DOMManipulation {
 
     }
 
+    getExtWebComponentById(id) {
+        return data.extWebComponents.ids[id] || null;
+    }
+
+    getExtWebComponentByTag(name) {
+        return data.extWebComponents.tags[name] || null;
+    }
 }
 
 

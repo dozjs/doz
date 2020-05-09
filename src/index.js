@@ -10,6 +10,7 @@ const {compile} = require('./vdom/parser');
 const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
+const createExtWebComponent = require('./create-ext-webcomponent');
 require('./directives/built-in/bootstrap');
 
 Object.defineProperties(Doz, {
@@ -62,6 +63,10 @@ Object.defineProperties(Doz, {
     },
     tag: {
         value: tag,
+        enumerable: true
+    },
+    createExtWebComponent: {
+        value: createExtWebComponent,
         enumerable: true
     }
 });

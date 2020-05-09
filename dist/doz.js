@@ -939,7 +939,9 @@ var cloneObject = __webpack_require__(55);
 
 var toLiteralString = __webpack_require__(23);
 
-var makeSureAttach = __webpack_require__(4); //const mapCompiled = require('../vdom/map-compiled');
+var makeSureAttach = __webpack_require__(4);
+
+var data = __webpack_require__(33); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1268,6 +1270,16 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       Object.defineProperty(this, '_initialProps', {
         value: cloneObject(this._rawProps)
       });
+    }
+  }, {
+    key: "getExtWebComponentById",
+    value: function getExtWebComponentById(id) {
+      return data.extWebComponents.ids[id] || null;
+    }
+  }, {
+    key: "getExtWebComponentByTag",
+    value: function getExtWebComponentByTag(name) {
+      return data.extWebComponents.tags[name] || null;
     }
   }, {
     key: "props",
@@ -3213,6 +3225,8 @@ var _require4 = __webpack_require__(17),
 
 var tag = __webpack_require__(59);
 
+var createExtWebComponent = __webpack_require__(74);
+
 __webpack_require__(60);
 
 Object.defineProperties(Doz, {
@@ -3265,6 +3279,10 @@ Object.defineProperties(Doz, {
   },
   tag: {
     value: tag,
+    enumerable: true
+  },
+  createExtWebComponent: {
+    value: createExtWebComponent,
     enumerable: true
   }
 });
@@ -3349,7 +3367,7 @@ var Doz = /*#__PURE__*/function () {
       cfg.template = cfg.template.innerHTML;
     }
 
-    if (!(cfg.root instanceof HTMLElement)) {
+    if (!(cfg.root instanceof HTMLElement || cfg.root instanceof ShadowRoot)) {
       throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
     }
 
@@ -3730,6 +3748,10 @@ module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', '
 
 module.exports = {
   components: {},
+  extWebComponents: {
+    tags: {},
+    ids: {}
+  },
   plugins: [],
   directives: {},
   directivesKeys: []
@@ -6760,6 +6782,111 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n                        <", "/>\n                    "]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Doz = __webpack_require__(27);
+
+var data = __webpack_require__(33);
+
+function createExtWebComponent(tag, cmp) {
+  data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
+  customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
+    _inherits(_class, _HTMLElement);
+
+    var _super = _createSuper(_class);
+
+    function _class() {
+      _classCallCheck(this, _class);
+
+      return _super.call(this);
+    }
+
+    _createClass(_class, [{
+      key: "connectedCallback",
+      value: function connectedCallback() {
+        var initialProps = {};
+        var id = null;
+
+        for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
+          att = atts[i];
+
+          if (att.nodeName === 'data-id') {
+            id = att.nodeValue;
+            continue;
+          }
+
+          initialProps[att.nodeName] = att.nodeValue;
+        }
+
+        new Doz({
+          root: this,
+          template: function template(h) {
+            return h(_templateObject(), cmp || tag);
+          },
+          onMountAsync: function onMountAsync() {
+            var firstChild = this.children[0];
+            firstChild.props = Object.assign({}, firstChild.props, initialProps);
+            var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
+            data.extWebComponents.tags[tag][id || countCmp] = firstChild;
+
+            if (id !== null) {
+              if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
+              data.extWebComponents.ids[id] = firstChild;
+            } //console.log(tag, data.extWebComponents);
+
+          }
+        });
+      }
+    }]);
+
+    return _class;
+  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
+}
+
+module.exports = createExtWebComponent;
 
 /***/ })
 /******/ ]);
