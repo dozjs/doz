@@ -22,13 +22,13 @@
         template(h) {
             return h`
                     <style>
-                        div {
+                        .container {
                             font-size: 35px;
                             padding: 20px;
                             text-align: center;
                         }
                     </style>
-                    <div style="color: ${this.props.color}">
+                    <div class="container" style="color: ${this.props.color}">
                         ${this.props.title}: ${this.props.time}
                     </div>
                 `
@@ -50,8 +50,10 @@
     let myText = {
         template(h) {
             return h`
-                    <div>Hello</div>
-                    <button onclick="this.myClick()">get ext wc</button>
+                    <div>
+                        <div>Hello</div>
+                        <button onclick="this.myClick()">get ext wc</button>
+                    </div>
                 `
         },
         myClick() {

@@ -573,6 +573,8 @@ module.exports = {
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -670,13 +672,14 @@ function removeDoubleQuotes(str) {
 }
 
 var Element = /*#__PURE__*/function () {
-  function Element(name, props, isSVG) {
+  function Element(name, props, isSVG, style) {
     _classCallCheck(this, Element);
 
     this.type = name;
     this.props = props; //Object.assign({}, props);
 
     this.children = [];
+    this.style = style;
     this.isSVG = isSVG || name === 'svg'; //REGEX.IS_SVG.test(name);
 
     if (props.key !== undefined) this.key = props.key;
@@ -699,7 +702,8 @@ var Element = /*#__PURE__*/function () {
 }();
 
 function compile(data, cmp) {
-  if (!data) return '';
+  if (!data) return ''; //console.log(data)
+
   var root = new Element(null, {});
   var stack = [root];
   var currentParent = root;
@@ -718,7 +722,15 @@ function compile(data, cmp) {
 
         if (text) {
           var possibleCompiled = mapper.get(text.trim());
-          if (!Array.isArray(possibleCompiled)) currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+
+          if (!Array.isArray(possibleCompiled)) {
+            //console.log('currentParent.style', currentParent.style, possibleCompiled === undefined ? text : possibleCompiled)
+            if (currentParent.style) {
+              currentParent.style = possibleCompiled === undefined ? text : possibleCompiled; //console.log(currentParent)
+            } else {
+              currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+            }
+          }
         }
       }
     }
@@ -756,6 +768,11 @@ function compile(data, cmp) {
         }
       }
 
+      if (match[2] === 'style') {
+        currentParent.style = true;
+        continue;
+      }
+
       currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
       stack.push(currentParent);
     }
@@ -782,6 +799,10 @@ function compile(data, cmp) {
         }
       }
     }
+  }
+
+  if (root.style) {
+    if (_typeof(root.children[0]) === 'object') root.children[0].style = root.style;
   }
 
   if (root.children.length > 1) {
@@ -1392,15 +1413,14 @@ var makeSureAttach = __webpack_require__(4);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!cfg.root) return;
+  if (!cfg.root) return; //console.log('HTML, ', cfg.template.outerHTML)
 
   if (cfg.template instanceof HTMLElement) {
     if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
   } else if (typeof cfg.template === 'string') {
     cfg.template = html.create(cfg.template);
     cfg.root.appendChild(cfg.template);
-  } //console.log('HTML, ', cfg.template)
-
+  }
 
   var componentInstance = null;
   var cmpName;
@@ -1420,7 +1440,11 @@ function createInstance() {
         continue;
       }
 
-      directive.callAppWalkDOM(parent, $child);
+      directive.callAppWalkDOM(parent, $child); //if ($child.nodeName === 'STYLE')
+      //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
+      //console.log(cfg.root._dozAttach)
+
+      if ($child.nodeName === 'STYLE') console.log('potrei mettere il tag style', $child.nodeName === 'STYLE');
       isChildStyle = transformChildStyle($child, parent);
 
       if (isChildStyle) {
@@ -2546,6 +2570,7 @@ function create(node, cmp, initial, cmpParent) {
   makeSureAttach($el);
   $el._dozAttach.elementChildren = node.children;
   cmp.$$afterNodeElementCreate($el, node, initial);
+  if (node.style) console.log($el.parentNode);
   return $el;
 }
 
@@ -2875,22 +2900,23 @@ var _require = __webpack_require__(1),
 var mapper = __webpack_require__(5);
 
 var camelToDash = __webpack_require__(19); //const eventsAttributes = require('../utils/events-attributes');
-//const {scopedInner} = require('../component/helpers/style');
 
 
-var _require2 = __webpack_require__(8),
-    compile = _require2.compile,
-    Element = _require2.Element;
+var _require2 = __webpack_require__(30),
+    scopedInner = _require2.scopedInner;
+
+var _require3 = __webpack_require__(8),
+    compile = _require3.compile,
+    Element = _require3.Element;
 
 var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
 var LESSER = '<';
-var GREATER = '>';
-/*
-const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
-const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
-const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
-*/
+var GREATER = '>'; //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
+//const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
+
+var regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
+/**/
 
 /**
  * This method add special tag to value placeholder
@@ -3051,25 +3077,27 @@ module.exports = function (strings) {
               .replace(regClose, GREATER);*/
   // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
   // il tag script con il tipo text/style
+  //console.log('h', result)
 
   /*
-  if (isBoundedToComponent) {
-      // Now get style from complete string
-      if (thereIsStyle)
-          result = result.replace(regStyle, (match, p1) => {
-              if (!this._rootElement || p1 === this._currentStyle) return '';
-              if (match && p1) {
-                  // Here should be create the tag style
-                  this._currentStyle = p1;
-                  let isScoped = /scoped/.test(match);
-                  const dataSetUId = this.uId;
-                  this.getHTMLElement().dataset.uid = this.uId;
-                  let tagByData = `[data-uid="${dataSetUId}"]`;
-                    scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-              }
-                return '';
-          });
-  }
+          if (isBoundedToComponent) {
+              // Now get style from complete string
+              if (thereIsStyle)
+                  result = result.replace(regStyle, (match, p1) => {
+                      if (!this._rootElement || p1 === this._currentStyle) return '';
+                      if (match && p1) {
+                          // Here should be create the tag style
+                          this._currentStyle = p1;
+                          let isScoped = /scoped/.test(match);
+                          const dataSetUId = this.uId;
+                          this.getHTMLElement().dataset.uid = this.uId;
+                          let tagByData = `[data-uid="${dataSetUId}"]`;
+  console.log('metto style')
+                          scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                      }
+                        return '';
+                  });
+          }
   */
 
 

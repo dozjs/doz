@@ -15,7 +15,7 @@ const makeSureAttach = require('./make-sure-attach');
 function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
-
+    //console.log('HTML, ', cfg.template.outerHTML)
     if (cfg.template instanceof HTMLElement) {
         if (!cfg.template.parentNode)
             cfg.root.appendChild(cfg.template);
@@ -24,7 +24,7 @@ function createInstance(cfg = {}) {
         cfg.root.appendChild(cfg.template);
     }
 
-    //console.log('HTML, ', cfg.template)
+
 
     let componentInstance = null;
     let cmpName;
@@ -48,6 +48,11 @@ function createInstance(cfg = {}) {
 
             directive.callAppWalkDOM(parent, $child);
 
+            //if ($child.nodeName === 'STYLE')
+            //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
+            //console.log(cfg.root._dozAttach)
+            if ($child.nodeName === 'STYLE')
+            console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
             isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {

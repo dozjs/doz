@@ -69,6 +69,9 @@ function create(node, cmp, initial, cmpParent) {
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
+    if (node.style)
+    console.log($el.parentNode)
+
     return $el;
 }
 

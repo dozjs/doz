@@ -53,10 +53,11 @@ function removeDoubleQuotes(str) {
 
 class Element {
 
-    constructor(name, props, isSVG) {
+    constructor(name, props, isSVG, style) {
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
+        this.style = style;
         this.isSVG = isSVG || name === 'svg';//REGEX.IS_SVG.test(name);
         if (props.key !== undefined)
             this.key = props.key;
@@ -76,7 +77,7 @@ class Element {
 function compile(data, cmp) {
 
     if (!data) return '';
-
+//console.log(data)
     const root = new Element(null, {});
     const stack = [root];
     let currentParent = root;
@@ -94,8 +95,15 @@ function compile(data, cmp) {
                 // if has content
                 if (text) {
                     let possibleCompiled = mapper.get(text.trim());
-                    if (!Array.isArray(possibleCompiled))
-                        currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                    if (!Array.isArray(possibleCompiled)) {
+                        //console.log('currentParent.style', currentParent.style, possibleCompiled === undefined ? text : possibleCompiled)
+                        if (currentParent.style) {
+                            currentParent.style = possibleCompiled === undefined ? text : possibleCompiled;
+                            //console.log(currentParent)
+                        } else {
+                            currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                        }
+                    }
                 }
             }
         }
@@ -138,6 +146,11 @@ function compile(data, cmp) {
                 }
             }
 
+            if (match[2] === 'style') {
+                currentParent.style = true;
+                continue;
+            }
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
             stack.push(currentParent);
         }
@@ -163,6 +176,11 @@ function compile(data, cmp) {
                 }
             }
         }
+    }
+
+    if (root.style) {
+        if (typeof root.children[0] === 'object')
+            root.children[0].style = root.style;
     }
 
     if (root.children.length > 1) {
