@@ -672,7 +672,7 @@ function removeDoubleQuotes(str) {
 }
 
 var Element = /*#__PURE__*/function () {
-  function Element(name, props, isSVG, style) {
+  function Element(name, props, isSVG, style, styleScoped) {
     _classCallCheck(this, Element);
 
     this.type = name;
@@ -680,6 +680,7 @@ var Element = /*#__PURE__*/function () {
 
     this.children = [];
     this.style = style;
+    this.styleScoped = styleScoped;
     this.isSVG = isSVG || name === 'svg'; //REGEX.IS_SVG.test(name);
 
     if (props.key !== undefined) this.key = props.key;
@@ -725,7 +726,9 @@ function compile(data, cmp) {
 
           if (!Array.isArray(possibleCompiled)) {
             //console.log('currentParent.style', currentParent.style, possibleCompiled === undefined ? text : possibleCompiled)
-            if (currentParent.style) {
+            //console.log(currentParent.style, currentParent.styleScoped)
+            if (currentParent.style === true) {
+              //console.log('currentParent.style', currentParent.style)
               currentParent.style = possibleCompiled === undefined ? text : possibleCompiled; //console.log(currentParent)
             } else {
               currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
@@ -757,6 +760,7 @@ function compile(data, cmp) {
       for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
         //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
         //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
+        console.log(attMatch[2]);
         props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
@@ -770,6 +774,11 @@ function compile(data, cmp) {
 
       if (match[2] === 'style') {
         currentParent.style = true;
+
+        if (props['data-scoped'] === '') {
+          currentParent.styleScoped = true;
+        }
+
         continue;
       }
 
@@ -802,7 +811,10 @@ function compile(data, cmp) {
   }
 
   if (root.style) {
-    if (_typeof(root.children[0]) === 'object') root.children[0].style = root.style;
+    if (_typeof(root.children[0]) === 'object') {
+      //console.log('root.style', root.style)
+      root.children[0].style = root.style;
+    }
   }
 
   if (root.children.length > 1) {
@@ -2577,6 +2589,7 @@ function create(node, cmp, initial, cmpParent) {
   /**/
 
   if (node.style) {
+    //console.log('---->', node)
     setHeadStyle(node, cmp);
   }
 
@@ -2588,6 +2601,7 @@ function setHeadStyle(node, cmp) {
   var isScoped = node.styleScoped;
   var dataSetUId = cmp.uId;
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
+  console.log(cmp, node.style, node.styleScoped);
   scopedInner(node.style, dataSetUId, tagByData, isScoped);
 }
 
@@ -2922,22 +2936,20 @@ var _require = __webpack_require__(1),
 var mapper = __webpack_require__(5);
 
 var camelToDash = __webpack_require__(19); //const eventsAttributes = require('../utils/events-attributes');
+//const {scopedInner} = require('../component/helpers/style');
 
 
-var _require2 = __webpack_require__(30),
-    scopedInner = _require2.scopedInner;
-
-var _require3 = __webpack_require__(8),
-    compile = _require3.compile,
-    Element = _require3.Element;
+var _require2 = __webpack_require__(8),
+    compile = _require2.compile,
+    Element = _require2.Element;
 
 var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
 var LESSER = '<';
 var GREATER = '>'; //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
+//const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
-var regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 /**/
 
 /**
@@ -3079,7 +3091,6 @@ module.exports = function (strings) {
     }
 
     if (allowTag) {
-      //console.log('aaaaaaaaaaaaaaaaddd', tagText, value[i])
       result += "<".concat(tagText, ">").concat(value[i], "</").concat(tagText, ">").concat(strings[i + 1]);
     } else {
       // If is not component constructor then add to map.
@@ -3099,36 +3110,31 @@ module.exports = function (strings) {
               .replace(regClose, GREATER);*/
   // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
   // il tag script con il tipo text/style
-  //console.log('h', result)
 
   /*
-              if (isBoundedToComponent) {
-                  // Now get style from complete string
-                  if (thereIsStyle)
-                      result = result.replace(regStyle, (match, p1) => {
-                          if (!this._rootElement || p1 === this._currentStyle) return '';
-                          if (match && p1) {
-                              // Here should be create the tag style
-                              this._currentStyle = p1;
-                              let isScoped = /scoped/.test(match);
-                              const dataSetUId = this.uId;
-                              this.getHTMLElement().dataset.uid = this.uId;
-                              let tagByData = `[data-uid="${dataSetUId}"]`;
-      console.log('metto style', this.getHTMLElement())
-                              scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-                          }
+      if (isBoundedToComponent) {
+          // Now get style from complete string
+          if (thereIsStyle)
+              result = result.replace(regStyle, (match, p1) => {
+                  if (!this._rootElement || p1 === this._currentStyle) return '';
+                  if (match && p1) {
+                      // Here should be create the tag style
+                      this._currentStyle = p1;
+                      let isScoped = /scoped/.test(match);
+                      const dataSetUId = this.uId;
+                      this.getHTMLElement().dataset.uid = this.uId;
+                      let tagByData = `[data-uid="${dataSetUId}"]`;
+                      scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                  }
   
-                          return '';
-                      });
-              }
+                  return '';
+              });
+      }
   */
 
 
-  result = result.trim(); //console.log(result);
-
-  result = compile(result); //console.log(result)
-  //console.log(mapCompiled.data)
-
+  result = result.trim();
+  result = compile(result);
   return result;
 };
 

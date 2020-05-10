@@ -2,7 +2,7 @@ const {TAG} = require('../constants');
 const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
 //const eventsAttributes = require('../utils/events-attributes');
-const {scopedInner} = require('../component/helpers/style');
+//const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
@@ -12,7 +12,7 @@ const GREATER = '>';
 
 //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
-const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
+//const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 /**/
 
 /**
@@ -123,8 +123,6 @@ module.exports = function (strings, ...value) {
 
                 let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
-
-
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
                 } else {
@@ -152,7 +150,6 @@ module.exports = function (strings, ...value) {
         }
 
         if(allowTag) {
-            //console.log('aaaaaaaaaaaaaaaaddd', tagText, value[i])
             result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
         } else {
             // If is not component constructor then add to map.
@@ -174,35 +171,28 @@ module.exports = function (strings, ...value) {
 
     // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
     // il tag script con il tipo text/style
-    //console.log('h', result)
 /*
-            if (isBoundedToComponent) {
-                // Now get style from complete string
-                if (thereIsStyle)
-                    result = result.replace(regStyle, (match, p1) => {
-                        if (!this._rootElement || p1 === this._currentStyle) return '';
-                        if (match && p1) {
-                            // Here should be create the tag style
-                            this._currentStyle = p1;
-                            let isScoped = /scoped/.test(match);
-                            const dataSetUId = this.uId;
-                            this.getHTMLElement().dataset.uid = this.uId;
-                            let tagByData = `[data-uid="${dataSetUId}"]`;
-    console.log('metto style', this.getHTMLElement())
-                            scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-                        }
+    if (isBoundedToComponent) {
+        // Now get style from complete string
+        if (thereIsStyle)
+            result = result.replace(regStyle, (match, p1) => {
+                if (!this._rootElement || p1 === this._currentStyle) return '';
+                if (match && p1) {
+                    // Here should be create the tag style
+                    this._currentStyle = p1;
+                    let isScoped = /scoped/.test(match);
+                    const dataSetUId = this.uId;
+                    this.getHTMLElement().dataset.uid = this.uId;
+                    let tagByData = `[data-uid="${dataSetUId}"]`;
+                    scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                }
 
-                        return '';
-                    });
-            }
+                return '';
+            });
+    }
 */
 
     result = result.trim();
-    //console.log(result);
-
     result = compile(result);
-
-    //console.log(result)
-    //console.log(mapCompiled.data)
     return result;
 };
