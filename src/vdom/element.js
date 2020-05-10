@@ -4,6 +4,7 @@ const canDecode = require('../utils/can-decode');
 const hooks = require('../component/hooks');
 const directive = require('../directives');
 const makeSureAttach = require('../component/make-sure-attach');
+const {scopedInner} = require('../component/helpers/style');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -12,6 +13,7 @@ function isChanged(nodeA, nodeB) {
     return  typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
+        nodeA.style !== nodeB.style ||
         nodeA.props && nodeA.props.forceupdate;
 }
 
@@ -28,7 +30,7 @@ function create(node, cmp, initial, cmpParent) {
         );
     }
 
-    if (node.type[0] === '#') {
+    if (node.type == null || node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
 
@@ -69,10 +71,20 @@ function create(node, cmp, initial, cmpParent) {
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
-    if (node.style)
-    console.log($el.parentNode)
+    /**/
+    if (node.style) {
+        setHeadStyle(node, cmp)
+    }
 
     return $el;
+}
+
+function setHeadStyle(node, cmp) {
+    cmp.__hasStyle = true;
+    let isScoped = node.styleScoped;
+    const dataSetUId = cmp.uId;
+    let tagByData = `[data-uid="${dataSetUId}"]`;
+    scopedInner(node.style, dataSetUId, tagByData, isScoped);
 }
 
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
@@ -153,7 +165,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
         makeSureAttach($parent);
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-
+        //console.log('append to', $parent, cmp.uid);
         $parent.appendChild($newElement);
         return $newElement;
 
@@ -166,6 +178,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     } else if (isChanged(newNode, oldNode)) {
         //console.log('node changes', newNode, oldNode);
+        if (newNode.style) {
+            setHeadStyle(newNode, cmp)
+        }
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;

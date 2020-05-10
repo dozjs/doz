@@ -175,7 +175,7 @@ module.exports = function (strings, ...value) {
     // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
     // il tag script con il tipo text/style
     //console.log('h', result)
-    /*
+/*
             if (isBoundedToComponent) {
                 // Now get style from complete string
                 if (thereIsStyle)
@@ -188,7 +188,7 @@ module.exports = function (strings, ...value) {
                             const dataSetUId = this.uId;
                             this.getHTMLElement().dataset.uid = this.uId;
                             let tagByData = `[data-uid="${dataSetUId}"]`;
-    console.log('metto style')
+    console.log('metto style', this.getHTMLElement())
                             scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
                         }
 

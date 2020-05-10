@@ -188,6 +188,8 @@ class Component extends DOMManipulation {
             this._rootElement = rootElement;
             makeSureAttach(this._rootElement);
             this._parentElement = rootElement.parentNode;
+            if (this.__hasStyle)
+                this._parentElement.dataset.uid = this.uId;
         }
         this._prev = next;
 

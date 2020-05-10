@@ -1095,6 +1095,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         this._rootElement = rootElement;
         makeSureAttach(this._rootElement);
         this._parentElement = rootElement.parentNode;
+        if (this.__hasStyle) this._parentElement.dataset.uid = this.uId;
       }
 
       this._prev = next;
@@ -2519,11 +2520,14 @@ var directive = __webpack_require__(0);
 
 var makeSureAttach = __webpack_require__(4);
 
+var _require3 = __webpack_require__(30),
+    scopedInner = _require3.scopedInner;
+
 var storeElementNode = Object.create(null);
 var deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
-  return _typeof(nodeA) !== _typeof(nodeB) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
+  return _typeof(nodeA) !== _typeof(nodeB) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.style !== nodeB.style || nodeA.props && nodeA.props.forceupdate;
 }
 
 function create(node, cmp, initial, cmpParent) {
@@ -2536,7 +2540,7 @@ function create(node, cmp, initial, cmpParent) {
     canDecode(node));
   }
 
-  if (node.type[0] === '#') {
+  if (node.type == null || node.type[0] === '#') {
     node.type = TAG.EMPTY;
   }
 
@@ -2570,8 +2574,21 @@ function create(node, cmp, initial, cmpParent) {
   makeSureAttach($el);
   $el._dozAttach.elementChildren = node.children;
   cmp.$$afterNodeElementCreate($el, node, initial);
-  if (node.style) console.log($el.parentNode);
+  /**/
+
+  if (node.style) {
+    setHeadStyle(node, cmp);
+  }
+
   return $el;
+}
+
+function setHeadStyle(node, cmp) {
+  cmp.__hasStyle = true;
+  var isScoped = node.styleScoped;
+  var dataSetUId = cmp.uId;
+  var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
+  scopedInner(node.style, dataSetUId, tagByData, isScoped);
 }
 
 function update($parent, newNode, oldNode) {
@@ -2647,7 +2664,8 @@ function update($parent, newNode, oldNode) {
 
 
     makeSureAttach($parent);
-    $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent); //console.log('append to', $parent, cmp.uid);
+
     $parent.appendChild($newElement);
     return $newElement;
   } else if (!newNode) {
@@ -2658,7 +2676,11 @@ function update($parent, newNode, oldNode) {
     }
   } else if (isChanged(newNode, oldNode)) {
     //console.log('node changes', newNode, oldNode);
-    // node changes
+    if (newNode.style) {
+      setHeadStyle(newNode, cmp);
+    } // node changes
+
+
     var $oldElement = $parent.childNodes[index];
     if (!$oldElement) return;
     var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
@@ -3080,24 +3102,25 @@ module.exports = function (strings) {
   //console.log('h', result)
 
   /*
-          if (isBoundedToComponent) {
-              // Now get style from complete string
-              if (thereIsStyle)
-                  result = result.replace(regStyle, (match, p1) => {
-                      if (!this._rootElement || p1 === this._currentStyle) return '';
-                      if (match && p1) {
-                          // Here should be create the tag style
-                          this._currentStyle = p1;
-                          let isScoped = /scoped/.test(match);
-                          const dataSetUId = this.uId;
-                          this.getHTMLElement().dataset.uid = this.uId;
-                          let tagByData = `[data-uid="${dataSetUId}"]`;
-  console.log('metto style')
-                          scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-                      }
-                        return '';
-                  });
-          }
+              if (isBoundedToComponent) {
+                  // Now get style from complete string
+                  if (thereIsStyle)
+                      result = result.replace(regStyle, (match, p1) => {
+                          if (!this._rootElement || p1 === this._currentStyle) return '';
+                          if (match && p1) {
+                              // Here should be create the tag style
+                              this._currentStyle = p1;
+                              let isScoped = /scoped/.test(match);
+                              const dataSetUId = this.uId;
+                              this.getHTMLElement().dataset.uid = this.uId;
+                              let tagByData = `[data-uid="${dataSetUId}"]`;
+      console.log('metto style', this.getHTMLElement())
+                              scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                          }
+  
+                          return '';
+                      });
+              }
   */
 
 
