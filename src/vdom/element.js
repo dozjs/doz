@@ -85,7 +85,7 @@ function setHeadStyle(node, cmp) {
     let isScoped = node.styleScoped;
     const dataSetUId = cmp.uId;
     let tagByData = `[data-uid="${dataSetUId}"]`;
-    console.log(cmp, node.style, node.styleScoped)
+    //console.log(cmp, node.style, node.styleScoped)
     scopedInner(node.style, dataSetUId, tagByData, isScoped);
 }
 

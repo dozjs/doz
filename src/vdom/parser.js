@@ -97,8 +97,7 @@ function compile(data, cmp) {
                 if (text) {
                     let possibleCompiled = mapper.get(text.trim());
                     if (!Array.isArray(possibleCompiled)) {
-                        //console.log('currentParent.style', currentParent.style, possibleCompiled === undefined ? text : possibleCompiled)
-                        //console.log(currentParent.style, currentParent.styleScoped)
+                        //console.log(currentParent)
                         if (currentParent.style === true) {
                             //console.log('currentParent.style', currentParent.style)
                             currentParent.style = possibleCompiled === undefined ? text : possibleCompiled;
@@ -132,7 +131,7 @@ function compile(data, cmp) {
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
                 //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
-                console.log(attMatch[2])
+                //console.log(attMatch[2])
                 props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
@@ -189,6 +188,7 @@ function compile(data, cmp) {
         if (typeof root.children[0] === 'object') {
             //console.log('root.style', root.style)
             root.children[0].style = root.style;
+            root.children[0].styleScoped = root.styleScoped;
         }
     }
 
