@@ -5717,7 +5717,7 @@ module.exports = function tag(name) {
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n                        <", "/>\n                    "]);
+  var data = _taggedTemplateLiteral(["\n                        <", "> \n                            ", "\n                        </", ">\n                    "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -5759,58 +5759,67 @@ var Doz = __webpack_require__(12);
 var data = __webpack_require__(9);
 
 function createExtWebComponent(tag, cmp) {
-  data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
-  customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
-    _inherits(_class, _HTMLElement);
+  document.addEventListener('DOMContentLoaded', function (event) {
+    data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
+    customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
+      _inherits(_class, _HTMLElement);
 
-    var _super = _createSuper(_class);
+      var _super = _createSuper(_class);
 
-    function _class() {
-      _classCallCheck(this, _class);
+      function _class() {
+        _classCallCheck(this, _class);
 
-      return _super.call(this);
-    }
-
-    _createClass(_class, [{
-      key: "connectedCallback",
-      value: function connectedCallback() {
-        var initialProps = {};
-        var id = null;
-
-        for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
-          att = atts[i];
-
-          if (att.nodeName === 'data-id') {
-            id = att.nodeValue;
-            continue;
-          }
-
-          initialProps[att.nodeName] = att.nodeValue;
-        }
-
-        new Doz({
-          root: this,
-          template: function template(h) {
-            return h(_templateObject(), cmp || tag);
-          },
-          onMountAsync: function onMountAsync() {
-            var firstChild = this.children[0];
-            firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
-            data.extWebComponents.tags[tag][id || countCmp] = firstChild;
-
-            if (id !== null) {
-              if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
-              data.extWebComponents.ids[id] = firstChild;
-            } //console.log(tag, data.extWebComponents);
-
-          }
-        });
+        return _super.call(this);
       }
-    }]);
 
-    return _class;
-  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
+      _createClass(_class, [{
+        key: "connectedCallback",
+        value: function connectedCallback() {
+          var initialProps = {};
+          var id = null;
+          var contentHTML = '';
+
+          for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
+            att = atts[i];
+
+            if (att.nodeName === 'data-id') {
+              id = att.nodeValue;
+              continue;
+            }
+
+            initialProps[att.nodeName] = att.nodeValue;
+          }
+
+          contentHTML = this.innerHTML;
+          this.innerHTML = '';
+          var tagCmp = cmp || tag;
+          new Doz({
+            root: this,
+            template: function template(h) {
+              return h(_templateObject(), tagCmp, contentHTML, tagCmp);
+            },
+            onMount: function onMount() {//thisWC.innerHTML = ''
+            },
+            onMountAsync: function onMountAsync() {
+              var firstChild = this.children[0];
+              firstChild.props = Object.assign({}, firstChild.props, initialProps);
+              var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
+              data.extWebComponents.tags[tag][id || countCmp] = firstChild;
+
+              if (id !== null) {
+                if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
+                data.extWebComponents.ids[id] = firstChild;
+              } //console.log(tag, data.extWebComponents);
+              //console.log(thisWC.innerHTML)
+
+            }
+          });
+        }
+      }]);
+
+      return _class;
+    }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
+  });
 }
 
 module.exports = createExtWebComponent;
