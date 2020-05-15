@@ -35,9 +35,7 @@ function createExtWebComponent(tag, cmp) {
                     root: this,
                     template(h) {
                         return h`
-                        <${tagCmp}> 
-                            ${contentHTML}
-                        </${tagCmp}>
+                        <${tagCmp}>${contentHTML}</${tagCmp}>
                     `
                     },
                     onMount() {
