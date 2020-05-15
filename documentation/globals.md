@@ -155,6 +155,26 @@
     */
 
     ```
+  
+### Doz.createExtWebComponent( tag, component )
+
+- **Since**: 2.5.0
+- **Arguments**:
+    - `tag` string
+    - `component` `function`, `object`
+- **Details**: Create ext web component.
+- **Usage**:
+    ``` js
+    Doz.createExtWebComponent('my-cmp', class extends Component {
+        //....//
+    });
+    ```
+    In your HTML page
+    ```html
+    <!-- Load Doz library -->
+    <!-- Load Doz component -->
+    <ext-my-cmp></ext-my-cmp> 
+    ```
 
 ### Doz.version()
 
