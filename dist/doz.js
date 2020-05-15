@@ -1729,9 +1729,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var html = __webpack_require__(14);
+var html = __webpack_require__(14); //const transformChildStyle = require('./helpers/transform-child-style');
 
-var transformChildStyle = __webpack_require__(31);
 
 var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
@@ -1775,8 +1774,8 @@ function createInstance() {
   }
 
   var componentInstance = null;
-  var cmpName;
-  var isChildStyle;
+  var cmpName; //let isChildStyle;
+
   var trash = []; //console.log(cfg.root.outerHTML)
 
   function walk($child) {
@@ -1795,14 +1794,13 @@ function createInstance() {
       directive.callAppWalkDOM(parent, $child); //if ($child.nodeName === 'STYLE')
       //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
       //console.log(cfg.root._dozAttach)
-
-      if ($child.nodeName === 'STYLE') console.log('potrei mettere il tag style', $child.nodeName === 'STYLE');
-      isChildStyle = transformChildStyle($child, parent);
-
-      if (isChildStyle) {
-        $child = isChildStyle;
-        continue;
-      }
+      //if ($child.nodeName === 'STYLE')
+      //console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
+      //isChildStyle = transformChildStyle($child, parent);
+      //if (isChildStyle) {
+      //    $child = isChildStyle;
+      //    continue;
+      //}
 
       cmpName = getComponentName($child);
       directive.callAppComponentAssignName(parent, $child, function (name) {
@@ -3751,43 +3749,7 @@ function bind(obj, context) {
 module.exports = bind;
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _require = __webpack_require__(15),
-    scopedInner = _require.scopedInner;
-
-function transformChildStyle(child, parent) {
-  if (child.nodeName !== 'STYLE') return;
-  var dataSetUId = parent.cmp.uId;
-  parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId; //child.removeAttribute('scoped');
-
-  var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
-  var isScoped = child.hasAttribute('data-scoped');
-  scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
-  var emptyStyle = document.createElement('script');
-  emptyStyle.type = 'text/style';
-  emptyStyle.textContent = ' ';
-  emptyStyle._dozAttach = {
-    styleData: {}
-  };
-  emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
-  emptyStyle._dozAttach.styleData.owner = dataSetUId;
-  emptyStyle._dozAttach.styleData.ownerByData = tagByData;
-
-  if (isScoped) {
-    emptyStyle._dozAttach.styleData.scoped = 'true';
-  } //console.log(emptyStyle);
-
-
-  child.parentNode.replaceChild(emptyStyle, child);
-  child = emptyStyle.nextSibling;
-  return child;
-}
-
-module.exports = transformChildStyle;
-
-/***/ }),
+/* 31 */,
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 

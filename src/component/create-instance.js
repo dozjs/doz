@@ -1,5 +1,5 @@
 const html = require('../utils/html');
-const transformChildStyle = require('./helpers/transform-child-style');
+//const transformChildStyle = require('./helpers/transform-child-style');
 const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, COMPONENT_DYNAMIC_INSTANCE, DEFAULT_SLOT_KEY, PROPS_ATTRIBUTES, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
@@ -28,7 +28,7 @@ function createInstance(cfg = {}) {
 
     let componentInstance = null;
     let cmpName;
-    let isChildStyle;
+    //let isChildStyle;
     const trash = [];
 
     //console.log(cfg.root.outerHTML)
@@ -51,14 +51,14 @@ function createInstance(cfg = {}) {
             //if ($child.nodeName === 'STYLE')
             //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
             //console.log(cfg.root._dozAttach)
-            if ($child.nodeName === 'STYLE')
-            console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
-            isChildStyle = transformChildStyle($child, parent);
+            //if ($child.nodeName === 'STYLE')
+            //console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
+            //isChildStyle = transformChildStyle($child, parent);
 
-            if (isChildStyle) {
-                $child = isChildStyle;
-                continue;
-            }
+            //if (isChildStyle) {
+            //    $child = isChildStyle;
+            //    continue;
+            //}
 
             cmpName = getComponentName($child);
 
