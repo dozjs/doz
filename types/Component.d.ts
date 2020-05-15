@@ -131,6 +131,13 @@ export class Component {
     getComponentById(id: string): Component
 
     /**
+     * Get ext component instance by id.
+     * @param {string} id
+     * @returns {Component}
+     */
+    getExtWebComponentById(id: string): Component
+
+    /**
      * This method must be return the component template literals.
      * @returns {string}
      */
