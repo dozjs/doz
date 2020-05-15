@@ -45,7 +45,7 @@ Below some basic concepts:
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
         - [Custom directives](#custom-directives)
-            
+- [Ext Component: doz component as web component](#ext-component-doz-component-as-web-component)           
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
@@ -1526,6 +1526,62 @@ new Doz({
     }
 });
 ```
+
+---
+
+### Ext Component: doz component as web component
+
+**Since 2.5.0**
+
+
+If you need to use a doz component outside your JavaScript app then this is for you.
+Calling the `Doz.createExtWebComponent` method will create a web component that will incorporate your doz component.
+Keep in mind that the prefix "ext-" will be added to the tag, this to prevent Doz from processing possible web components that
+have the same name as the doz components.
+
+```javascript
+    const myCmp1 = {
+        template(h) {
+            return h`
+                    <div>Hello</div>
+                    <button onclick="this.myClick()">Set random to myCmp2</button>
+                `
+        },
+        myClick() {
+            this.getExtWebComponentById('my-cmp2').props.title = Math.random();
+        }
+    }
+
+    const myCmp2 = {
+        props: {
+            title: 'WoW'
+        },       
+        template(h) {
+            return h`
+                    <div>${this.props.title}</div>
+                `
+        }
+    }
+
+    createExtWebComponent('my-cmp1', myCmp1);
+    createExtWebComponent('my-cmp2', myCmp2);
+```
+HTML
+```html
+<html>
+    <head>
+    <!-- doz library file-->
+    <!-- doz components file -->
+    </head>
+    <body>
+        <ext-my-cmp1></ext-my-cmp1>
+        <ext-my-cmp2 data-id="my-cmp2"></ext-my-cmp2>
+    </body>
+</html>
+```
+
+The "data-id" attribute allows us to access an ext component from other components
+using the method (in this case) `this.getExtWebComponentById ('my-cmp2')`.
 
 ---
 
