@@ -25,6 +25,13 @@ export function define(name: string, options: ConfigComponent | object): void
 export function use(plugin: Function, options?: object): void
 
 /**
+ * Create Ext Web Component.
+ * @param {string} tag
+ * @param {object} component
+ */
+export function createExtWebComponent(tag: string, component?: ConfigComponent | object | Function): void
+
+/**
  * Add external functions to global components.
  * @param {object} methods
  */
