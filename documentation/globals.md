@@ -64,7 +64,7 @@
 - **Since**: 1.5.0
 - **Arguments**:
     - `string` template
-- **Details**: This helper improve the virtual dom performance.
+- **Details**: This helper improves the virtual dom performance.
 - **Usage**:
     ``` js
     Doz.define('my-component', class extends Doz.Component {
@@ -136,7 +136,7 @@
 - **Since**: 1.6.0
 - **Arguments**:
     - `string` string
-- **Details**: Transforms HTML string to tree object.
+- **Details**: Transforms HTML strings to tree object.
 - **Usage**:
     ``` js
     Doz.compile(`

@@ -757,7 +757,7 @@ new Doz({
 
 ### Drawing hooks
 
-- `onAppDraw`: called every time that any component (of the whole app) is drawn
+- `onAppDraw`: called every time any component (of the whole app) is drawn
     ```javascript
     Doz.component('hello-world', {
         template(h) {
@@ -800,7 +800,7 @@ new Doz({
     ```
     [FIDDLE](https://jsfiddle.net/5j24sxzb/)
     
-- `onDrawByParent`: called every time that component is drawn by the parent for example in a slot scenario
+- `onDrawByParent`: called every time component is drawn by the parent for example in a slot scenario
 
     ```javascript
     Doz.define('user-card', class extends Doz.Component {
@@ -1240,7 +1240,7 @@ new Doz({
 **Since 2.3.0**
 
 This directive allows you to add CSS animations to components and HTML 
-elements. By default it is set to use the animate.css library but you 
+elements. By default, it is set to use the animate.css library, but you 
 can also use custom animations or other libraries.
 
 ```javascript
@@ -1257,7 +1257,7 @@ new Doz({
 
 The d-animate directive accepts an object as a configuration. The main 
 properties of the object are two: "show" and "hide".
-The show property defines the CSS class that will be used when an element 
+The show property defines the CSS class will be used when an element 
 will be displayed in the DOM. While the hide property will be used when 
 an element will be hidden or removed from the DOM
 Both show and hide properties can accept values as a string (just animation name) or object.
@@ -1308,7 +1308,7 @@ PS: `d-show` supports the animation with `d-directive`.
 Directives that works only on component
 
 ##### d:alias
-This attribute allows you to define an unique name that identify the component locally inside component parent.
+This attribute allows you to define a unique name that identify the component locally inside component parent.
 
 ```javascript
 Doz.component('my-label', {
@@ -1343,7 +1343,7 @@ new Doz({
 ```
 
 ##### d:id
-This attribute allows you to define an unique name that identify the component globally.
+This attribute allows you to define a unique name that identify the component globally.
 
 ```javascript
 Doz.component('my-label', {
@@ -1382,7 +1382,7 @@ new Doz({
 ---
 
 ##### d:store
-This attribute allows you to define an unique name that expose your component props globally.
+This attribute allows you to define a unique name that expose your component props globally.
 
 ```javascript
 Doz.component('my-label', {
@@ -1424,7 +1424,7 @@ new Doz({
 ---
 
 ##### d:on
-This attribute allows you to define an event name.
+This attribute allows you to define a event name.
 
 ```javascript
 Doz.component('salutation-card', {
