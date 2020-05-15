@@ -10,7 +10,7 @@ const storeElementNode = Object.create(null);
 const deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
-    return  typeof nodeA !== typeof nodeB ||
+    return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
         nodeA.style !== nodeB.style ||
@@ -35,7 +35,7 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     if (node.props && node.props.slot && !node.isNewSlotEl) {
-        return  document.createComment(`slot(${node.props.slot})`);
+        return document.createComment(`slot(${node.props.slot})`);
     }
 
     ////console.log(node.type, node.props, cmp.tag)
@@ -216,8 +216,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         ////console.log(newNode.type, $myListParent);
         let newNodeKeyList = newNode.children.map(i => i.key);
         let oldNodeKeyList = oldNode.children.map(i => i.key);
-        ////console.log(newNodeKeyList);
-        ////console.log(oldNodeKeyList);
+        //console.log('oldNodeKeyList', oldNodeKeyList);
+        //console.log('newNodeKeyList', newNodeKeyList);
+
         // here my new logic for keys
 
         // Check if $myListParent has _dozAttach.keyList
@@ -232,7 +233,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
                 let $oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]);
                 ////console.log('da rimuovere', $oldElement);
-                if($oldElement._dozAttach[COMPONENT_INSTANCE]) {
+                if ($oldElement._dozAttach[COMPONENT_INSTANCE]) {
                     $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
                 } else {
                     $myListParent.removeChild($oldElement);
@@ -303,24 +304,42 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             for (let i = 0; i < listOfElement.length; i++) {
                 $myListParent.appendChild(listOfElement[i]);
             }
-            return ;
+            return;
         }
 
-        //console.log('aaa');
+        let useIndexI = true;
+        let $currentElementAtPosition;
+        let $element;
 
-        let diff = 0;
-        for (let i = 0; i < listOfElement.length; i++) {
-            let $currentElementAtPosition = $myListParent.childNodes[i + diff];
-            let $element = listOfElement[i];
-            if (
-                ($currentElementAtPosition && $element && $currentElementAtPosition._dozAttach.key === $element._dozAttach.key)
-                || Array.from($myListParent.childNodes).indexOf($element) === i) {
-                continue;
+        let i = 0;
+        let j = listOfElement.length - 1;
+
+        while (i <= j) {
+            if (useIndexI) {
+                $currentElementAtPosition = $myListParent.childNodes[i];
+                $element = listOfElement[i];
+
+                if (Array.from($myListParent.childNodes).indexOf($element) !== i) {
+                    //console.log('MOVE I, ', i)
+                    $myListParent.insertBefore($element, $currentElementAtPosition);
+                    useIndexI = false;
+                }
+                i++;
+            } else {
+                $currentElementAtPosition = $myListParent.childNodes[j];
+                $element = listOfElement[j];
+
+                if (Array.from($myListParent.childNodes).indexOf($element) !== j) {
+                    //console.log('MOVE J, ', j)
+                    $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
+                    useIndexI = true;
+                }
+                j--;
             }
-            diff++;
-            $myListParent.insertBefore($element, $currentElementAtPosition);
         }
 
+        //console.log('$myListParent ', Array.from($myListParent.childNodes).map(item => item._dozAttach.key))
+        //console.log('----------------');
     } else if (newNode.type) {
         //console.log('walk node', newNode.type)
         // walk node

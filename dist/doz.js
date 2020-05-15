@@ -3094,8 +3094,8 @@ function update($parent, newNode, oldNode) {
       return i.key;
     };
 
-    var oldNodeKeyList = new Array(_defined5.length); ////console.log(newNodeKeyList);
-    ////console.log(oldNodeKeyList);
+    var oldNodeKeyList = new Array(_defined5.length); //console.log('oldNodeKeyList', oldNodeKeyList);
+    //console.log('newNodeKeyList', newNodeKeyList);
     // here my new logic for keys
     // Check if $myListParent has _dozAttach.keyList
 
@@ -3118,9 +3118,9 @@ function update($parent, newNode, oldNode) {
       if (_defined7(oldNodeKeyList[_i12], _i12, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i12]);
     }
 
-    for (var i = 0; i < oldKeyDoRemove.length; i++) {
-      if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
-        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]); ////console.log('da rimuovere', $oldElement);
+    for (var _i6 = 0; _i6 < oldKeyDoRemove.length; _i6++) {
+      if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[_i6])) {
+        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[_i6]); ////console.log('da rimuovere', $oldElement);
 
 
         if (_$oldElement._dozAttach[COMPONENT_INSTANCE]) {
@@ -3129,21 +3129,21 @@ function update($parent, newNode, oldNode) {
           $myListParent.removeChild(_$oldElement);
         }
 
-        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[i]);
+        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]);
       }
     }
 
     var listOfElement = [];
 
-    for (var _i6 = 0; _i6 < newNodeKeyList.length; _i6++) {
+    for (var _i7 = 0; _i7 < newNodeKeyList.length; _i7++) {
       // This is the key of all
-      var theKey = newNodeKeyList[_i6]; ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+      var theKey = newNodeKeyList[_i7]; ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
-      var $element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
+      var _$element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
 
 
-      if (!$element) {
-        var _$newElement2 = create(newNode.children[_i6], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+      if (!_$element) {
+        var _$newElement2 = create(newNode.children[_i7], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
         $myListParent._dozAttach.keyList.set(theKey, _$newElement2); ////console.log('elemento creato', $newElement);
         // appendo per il momento
@@ -3155,10 +3155,10 @@ function update($parent, newNode, oldNode) {
         var newChildByKey = getChildByKey(theKey, newNode.children);
         var oldChildByKey = getChildByKey(theKey, oldNode.children); ////console.log('aaaaaaaaaaa')
 
-        listOfElement.push($element); // Update attributes?
+        listOfElement.push(_$element); // Update attributes?
         // Remember that the operation must be on the key and not on the index
 
-        updateAttributes($element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newChildByKey.isSVG); // Here also update function using the key
+        updateAttributes(_$element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newChildByKey.isSVG); // Here also update function using the key
         // update(...
 
         var newChildByKeyLength = newChildByKey.children.length;
@@ -3167,36 +3167,55 @@ function update($parent, newNode, oldNode) {
 
         /**/
 
-        for (var _i7 = 0; _i7 < newChildByKeyLength || _i7 < oldChildByKeyLength; _i7++) {
-          if (newChildByKey.children[_i7] === undefined && oldChildByKey.children[_i7] === undefined) continue; //console.log('000')
+        for (var _i8 = 0; _i8 < newChildByKeyLength || _i8 < oldChildByKeyLength; _i8++) {
+          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue; //console.log('000')
 
-          update($element, newChildByKey.children[_i7], oldChildByKey.children[_i7], _i7, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+          update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
     }
 
     if (!$myListParent.childNodes.length) {
-      for (var _i8 = 0; _i8 < listOfElement.length; _i8++) {
-        $myListParent.appendChild(listOfElement[_i8]);
+      for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
+        $myListParent.appendChild(listOfElement[_i9]);
       }
 
       return;
-    } //console.log('aaa');
-
-
-    var diff = 0;
-
-    for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
-      var $currentElementAtPosition = $myListParent.childNodes[_i9 + diff];
-      var _$element = listOfElement[_i9];
-
-      if ($currentElementAtPosition && _$element && $currentElementAtPosition._dozAttach.key === _$element._dozAttach.key || Array.from($myListParent.childNodes).indexOf(_$element) === _i9) {
-        continue;
-      }
-
-      diff++;
-      $myListParent.insertBefore(_$element, $currentElementAtPosition);
     }
+
+    var useIndexI = true;
+    var $currentElementAtPosition;
+    var $element;
+    var i = 0;
+    var j = listOfElement.length - 1;
+
+    while (i <= j) {
+      if (useIndexI) {
+        $currentElementAtPosition = $myListParent.childNodes[i];
+        $element = listOfElement[i];
+
+        if (Array.from($myListParent.childNodes).indexOf($element) !== i) {
+          //console.log('MOVE I, ', i)
+          $myListParent.insertBefore($element, $currentElementAtPosition);
+          useIndexI = false;
+        }
+
+        i++;
+      } else {
+        $currentElementAtPosition = $myListParent.childNodes[j];
+        $element = listOfElement[j];
+
+        if (Array.from($myListParent.childNodes).indexOf($element) !== j) {
+          //console.log('MOVE J, ', j)
+          $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
+          useIndexI = true;
+        }
+
+        j--;
+      }
+    } //console.log('$myListParent ', Array.from($myListParent.childNodes).map(item => item._dozAttach.key))
+    //console.log('----------------');
+
   } else if (newNode.type) {
     //console.log('walk node', newNode.type)
     // walk node
