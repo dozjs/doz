@@ -294,7 +294,7 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `function`
 - **Arguments**:
     - `string` id
-- **Description**: Get ext component by id.
+- **Description**: Get ExtWebComponent by id.
 
 ### component.getHTMLElement()
 

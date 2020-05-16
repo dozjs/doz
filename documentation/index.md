@@ -45,7 +45,7 @@ Below some basic concepts:
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
         - [Custom directives](#custom-directives)
-- [Ext Component: doz component as web component](#ext-component-doz-component-as-web-component)           
+- [ExtWebComponent: doz component as web component](#ext-component-doz-component-as-web-component)           
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
@@ -1529,7 +1529,7 @@ new Doz({
 
 ---
 
-### Ext Component: doz component as web component
+### ExtWebComponent: doz component as web component
 
 **Since 2.5.0**
 
@@ -1552,10 +1552,14 @@ have the same name as the doz components.
         }
     }
 
-    const myCmp2 = {
-        props: {
-            title: 'WoW'
-        },       
+    const myCmp2 = class extends Doz.Component {
+        constructor(o) {
+            super(o);
+            props = {
+                title: 'WoW'
+            }      
+        }        
+
         template(h) {
             return h`
                     <div>${this.props.title}</div>
@@ -1563,24 +1567,31 @@ have the same name as the doz components.
         }
     }
 
-    createExtWebComponent('my-cmp1', myCmp1);
-    createExtWebComponent('my-cmp2', myCmp2);
+    createExtWebComponent('my-cmp1', myCmp1, ['title']);
+    createExtWebComponent('my-cmp2', myCmp2, ['title']);
 ```
+
+**Important note**: The last parameters of `createExtWebComponent` is referred to "observedAttributes", 
+an array of attributes names linked to doz component props, so you can update the props also
+using native method `myWebComponentRef.setAttribute('title', 'hello')`.
+
 HTML
 ```html
 <html>
     <head>
-    <!-- doz library file-->
-    <!-- doz components file -->
+        <!-- doz library file-->
+        <script src="path/to/doz.js"></script>
     </head>
     <body>
-        <ext-my-cmp1></ext-my-cmp1>
-        <ext-my-cmp2 data-id="my-cmp2"></ext-my-cmp2>
+        <ext-my-cmp1 title="lorem"></ext-my-cmp1>
+        <ext-my-cmp2 title="ipsum" data-id="my-cmp2"></ext-my-cmp2>
+        <!-- doz components file -->
+        <script src="path/to/your-component.js"></script>
     </body>
 </html>
 ```
 
-The "data-id" attribute allows us to access an ext component from other components
+The "data-id" attribute allows us to access an ExtWebComponent from other components
 using the method (in this case) `this.getExtWebComponentById ('my-cmp2')`.
 
 ---

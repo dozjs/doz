@@ -162,18 +162,18 @@
 - **Arguments**:
     - `tag` string
     - `component` `function`, `object`
-- **Details**: Create ext web component.
+- **Details**: Create ExtWebComponent.
 - **Usage**:
     ``` js
     Doz.createExtWebComponent('my-cmp', class extends Component {
         //....//
-    });
+    }, ['foo', 'bar']);
     ```
     In your HTML page
     ```html
     <!-- Load Doz library -->
     <!-- Load Doz component -->
-    <ext-my-cmp></ext-my-cmp> 
+    <ext-my-cmp foo="lorem" bar="ipsum"></ext-my-cmp> 
     ```
 
 ### Doz.version()
