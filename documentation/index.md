@@ -1540,35 +1540,35 @@ Keep in mind that the prefix "ext-" will be added to the tag, this to prevent Do
 have the same name as the doz components.
 
 ```javascript
-    const myCmp1 = {
-        template(h) {
-            return h`
-                    <div>Hello</div>
-                    <button onclick="this.myClick()">Set random to myCmp2</button>
-                `
-        },
-        myClick() {
-            this.getExtWebComponentById('my-cmp2').props.title = Math.random();
-        }
+const myCmp1 = {
+    template(h) {
+        return h`
+                <div>Hello</div>
+                <button onclick="this.myClick()">Set random to myCmp2</button>
+            `
+    },
+    myClick() {
+        this.getExtWebComponentById('my-cmp2').props.title = Math.random();
     }
+}
 
-    const myCmp2 = class extends Doz.Component {
-        constructor(o) {
-            super(o);
-            props = {
-                title: 'WoW'
-            }      
-        }        
+const myCmp2 = class extends Doz.Component {
+    constructor(o) {
+        super(o);
+        props = {
+            title: 'WoW'
+        }      
+    }        
 
-        template(h) {
-            return h`
-                    <div>${this.props.title}</div>
-                `
-        }
+    template(h) {
+        return h`
+                <div>${this.props.title}</div>
+            `
     }
+}
 
-    createExtWebComponent('my-cmp1', myCmp1, ['title']);
-    createExtWebComponent('my-cmp2', myCmp2, ['title']);
+createExtWebComponent('my-cmp1', myCmp1, ['title']);
+createExtWebComponent('my-cmp2', myCmp2, ['title']);
 ```
 
 **Important note**: The last parameters of `createExtWebComponent` is referred to "observedAttributes", 
