@@ -331,7 +331,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
                 if (Array.from($myListParent.childNodes).indexOf($element) !== j) {
                     //console.log('MOVE J, ', j)
-                    $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
+                    if ($currentElementAtPosition)
+                        $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
+                    else {
+                        $myListParent.appendChild($element);
+                        j++
+                    }
                     useIndexI = true;
                 }
                 j--;

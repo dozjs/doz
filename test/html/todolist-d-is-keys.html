@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../../dist/doz.js?5896775e265545nj08778"></script>
+    <script src="../../dist/doz.js?5896775e26554nj08778"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -76,6 +76,11 @@
 <div id="app"></div>
 
 <script>
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
     const actions = {
         done(key) {
@@ -213,7 +218,7 @@
                 <div>
                     <button onclick="this.swap()">Swap</button>
                     <button onclick="this.reverse()">Reverse</button>
-                    <button onclick="this.sort()">Sort</button>
+                    <button onclick="this.randomData()">Random Data</button>
                 </div>
             `
         },
@@ -252,7 +257,22 @@
         sort() {
             let record = Object.assign([], this.getStore('todo').record);
             this.getStore('todo').record = record.sort();
-        }
+        },
+
+        randomData() {
+            //console.log('add');
+            const storeTmp = [];
+
+            for (let i = 0; i < getRandomInt(8, 15); i++) {
+                storeTmp.push({
+                    key: i,
+                    title: i + ' -- ',
+                    done: Math.random() > 0.5
+                });
+            }
+
+            this.getStore('todo').record = storeTmp;
+        },
     });
     Doz.component('doz-todo', {
         store: 'todo',
