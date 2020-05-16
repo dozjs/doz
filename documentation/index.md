@@ -45,7 +45,7 @@ Below some basic concepts:
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
         - [Custom directives](#custom-directives)
-- [ExtWebComponent: doz component as web component](#ext-component-doz-component-as-web-component)           
+- [ExtWebComponent: doz component as web component](#extwebcomponent-doz-component-as-web-component)           
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
