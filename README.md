@@ -25,6 +25,7 @@ Almost like writing in VanillaJS. For modern browser.
 ## Why
 - 🎼 Works with tagged template literals
 - 🎳 Component based
+- 🧩 WebComponent ready
 - 🏪 Global stores
 - 😆 Global components
 - 🔫 Fast performance
@@ -37,11 +38,11 @@ Almost like writing in VanillaJS. For modern browser.
 - 📽 CSS animation support
 
 ## Another framework?
-In the web there are many frameworks that do all the same things. But a lot of them are complex,
-we need to know a lot of directives and they make confusion for example with the context of "this".
+On the web there are many frameworks that do all the same things. A lot of them are complex,
+we need to know a lot of directives, and they make confusion for example with the context of "this".
 Doz was created to make the development of web applications easy, by reading this simple documentation
 you will be able to immediately start creating something without getting lost in words and multiple import of functions.
-E poi ve lo scrivo in italiano: adoro creare cose :).
+I like to make stuff :).
 
 ## Get started
 ```
@@ -60,15 +61,17 @@ $ npm start
 
 ButtonCounter.js
 ```javascript
-import {Component, tag} from 'doz'
+import {Component} from 'doz'
 
-@tag('button-counter')
 export default class extends Component {
-
-    props = {
-        counter: 0
-    };
     
+    constructor(o) {
+        super(o);
+        this.props = {
+            counter: 0
+        };
+    }
+
     template(h) {
         return h`
             <style>

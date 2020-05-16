@@ -4994,7 +4994,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
       styleResetEl.id = styleResetId;
       styleResetEl.innerHTML = resetContent;
 
-      if (cmp.app.isExtWebComponent) {
+      if (cmp && cmp.app.isExtWebComponent) {
         var tagApp = cmp.app._root.querySelector(TAG.APP);
 
         cmp.app._root.insertBefore(styleResetEl, tagApp);
@@ -5007,7 +5007,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
     styleEl.id = styleId;
     result = styleEl.innerHTML = cssContent;
 
-    if (cmp.app.isExtWebComponent) {
+    if (cmp && cmp.app.isExtWebComponent) {
       var _tagApp = cmp.app._root.querySelector(TAG.APP);
 
       cmp.app._root.insertBefore(styleEl, _tagApp);
