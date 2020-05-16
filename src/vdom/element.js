@@ -262,7 +262,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 let newChildByKey = getChildByKey(theKey, newNode.children);
                 let oldChildByKey = getChildByKey(theKey, oldNode.children);
 
-                ////console.log('aaaaaaaaaaa')
+                if (!newChildByKey.children)
+                    newChildByKey.children = [];
+
+                if (!oldChildByKey.children)
+                    oldChildByKey.children = [];
+
+                //console.log('aaaaaaaaaaa')
                 listOfElement.push($element);
                 // Update attributes?
                 // Remember that the operation must be on the key and not on the index

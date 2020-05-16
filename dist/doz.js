@@ -3094,7 +3094,9 @@ function update($parent, newNode, oldNode) {
       } else {
         // Get the child from newNode and oldNode by the same key
         var newChildByKey = getChildByKey(theKey, newNode.children);
-        var oldChildByKey = getChildByKey(theKey, oldNode.children); ////console.log('aaaaaaaaaaa')
+        var oldChildByKey = getChildByKey(theKey, oldNode.children);
+        if (!newChildByKey.children) newChildByKey.children = [];
+        if (!oldChildByKey.children) oldChildByKey.children = []; //console.log('aaaaaaaaaaa')
 
         listOfElement.push(_$element); // Update attributes?
         // Remember that the operation must be on the key and not on the index

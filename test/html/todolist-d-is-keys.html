@@ -262,11 +262,12 @@
         randomData() {
             //console.log('add');
             const storeTmp = [];
+            let prefix = getRandomInt(1, 5)
 
             for (let i = 0; i < getRandomInt(8, 15); i++) {
                 storeTmp.push({
                     key: i,
-                    title: i + ' -- ',
+                    title: prefix + '' + i + ' -- ',
                     done: Math.random() > 0.5
                 });
             }
