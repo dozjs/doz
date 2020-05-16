@@ -1,6 +1,7 @@
-const tagList = require("./tags");
+const tagList = require('./tags');
+const {TAG} = require('../constants');
 
-function createStyle(cssContent, uId, tag, scoped) {
+function createStyle(cssContent, uId, tag, scoped, cmp) {
     let result;
     const styleId = `${uId}--style`;
     const styleResetId = `${uId}--style-reset`;
@@ -16,13 +17,23 @@ function createStyle(cssContent, uId, tag, scoped) {
             const styleResetEl = document.createElement("style");
             styleResetEl.id = styleResetId;
             styleResetEl.innerHTML = resetContent;
-            document.head.appendChild(styleResetEl);
+            if (cmp.app.isExtWebComponent) {
+                let tagApp = cmp.app._root.querySelector(TAG.APP);
+                cmp.app._root.insertBefore(styleResetEl, tagApp);
+            } else {
+                document.head.appendChild(styleResetEl);
+            }
         }
 
         const styleEl = document.createElement("style");
         styleEl.id = styleId;
         result = styleEl.innerHTML = cssContent;
-        document.head.appendChild(styleEl);
+        if (cmp.app.isExtWebComponent) {
+            let tagApp = cmp.app._root.querySelector(TAG.APP);
+            cmp.app._root.insertBefore(styleEl, tagApp);
+        } else {
+            document.head.appendChild(styleEl);
+        }
     }
 
     return result;

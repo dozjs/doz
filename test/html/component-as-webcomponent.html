@@ -5,14 +5,32 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../../dist/doz.js?5896428e3"></script>
+    <script src="../../dist/doz.js?589642e8e3"></script>
     <style>
         body {
             font-family: sans-serif;
+            text-align: center;
+            font-size: 50px;
         }
     </style>
 </head>
 <body>
+
+<ext-doz-clock data-id="my-instance" title="my time"></ext-doz-clock>
+<hr>
+<ext-my-cmp1>
+    <div>1 div</div>
+    <div>2 div</div>
+    <div>3 div</div>
+</ext-my-cmp1>
+<hr>
+<ext-doz-clock id="my-element"></ext-doz-clock>
+<button onclick="document.getElementById('my-element').setAttribute('title', Math.random())">Set random for my-element</button>
+<hr>
+<ext-doz-clock></ext-doz-clock>
+
+<hr>
+<ext-my-cmp2></ext-my-cmp2>
 
 <script>
     const {component, createExtWebComponent} = Doz;
@@ -46,37 +64,49 @@
         }
     });
 
-    let myText = {
+    let myCmp1 = {
+        props: {
+            buttonText: 'Set random title for "my-instance"'
+        },
         template(h) {
             return h`
+                    <style>
+                        :component {
+                            border: 1px solid red;
+                            display: block;
+                        }
+                    </style>
                     <div>
                         <div>Hello</div>
-                        <button onclick="this.myClick()">get ext wc</button>
+                        <button onclick="this.myClick()">${this.props.buttonText}</button>
                     </div>
                 `
         },
         myClick() {
             this.getExtWebComponentById('my-instance').props.title = Math.random();
-        },
-        onMount() {
-            //console.log(Array.from(this.getHTMLElement().children))
-            this.getHTMLElement().childNodes.forEach(child => console.log(child))
         }
     }
 
-    createExtWebComponent('doz-clock');
-    createExtWebComponent('my-text', myText);
+    let myCmp2 = class extends Doz.Component {
+        constructor(o) {
+            super(o);
+
+            this.props = {
+                name: 'Doz'
+            }
+        }
+
+        template(h) {
+            return h`
+                <div>Hello ${this.props.name}</div>
+            `
+        }
+    }
+
+    createExtWebComponent('doz-clock', null, ['title']);
+    createExtWebComponent('my-cmp1', myCmp1);
+    createExtWebComponent('my-cmp2', myCmp2, ['name']);
 
 </script>
-
-<ext-doz-clock data-id="my-instance" title="my time"></ext-doz-clock>
-<ext-doz-clock></ext-doz-clock>
-<ext-doz-clock></ext-doz-clock>
-
-<ext-my-text>
-    <div>1 div</div>
-    <div>2 div</div>
-    <div>3 div</div>
-</ext-my-text>
 </body>
 </html>

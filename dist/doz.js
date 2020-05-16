@@ -1481,6 +1481,7 @@ var Doz = /*#__PURE__*/function () {
     this.cfg = Object.assign({}, {
       components: [],
       shared: {},
+      isExtWebComponent: false,
       propsListener: null,
       propsListenerAsync: null,
       actions: {},
@@ -1530,6 +1531,10 @@ var Doz = /*#__PURE__*/function () {
       },
       _onAppCB: {
         value: {},
+        writable: true
+      },
+      isExtWebComponent: {
+        value: this.cfg.isExtWebComponent,
         writable: true
       },
       _root: {
@@ -2895,7 +2900,7 @@ function setHeadStyle(node, cmp) {
   var dataSetUId = cmp.uId;
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]"); //console.log(cmp, node.style, node.styleScoped)
 
-  scopedInner(node.style, dataSetUId, tagByData, isScoped);
+  scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
 }
 
 function update($parent, newNode, oldNode) {
@@ -4951,10 +4956,10 @@ var composeStyleInner = __webpack_require__(20);
 
 var createStyle = __webpack_require__(42);
 
-function scopedInner(cssContent, uId, tag, scoped) {
+function scopedInner(cssContent, uId, tag, scoped, cmp) {
   if (typeof cssContent !== 'string') return;
   cssContent = composeStyleInner(cssContent, tag);
-  return createStyle(cssContent, uId, tag, scoped);
+  return createStyle(cssContent, uId, tag, scoped, cmp);
 }
 
 module.exports = {
@@ -4967,7 +4972,10 @@ module.exports = {
 
 var tagList = __webpack_require__(43);
 
-function createStyle(cssContent, uId, tag, scoped) {
+var _require = __webpack_require__(1),
+    TAG = _require.TAG;
+
+function createStyle(cssContent, uId, tag, scoped, cmp) {
   var result;
   var styleId = "".concat(uId, "--style");
   var styleResetId = "".concat(uId, "--style-reset");
@@ -4985,13 +4993,27 @@ function createStyle(cssContent, uId, tag, scoped) {
       var styleResetEl = document.createElement("style");
       styleResetEl.id = styleResetId;
       styleResetEl.innerHTML = resetContent;
-      document.head.appendChild(styleResetEl);
+
+      if (cmp.app.isExtWebComponent) {
+        var tagApp = cmp.app._root.querySelector(TAG.APP);
+
+        cmp.app._root.insertBefore(styleResetEl, tagApp);
+      } else {
+        document.head.appendChild(styleResetEl);
+      }
     }
 
     var styleEl = document.createElement("style");
     styleEl.id = styleId;
     result = styleEl.innerHTML = cssContent;
-    document.head.appendChild(styleEl);
+
+    if (cmp.app.isExtWebComponent) {
+      var _tagApp = cmp.app._root.querySelector(TAG.APP);
+
+      cmp.app._root.insertBefore(styleEl, _tagApp);
+    } else {
+      document.head.appendChild(styleEl);
+    }
   }
 
   return result;
@@ -5716,7 +5738,7 @@ module.exports = function tag(name) {
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n                        <", ">", "</", ">\n                    "]);
+  var data = _taggedTemplateLiteral(["\n                    <", ">", "</", ">\n                "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -5758,67 +5780,82 @@ var Doz = __webpack_require__(12);
 var data = __webpack_require__(9);
 
 function createExtWebComponent(tag, cmp) {
-  document.addEventListener('DOMContentLoaded', function (event) {
-    data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
-    customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
-      _inherits(_class, _HTMLElement);
+  var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
+  customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
+    _inherits(_class, _HTMLElement);
 
-      var _super = _createSuper(_class);
+    var _super = _createSuper(_class);
 
-      function _class() {
-        _classCallCheck(this, _class);
-
-        return _super.call(this);
+    _createClass(_class, null, [{
+      key: "observedAttributes",
+      get: function get() {
+        return observedAttributes;
       }
+    }]);
 
-      _createClass(_class, [{
-        key: "connectedCallback",
-        value: function connectedCallback() {
-          var initialProps = {};
-          var id = null;
-          var contentHTML = '';
+    function _class() {
+      _classCallCheck(this, _class);
 
-          for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
-            att = atts[i];
+      return _super.call(this);
+    }
 
-            if (att.nodeName === 'data-id') {
-              id = att.nodeValue;
-              continue;
-            }
+    _createClass(_class, [{
+      key: "connectedCallback",
+      value: function connectedCallback() {
+        var initialProps = {};
+        var id = null;
+        var contentHTML = '';
+        var shadow = this.attachShadow({
+          mode: 'open'
+        });
 
-            initialProps[att.nodeName] = att.nodeValue;
+        for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
+          att = atts[i];
+
+          if (att.nodeName === 'data-id') {
+            id = att.nodeValue;
+            continue;
           }
 
-          contentHTML = this.innerHTML;
-          this.innerHTML = '';
-          var tagCmp = cmp || tag;
-          new Doz({
-            root: this,
-            template: function template(h) {
-              return h(_templateObject(), tagCmp, contentHTML, tagCmp);
-            },
-            onMount: function onMount() {//thisWC.innerHTML = ''
-            },
-            onMountAsync: function onMountAsync() {
-              var firstChild = this.children[0];
-              firstChild.props = Object.assign({}, firstChild.props, initialProps);
-              var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
-              data.extWebComponents.tags[tag][id || countCmp] = firstChild;
-
-              if (id !== null) {
-                if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
-                data.extWebComponents.ids[id] = firstChild;
-              } //console.log(tag, data.extWebComponents);
-              //console.log(thisWC.innerHTML)
-
-            }
-          });
+          if (observedAttributes.includes(att.nodeName)) {
+            initialProps[att.nodeName] = att.nodeValue;
+          }
         }
-      }]);
 
-      return _class;
-    }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
-  });
+        contentHTML = this.innerHTML;
+        this.innerHTML = '';
+        var tagCmp = cmp || tag;
+        this.dozApp = new Doz({
+          root: shadow,
+          isExtWebComponent: true,
+          template: function template(h) {
+            return h(_templateObject(), tagCmp, contentHTML, tagCmp);
+          },
+          onMountAsync: function onMountAsync() {
+            var firstChild = this.children[0];
+            firstChild.props = Object.assign({}, firstChild.props, initialProps);
+            var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
+            data.extWebComponents.tags[tag][id || countCmp] = firstChild;
+
+            if (id !== null) {
+              if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
+              data.extWebComponents.ids[id] = firstChild;
+            }
+          }
+        });
+      }
+    }, {
+      key: "attributeChangedCallback",
+      value: function attributeChangedCallback(name, oldValue, newValue) {
+        if (!this.dozApp) return;
+        var firstChild = this.dozApp.mainComponent.children[0];
+        firstChild.props[name] = newValue;
+      }
+    }]);
+
+    return _class;
+  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
 }
 
 module.exports = createExtWebComponent;
