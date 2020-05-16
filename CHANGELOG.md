@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Fixed** possible wrong position of last two items when re-assign array, using keys
 
 ## [2.5.2] - 2020-05-16
-- **Fixed** update of attributes doesn't works
+- **Fixed** update of attributes doesn't work
 - **Improved** all styles now are placed inside shadowRoot
 - **Improved** added observedAttributes array property to createExtWebComponent function
 
@@ -103,7 +103,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.2.1] - 2019-11-24
 - **Added** support handler as function to `d-on` directive
-- **Improved** catch logic for handler into template
+- **Improved** catch logic handler into template
 
 ## [2.2.0] - 2019-11-24
 - **Added** support handler as function instead string for html element
@@ -130,7 +130,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Fixed** possible issue of style with pseudo classes 
 
 ## [2.0.6] - 2019-11-11
-- **Changed** installation method, using npx instead npm, this solve issue on Mac.
+- **Changed** installation method, using npx instead npm, this solves issue on Mac.
 
 ## [2.0.5] - 2019-11-09
 - **Added** project built with Doz
@@ -195,7 +195,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Improved** nested component system
 - **Changed** template parser, now removes all spaces after new line and tab
 - **Fixed** possible wrong parent component
-- **Fixed** when bind value is 0 don't works
+- **Fixed** when bind value is 0 don't work
 - **Removed** specials attributes from compiled code
 
 ## [1.20.2] - 2019-07-09
