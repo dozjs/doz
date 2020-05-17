@@ -59,7 +59,7 @@ class Element {
         this.children = [];
         this.style = style;
         this.styleScoped = styleScoped;
-        this.isSVG = isSVG || name === 'svg';//REGEX.IS_SVG.test(name);
+        this.isSVG = isSVG || name === 'svg';
         if (props.key !== undefined)
             this.key = props.key;
         this.hasKeys = undefined;
@@ -78,7 +78,7 @@ class Element {
 function compile(data, cmp) {
 
     if (!data) return '';
-//console.log(data)
+
     const root = new Element(null, {});
     const stack = [root];
     let currentParent = root;
@@ -149,6 +149,7 @@ function compile(data, cmp) {
                 }
             }
 
+            /*
             if (match[2] === 'style') {
                 currentParent.style = true;
                 if (props['data-scoped'] === '') {
@@ -156,7 +157,7 @@ function compile(data, cmp) {
                 }
                 continue;
             }
-
+        */
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
             stack.push(currentParent);
         }
@@ -238,13 +239,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
-    // Bisogna poter gestire più placeholder nella stessa stringa
-    // magari utilizzando la callback della funziona replace
-    // inoltre è necessario escludere le stringhe provenienti da
-    // attributi come gli eventi onclick ecc... perchè al momento vengono composti
-    // dentro il modulo attributes.js
 
-    //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
     if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
         aValue = mapper.getAll(aValue);
     } else {

@@ -681,8 +681,7 @@ var Element = /*#__PURE__*/function () {
     this.children = [];
     this.style = style;
     this.styleScoped = styleScoped;
-    this.isSVG = isSVG || name === 'svg'; //REGEX.IS_SVG.test(name);
-
+    this.isSVG = isSVG || name === 'svg';
     if (props.key !== undefined) this.key = props.key;
     this.hasKeys = undefined;
   }
@@ -703,8 +702,7 @@ var Element = /*#__PURE__*/function () {
 }();
 
 function compile(data, cmp) {
-  if (!data) return ''; //console.log(data)
-
+  if (!data) return '';
   var root = new Element(null, {});
   var stack = [root];
   var currentParent = root;
@@ -770,16 +768,16 @@ function compile(data, cmp) {
           currentParent = last(stack);
         }
       }
-
+      /*
       if (match[2] === 'style') {
-        currentParent.style = true;
-
-        if (props['data-scoped'] === '') {
-          currentParent.styleScoped = true;
-        }
-
-        continue;
+          currentParent.style = true;
+          if (props['data-scoped'] === '') {
+              currentParent.styleScoped = true;
+          }
+          continue;
       }
+      */
+
 
       currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
       stack.push(currentParent);
@@ -859,13 +857,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
     directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, function (newPropsName) {
       propsName = newPropsName;
     });
-  } // Bisogna poter gestire più placeholder nella stessa stringa
-  // magari utilizzando la callback della funziona replace
-  // inoltre è necessario escludere le stringhe provenienti da
-  // attributi come gli eventi onclick ecc... perchè al momento vengono composti
-  // dentro il modulo attributes.js
-  //if (typeof aValue === 'string' && !mapCompiled.isValidId(aValue) && !eventsAttributes.includes(aName)) {
-
+  }
 
   if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
     aValue = mapper.getAll(aValue);
@@ -1125,7 +1117,8 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         if (this.__hasStyle) this._parentElement.dataset.uid = this.uId;
       }
 
-      this._prev = next;
+      this._prev = next; //console.log(this._prev)
+
       if (!silentAfterRenderEvent) hooks.callAfterRender(this);
       drawDynamic(this);
     }
@@ -1734,8 +1727,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var html = __webpack_require__(14); //const transformChildStyle = require('./helpers/transform-child-style');
+var html = __webpack_require__(14);
 
+var transformChildStyle = __webpack_require__(74);
 
 var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
@@ -1769,7 +1763,7 @@ var makeSureAttach = __webpack_require__(4);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!cfg.root) return; //console.log('HTML, ', cfg.template.outerHTML)
+  if (!cfg.root) return;
 
   if (cfg.template instanceof HTMLElement) {
     if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
@@ -1779,9 +1773,9 @@ function createInstance() {
   }
 
   var componentInstance = null;
-  var cmpName; //let isChildStyle;
-
-  var trash = []; //console.log(cfg.root.outerHTML)
+  var cmpName;
+  var isChildStyle;
+  var trash = [];
 
   function walk($child) {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1796,16 +1790,15 @@ function createInstance() {
         continue;
       }
 
-      directive.callAppWalkDOM(parent, $child); //if ($child.nodeName === 'STYLE')
-      //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
-      //console.log(cfg.root._dozAttach)
-      //if ($child.nodeName === 'STYLE')
-      //console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
-      //isChildStyle = transformChildStyle($child, parent);
-      //if (isChildStyle) {
-      //    $child = isChildStyle;
-      //    continue;
-      //}
+      directive.callAppWalkDOM(parent, $child);
+      isChildStyle = transformChildStyle($child, parent);
+
+      if (isChildStyle) {
+        $child = isChildStyle;
+        continue;
+      }
+      /**/
+
 
       cmpName = getComponentName($child);
       directive.callAppComponentAssignName(parent, $child, function (name) {
@@ -1815,8 +1808,7 @@ function createInstance() {
 
       if (parent.cmp && parent.cmp._components) {
         localComponents = parent.cmp._components;
-      } //console.log('_______', cmpName);
-
+      }
 
       var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
       var parentElement = void 0;
@@ -1825,8 +1817,7 @@ function createInstance() {
         var _ret = function () {
           if (parent.cmp) {
             var rawChild = $child.outerHTML;
-            parent.cmp.rawChildren.push(rawChild); //console.log(parent)
-            //console.log('--->', $child.dozElementChildren)
+            parent.cmp.rawChildren.push(rawChild);
           } // For node created by mount method
 
 
@@ -1948,8 +1939,7 @@ function createInstance() {
             if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
               var slotPlaceholder = document.createComment('slot');
               newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
-            } //$child.insertBefore(newElement._rootElement, $child.firstChild);
-            // This is an hack for call render a second time so the
+            } // This is an hack for call render a second time so the
             // event onAppDraw and onDrawByParent are fired after
             // that the component is mounted.
             // This hack makes also the component that has keys
@@ -2837,7 +2827,7 @@ var storeElementNode = Object.create(null);
 var deadChildren = [];
 
 function isChanged(nodeA, nodeB) {
-  return _typeof(nodeA) !== _typeof(nodeB) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.style !== nodeB.style || nodeA.props && nodeA.props.forceupdate;
+  return _typeof(nodeA) !== _typeof(nodeB) || typeof nodeA === 'string' && nodeA !== nodeB || nodeA.type !== nodeB.type || nodeA.props && nodeA.props.forceupdate;
 }
 
 function create(node, cmp, initial, cmpParent) {
@@ -2848,7 +2838,8 @@ function create(node, cmp, initial, cmpParent) {
   if (typeof node === 'string') {
     return document.createTextNode( // use decode only if necessary
     canDecode(node));
-  }
+  } //console.log(node)
+
 
   if (node.type == null || node.type[0] === '#') {
     node.type = TAG.EMPTY;
@@ -2856,7 +2847,7 @@ function create(node, cmp, initial, cmpParent) {
 
   if (node.props && node.props.slot && !node.isNewSlotEl) {
     return document.createComment("slot(".concat(node.props.slot, ")"));
-  } ////console.log(node.type, node.props, cmp.tag)
+  } //console.log(node.type, node.props, cmp.tag)
 
 
   nodeStored = storeElementNode[node.type];
@@ -2883,11 +2874,9 @@ function create(node, cmp, initial, cmpParent) {
 
   makeSureAttach($el);
   $el._dozAttach.elementChildren = node.children;
-  cmp.$$afterNodeElementCreate($el, node, initial);
-  /**/
+  cmp.$$afterNodeElementCreate($el, node, initial); // Create eventually style
 
   if (node.style) {
-    //console.log('---->', node)
     setHeadStyle(node, cmp);
   }
 
@@ -2898,8 +2887,7 @@ function setHeadStyle(node, cmp) {
   cmp.__hasStyle = true;
   var isScoped = node.styleScoped;
   var dataSetUId = cmp.uId;
-  var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]"); //console.log(cmp, node.style, node.styleScoped)
-
+  var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
   scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
 }
 
@@ -2910,7 +2898,11 @@ function update($parent, newNode, oldNode) {
   var cmpParent = arguments.length > 6 ? arguments[6] : undefined;
   //directive.callComponentVNodeTick(cmp, newNode, oldNode);
   if (newNode && newNode.cmp) cmp = newNode.cmp;
-  if (!$parent) return;
+  if (!$parent) return; // Update style
+
+  if (newNode && oldNode && newNode.style !== oldNode.style) {
+    setHeadStyle(newNode, cmp);
+  }
 
   if (cmpParent && $parent._dozAttach[COMPONENT_INSTANCE]) {
     var result = hooks.callDrawByParent($parent._dozAttach[COMPONENT_INSTANCE], newNode, oldNode);
@@ -2968,12 +2960,10 @@ function update($parent, newNode, oldNode) {
 
       if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-        $parent.insertBefore($newElement, $lastNode); ////console.log('$newElement', $newElement)
-
+        $parent.insertBefore($newElement, $lastNode);
         return $newElement;
       }
-    } ////console.log(newNode)
-
+    }
 
     makeSureAttach($parent);
     $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent); //console.log('append to', $parent, cmp.uid);
@@ -2988,11 +2978,7 @@ function update($parent, newNode, oldNode) {
     }
   } else if (isChanged(newNode, oldNode)) {
     //console.log('node changes', newNode, oldNode);
-    if (newNode.style) {
-      setHeadStyle(newNode, cmp);
-    } // node changes
-
-
+    // node changes
     var $oldElement = $parent.childNodes[index];
     if (!$oldElement) return;
     var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
@@ -3015,7 +3001,7 @@ function update($parent, newNode, oldNode) {
     // </ul>
     // Only the "LI" tags will be processed with this algorithm.
     // The content of the "LI" tag will be processed by the normal "update" function
-    var $myListParent = $parent.childNodes[index]; ////console.log(newNode.type, $myListParent);
+    var $myListParent = $parent.childNodes[index]; // console.log(newNode.type, $myListParent);
 
     var _defined3 = newNode.children;
 
@@ -3035,9 +3021,7 @@ function update($parent, newNode, oldNode) {
       return i.key;
     };
 
-    var oldNodeKeyList = new Array(_defined5.length); //console.log('oldNodeKeyList', oldNodeKeyList);
-    //console.log('newNodeKeyList', newNodeKeyList);
-    // here my new logic for keys
+    var oldNodeKeyList = new Array(_defined5.length); // here my new logic for keys
     // Check if $myListParent has _dozAttach.keyList
 
     for (var _i11 = 0; _i11 <= _defined5.length - 1; _i11++) {
@@ -3052,7 +3036,7 @@ function update($parent, newNode, oldNode) {
       return !newNodeKeyList.includes(x);
     };
 
-    var oldKeyDoRemove = []; ////console.log('diff', oldKeyDoRemove)
+    var oldKeyDoRemove = []; // console.log('diff', oldKeyDoRemove)
     // Ci sono key da rimuovere?
 
     for (var _i12 = 0; _i12 <= oldNodeKeyList.length - 1; _i12++) {
@@ -3078,7 +3062,7 @@ function update($parent, newNode, oldNode) {
 
     for (var _i7 = 0; _i7 < newNodeKeyList.length; _i7++) {
       // This is the key of all
-      var theKey = newNodeKeyList[_i7]; ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+      var theKey = newNodeKeyList[_i7]; // console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
       var _$element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
 
@@ -3086,7 +3070,7 @@ function update($parent, newNode, oldNode) {
       if (!_$element) {
         var _$newElement2 = create(newNode.children[_i7], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
-        $myListParent._dozAttach.keyList.set(theKey, _$newElement2); ////console.log('elemento creato', $newElement);
+        $myListParent._dozAttach.keyList.set(theKey, _$newElement2); // console.log('elemento creato', $newElement);
         // appendo per il momento
 
 
@@ -3096,8 +3080,7 @@ function update($parent, newNode, oldNode) {
         var newChildByKey = getChildByKey(theKey, newNode.children);
         var oldChildByKey = getChildByKey(theKey, oldNode.children);
         if (!newChildByKey.children) newChildByKey.children = [];
-        if (!oldChildByKey.children) oldChildByKey.children = []; //console.log('aaaaaaaaaaa')
-
+        if (!oldChildByKey.children) oldChildByKey.children = [];
         listOfElement.push(_$element); // Update attributes?
         // Remember that the operation must be on the key and not on the index
 
@@ -3105,14 +3088,10 @@ function update($parent, newNode, oldNode) {
         // update(...
 
         var newChildByKeyLength = newChildByKey.children.length;
-        var oldChildByKeyLength = oldChildByKey.children.length; ////console.log(newChildByKey.children[i])
-        ////console.log(oldChildByKey.children[i])
-
-        /**/
+        var oldChildByKeyLength = oldChildByKey.children.length;
 
         for (var _i8 = 0; _i8 < newChildByKeyLength || _i8 < oldChildByKeyLength; _i8++) {
-          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue; //console.log('000')
-
+          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue;
           update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
@@ -6975,6 +6954,43 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(41),
+    scopedInner = _require.scopedInner;
+
+function transformChildStyle(child, parent) {
+  if (child.nodeName !== 'STYLE') return;
+  var dataSetUId = parent.cmp.uId;
+  parent.cmp._rootElement.parentNode.dataset.uid = parent.cmp.uId; //child.removeAttribute('scoped');
+
+  var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
+  var isScoped = child.hasAttribute('data-scoped');
+  scopedInner(child.textContent, dataSetUId, tagByData, isScoped);
+  var emptyStyle = document.createElement('script');
+  emptyStyle.type = 'text/style';
+  emptyStyle.textContent = ' ';
+  emptyStyle._dozAttach = {
+    styleData: {}
+  };
+  emptyStyle._dozAttach.styleData.id = dataSetUId + '--style';
+  emptyStyle._dozAttach.styleData.owner = dataSetUId;
+  emptyStyle._dozAttach.styleData.ownerByData = tagByData;
+
+  if (isScoped) {
+    emptyStyle._dozAttach.styleData.scoped = 'true';
+  } //console.log(emptyStyle);
+
+
+  child.parentNode.replaceChild(emptyStyle, child);
+  child = emptyStyle.nextSibling;
+  return child;
+}
+
+module.exports = transformChildStyle;
 
 /***/ })
 /******/ ]);

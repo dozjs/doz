@@ -191,7 +191,10 @@ class Component extends DOMManipulation {
             if (this.__hasStyle)
                 this._parentElement.dataset.uid = this.uId;
         }
+
         this._prev = next;
+
+        //console.log(this._prev)
 
         if (!silentAfterRenderEvent)
             hooks.callAfterRender(this);

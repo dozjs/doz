@@ -13,7 +13,6 @@ function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
-        nodeA.style !== nodeB.style ||
         nodeA.props && nodeA.props.forceupdate;
 }
 
@@ -29,8 +28,9 @@ function create(node, cmp, initial, cmpParent) {
             canDecode(node)
         );
     }
-
+    //console.log(node)
     if (node.type == null || node.type[0] === '#') {
+
         node.type = TAG.EMPTY;
     }
 
@@ -38,7 +38,7 @@ function create(node, cmp, initial, cmpParent) {
         return document.createComment(`slot(${node.props.slot})`);
     }
 
-    ////console.log(node.type, node.props, cmp.tag)
+    //console.log(node.type, node.props, cmp.tag)
 
     nodeStored = storeElementNode[node.type];
     if (nodeStored) {
@@ -71,9 +71,8 @@ function create(node, cmp, initial, cmpParent) {
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
-    /**/
+    // Create eventually style
     if (node.style) {
-        //console.log('---->', node)
         setHeadStyle(node, cmp)
     }
 
@@ -85,7 +84,6 @@ function setHeadStyle(node, cmp) {
     let isScoped = node.styleScoped;
     const dataSetUId = cmp.uId;
     let tagByData = `[data-uid="${dataSetUId}"]`;
-    //console.log(cmp, node.style, node.styleScoped)
     scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
 }
 
@@ -97,6 +95,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         cmp = newNode.cmp;
 
     if (!$parent) return;
+
+    // Update style
+    if (newNode && oldNode && newNode.style !== oldNode.style) {
+        setHeadStyle(newNode, cmp)
+    }
 
     if (cmpParent && $parent._dozAttach[COMPONENT_INSTANCE]) {
 
@@ -158,12 +161,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             if ($lastNode._dozAttach[COMPONENT_ROOT_INSTANCE]) {
                 $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 $parent.insertBefore($newElement, $lastNode);
-                ////console.log('$newElement', $newElement)
                 return $newElement;
             }
         }
-
-        ////console.log(newNode)
 
         makeSureAttach($parent);
         $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
@@ -180,22 +180,17 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     } else if (isChanged(newNode, oldNode)) {
         //console.log('node changes', newNode, oldNode);
-        if (newNode.style) {
-            setHeadStyle(newNode, cmp)
-        }
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
-
         const $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
         $parent.replaceChild(
             $newElement,
             $oldElement
         );
-
         cmp.$$afterNodeChange($newElement, $oldElement);
 
         return $newElement;
@@ -213,11 +208,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // The content of the "LI" tag will be processed by the normal "update" function
 
         let $myListParent = $parent.childNodes[index];
-        ////console.log(newNode.type, $myListParent);
+        // console.log(newNode.type, $myListParent);
         let newNodeKeyList = newNode.children.map(i => i.key);
         let oldNodeKeyList = oldNode.children.map(i => i.key);
-        //console.log('oldNodeKeyList', oldNodeKeyList);
-        //console.log('newNodeKeyList', newNodeKeyList);
 
         // here my new logic for keys
 
@@ -227,7 +220,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         let oldKeyDoRemove = oldNodeKeyList.filter(x => !newNodeKeyList.includes(x));
-        ////console.log('diff', oldKeyDoRemove)
+        // console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
         for (let i = 0; i < oldKeyDoRemove.length; i++) {
             if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
@@ -247,13 +240,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         for (let i = 0; i < newNodeKeyList.length; i++) {
             // This is the key of all
             let theKey = newNodeKeyList[i];
-            ////console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+            // console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
             let $element = $myListParent._dozAttach.keyList.get(theKey);
             // Se non esiste creo il nodo
             if (!$element) {
                 let $newElement = create(newNode.children[i], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 $myListParent._dozAttach.keyList.set(theKey, $newElement);
-                ////console.log('elemento creato', $newElement);
+                // console.log('elemento creato', $newElement);
                 // appendo per il momento
                 listOfElement.push($newElement);
                 //$myListParent.appendChild($newElement);
@@ -268,7 +261,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 if (!oldChildByKey.children)
                     oldChildByKey.children = [];
 
-                //console.log('aaaaaaaaaaa')
                 listOfElement.push($element);
                 // Update attributes?
                 // Remember that the operation must be on the key and not on the index
@@ -286,13 +278,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 const newChildByKeyLength = newChildByKey.children.length;
                 const oldChildByKeyLength = oldChildByKey.children.length;
 
-                ////console.log(newChildByKey.children[i])
-                ////console.log(oldChildByKey.children[i])
-
-                /**/
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
                     if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
-                    //console.log('000')
                     update(
                         $element,
                         newChildByKey.children[i],

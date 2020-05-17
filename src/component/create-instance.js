@@ -1,5 +1,5 @@
 const html = require('../utils/html');
-//const transformChildStyle = require('./helpers/transform-child-style');
+const transformChildStyle = require('./helpers/transform-child-style');
 const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, COMPONENT_DYNAMIC_INSTANCE, DEFAULT_SLOT_KEY, PROPS_ATTRIBUTES, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
@@ -15,7 +15,7 @@ const makeSureAttach = require('./make-sure-attach');
 function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
-    //console.log('HTML, ', cfg.template.outerHTML)
+
     if (cfg.template instanceof HTMLElement) {
         if (!cfg.template.parentNode)
             cfg.root.appendChild(cfg.template);
@@ -24,14 +24,10 @@ function createInstance(cfg = {}) {
         cfg.root.appendChild(cfg.template);
     }
 
-
-
     let componentInstance = null;
     let cmpName;
-    //let isChildStyle;
+    let isChildStyle;
     const trash = [];
-
-    //console.log(cfg.root.outerHTML)
 
     function walk($child, parent = {}) {
         while ($child) {
@@ -48,17 +44,14 @@ function createInstance(cfg = {}) {
 
             directive.callAppWalkDOM(parent, $child);
 
-            //if ($child.nodeName === 'STYLE')
-            //console.log('potrei mettere lo style', $child.nodeName, $child.nodeName === 'STYLE')
-            //console.log(cfg.root._dozAttach)
-            //if ($child.nodeName === 'STYLE')
-            //console.log('potrei mettere il tag style', $child.nodeName === 'STYLE')
-            //isChildStyle = transformChildStyle($child, parent);
 
-            //if (isChildStyle) {
-            //    $child = isChildStyle;
-            //    continue;
-            //}
+            isChildStyle = transformChildStyle($child, parent);
+
+            if (isChildStyle) {
+                $child = isChildStyle;
+                continue;
+            }
+             /**/
 
             cmpName = getComponentName($child);
 
@@ -71,8 +64,6 @@ function createInstance(cfg = {}) {
             if (parent.cmp && parent.cmp._components) {
                 localComponents = parent.cmp._components;
             }
-
-            //console.log('_______', cmpName);
 
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
@@ -87,8 +78,6 @@ function createInstance(cfg = {}) {
 
                     const rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
-                    //console.log(parent)
-                    //console.log('--->', $child.dozElementChildren)
                 }
 
                 // For node created by mount method
@@ -207,8 +196,6 @@ function createInstance(cfg = {}) {
                         let slotPlaceholder = document.createComment('slot');
                         newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
-
-                    //$child.insertBefore(newElement._rootElement, $child.firstChild);
 
                     // This is an hack for call render a second time so the
                     // event onAppDraw and onDrawByParent are fired after
