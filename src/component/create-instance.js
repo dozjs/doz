@@ -1,5 +1,5 @@
 const html = require('../utils/html');
-const transformChildStyle = require('./helpers/transform-child-style');
+//const transformChildStyle = require('./helpers/transform-child-style');
 const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, COMPONENT_DYNAMIC_INSTANCE, DEFAULT_SLOT_KEY, PROPS_ATTRIBUTES, REGEX} = require('../constants');
 const collection = require('../collection');
 const hooks = require('./hooks');
@@ -26,7 +26,7 @@ function createInstance(cfg = {}) {
 
     let componentInstance = null;
     let cmpName;
-    let isChildStyle;
+    //let isChildStyle;
     const trash = [];
 
     function walk($child, parent = {}) {
@@ -44,14 +44,14 @@ function createInstance(cfg = {}) {
 
             directive.callAppWalkDOM(parent, $child);
 
-
+            /*
             isChildStyle = transformChildStyle($child, parent);
 
             if (isChildStyle) {
                 $child = isChildStyle;
                 continue;
             }
-             /**/
+             */
 
             cmpName = getComponentName($child);
 

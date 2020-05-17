@@ -149,7 +149,7 @@ function compile(data, cmp) {
                 }
             }
 
-            /*
+            /**/
             if (match[2] === 'style') {
                 currentParent.style = true;
                 if (props['data-scoped'] === '') {
@@ -157,7 +157,7 @@ function compile(data, cmp) {
                 }
                 continue;
             }
-        */
+
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
             stack.push(currentParent);
         }
