@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.5] - 2020-05-17
+- **Fixed** style update doesn't work fine
+
 ## [2.5.4] - 2020-05-16
 - **Fixed** possible wrong position of last two items when re-assign array, using keys
 
