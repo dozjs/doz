@@ -54,7 +54,7 @@ function createInstance(cfg = {}) {
              */
 
             cmpName = getComponentName($child);
-
+//console.log('cmpName', cmpName)
             directive.callAppComponentAssignName(parent, $child, (name) => {
                 cmpName = name;
             });
@@ -65,15 +65,19 @@ function createInstance(cfg = {}) {
                 localComponents = parent.cmp._components;
             }
 
+            //console.log(cmpName)
             const cmp = cfg.autoCmp ||
                 localComponents[cmpName] ||
                 cfg.app._components[cmpName] ||
                 collection.getComponent(cmpName);
 
+
+            //console.log($child._dozAttach.originalTagName)
+
             let parentElement;
 
             if (cmp) {
-
+                //console.log(cmpName)
                 if (parent.cmp) {
 
                     const rawChild = $child.outerHTML;

@@ -13,6 +13,8 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
     //console.log('setAttribute', $target, name, value)
+    if (name === 'data-attributeoriginaletagname') return;
+
     makeSureAttach($target);
 
     if (!$target._dozAttach[PROPS_ATTRIBUTES]) {

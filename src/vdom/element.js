@@ -21,6 +21,7 @@ function create(node, cmp, initial, cmpParent) {
 
     let nodeStored;
     let $el;
+    let originalTagName;
 
     if (typeof node === 'string') {
         return document.createTextNode(
@@ -28,7 +29,7 @@ function create(node, cmp, initial, cmpParent) {
             canDecode(node)
         );
     }
-    //console.log(node)
+
     if (node.type == null || node.type[0] === '#') {
         node.type = TAG.EMPTY;
     }
@@ -43,6 +44,7 @@ function create(node, cmp, initial, cmpParent) {
     if (nodeStored) {
         $el = nodeStored.cloneNode();
     } else {
+        //originalTagName = node.props['data-attributeoriginaletagname'];
         $el = node.isSVG
             ? document.createElementNS(NS.SVG, node.type)
             : document.createElement(node.type);
@@ -67,6 +69,7 @@ function create(node, cmp, initial, cmpParent) {
     makeSureAttach($el);
 
     $el._dozAttach.elementChildren = node.children;
+    $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
 
     cmp.$$afterNodeElementCreate($el, node, initial);
 
@@ -178,13 +181,16 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
     } else if (isChanged(newNode, oldNode)) {
-        //console.log('node changes', newNode, oldNode);
+        console.log('newNode changes', newNode);
+        console.log('oldNode changes', oldNode);
         // node changes
         const $oldElement = $parent.childNodes[index];
         if (!$oldElement) return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement) return canReuseElement;
         const $newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+
+        //console.log(newNode.type, oldNode.type)
 
         $parent.replaceChild(
             $newElement,

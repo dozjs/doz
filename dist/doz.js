@@ -1800,7 +1800,8 @@ function createInstance() {
       }
        */
 
-      cmpName = getComponentName($child);
+      cmpName = getComponentName($child); //console.log('cmpName', cmpName)
+
       directive.callAppComponentAssignName(parent, $child, function (name) {
         cmpName = name;
       });
@@ -1808,13 +1809,16 @@ function createInstance() {
 
       if (parent.cmp && parent.cmp._components) {
         localComponents = parent.cmp._components;
-      }
+      } //console.log(cmpName)
 
-      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
+
+      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName); //console.log($child._dozAttach.originalTagName)
+
       var parentElement = void 0;
 
       if (cmp) {
         var _ret = function () {
+          //console.log(cmpName)
           if (parent.cmp) {
             var rawChild = $child.outerHTML;
             parent.cmp.rawChildren.push(rawChild);
@@ -2833,12 +2837,12 @@ function create(node, cmp, initial, cmpParent) {
   if (typeof node === 'undefined') return;
   var nodeStored;
   var $el;
+  var originalTagName;
 
   if (typeof node === 'string') {
     return document.createTextNode( // use decode only if necessary
     canDecode(node));
-  } //console.log(node)
-
+  }
 
   if (node.type == null || node.type[0] === '#') {
     node.type = TAG.EMPTY;
@@ -2854,6 +2858,7 @@ function create(node, cmp, initial, cmpParent) {
   if (nodeStored) {
     $el = nodeStored.cloneNode();
   } else {
+    //originalTagName = node.props['data-attributeoriginaletagname'];
     $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
     storeElementNode[node.type] = $el.cloneNode(true);
   }
@@ -2873,6 +2878,7 @@ function create(node, cmp, initial, cmpParent) {
 
   makeSureAttach($el);
   $el._dozAttach.elementChildren = node.children;
+  $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
   cmp.$$afterNodeElementCreate($el, node, initial); // Create eventually style
 
   if (node.style) {
@@ -2976,14 +2982,16 @@ function update($parent, newNode, oldNode) {
       deadChildren.push($parent.childNodes[index]);
     }
   } else if (isChanged(newNode, oldNode)) {
-    //console.log('node changes', newNode, oldNode);
-    // node changes
+    console.log('newNode changes', newNode);
+    console.log('oldNode changes', oldNode); // node changes
+
     var $oldElement = $parent.childNodes[index];
     if (!$oldElement) return;
     var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
     if (canReuseElement) return canReuseElement;
 
-    var _$newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    var _$newElement = create(newNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent); //console.log(newNode.type, oldNode.type)
+
 
     $parent.replaceChild(_$newElement, $oldElement);
     cmp.$$afterNodeChange(_$newElement, $oldElement);
@@ -3389,8 +3397,9 @@ module.exports = function (strings) {
       } //}
 
     } //console.log(isInHandler, value[i]);
-    // if this function is bound to Doz component
 
+
+    var attributeOriginalTagName = void 0; // if this function is bound to Doz component
 
     if (isBoundedToComponent && !isInStyle && !isInHandler) {
       // if before is to <
@@ -3403,7 +3412,9 @@ module.exports = function (strings) {
 
         if (tagName.indexOf('-') === -1) {
           tagName = "".concat(tagName, "-").concat(tagName);
-        }
+        } //attributeOriginalTagName = tagName;
+        //let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
+
 
         var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
 
@@ -3415,22 +3426,33 @@ module.exports = function (strings) {
 
 
         if (this._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
           this._components[tagCmp] = {
             tag: tagName,
             cfg: cmp
           };
-        } // add to local app components
+        }
+        /*else {
+          //attributeOriginalTagName = tagCmp;
+        }*/
+        // add to local app components
 
 
         if (this.app._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
           this.app._components[tagCmp] = {
             tag: tagName,
             cfg: cmp
           };
-        } //console.log('---------->', tagCmp);
+        }
+        /*else {
+          //attributeOriginalTagName = tagCmp;
+        }*/
 
 
-        value[i] = tagCmp;
+        attributeOriginalTagName = tagCmp; //console.log('---------->', tagCmp);
+
+        value[i] = tagName; //value[i] = tagCmp;
       }
     }
 
@@ -3444,7 +3466,13 @@ module.exports = function (strings) {
         value[i] = mapper.set(value[i]);
       }
 
-      result += "".concat(value[i]).concat(strings[i + 1]);
+      if (attributeOriginalTagName) {
+        //console.log(attributeOriginalTagName)
+        result += "".concat(value[i], " data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+      } else
+        /**/
+        result += "".concat(value[i]).concat(strings[i + 1]); //console.log('--------------', value[i], attributeOriginalTagName, strings[i + 1])
+
     }
   } // Funziona anche senza?
 
@@ -3475,6 +3503,7 @@ module.exports = function (strings) {
               });
       }
   */
+  //console.log(result)
 
 
   result = result.trim();
@@ -4662,6 +4691,7 @@ function isEventAttribute(name) {
 
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
   //console.log('setAttribute', $target, name, value)
+  if (name === 'data-attributeoriginaletagname') return;
   makeSureAttach($target);
 
   if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
@@ -5654,8 +5684,8 @@ module.exports = cloneObject;
 /* 55 */
 /***/ (function(module, exports) {
 
-function getComponentName(child) {
-  return child.nodeName.toLowerCase();
+function getComponentName($child) {
+  return $child._dozAttach.originalTagName || $child.nodeName.toLowerCase();
 }
 
 module.exports = getComponentName;

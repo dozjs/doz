@@ -106,6 +106,7 @@ module.exports = function (strings, ...value) {
 
         //console.log(isInHandler, value[i]);
 
+        let attributeOriginalTagName;
         // if this function is bound to Doz component
         if (isBoundedToComponent && !isInStyle && !isInHandler) {
 
@@ -121,7 +122,10 @@ module.exports = function (strings, ...value) {
                     tagName = `${tagName}-${tagName}`;
                 }
 
+                //attributeOriginalTagName = tagName;
+                //let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
                 let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
+
 
                 if (this._componentsMap.has(value[i])) {
                     tagCmp = this._componentsMap.get(value[i]);
@@ -131,21 +135,30 @@ module.exports = function (strings, ...value) {
 
                 // add to local components
                 if (this._components[tagCmp] === undefined) {
+                    //attributeOriginalTagName = tagCmp;
                     this._components[tagCmp] = {
                         tag: tagName,
                         cfg: cmp
                     };
-                }
+                } /*else {
+                    //attributeOriginalTagName = tagCmp;
+                }*/
 
                 // add to local app components
                 if (this.app._components[tagCmp] === undefined) {
+                    //attributeOriginalTagName = tagCmp;
                     this.app._components[tagCmp] = {
                         tag: tagName,
                         cfg: cmp
                     };
-                }
+                } /*else {
+                    //attributeOriginalTagName = tagCmp;
+                }*/
+
+                attributeOriginalTagName = tagCmp;
                 //console.log('---------->', tagCmp);
-                value[i] = tagCmp;
+                value[i] = tagName;
+                //value[i] = tagCmp;
             }
         }
 
@@ -158,7 +171,12 @@ module.exports = function (strings, ...value) {
             if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 value[i] = mapper.set(value[i]);
             }
-            result += `${value[i]}${strings[i + 1]}`;
+            if (attributeOriginalTagName) {
+                //console.log(attributeOriginalTagName)
+                result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+            } else/**/
+                result += `${value[i]}${strings[i + 1]}`;
+            //console.log('--------------', value[i], attributeOriginalTagName, strings[i + 1])
         }
     }
 
@@ -191,8 +209,9 @@ module.exports = function (strings, ...value) {
             });
     }
 */
-
+    //console.log(result)
     result = result.trim();
     result = compile(result);
+
     return result;
 };
