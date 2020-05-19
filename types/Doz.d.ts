@@ -30,7 +30,7 @@ export function use(plugin: Function, options?: object): void
  * @param {object} component
  * @param {Array<string>} observedAttributes
  */
-export function createExtWebComponent(tag: string, component?: ConfigComponent | object | Function, observedAttributes?: Array<string>): void
+export function createDozWebComponent(tag: string, component?: ConfigComponent | object | Function, observedAttributes?: Array<string>): void
 
 /**
  * Add external functions to global components.

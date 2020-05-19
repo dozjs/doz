@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.5.2] - 2020-05-16
 - **Fixed** update of attributes doesn't work
 - **Improved** all styles now are placed inside shadowRoot
-- **Improved** added observedAttributes array property to createExtWebComponent function
+- **Improved** added observedAttributes array property to createDozWebComponent function
 
 ## [2.5.1] - 2020-05-15
 - **Updated** types definitions

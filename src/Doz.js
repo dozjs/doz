@@ -59,7 +59,7 @@ class Doz {
         this.cfg = Object.assign({}, {
             components: [],
             shared: {},
-            isExtWebComponent: false,
+            isDozWebComponent: false,
             propsListener: null,
             propsListenerAsync: null,
             actions: {},
@@ -106,8 +106,8 @@ class Doz {
                 value: {},
                 writable: true
             },
-            isExtWebComponent: {
-                value: this.cfg.isExtWebComponent,
+            isDozWebComponent: {
+                value: this.cfg.isDozWebComponent,
                 writable: true
             },
             _root: {

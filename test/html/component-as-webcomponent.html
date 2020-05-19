@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../../dist/doz.js?589642e8e3"></script>
+    <script src="../../dist/doz.js?58942e8e3"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -16,39 +16,39 @@
 </head>
 <body>
 
-<ext-doz-clock data-id="my-instance" title="my time"></ext-doz-clock>
+<dwc-doz-clock data-id="my-instance" title="my time"></dwc-doz-clock>
 <hr>
-<ext-my-cmp1>
+<dwc-my-cmp1>
     <div>1 div</div>
     <div>2 div</div>
     <div>3 div</div>
-</ext-my-cmp1>
+</dwc-my-cmp1>
 <hr>
-<ext-doz-clock id="my-element"></ext-doz-clock>
+<dwc-doz-clock id="my-element"></dwc-doz-clock>
 <button onclick="document.getElementById('my-element').setAttribute('title', Math.random())">Set random for my-element</button>
 <hr>
-<ext-doz-clock></ext-doz-clock>
+<dwc-doz-clock></dwc-doz-clock>
 
 <hr>
-<ext-my-cmp2></ext-my-cmp2>
+<dwc-my-cmp2></dwc-my-cmp2>
 
 <script>
-    const {component, createExtWebComponent} = Doz;
+    const {component, createDozWebComponent} = Doz;
 
     component('doz-clock', {
         template(h) {
             return h`
-                    <style>
-                        .container {
-                            font-size: 35px;
-                            padding: 20px;
-                            text-align: center;
-                        }
-                    </style>
-                    <div class="container" style="color: ${this.props.color}">
-                        ${this.props.title}: ${this.props.time}
-                    </div>
-                `
+                <style>
+                    .container {
+                        font-size: 35px;
+                        padding: 20px;
+                        text-align: center;
+                    }
+                </style>
+                <div class="container" style="color: ${this.props.color}">
+                    ${this.props.title}: ${this.props.time}
+                </div>
+            `
         },
         props: {
             title: 'the time',
@@ -83,7 +83,7 @@
                 `
         },
         myClick() {
-            this.getExtWebComponentById('my-instance').props.title = Math.random();
+            this.getDozWebComponentById('my-instance').props.title = Math.random();
         }
     }
 
@@ -103,9 +103,9 @@
         }
     }
 
-    createExtWebComponent('doz-clock', null, ['title']);
-    createExtWebComponent('my-cmp1', myCmp1);
-    createExtWebComponent('my-cmp2', myCmp2, ['name']);
+    createDozWebComponent('doz-clock', null, ['title']);
+    createDozWebComponent('my-cmp1', myCmp1);
+    createDozWebComponent('my-cmp2', myCmp2, ['name']);
 
 </script>
 </body>

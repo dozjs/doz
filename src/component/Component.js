@@ -369,12 +369,12 @@ class Component extends DOMManipulation {
 
     }
 
-    getExtWebComponentById(id) {
-        return data.extWebComponents.ids[id] || null;
+    getDozWebComponentById(id) {
+        return data.dozWebComponents.ids[id] || null;
     }
 
-    getExtWebComponentByTag(name) {
-        return data.extWebComponents.tags[name] || null;
+    getDozWebComponentByTag(name) {
+        return data.dozWebComponents.tags[name] || null;
     }
 }
 

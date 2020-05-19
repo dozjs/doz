@@ -890,7 +890,7 @@ module.exports = {
 
 module.exports = {
   components: {},
-  extWebComponents: {
+  dozWebComponents: {
     tags: {},
     ids: {}
   },
@@ -1316,14 +1316,14 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       });
     }
   }, {
-    key: "getExtWebComponentById",
-    value: function getExtWebComponentById(id) {
-      return data.extWebComponents.ids[id] || null;
+    key: "getDozWebComponentById",
+    value: function getDozWebComponentById(id) {
+      return data.dozWebComponents.ids[id] || null;
     }
   }, {
-    key: "getExtWebComponentByTag",
-    value: function getExtWebComponentByTag(name) {
-      return data.extWebComponents.tags[name] || null;
+    key: "getDozWebComponentByTag",
+    value: function getDozWebComponentByTag(name) {
+      return data.dozWebComponents.tags[name] || null;
     }
   }, {
     key: "props",
@@ -1476,7 +1476,7 @@ var Doz = /*#__PURE__*/function () {
     this.cfg = Object.assign({}, {
       components: [],
       shared: {},
-      isExtWebComponent: false,
+      isDozWebComponent: false,
       propsListener: null,
       propsListenerAsync: null,
       actions: {},
@@ -1528,8 +1528,8 @@ var Doz = /*#__PURE__*/function () {
         value: {},
         writable: true
       },
-      isExtWebComponent: {
-        value: this.cfg.isExtWebComponent,
+      isDozWebComponent: {
+        value: this.cfg.isDozWebComponent,
         writable: true
       },
       _root: {
@@ -2894,7 +2894,8 @@ function setHeadStyle(node, cmp) {
   var dataSetUId = cmp.uId;
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
   scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
-}
+} //let xy = 0;
+
 
 function update($parent, newNode, oldNode) {
   var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
@@ -2902,6 +2903,7 @@ function update($parent, newNode, oldNode) {
   var initial = arguments.length > 5 ? arguments[5] : undefined;
   var cmpParent = arguments.length > 6 ? arguments[6] : undefined;
   //directive.callComponentVNodeTick(cmp, newNode, oldNode);
+  //console.log('a')
   if (newNode && newNode.cmp) cmp = newNode.cmp;
   if (!$parent) return; // Update style
 
@@ -2954,7 +2956,7 @@ function update($parent, newNode, oldNode) {
   }
 
   if (!oldNode) {
-    //console.log('create node', $parent);
+    //console.log('create node');
     // create node
     var $newElement;
 
@@ -3043,7 +3045,7 @@ function update($parent, newNode, oldNode) {
       return !newNodeKeyList.includes(x);
     };
 
-    var oldKeyDoRemove = []; // console.log('diff', oldKeyDoRemove)
+    var oldKeyDoRemove = []; //console.log('diff', oldKeyDoRemove)
     // Ci sono key da rimuovere?
 
     for (var _i12 = 0; _i12 <= oldNodeKeyList.length - 1; _i12++) {
@@ -3067,11 +3069,13 @@ function update($parent, newNode, oldNode) {
 
     var listOfElement = [];
     var diffIndex = [];
+    var diffIndexMap = Object.create(null);
 
     for (var _i7 = 0; _i7 < newNodeKeyList.length; _i7++) {
       if (newNodeKeyList[_i7] !== oldNodeKeyList[_i7]) {
         //console.log('indice diverso ', i)
         diffIndex.push(_i7);
+        diffIndexMap[_i7] = true;
       } // This is the key of all
 
 
@@ -3101,17 +3105,19 @@ function update($parent, newNode, oldNode) {
         // update(...
 
         var newChildByKeyLength = newChildByKey.children.length;
-        var oldChildByKeyLength = oldChildByKey.children.length;
+        var oldChildByKeyLength = oldChildByKey.children.length; //console.log(diffIndex)
 
         for (var _i8 = 0; _i8 < newChildByKeyLength || _i8 < oldChildByKeyLength; _i8++) {
-          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue;
+          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue; //console.log(newChildByKey.children[i])
+          //console.log(oldChildByKey.children[i])
+
           update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
-    } // No differences so exit
+    } // No differences so exit or items are removed
 
 
-    if (diffIndex[0] === undefined) return; // If first item index is equal to childNodes length then just append..
+    if (diffIndex[0] === undefined || oldKeyDoRemove.length) return; // If first item index is equal to childNodes length then just append..
 
     if ($myListParent.childNodes.length === diffIndex[0]) {
       for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
@@ -3125,7 +3131,8 @@ function update($parent, newNode, oldNode) {
     var $currentElementAtPosition;
     var $element;
     var i = 0;
-    var j = listOfElement.length - 1; // Try to reorder the list...
+    var j = listOfElement.length - 1; //console.log('diffIndex', diffIndex);
+    // Try to reorder the list...
 
     while (i <= j) {
       //console.log(i)
@@ -3133,10 +3140,13 @@ function update($parent, newNode, oldNode) {
         $currentElementAtPosition = $myListParent.childNodes[i];
         $element = listOfElement[i];
 
-        if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== i) {
-          //console.log('MOVE I, ', i)
-          $myListParent.insertBefore($element, $currentElementAtPosition);
-          useIndexI = false;
+        if (diffIndexMap[i]) {
+          //if (diffIndex.indexOf(i) > -1) {
+          if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== i) {
+            //console.log('MOVE I, ', i)
+            $myListParent.insertBefore($element, $currentElementAtPosition);
+            useIndexI = false;
+          }
         }
 
         i++;
@@ -3144,13 +3154,16 @@ function update($parent, newNode, oldNode) {
         $currentElementAtPosition = $myListParent.childNodes[j];
         $element = listOfElement[j];
 
-        if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== j) {
-          //console.log('MOVE J, ', j)
-          if ($currentElementAtPosition) $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);else {
-            $myListParent.appendChild($element);
-            j++;
+        if (diffIndexMap[j]) {
+          //if (diffIndex.indexOf(j) > -1) {
+          if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== j) {
+            //console.log('MOVE J, ', j)
+            if ($currentElementAtPosition) $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);else {
+              $myListParent.appendChild($element);
+              j++;
+            }
+            useIndexI = true;
           }
-          useIndexI = true;
         }
 
         j--;
@@ -3159,7 +3172,7 @@ function update($parent, newNode, oldNode) {
     //console.log('----------------');
 
   } else if (newNode.type) {
-    //console.log('walk node', newNode.type)
+    //console.log('walk node', xy++)
     // walk node
 
     /*
@@ -3665,7 +3678,7 @@ var _require4 = __webpack_require__(18),
 
 var tag = __webpack_require__(58);
 
-var createExtWebComponent = __webpack_require__(59);
+var createDozWebComponent = __webpack_require__(59);
 
 __webpack_require__(60);
 
@@ -3721,8 +3734,8 @@ Object.defineProperties(Doz, {
     value: tag,
     enumerable: true
   },
-  createExtWebComponent: {
-    value: createExtWebComponent,
+  createDozWebComponent: {
+    value: createDozWebComponent,
     enumerable: true
   }
 });
@@ -5017,7 +5030,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
       styleResetEl.id = styleResetId;
       styleResetEl.innerHTML = resetContent;
 
-      if (cmp && cmp.app.isExtWebComponent) {
+      if (cmp && cmp.app.isDozWebComponent) {
         var tagApp = cmp.app._root.querySelector(TAG.APP);
 
         cmp.app._root.insertBefore(styleResetEl, tagApp);
@@ -5030,7 +5043,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
     styleEl.id = styleId;
     result = styleEl.innerHTML = cssContent;
 
-    if (cmp && cmp.app.isExtWebComponent) {
+    if (cmp && cmp.app.isDozWebComponent) {
       var _tagApp = cmp.app._root.querySelector(TAG.APP);
 
       cmp.app._root.insertBefore(styleEl, _tagApp);
@@ -5802,10 +5815,10 @@ var Doz = __webpack_require__(12);
 
 var data = __webpack_require__(9);
 
-function createExtWebComponent(tag, cmp) {
+function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
-  customElements.define('ext-' + tag, /*#__PURE__*/function (_HTMLElement) {
+  data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
+  customElements.define('dwc-' + tag, /*#__PURE__*/function (_HTMLElement) {
     _inherits(_class, _HTMLElement);
 
     var _super = _createSuper(_class);
@@ -5851,19 +5864,19 @@ function createExtWebComponent(tag, cmp) {
         var tagCmp = cmp || tag;
         this.dozApp = new Doz({
           root: shadow,
-          isExtWebComponent: true,
+          isDozWebComponent: true,
           template: function template(h) {
             return h(_templateObject(), tagCmp, contentHTML, tagCmp);
           },
           onMountAsync: function onMountAsync() {
             var firstChild = this.children[0];
             firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
-            data.extWebComponents.tags[tag][id || countCmp] = firstChild;
+            var countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
+            data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
 
             if (id !== null) {
-              if (data.extWebComponents.ids[id]) return console.warn(id + ': id already exists for ExtWebComponent');
-              data.extWebComponents.ids[id] = firstChild;
+              if (data.dozWebComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
+              data.dozWebComponents.ids[id] = firstChild;
             }
           }
         });
@@ -5881,7 +5894,7 @@ function createExtWebComponent(tag, cmp) {
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
 }
 
-module.exports = createExtWebComponent;
+module.exports = createDozWebComponent;
 
 /***/ }),
 /* 60 */

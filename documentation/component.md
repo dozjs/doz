@@ -288,13 +288,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
     - `string` id
 - **Description**: Get component by id.
 
-### component.getExtWebComponentById( id )
+### component.getDozWebComponentById( id )
 
 - **Since**: 2.5.0
 - **Type**: `function`
 - **Arguments**:
     - `string` id
-- **Description**: Get ExtWebComponent by id.
+- **Description**: Get DozWebComponent by id.
 
 ### component.getHTMLElement()
 

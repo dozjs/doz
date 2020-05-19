@@ -45,7 +45,7 @@ Below some basic concepts:
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
         - [Custom directives](#custom-directives)
-- [ExtWebComponent: doz component as web component](#extwebcomponent-doz-component-as-web-component)           
+- [DozWebComponent: doz component as web component](#dozwebcomponent-doz-component-as-web-component)           
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
 - [Loops](#loops)
@@ -1529,13 +1529,13 @@ new Doz({
 
 ---
 
-### ExtWebComponent: doz component as web component
+### DozWebComponent: doz component as web component
 
 **Since 2.5.0**
 
 
 If you need to use a doz component outside your JavaScript app then this is for you.
-Calling the `Doz.createExtWebComponent` method will create a web component that will incorporate your doz component.
+Calling the `Doz.createDozWebComponent` method will create a web component that will incorporate your doz component.
 Keep in mind that the prefix "ext-" will be added to the tag, this to prevent Doz from processing possible web components that
 have the same name as the doz components.
 
@@ -1548,7 +1548,7 @@ const myCmp1 = {
             `
     },
     myClick() {
-        this.getExtWebComponentById('my-cmp2').props.title = Math.random();
+        this.getDozWebComponentById('my-cmp2').props.title = Math.random();
     }
 }
 
@@ -1567,11 +1567,11 @@ const myCmp2 = class extends Doz.Component {
     }
 }
 
-createExtWebComponent('my-cmp1', myCmp1, ['title']);
-createExtWebComponent('my-cmp2', myCmp2, ['title']);
+createDozWebComponent('my-cmp1', myCmp1, ['title']);
+createDozWebComponent('my-cmp2', myCmp2, ['title']);
 ```
 
-**Important note**: The last parameters of `createExtWebComponent` is referred to "observedAttributes", 
+**Important note**: The last parameters of `createDozWebComponent` is referred to "observedAttributes", 
 an array of attributes names linked to doz component props, so you can update the props also
 using native method `myWebComponentRef.setAttribute('title', 'hello')`.
 
@@ -1591,8 +1591,8 @@ HTML
 </html>
 ```
 
-The "data-id" attribute allows us to access an ExtWebComponent from other components
-using the method (in this case) `this.getExtWebComponentById ('my-cmp2')`.
+The "data-id" attribute allows us to access an DozWebComponent from other components
+using the method (in this case) `this.getDozWebComponentById ('my-cmp2')`.
 
 ---
 

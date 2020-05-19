@@ -156,16 +156,16 @@
 
     ```
   
-### Doz.createExtWebComponent( tag, component )
+### Doz.createDozWebComponent( tag, component )
 
 - **Since**: 2.5.0
 - **Arguments**:
     - `tag` string
     - `component` `function`, `object`
-- **Details**: Create ExtWebComponent.
+- **Details**: Create DozWebComponent.
 - **Usage**:
     ``` js
-    Doz.createExtWebComponent('my-cmp', class extends Component {
+    Doz.createDozWebComponent('my-cmp', class extends Component {
         //....//
     }, ['foo', 'bar']);
     ```

@@ -1,11 +1,11 @@
 const Doz = require('./Doz');
 const data = require('./data');
 
-function createExtWebComponent(tag, cmp, observedAttributes = []) {
+function createDozWebComponent(tag, cmp, observedAttributes = []) {
 
-    data.extWebComponents.tags[tag] = data.extWebComponents.tags[tag] || {};
+    data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
 
-    customElements.define('ext-' + tag, class extends HTMLElement {
+    customElements.define('dwc-' + tag, class extends HTMLElement {
         static get observedAttributes() {
             return observedAttributes;
         }
@@ -38,7 +38,7 @@ function createExtWebComponent(tag, cmp, observedAttributes = []) {
 
             this.dozApp = new Doz({
                 root: shadow,
-                isExtWebComponent: true,
+                isDozWebComponent: true,
                 template(h) {
                     return h`
                     <${tagCmp}>${contentHTML}</${tagCmp}>
@@ -48,14 +48,14 @@ function createExtWebComponent(tag, cmp, observedAttributes = []) {
                     let firstChild = this.children[0];
                     firstChild.props = Object.assign({}, firstChild.props, initialProps);
 
-                    let countCmp = Object.keys(data.extWebComponents.tags[tag]).length++;
+                    let countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
 
-                    data.extWebComponents.tags[tag][id || countCmp] = firstChild;
+                    data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
                     if (id !== null) {
-                        if (data.extWebComponents.ids[id])
-                            return console.warn(id + ': id already exists for ExtWebComponent');
+                        if (data.dozWebComponents.ids[id])
+                            return console.warn(id + ': id already exists for DozWebComponent');
 
-                        data.extWebComponents.ids[id] = firstChild;
+                        data.dozWebComponents.ids[id] = firstChild;
                     }
                 }
             });
@@ -69,4 +69,4 @@ function createExtWebComponent(tag, cmp, observedAttributes = []) {
     });
 }
 
-module.exports = createExtWebComponent;
+module.exports = createDozWebComponent;

@@ -135,7 +135,7 @@ export class Component {
      * @param {string} id
      * @returns {Component}
      */
-    getExtWebComponentById(id: string): Component
+    getDozWebComponentById(id: string): Component
 
     /**
      * This method must be return the component template literals.

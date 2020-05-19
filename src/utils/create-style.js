@@ -17,7 +17,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
             const styleResetEl = document.createElement("style");
             styleResetEl.id = styleResetId;
             styleResetEl.innerHTML = resetContent;
-            if (cmp && cmp.app.isExtWebComponent) {
+            if (cmp && cmp.app.isDozWebComponent) {
                 let tagApp = cmp.app._root.querySelector(TAG.APP);
                 cmp.app._root.insertBefore(styleResetEl, tagApp);
             } else {
@@ -28,7 +28,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
         const styleEl = document.createElement("style");
         styleEl.id = styleId;
         result = styleEl.innerHTML = cssContent;
-        if (cmp && cmp.app.isExtWebComponent) {
+        if (cmp && cmp.app.isDozWebComponent) {
             let tagApp = cmp.app._root.querySelector(TAG.APP);
             cmp.app._root.insertBefore(styleEl, tagApp);
         } else {
