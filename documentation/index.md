@@ -1536,7 +1536,7 @@ new Doz({
 
 If you need to use a doz component outside your JavaScript app then this is for you.
 Calling the `Doz.createDozWebComponent` method will create a web component that will incorporate your doz component.
-Keep in mind that the prefix "ext-" will be added to the tag, this to prevent Doz from processing possible web components that
+Keep in mind that the prefix "dwc-" will be added to the tag, this to prevent Doz from processing possible web components that
 have the same name as the doz components.
 
 ```javascript
@@ -1583,8 +1583,8 @@ HTML
         <script src="path/to/doz.js"></script>
     </head>
     <body>
-        <ext-my-cmp1 title="lorem"></ext-my-cmp1>
-        <ext-my-cmp2 title="ipsum" data-id="my-cmp2"></ext-my-cmp2>
+        <dwc-my-cmp1 title="lorem"></dwc-my-cmp1>
+        <dwc-my-cmp2 title="ipsum" data-id="my-cmp2"></dwc-my-cmp2>
         <!-- doz components file -->
         <script src="path/to/your-component.js"></script>
     </body>
