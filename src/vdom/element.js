@@ -88,11 +88,11 @@ function setHeadStyle(node, cmp) {
     let tagByData = `[data-uid="${dataSetUId}"]`;
     scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
 }
-
+//let xy = 0;
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
-
+    //console.log('a')
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
 
@@ -151,7 +151,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     }
 
     if (!oldNode) {
-        //console.log('create node', $parent);
+        //console.log('create node');
         // create node
 
         let $newElement;
@@ -225,7 +225,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         let oldKeyDoRemove = oldNodeKeyList.filter(x => !newNodeKeyList.includes(x));
-        // console.log('diff', oldKeyDoRemove)
+         //console.log('diff', oldKeyDoRemove)
         // Ci sono key da rimuovere?
         for (let i = 0; i < oldKeyDoRemove.length; i++) {
             if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
@@ -243,11 +243,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         let listOfElement = [];
 
         let diffIndex = []
+        let diffIndexMap = Object.create(null);
 
         for (let i = 0; i < newNodeKeyList.length; i++) {
             if (newNodeKeyList[i] !== oldNodeKeyList[i]) {
                 //console.log('indice diverso ', i)
                 diffIndex.push(i);
+                diffIndexMap[i] = true;
             }
             // This is the key of all
             let theKey = newNodeKeyList[i];
@@ -289,8 +291,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 const newChildByKeyLength = newChildByKey.children.length;
                 const oldChildByKeyLength = oldChildByKey.children.length;
 
+                //console.log(diffIndex)
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
                     if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
+                    //console.log(newChildByKey.children[i])
+                    //console.log(oldChildByKey.children[i])
                     update(
                         $element,
                         newChildByKey.children[i],
@@ -304,8 +309,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
         }
 
-        // No differences so exit
-        if (diffIndex[0] === undefined) return;
+        // No differences so exit or items are removed
+        if (diffIndex[0] === undefined || oldKeyDoRemove.length) return;
 
         // If first item index is equal to childNodes length then just append..
         if ($myListParent.childNodes.length === diffIndex[0]) {
@@ -322,31 +327,39 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         let i = 0;
         let j = listOfElement.length - 1;
 
+        //console.log('diffIndex', diffIndex);
+
+
         // Try to reorder the list...
         while (i <= j) {
             //console.log(i)
             if (useIndexI) {
                 $currentElementAtPosition = $myListParent.childNodes[i];
                 $element = listOfElement[i];
-                if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== i) {
-                    //console.log('MOVE I, ', i)
-                    $myListParent.insertBefore($element, $currentElementAtPosition);
-                    useIndexI = false;
+                if (diffIndexMap[i]) {
+                //if (diffIndex.indexOf(i) > -1) {
+                    if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== i) {
+                        //console.log('MOVE I, ', i)
+                        $myListParent.insertBefore($element, $currentElementAtPosition);
+                        useIndexI = false;
+                    }
                 }
                 i++;
             } else {
                 $currentElementAtPosition = $myListParent.childNodes[j];
                 $element = listOfElement[j];
-
-                if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== j) {
-                    //console.log('MOVE J, ', j)
-                    if ($currentElementAtPosition)
-                        $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
-                    else {
-                        $myListParent.appendChild($element);
-                        j++
+                if (diffIndexMap[j]) {
+                //if (diffIndex.indexOf(j) > -1) {
+                    if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== j) {
+                        //console.log('MOVE J, ', j)
+                        if ($currentElementAtPosition)
+                            $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);
+                        else {
+                            $myListParent.appendChild($element);
+                            j++
+                        }
+                        useIndexI = true;
                     }
-                    useIndexI = true;
                 }
                 j--;
             }
@@ -355,7 +368,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log('$myListParent ', Array.from($myListParent.childNodes).map(item => item._dozAttach.key))
         //console.log('----------------');
     } else if (newNode.type) {
-        //console.log('walk node', newNode.type)
+        //console.log('walk node', xy++)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:

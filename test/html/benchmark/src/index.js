@@ -125,7 +125,7 @@ new Doz({
                         </td>
                         <td class="col-md-1">
                             <a>
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true" onclick="${() => this.action.del(item.id)}"></span>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true" onclick="${(e) => {e.stopPropagation(); this.action.del(item.id)}}"></span>
                             </a>
                         </td>
                         <td class="col-md-6"></td>
