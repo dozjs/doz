@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] - 2020-05-19
+- **Breaking changes**
+    - Refactored method `createExtWebComponent` to `createDozWebComponent`
+    - Refactored method `getExtWebComponentById` to `getDozWebComponentById`
+    - Refactored method `getExtWebComponentByTag` to `getDozWebComponentByTag`
+- **Removed** app id suffix from tag name of local component
+- **Improved** performance when use keyed list    
+
 ## [2.5.5] - 2020-05-17
 - **Fixed** style update doesn't work fine
 
