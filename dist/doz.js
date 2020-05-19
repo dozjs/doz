@@ -2982,9 +2982,9 @@ function update($parent, newNode, oldNode) {
       deadChildren.push($parent.childNodes[index]);
     }
   } else if (isChanged(newNode, oldNode)) {
-    console.log('newNode changes', newNode);
-    console.log('oldNode changes', oldNode); // node changes
-
+    //console.log('newNode changes', newNode);
+    //console.log('oldNode changes', oldNode);
+    // node changes
     var $oldElement = $parent.childNodes[index];
     if (!$oldElement) return;
     var canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
@@ -3066,9 +3066,15 @@ function update($parent, newNode, oldNode) {
     }
 
     var listOfElement = [];
+    var diffIndex = [];
 
     for (var _i7 = 0; _i7 < newNodeKeyList.length; _i7++) {
-      // This is the key of all
+      if (newNodeKeyList[_i7] !== oldNodeKeyList[_i7]) {
+        //console.log('indice diverso ', i)
+        diffIndex.push(_i7);
+      } // This is the key of all
+
+
       var theKey = newNodeKeyList[_i7]; // console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
       var _$element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
@@ -3102,9 +3108,12 @@ function update($parent, newNode, oldNode) {
           update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
-    }
+    } // No differences so exit
 
-    if (!$myListParent.childNodes.length) {
+
+    if (diffIndex[0] === undefined) return; // If first item index is equal to childNodes length then just append..
+
+    if ($myListParent.childNodes.length === diffIndex[0]) {
       for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
         $myListParent.appendChild(listOfElement[_i9]);
       }
@@ -3116,14 +3125,15 @@ function update($parent, newNode, oldNode) {
     var $currentElementAtPosition;
     var $element;
     var i = 0;
-    var j = listOfElement.length - 1;
+    var j = listOfElement.length - 1; // Try to reorder the list...
 
     while (i <= j) {
+      //console.log(i)
       if (useIndexI) {
         $currentElementAtPosition = $myListParent.childNodes[i];
         $element = listOfElement[i];
 
-        if (Array.from($myListParent.childNodes).indexOf($element) !== i) {
+        if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== i) {
           //console.log('MOVE I, ', i)
           $myListParent.insertBefore($element, $currentElementAtPosition);
           useIndexI = false;
@@ -3134,7 +3144,7 @@ function update($parent, newNode, oldNode) {
         $currentElementAtPosition = $myListParent.childNodes[j];
         $element = listOfElement[j];
 
-        if (Array.from($myListParent.childNodes).indexOf($element) !== j) {
+        if (Array.prototype.indexOf.call($myListParent.childNodes, $element) !== j) {
           //console.log('MOVE J, ', j)
           if ($currentElementAtPosition) $myListParent.insertBefore($element, $currentElementAtPosition.nextSibling);else {
             $myListParent.appendChild($element);
