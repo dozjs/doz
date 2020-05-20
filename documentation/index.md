@@ -40,6 +40,7 @@ Below some basic concepts:
             - [d-show](#d-show)
             - [d-animate](#d-animate)
         - [DOZ component](#doz-component)
+            - [d:alias](#dalias)
             - [d:id](#did)
             - [d:store](#dstore)
             - [d:on](#don)
