@@ -1544,9 +1544,9 @@ have the same name as the doz components.
 const myCmp1 = {
     template(h) {
         return h`
-                <div>Hello</div>
-                <button onclick="this.myClick()">Set random to myCmp2</button>
-            `
+            <div>Hello</div>
+            <button onclick="this.myClick()">Set random to myCmp2</button>
+        `
     },
     myClick() {
         this.getDozWebComponentById('my-cmp2').props.title = Math.random();
@@ -1563,8 +1563,8 @@ const myCmp2 = class extends Doz.Component {
 
     template(h) {
         return h`
-                <div>${this.props.title}</div>
-            `
+            <div>${this.props.title}</div>
+        `
     }
 }
 
@@ -1592,7 +1592,7 @@ HTML
 </html>
 ```
 
-The "data-id" attribute allows us to access an DozWebComponent from other components
+The "data-id" attribute allows us to access a DozWebComponent from other components
 using the method (in this case) `this.getDozWebComponentById ('my-cmp2')`.
 
 ---
