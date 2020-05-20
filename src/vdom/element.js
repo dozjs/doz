@@ -293,7 +293,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
                 //console.log(diffIndex)
                 for (let i = 0; i < newChildByKeyLength || i < oldChildByKeyLength; i++) {
-                    if (newChildByKey.children[i] === undefined && oldChildByKey.children[i] === undefined) continue;
+                    if (newChildByKey.children[i] === undefined || oldChildByKey.children[i] === undefined) continue;
                     //console.log(newChildByKey.children[i])
                     //console.log(oldChildByKey.children[i])
                     update(
@@ -310,7 +310,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         // No differences so exit or items are removed
-        if (diffIndex[0] === undefined || oldKeyDoRemove.length) return;
+        if (diffIndex[0] === undefined /*|| oldKeyDoRemove.length*/) return;
 
         // If first item index is equal to childNodes length then just append..
         if ($myListParent.childNodes.length === diffIndex[0]) {

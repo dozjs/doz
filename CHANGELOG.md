@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.1] - 2020-05-20
+- **Fixed** possible duplicate elements during updating with keys
+- **Fixed** possible error when remove an element from keyed list
+
 ## [3.0.0] - 2020-05-19
 - **Breaking changes**
     - Refactored method `createExtWebComponent` to `createDozWebComponent`

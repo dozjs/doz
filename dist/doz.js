@@ -3108,7 +3108,7 @@ function update($parent, newNode, oldNode) {
         var oldChildByKeyLength = oldChildByKey.children.length; //console.log(diffIndex)
 
         for (var _i8 = 0; _i8 < newChildByKeyLength || _i8 < oldChildByKeyLength; _i8++) {
-          if (newChildByKey.children[_i8] === undefined && oldChildByKey.children[_i8] === undefined) continue; //console.log(newChildByKey.children[i])
+          if (newChildByKey.children[_i8] === undefined || oldChildByKey.children[_i8] === undefined) continue; //console.log(newChildByKey.children[i])
           //console.log(oldChildByKey.children[i])
 
           update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
@@ -3117,7 +3117,9 @@ function update($parent, newNode, oldNode) {
     } // No differences so exit or items are removed
 
 
-    if (diffIndex[0] === undefined || oldKeyDoRemove.length) return; // If first item index is equal to childNodes length then just append..
+    if (diffIndex[0] === undefined
+    /*|| oldKeyDoRemove.length*/
+    ) return; // If first item index is equal to childNodes length then just append..
 
     if ($myListParent.childNodes.length === diffIndex[0]) {
       for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
