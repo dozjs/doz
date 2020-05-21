@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - DWC">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component as web-component</title>
+    <script src="../dist/doz.js?58942e8e3"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<dwc-my-cmp id="my-element"></dwc-my-cmp>
+<button onclick="document.getElementById('my-element').setAttribute('time', new Date().getTime())">Set timestamp for
+    my-element
+</button>
+
+<script>
+    const {Component, createDozWebComponent} = Doz;
+
+    let myCmp = class extends Component {
+        constructor(o) {
+            super(o);
+
+            this.props = {
+                time: new Date().getTime()
+            }
+        }
+
+        template(h) {
+            return h`
+                <div>
+                    Timestamp: ${this.props.time}
+                </div>
+            `
+        }
+    }
+
+    createDozWebComponent('my-cmp', myCmp, ['time']);
+</script>
+
+</body>
+</html>
