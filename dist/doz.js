@@ -5817,6 +5817,17 @@ var Doz = __webpack_require__(12);
 
 var data = __webpack_require__(9);
 
+function createStyleSoftEntrance() {
+  if (!document.getElementById('style--soft-entrance--')) {
+    var style = document.createElement('style');
+    style.id = 'style--soft-entrance--';
+    style.innerHTML = "[data-soft-entrance] {visibility: hidden!important;}";
+    document.head.appendChild(style);
+  }
+}
+
+createStyleSoftEntrance();
+
 function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
@@ -5847,6 +5858,7 @@ function createDozWebComponent(tag, cmp) {
         var shadow = this.attachShadow({
           mode: 'open'
         });
+        var thisElement = this;
 
         for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
           att = atts[i];
@@ -5871,6 +5883,7 @@ function createDozWebComponent(tag, cmp) {
             return h(_templateObject(), tagCmp, contentHTML, tagCmp);
           },
           onMountAsync: function onMountAsync() {
+            thisElement.removeAttribute('data-soft-entrance');
             var firstChild = this.children[0];
             firstChild.props = Object.assign({}, firstChild.props, initialProps);
             var countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
