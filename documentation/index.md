@@ -1595,6 +1595,25 @@ HTML
 The "data-id" attribute allows us to access a DozWebComponent from other components
 using the method (in this case) `this.getDozWebComponentById ('my-cmp2')`.
 
+Sometimes the initial rendering of a web component by the browser could generate an unpleasant effect as if for example 
+the style was missing. To solve this problem you can use the `data-soft-entrance` attribute.
+```html
+<html>
+    <head>
+        <!-- doz library file-->
+        <script src="path/to/doz.js"></script>
+    </head>
+    <body>
+        <dwc-my-cmp data-soft-entrance> 
+            <foo-bar1></foo-bar1>
+            <foo-bar2></foo-bar2>
+            <foo-bar3></foo-bar3>
+        </dwc-my-cmp>
+        <!-- doz components file -->
+        <script src="path/to/your-component.js"></script>
+    </body>
+</html>
+```
 ---
 
 ### Sharing things
