@@ -5,7 +5,15 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
     let result;
     const styleId = `${uId}--style`;
     const styleResetId = `${uId}--style-reset`;
-    const styleExists = document.getElementById(styleId);
+    //const styleExists = document.getElementById(styleId);
+
+    let styleExists;
+
+    if (cmp && cmp.app.isDozWebComponent) {
+        styleExists = cmp.app._root.getElementById(styleId);
+    } else {
+        styleExists = document.getElementById(styleId);
+    }
 
     if (styleExists) {
         result = styleExists.innerHTML = cssContent;
