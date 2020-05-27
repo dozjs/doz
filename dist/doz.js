@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.1.0  
+// [DOZ]  Build version: 3.1.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3729,7 +3729,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '3.1.0',
+    value: '3.1.1',
     enumerable: true
   },
   tag: {
@@ -5016,8 +5016,15 @@ var _require = __webpack_require__(1),
 function createStyle(cssContent, uId, tag, scoped, cmp) {
   var result;
   var styleId = "".concat(uId, "--style");
-  var styleResetId = "".concat(uId, "--style-reset");
-  var styleExists = document.getElementById(styleId);
+  var styleResetId = "".concat(uId, "--style-reset"); //const styleExists = document.getElementById(styleId);
+
+  var styleExists;
+
+  if (cmp && cmp.app.isDozWebComponent) {
+    styleExists = cmp.app._root.getElementById(styleId);
+  } else {
+    styleExists = document.getElementById(styleId);
+  }
 
   if (styleExists) {
     result = styleExists.innerHTML = cssContent;
