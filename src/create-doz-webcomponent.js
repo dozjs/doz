@@ -1,5 +1,6 @@
 const Doz = require('./Doz');
 const data = require('./data');
+const dashToCamel = require('./utils/dash-to-camel');
 
 function createStyleSoftEntrance() {
     if (!document.getElementById('style--soft-entrance--')) {
@@ -32,15 +33,16 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
             let shadow = this.attachShadow({mode: 'open'});
 
             let thisElement = this;
-
+            let nodeCamelize;
             for (let att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
                 att = atts[i];
                 if (att.nodeName === 'data-id') {
                     id = att.nodeValue;
                     continue;
                 }
-                if (observedAttributes.includes(att.nodeName)) {
-                    initialProps[att.nodeName] = att.nodeValue;
+                nodeCamelize = dashToCamel(att.nodeName);
+                if (observedAttributes.includes(nodeCamelize)) {
+                    initialProps[nodeCamelize] = att.nodeValue;
                 }
             }
 
@@ -78,7 +80,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
         attributeChangedCallback(name, oldValue, newValue) {
             if (!this.dozApp) return;
             let firstChild = this.dozApp.mainComponent.children[0];
-            firstChild.props[name] = newValue;
+            firstChild.props[dashToCamel(name)] = newValue;
         }
     });
 }
