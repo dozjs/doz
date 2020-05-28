@@ -1614,6 +1614,15 @@ the style was missing. To solve this problem you can use the `data-soft-entrance
     </body>
 </html>
 ```
+
+If you want disable the shadow root you can use `data-no-shadow` attribute:
+```html
+<dwc-my-cmp data-no-shadow> 
+    <foo-bar1></foo-bar1>
+    <foo-bar2></foo-bar2>
+    <foo-bar3></foo-bar3>
+</dwc-my-cmp>
+```
 ---
 
 ### Sharing things
