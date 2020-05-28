@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.1.2  
+// [DOZ]  Build version: 3.1.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3729,7 +3729,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '3.1.2',
+    value: '3.1.3',
     enumerable: true
   },
   tag: {
@@ -5868,7 +5868,6 @@ function createDozWebComponent(tag, cmp) {
           mode: 'open'
         });
         var thisElement = this;
-        var nodeCamelize;
 
         for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
           att = atts[i];
@@ -5878,10 +5877,8 @@ function createDozWebComponent(tag, cmp) {
             continue;
           }
 
-          nodeCamelize = dashToCamel(att.nodeName);
-
-          if (observedAttributes.includes(nodeCamelize)) {
-            initialProps[nodeCamelize] = att.nodeValue;
+          if (observedAttributes.includes(att.nodeName)) {
+            initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
           }
         }
 
