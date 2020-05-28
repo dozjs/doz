@@ -30,7 +30,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
             let initialProps = {};
             let id = null;
             let contentHTML = '';
-            let shadow = this.attachShadow({mode: 'open'});
+            let hasDataNoShadow = this.hasAttribute('data-no-shadow');
+            let root = !hasDataNoShadow ? this.attachShadow({mode: 'open'}) : this;
 
             let thisElement = this;
             for (let att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
@@ -51,8 +52,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
             let tagCmp = cmp || tag;
 
             this.dozApp = new Doz({
-                root: shadow,
-                isDozWebComponent: true,
+                root,
+                useShadowRoot: !hasDataNoShadow,
                 template(h) {
                     return h`
                     <${tagCmp}>${contentHTML}</${tagCmp}>

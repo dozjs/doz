@@ -9,7 +9,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
 
     let styleExists;
 
-    if (cmp && cmp.app.isDozWebComponent) {
+    if (cmp && cmp.app.useShadowRoot) {
         styleExists = cmp.app._root.getElementById(styleId);
     } else {
         styleExists = document.getElementById(styleId);
@@ -25,7 +25,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
             const styleResetEl = document.createElement("style");
             styleResetEl.id = styleResetId;
             styleResetEl.innerHTML = resetContent;
-            if (cmp && cmp.app.isDozWebComponent) {
+            if (cmp && cmp.app.useShadowRoot) {
                 let tagApp = cmp.app._root.querySelector(TAG.APP);
                 cmp.app._root.insertBefore(styleResetEl, tagApp);
             } else {
@@ -36,7 +36,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
         const styleEl = document.createElement("style");
         styleEl.id = styleId;
         result = styleEl.innerHTML = cssContent;
-        if (cmp && cmp.app.isDozWebComponent) {
+        if (cmp && cmp.app.useShadowRoot) {
             let tagApp = cmp.app._root.querySelector(TAG.APP);
             cmp.app._root.insertBefore(styleEl, tagApp);
         } else {

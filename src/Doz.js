@@ -59,7 +59,7 @@ class Doz {
         this.cfg = Object.assign({}, {
             components: [],
             shared: {},
-            isDozWebComponent: false,
+            useShadowRoot: false,
             propsListener: null,
             propsListenerAsync: null,
             actions: {},
@@ -106,8 +106,8 @@ class Doz {
                 value: {},
                 writable: true
             },
-            isDozWebComponent: {
-                value: this.cfg.isDozWebComponent,
+            useShadowRoot: {
+                value: this.cfg.useShadowRoot,
                 writable: true
             },
             _root: {

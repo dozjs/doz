@@ -1476,7 +1476,7 @@ var Doz = /*#__PURE__*/function () {
     this.cfg = Object.assign({}, {
       components: [],
       shared: {},
-      isDozWebComponent: false,
+      useShadowRoot: false,
       propsListener: null,
       propsListenerAsync: null,
       actions: {},
@@ -1528,8 +1528,8 @@ var Doz = /*#__PURE__*/function () {
         value: {},
         writable: true
       },
-      isDozWebComponent: {
-        value: this.cfg.isDozWebComponent,
+      useShadowRoot: {
+        value: this.cfg.useShadowRoot,
         writable: true
       },
       _root: {
@@ -5020,7 +5020,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
 
   var styleExists;
 
-  if (cmp && cmp.app.isDozWebComponent) {
+  if (cmp && cmp.app.useShadowRoot) {
     styleExists = cmp.app._root.getElementById(styleId);
   } else {
     styleExists = document.getElementById(styleId);
@@ -5039,7 +5039,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
       styleResetEl.id = styleResetId;
       styleResetEl.innerHTML = resetContent;
 
-      if (cmp && cmp.app.isDozWebComponent) {
+      if (cmp && cmp.app.useShadowRoot) {
         var tagApp = cmp.app._root.querySelector(TAG.APP);
 
         cmp.app._root.insertBefore(styleResetEl, tagApp);
@@ -5052,7 +5052,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
     styleEl.id = styleId;
     result = styleEl.innerHTML = cssContent;
 
-    if (cmp && cmp.app.isDozWebComponent) {
+    if (cmp && cmp.app.useShadowRoot) {
       var _tagApp = cmp.app._root.querySelector(TAG.APP);
 
       cmp.app._root.insertBefore(styleEl, _tagApp);
@@ -5864,9 +5864,10 @@ function createDozWebComponent(tag, cmp) {
         var initialProps = {};
         var id = null;
         var contentHTML = '';
-        var shadow = this.attachShadow({
+        var hasDataNoShadow = this.hasAttribute('data-no-shadow');
+        var root = !hasDataNoShadow ? this.attachShadow({
           mode: 'open'
-        });
+        }) : this;
         var thisElement = this;
 
         for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
@@ -5886,8 +5887,8 @@ function createDozWebComponent(tag, cmp) {
         this.innerHTML = '';
         var tagCmp = cmp || tag;
         this.dozApp = new Doz({
-          root: shadow,
-          isDozWebComponent: true,
+          root: root,
+          useShadowRoot: !hasDataNoShadow,
           template: function template(h) {
             return h(_templateObject(), tagCmp, contentHTML, tagCmp);
           },
