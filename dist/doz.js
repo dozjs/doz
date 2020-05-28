@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.1.3  
+// [DOZ]  Build version: 3.2.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3729,7 +3729,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '3.1.3',
+    value: '3.2.0',
     enumerable: true
   },
   tag: {
