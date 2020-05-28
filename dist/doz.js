@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.1.1  
+// [DOZ]  Build version: 3.1.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -151,7 +151,7 @@ module.exports = {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var data = __webpack_require__(9);
+var data = __webpack_require__(10);
 /**
  * Register a component to global
  * @param cmp
@@ -582,7 +582,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 //const castStringTo = require('../utils/cast-string-to');
-var dashToCamel = __webpack_require__(10);
+var dashToCamel = __webpack_require__(9);
 
 var isListener = __webpack_require__(15);
 
@@ -888,6 +888,18 @@ module.exports = {
 /* 9 */
 /***/ (function(module, exports) {
 
+function dashToCamel(s) {
+  return s.replace(/(-\w)/g, function (m) {
+    return m[1].toUpperCase();
+  });
+}
+
+module.exports = dashToCamel;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
 module.exports = {
   components: {},
   dozWebComponents: {
@@ -898,18 +910,6 @@ module.exports = {
   directives: {},
   directivesKeys: []
 };
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-function dashToCamel(s) {
-  return s.replace(/(-\w)/g, function (m) {
-    return m[1].toUpperCase();
-  });
-}
-
-module.exports = dashToCamel;
 
 /***/ }),
 /* 11 */
@@ -983,7 +983,7 @@ var toLiteralString = __webpack_require__(25);
 
 var makeSureAttach = __webpack_require__(4);
 
-var data = __webpack_require__(9); //const mapCompiled = require('../vdom/map-compiled');
+var data = __webpack_require__(10); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -3729,7 +3729,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '3.1.1',
+    value: '3.1.2',
     enumerable: true
   },
   tag: {
@@ -5342,7 +5342,7 @@ var canDecode = __webpack_require__(19);
 
 var composeStyleInner = __webpack_require__(20);
 
-var dashToCamel = __webpack_require__(10);
+var dashToCamel = __webpack_require__(9);
 
 var Base = __webpack_require__(53);
 
@@ -5822,7 +5822,9 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 var Doz = __webpack_require__(12);
 
-var data = __webpack_require__(9);
+var data = __webpack_require__(10);
+
+var dashToCamel = __webpack_require__(9);
 
 function createStyleSoftEntrance() {
   if (!document.getElementById('style--soft-entrance--')) {
@@ -5866,6 +5868,7 @@ function createDozWebComponent(tag, cmp) {
           mode: 'open'
         });
         var thisElement = this;
+        var nodeCamelize;
 
         for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
           att = atts[i];
@@ -5875,8 +5878,10 @@ function createDozWebComponent(tag, cmp) {
             continue;
           }
 
-          if (observedAttributes.includes(att.nodeName)) {
-            initialProps[att.nodeName] = att.nodeValue;
+          nodeCamelize = dashToCamel(att.nodeName);
+
+          if (observedAttributes.includes(nodeCamelize)) {
+            initialProps[nodeCamelize] = att.nodeValue;
           }
         }
 
@@ -5908,7 +5913,7 @@ function createDozWebComponent(tag, cmp) {
       value: function attributeChangedCallback(name, oldValue, newValue) {
         if (!this.dozApp) return;
         var firstChild = this.dozApp.mainComponent.children[0];
-        firstChild.props[name] = newValue;
+        firstChild.props[dashToCamel(name)] = newValue;
       }
     }]);
 
@@ -6293,7 +6298,7 @@ directive('ref', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var dashToCamel = __webpack_require__(10);
+var dashToCamel = __webpack_require__(9);
 
 directive('is', {
   hasDataIs: function hasDataIs($target) {
