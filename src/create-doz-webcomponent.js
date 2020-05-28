@@ -40,9 +40,9 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
                     id = att.nodeValue;
                     continue;
                 }
-                nodeCamelize = dashToCamel(att.nodeName);
-                if (observedAttributes.includes(nodeCamelize)) {
-                    initialProps[nodeCamelize] = att.nodeValue;
+
+                if (observedAttributes.includes(att.nodeName)) {
+                    initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
                 }
             }
 
