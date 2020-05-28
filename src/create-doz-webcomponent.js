@@ -33,7 +33,6 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
             let shadow = this.attachShadow({mode: 'open'});
 
             let thisElement = this;
-            let nodeCamelize;
             for (let att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
                 att = atts[i];
                 if (att.nodeName === 'data-id') {
