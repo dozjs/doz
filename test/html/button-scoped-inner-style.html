@@ -43,6 +43,12 @@
         template(h) {
             return h`
                 <style>
+                                    :host {
+                        background: red;
+                    }
+                    :host-context(button) {
+                        padding: 50px;
+                    }
                     button {
                         color: red;
                         background-color: yellow;

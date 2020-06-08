@@ -29,7 +29,7 @@ function composeStyleInner(cssContent, tag) {
         .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '')
         .replace(/[^\s].*{/gm, match => {
 
-            if (/^(@|(from|to|\d+%)[^-_])/.test(match))
+            if (/^(@|:host|(from|to|\d+%)[^-_])/.test(match))
                 return match;
 
             let part = match.split(',');

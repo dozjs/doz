@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.1] - 2020-06-08
+- **Fixed** the pseudo selectors `:host` and `:host-context` are not modified
+
 ## [3.2.0] - 2020-05-28
 - **Added** data-no-shadow attribute for DozWebComponent
 
