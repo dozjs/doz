@@ -378,11 +378,11 @@ class Component extends DOMManipulation {
     }
 
     getWebComponentById(id) {
-        return data.dozWebComponents.ids[id] || null;
+        return data.webComponents.ids[id] || null;
     }
 
     getWebComponentByTag(name) {
-        return data.dozWebComponents.tags[name] || null;
+        return data.webComponents.tags[name] || null;
     }
 }
 

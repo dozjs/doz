@@ -902,7 +902,7 @@ module.exports = dashToCamel;
 
 module.exports = {
   components: {},
-  dozWebComponents: {
+  webComponents: {
     tags: {},
     ids: {}
   },
@@ -1328,12 +1328,12 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
   }, {
     key: "getWebComponentById",
     value: function getWebComponentById(id) {
-      return data.dozWebComponents.ids[id] || null;
+      return data.webComponents.ids[id] || null;
     }
   }, {
     key: "getWebComponentByTag",
     value: function getWebComponentByTag(name) {
-      return data.dozWebComponents.tags[name] || null;
+      return data.webComponents.tags[name] || null;
     }
   }, {
     key: "props",
@@ -6940,11 +6940,13 @@ var data = __webpack_require__(10);
 
 var dashToCamel = __webpack_require__(9);
 
+__webpack_require__(75)();
+
 function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var prefix = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'dwc';
   var globalTag = arguments.length > 4 ? arguments[4] : undefined;
-  data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
+  data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
   if (prefix) {
     prefix += '-';
@@ -7006,12 +7008,12 @@ function createDozWebComponent(tag, cmp) {
             thisElement.removeAttribute('data-soft-entrance');
             var firstChild = this.children[0];
             firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
-            data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
+            var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+            data.webComponents.tags[tag][id || countCmp] = firstChild;
 
             if (id !== null) {
-              if (data.dozWebComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
-              data.dozWebComponents.ids[id] = firstChild;
+              if (data.webComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
+              data.webComponents.ids[id] = firstChild;
             }
           }
         });
@@ -7044,6 +7046,21 @@ module.exports = {
   defineWebComponentFromGlobal: defineWebComponentFromGlobal,
   createDozWebComponent: createDozWebComponent
 };
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+function createStyleSoftEntrance() {
+  if (!document.getElementById('style--soft-entrance--')) {
+    var style = document.createElement('style');
+    style.id = 'style--soft-entrance--';
+    style.innerHTML = "[data-soft-entrance] {visibility: hidden!important;}";
+    document.head.appendChild(style);
+  }
+}
+
+module.exports = createStyleSoftEntrance;
 
 /***/ })
 /******/ ]);

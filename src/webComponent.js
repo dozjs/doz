@@ -1,10 +1,11 @@
 const Doz = require('./Doz');
 const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
+require('./utils/create-style-soft-entrance')();
 
 function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag) {
 
-    data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
+    data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
     if (prefix) {
         prefix += '-';
@@ -57,14 +58,14 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     let firstChild = this.children[0];
                     firstChild.props = Object.assign({}, firstChild.props, initialProps);
 
-                    let countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
+                    let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
 
-                    data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
+                    data.webComponents.tags[tag][id || countCmp] = firstChild;
                     if (id !== null) {
-                        if (data.dozWebComponents.ids[id])
+                        if (data.webComponents.ids[id])
                             return console.warn(id + ': id already exists for DozWebComponent');
 
-                        data.dozWebComponents.ids[id] = firstChild;
+                        data.webComponents.ids[id] = firstChild;
                     }
                 }
             });

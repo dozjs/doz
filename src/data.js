@@ -1,6 +1,6 @@
 module.exports = {
     components: {},
-    dozWebComponents: {
+    webComponents: {
         tags: {},
         ids: {}
     },

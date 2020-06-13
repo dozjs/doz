@@ -7,4 +7,4 @@ function createStyleSoftEntrance() {
     }
 }
 
-createStyleSoftEntrance();
+module.exports = createStyleSoftEntrance;
