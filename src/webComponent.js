@@ -2,17 +2,6 @@ const Doz = require('./Doz');
 const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
 
-function createStyleSoftEntrance() {
-    if (!document.getElementById('style--soft-entrance--')) {
-        const style = document.createElement('style');
-        style.id = 'style--soft-entrance--';
-        style.innerHTML = `[data-soft-entrance] {visibility: hidden!important;}`;
-        document.head.appendChild(style);
-    }
-}
-
-createStyleSoftEntrance();
-
 function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag) {
 
     data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
