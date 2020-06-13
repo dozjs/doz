@@ -489,6 +489,7 @@ const ObservableSlim = (function () {
          * @param target {Object} required, plain JavaScript object that we want to observe for changes.
          * @param domDelay {Boolean} if true, then batch up changes on a 10ms delay so a series of changes can be processed in one DOM update.
          * @param observer {Function} optional, will be invoked when a change is made to the proxy.
+         * @param iterateBeforeCreate
          * @returns {Object}
          */
         create: function (target, domDelay, observer, iterateBeforeCreate) {
