@@ -22,7 +22,7 @@
 </button>
 
 <script>
-    const {Component, createDozWebComponent} = Doz;
+    const {Component, webcomponent} = Doz;
 
     let myCmp = class extends Component {
         constructor(o) {
@@ -42,7 +42,7 @@
         }
     }
 
-    createDozWebComponent('my-cmp', myCmp, ['time']);
+    webcomponent('my-cmp', myCmp, ['time']);
 </script>
 
 </body>

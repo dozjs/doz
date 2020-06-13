@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../../dist/doz.js?58942e8e3"></script>
+    <script src="../../dist/doz.js?5894uimj2e8e3"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -33,7 +33,7 @@
 <dwc-my-cmp2></dwc-my-cmp2>
 
 <script>
-    const {component, createDozWebComponent} = Doz;
+    const {component, defineWebComponent, defineWebComponentFromGlobal} = Doz;
 
     component('doz-clock', {
         template(h) {
@@ -83,7 +83,7 @@
                 `
         },
         myClick() {
-            this.getDozWebComponentById('my-instance').props.title = Math.random();
+            this.getWebComponentById('my-instance').props.title = Math.random();
         }
     }
 
@@ -103,9 +103,9 @@
         }
     }
 
-    createDozWebComponent('doz-clock', null, ['title']);
-    createDozWebComponent('my-cmp1', myCmp1);
-    createDozWebComponent('my-cmp2', myCmp2, ['name']);
+    defineWebComponentFromGlobal('dwc-doz-clock', 'doz-clock', ['title']);
+    defineWebComponent('dwc-my-cmp1', myCmp1);
+    defineWebComponent('dwc-my-cmp2', myCmp2, ['name']);
 
 </script>
 </body>

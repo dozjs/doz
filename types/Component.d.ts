@@ -135,7 +135,14 @@ export class Component {
      * @param {string} id
      * @returns {Component}
      */
-    getDozWebComponentById(id: string): Component
+    getWebComponentById(id: string): Component
+
+    /**
+     * Get ext component instance by tag.
+     * @param {string} tag
+     * @returns {Component}
+     */
+    getWebComponentByTag(tag: string): Component
 
     /**
      * This method must be return the component template literals.

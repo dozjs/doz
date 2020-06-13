@@ -584,7 +584,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 //const castStringTo = require('../utils/cast-string-to');
 var dashToCamel = __webpack_require__(9);
 
-var isListener = __webpack_require__(15);
+var isListener = __webpack_require__(16);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -950,7 +950,7 @@ var update = __webpack_require__(37).updateElement;
 
 var drawDynamic = __webpack_require__(44);
 
-var proxy = __webpack_require__(16);
+var proxy = __webpack_require__(17);
 
 var toInlineStyle = __webpack_require__(45);
 
@@ -962,7 +962,7 @@ var extendInstance = __webpack_require__(48);
 
 var removeAllAttributes = __webpack_require__(49);
 
-var h = __webpack_require__(22);
+var h = __webpack_require__(12);
 
 var loadLocal = __webpack_require__(50);
 
@@ -1318,11 +1318,21 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
   }, {
     key: "getDozWebComponentById",
     value: function getDozWebComponentById(id) {
-      return data.dozWebComponents.ids[id] || null;
+      return this.getWebComponentById(id);
     }
   }, {
     key: "getDozWebComponentByTag",
     value: function getDozWebComponentByTag(name) {
+      return this.getWebComponentByTag(name);
+    }
+  }, {
+    key: "getWebComponentById",
+    value: function getWebComponentById(id) {
+      return data.dozWebComponents.ids[id] || null;
+    }
+  }, {
+    key: "getWebComponentByTag",
+    value: function getWebComponentByTag(name) {
       return data.dozWebComponents.tags[name] || null;
     }
   }, {
@@ -1384,6 +1394,241 @@ module.exports._Component = Component;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+var _require = __webpack_require__(1),
+    TAG = _require.TAG;
+
+var mapper = __webpack_require__(6);
+
+var camelToDash = __webpack_require__(22); //const eventsAttributes = require('../utils/events-attributes');
+//const {scopedInner} = require('../component/helpers/style');
+
+
+var _require2 = __webpack_require__(8),
+    compile = _require2.compile,
+    Element = _require2.Element;
+
+var tagText = TAG.TEXT_NODE_PLACE;
+var tagIterate = TAG.ITERATE_NODE_PLACE;
+var LESSER = '<';
+var GREATER = '>'; //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
+//const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
+//const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
+
+/**/
+
+/**
+ * This method add special tag to value placeholder
+ * @param strings
+ * @param value
+ * @returns {*}
+ */
+
+module.exports = function (strings) {
+  //hCache.get(strings, value);
+  //console.log('val', value);
+  // Why? cycling require :D
+  //let Component = require('../component/Component');
+  var result = strings[0];
+  var allowTag = false;
+  var isInStyle = false;
+  var thereIsStyle = false;
+  var isBoundedToComponent = !!this._components;
+
+  for (var _len = arguments.length, value = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    value[_key - 1] = arguments[_key];
+  }
+
+  var valueLength = value.length;
+
+  for (var i = 0; i < valueLength; ++i) {
+    var isComponentConstructor = false;
+
+    if (Array.isArray(value[i])) {
+      var newValueString = '';
+
+      for (var j = 0; j < value[i].length; j++) {
+        var obj = value[i][j];
+
+        if (_typeof(obj) === 'object' && obj.constructor && obj.constructor === Element) {
+          newValueString += "<".concat(tagIterate, ">").concat(mapper.set(obj), "</").concat(tagIterate, ">");
+        }
+      }
+
+      if (newValueString) value[i] = newValueString;
+    }
+
+    if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {
+      value[i] = mapper.set(value[i]);
+    } //console.log(strings[i].split(''));
+    //console.log([...strings[i]]);
+    //let char;
+    //console.log(strings[i])
+
+
+    var stringsI = strings[i];
+    var stringLength = stringsI.length;
+
+    for (var x = 0; x < stringLength; x++) {
+      //char = strings[i][x];
+      if (stringsI[x] === LESSER) {
+        //console.log('a', strings[i][x], x)
+        allowTag = false; //continue
+      } else if (stringsI[x] === GREATER) {
+        //console.log('b', strings[i][x], x)
+        allowTag = true;
+      }
+    }
+    /*console.log('---------------')
+    console.log('-a', strings[i].indexOf(LESSER));
+    console.log('-b', strings[i].indexOf(GREATER));*/
+
+
+    if (stringsI.indexOf('<style') > -1) {
+      isInStyle = true;
+      thereIsStyle = true;
+    }
+
+    if (stringsI.indexOf('</style') > -1) {
+      isInStyle = false;
+    }
+
+    if (isInStyle) {
+      allowTag = false;
+      result = result.replace(/ scoped>/, ' data-scoped>');
+    } //
+
+
+    var isInHandler = false; // Check if value is a function and is after an event attribute like onclick for example.
+
+    if (typeof value[i] === 'function' || _typeof(value[i]) === 'object') {
+      //for (let x = 0; x < eventsAttributes.length; x++) {
+      var r = stringsI.split("=");
+
+      if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+        isInHandler = true;
+      } //}
+
+    } //console.log(isInHandler, value[i]);
+
+
+    var attributeOriginalTagName = void 0; // if this function is bound to Doz component
+
+    if (isBoundedToComponent && !isInStyle && !isInHandler) {
+      // if before is to <
+      if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
+        isComponentConstructor = true;
+        var cmp = value[i];
+        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
+
+        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
+
+        if (tagName.indexOf('-') === -1) {
+          tagName = "".concat(tagName, "-").concat(tagName);
+        } //attributeOriginalTagName = tagName;
+        //let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
+
+
+        var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
+
+        if (this._componentsMap.has(value[i])) {
+          tagCmp = this._componentsMap.get(value[i]);
+        } else {
+          this._componentsMap.set(value[i], tagCmp);
+        } // add to local components
+
+
+        if (this._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
+          this._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        }
+        /*else {
+          //attributeOriginalTagName = tagCmp;
+        }*/
+        // add to local app components
+
+
+        if (this.app._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
+          this.app._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        }
+        /*else {
+          //attributeOriginalTagName = tagCmp;
+        }*/
+
+
+        attributeOriginalTagName = tagCmp; //console.log('---------->', tagCmp);
+
+        value[i] = tagName; //value[i] = tagCmp;
+      }
+    }
+
+    if (allowTag) {
+      result += "<".concat(tagText, ">").concat(value[i], "</").concat(tagText, ">").concat(strings[i + 1]);
+    } else {
+      // If is not component constructor then add to map.
+      // Exclude string type and style also
+      //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
+      if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
+        value[i] = mapper.set(value[i]);
+      }
+
+      if (attributeOriginalTagName) {
+        //console.log(attributeOriginalTagName)
+        result += "".concat(value[i], " data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+      } else
+        /**/
+        result += "".concat(value[i]).concat(strings[i + 1]); //console.log('--------------', value[i], attributeOriginalTagName, strings[i + 1])
+
+    }
+  } // Funziona anche senza?
+
+  /*
+          result = result
+              .replace(regOpen, LESSER)
+              .replace(regClose, GREATER);*/
+  // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
+  // il tag script con il tipo text/style
+
+  /*
+      if (isBoundedToComponent) {
+          // Now get style from complete string
+          if (thereIsStyle)
+              result = result.replace(regStyle, (match, p1) => {
+                  if (!this._rootElement || p1 === this._currentStyle) return '';
+                  if (match && p1) {
+                      // Here should be create the tag style
+                      this._currentStyle = p1;
+                      let isScoped = /scoped/.test(match);
+                      const dataSetUId = this.uId;
+                      this.getHTMLElement().dataset.uid = this.uId;
+                      let tagByData = `[data-uid="${dataSetUId}"]`;
+                      scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
+                  }
+  
+                  return '';
+              });
+      }
+  */
+  //console.log(result)
+
+
+  result = result.trim();
+  result = compile(result);
+  return result;
+};
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _templateObject() {
   var data = _taggedTemplateLiteral(["<", ">", "</", ">"]);
 
@@ -1404,7 +1649,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var bind = __webpack_require__(29);
 
-var createInstance = __webpack_require__(13);
+var createInstance = __webpack_require__(14);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -1708,7 +1953,7 @@ var Doz = /*#__PURE__*/function () {
 module.exports = Doz;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -1729,7 +1974,7 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var html = __webpack_require__(14); //const transformChildStyle = require('./helpers/transform-child-style');
+var html = __webpack_require__(15); //const transformChildStyle = require('./helpers/transform-child-style');
 
 
 var _require = __webpack_require__(1),
@@ -2010,7 +2255,7 @@ function createInstance() {
 module.exports = createInstance;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 var regexN = /\n/g;
@@ -2049,7 +2294,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = function isListener(str) {
@@ -2058,7 +2303,7 @@ module.exports = function isListener(str) {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -2730,7 +2975,7 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -2800,7 +3045,7 @@ function manipulate(instance, value, currentPath, onFly, init) {
 module.exports = manipulate;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -2816,7 +3061,7 @@ var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
-var canDecode = __webpack_require__(19);
+var canDecode = __webpack_require__(20);
 
 var hooks = __webpack_require__(7); //const directive = require('../directives');
 
@@ -3236,10 +3481,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var html = __webpack_require__(14);
+var html = __webpack_require__(15);
 
 function canDecode(str) {
   return /&\w+;/.test(str) ? html.decode(str) : str;
@@ -3248,7 +3493,7 @@ function canDecode(str) {
 module.exports = canDecode;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -3292,7 +3537,7 @@ function composeStyleInner(cssContent, tag) {
 module.exports = composeStyleInner;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 function camelToDash(s) {
@@ -3300,241 +3545,6 @@ function camelToDash(s) {
 }
 
 module.exports = camelToDash;
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var _require = __webpack_require__(1),
-    TAG = _require.TAG;
-
-var mapper = __webpack_require__(6);
-
-var camelToDash = __webpack_require__(21); //const eventsAttributes = require('../utils/events-attributes');
-//const {scopedInner} = require('../component/helpers/style');
-
-
-var _require2 = __webpack_require__(8),
-    compile = _require2.compile,
-    Element = _require2.Element;
-
-var tagText = TAG.TEXT_NODE_PLACE;
-var tagIterate = TAG.ITERATE_NODE_PLACE;
-var LESSER = '<';
-var GREATER = '>'; //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
-//const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
-//const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
-
-/**/
-
-/**
- * This method add special tag to value placeholder
- * @param strings
- * @param value
- * @returns {*}
- */
-
-module.exports = function (strings) {
-  //hCache.get(strings, value);
-  //console.log('val', value);
-  // Why? cycling require :D
-  //let Component = require('../component/Component');
-  var result = strings[0];
-  var allowTag = false;
-  var isInStyle = false;
-  var thereIsStyle = false;
-  var isBoundedToComponent = !!this._components;
-
-  for (var _len = arguments.length, value = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    value[_key - 1] = arguments[_key];
-  }
-
-  var valueLength = value.length;
-
-  for (var i = 0; i < valueLength; ++i) {
-    var isComponentConstructor = false;
-
-    if (Array.isArray(value[i])) {
-      var newValueString = '';
-
-      for (var j = 0; j < value[i].length; j++) {
-        var obj = value[i][j];
-
-        if (_typeof(obj) === 'object' && obj.constructor && obj.constructor === Element) {
-          newValueString += "<".concat(tagIterate, ">").concat(mapper.set(obj), "</").concat(tagIterate, ">");
-        }
-      }
-
-      if (newValueString) value[i] = newValueString;
-    }
-
-    if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {
-      value[i] = mapper.set(value[i]);
-    } //console.log(strings[i].split(''));
-    //console.log([...strings[i]]);
-    //let char;
-    //console.log(strings[i])
-
-
-    var stringsI = strings[i];
-    var stringLength = stringsI.length;
-
-    for (var x = 0; x < stringLength; x++) {
-      //char = strings[i][x];
-      if (stringsI[x] === LESSER) {
-        //console.log('a', strings[i][x], x)
-        allowTag = false; //continue
-      } else if (stringsI[x] === GREATER) {
-        //console.log('b', strings[i][x], x)
-        allowTag = true;
-      }
-    }
-    /*console.log('---------------')
-    console.log('-a', strings[i].indexOf(LESSER));
-    console.log('-b', strings[i].indexOf(GREATER));*/
-
-
-    if (stringsI.indexOf('<style') > -1) {
-      isInStyle = true;
-      thereIsStyle = true;
-    }
-
-    if (stringsI.indexOf('</style') > -1) {
-      isInStyle = false;
-    }
-
-    if (isInStyle) {
-      allowTag = false;
-      result = result.replace(/ scoped>/, ' data-scoped>');
-    } //
-
-
-    var isInHandler = false; // Check if value is a function and is after an event attribute like onclick for example.
-
-    if (typeof value[i] === 'function' || _typeof(value[i]) === 'object') {
-      //for (let x = 0; x < eventsAttributes.length; x++) {
-      var r = stringsI.split("=");
-
-      if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
-        isInHandler = true;
-      } //}
-
-    } //console.log(isInHandler, value[i]);
-
-
-    var attributeOriginalTagName = void 0; // if this function is bound to Doz component
-
-    if (isBoundedToComponent && !isInStyle && !isInHandler) {
-      // if before is to <
-      if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
-        isComponentConstructor = true;
-        var cmp = value[i];
-        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
-
-        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
-
-        if (tagName.indexOf('-') === -1) {
-          tagName = "".concat(tagName, "-").concat(tagName);
-        } //attributeOriginalTagName = tagName;
-        //let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
-
-
-        var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
-
-        if (this._componentsMap.has(value[i])) {
-          tagCmp = this._componentsMap.get(value[i]);
-        } else {
-          this._componentsMap.set(value[i], tagCmp);
-        } // add to local components
-
-
-        if (this._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
-          this._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        }
-        /*else {
-          //attributeOriginalTagName = tagCmp;
-        }*/
-        // add to local app components
-
-
-        if (this.app._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
-          this.app._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        }
-        /*else {
-          //attributeOriginalTagName = tagCmp;
-        }*/
-
-
-        attributeOriginalTagName = tagCmp; //console.log('---------->', tagCmp);
-
-        value[i] = tagName; //value[i] = tagCmp;
-      }
-    }
-
-    if (allowTag) {
-      result += "<".concat(tagText, ">").concat(value[i], "</").concat(tagText, ">").concat(strings[i + 1]);
-    } else {
-      // If is not component constructor then add to map.
-      // Exclude string type and style also
-      //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
-      if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-        value[i] = mapper.set(value[i]);
-      }
-
-      if (attributeOriginalTagName) {
-        //console.log(attributeOriginalTagName)
-        result += "".concat(value[i], " data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
-      } else
-        /**/
-        result += "".concat(value[i]).concat(strings[i + 1]); //console.log('--------------', value[i], attributeOriginalTagName, strings[i + 1])
-
-    }
-  } // Funziona anche senza?
-
-  /*
-          result = result
-              .replace(regOpen, LESSER)
-              .replace(regClose, GREATER);*/
-  // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
-  // il tag script con il tipo text/style
-
-  /*
-      if (isBoundedToComponent) {
-          // Now get style from complete string
-          if (thereIsStyle)
-              result = result.replace(regStyle, (match, p1) => {
-                  if (!this._rootElement || p1 === this._currentStyle) return '';
-                  if (match && p1) {
-                      // Here should be create the tag style
-                      this._currentStyle = p1;
-                      let isScoped = /scoped/.test(match);
-                      const dataSetUId = this.uId;
-                      this.getHTMLElement().dataset.uid = this.uId;
-                      let tagByData = `[data-uid="${dataSetUId}"]`;
-                      scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-                  }
-  
-                  return '';
-              });
-      }
-  */
-  //console.log(result)
-
-
-  result = result.trim();
-  result = compile(result);
-  return result;
-};
 
 /***/ }),
 /* 23 */
@@ -3576,7 +3586,7 @@ module.exports = mixin;
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var manipulate = __webpack_require__(17);
+var manipulate = __webpack_require__(18);
 
 function propsInit(instance) {
   (function iterate(props) {
@@ -3652,7 +3662,7 @@ module.exports = __webpack_require__(28);
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Doz = __webpack_require__(12);
+var Doz = __webpack_require__(13);
 
 var collection = __webpack_require__(2);
 
@@ -3668,19 +3678,22 @@ var Component = __webpack_require__(11);
 
 var mixin = __webpack_require__(57);
 
-var h = __webpack_require__(22);
+var h = __webpack_require__(12);
 
 var _require3 = __webpack_require__(8),
     compile = _require3.compile;
 
 var mapper = __webpack_require__(6);
 
-var _require4 = __webpack_require__(18),
+var _require4 = __webpack_require__(19),
     update = _require4.update;
 
 var tag = __webpack_require__(58);
 
-var createDozWebComponent = __webpack_require__(59);
+var _require5 = __webpack_require__(74),
+    createDozWebComponent = _require5.createDozWebComponent,
+    defineWebComponent = _require5.defineWebComponent,
+    defineWebComponentFromGlobal = _require5.defineWebComponentFromGlobal;
 
 __webpack_require__(60);
 
@@ -3738,6 +3751,14 @@ Object.defineProperties(Doz, {
   },
   createDozWebComponent: {
     value: createDozWebComponent,
+    enumerable: true
+  },
+  defineWebComponent: {
+    value: defineWebComponent,
+    enumerable: true
+  },
+  defineWebComponentFromGlobal: {
+    value: defineWebComponentFromGlobal,
     enumerable: true
   }
 });
@@ -4510,13 +4531,13 @@ module.exports = hmr;
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var proxy = __webpack_require__(16);
+var proxy = __webpack_require__(17);
 
 var events = __webpack_require__(7);
 
 var propsListener = __webpack_require__(35);
 
-var manipulate = __webpack_require__(17);
+var manipulate = __webpack_require__(18);
 
 function runUpdate(instance, changes) {
   events.callUpdate(instance, changes);
@@ -4667,7 +4688,7 @@ module.exports = function castType(value, type) {
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var element = __webpack_require__(18);
+var element = __webpack_require__(19);
 
 module.exports = {
   updateElement: element.update
@@ -4699,7 +4720,7 @@ var _require = __webpack_require__(1),
 
 var objectPath = __webpack_require__(39);
 
-var isListener = __webpack_require__(15);
+var isListener = __webpack_require__(16);
 
 var mapper = __webpack_require__(6);
 
@@ -4990,7 +5011,7 @@ module.exports = ['async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'c
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var composeStyleInner = __webpack_require__(20);
+var composeStyleInner = __webpack_require__(21);
 
 var createStyle = __webpack_require__(42);
 
@@ -5091,7 +5112,7 @@ function drawDynamic(instance) {
     var item = instance._processing[index];
     var root = item.node.parentNode; //console.log('create dynamic', item.node, item.node.__dozProps)
 
-    var dynamicInstance = __webpack_require__(13)({
+    var dynamicInstance = __webpack_require__(14)({
       root: root,
       template: item.node,
       //template: item.node.outerHTML,
@@ -5155,7 +5176,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var camelToDash = __webpack_require__(21);
+var camelToDash = __webpack_require__(22);
 
 function toInlineStyle(obj) {
   var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -5338,9 +5359,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var canDecode = __webpack_require__(19);
+var canDecode = __webpack_require__(20);
 
-var composeStyleInner = __webpack_require__(20);
+var composeStyleInner = __webpack_require__(21);
 
 var dashToCamel = __webpack_require__(9);
 
@@ -5777,151 +5798,7 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n                    <", ">", "</", ">\n                "]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
-
-function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var Doz = __webpack_require__(12);
-
-var data = __webpack_require__(10);
-
-var dashToCamel = __webpack_require__(9);
-
-function createStyleSoftEntrance() {
-  if (!document.getElementById('style--soft-entrance--')) {
-    var style = document.createElement('style');
-    style.id = 'style--soft-entrance--';
-    style.innerHTML = "[data-soft-entrance] {visibility: hidden!important;}";
-    document.head.appendChild(style);
-  }
-}
-
-createStyleSoftEntrance();
-
-function createDozWebComponent(tag, cmp) {
-  var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
-  customElements.define('dwc-' + tag, /*#__PURE__*/function (_HTMLElement) {
-    _inherits(_class, _HTMLElement);
-
-    var _super = _createSuper(_class);
-
-    _createClass(_class, null, [{
-      key: "observedAttributes",
-      get: function get() {
-        return observedAttributes;
-      }
-    }]);
-
-    function _class() {
-      _classCallCheck(this, _class);
-
-      return _super.call(this);
-    }
-
-    _createClass(_class, [{
-      key: "connectedCallback",
-      value: function connectedCallback() {
-        var initialProps = {};
-        var id = null;
-        var contentHTML = '';
-        var hasDataNoShadow = this.hasAttribute('data-no-shadow');
-        var root = !hasDataNoShadow ? this.attachShadow({
-          mode: 'open'
-        }) : this;
-        var thisElement = this;
-
-        for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
-          att = atts[i];
-
-          if (att.nodeName === 'data-id') {
-            id = att.nodeValue;
-            continue;
-          }
-
-          if (observedAttributes.includes(att.nodeName)) {
-            initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
-          }
-        }
-
-        contentHTML = this.innerHTML;
-        this.innerHTML = '';
-        var tagCmp = cmp || tag;
-        this.dozApp = new Doz({
-          root: root,
-          useShadowRoot: !hasDataNoShadow,
-          template: function template(h) {
-            return h(_templateObject(), tagCmp, contentHTML, tagCmp);
-          },
-          onMountAsync: function onMountAsync() {
-            thisElement.removeAttribute('data-soft-entrance');
-            var firstChild = this.children[0];
-            firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
-            data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
-
-            if (id !== null) {
-              if (data.dozWebComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
-              data.dozWebComponents.ids[id] = firstChild;
-            }
-          }
-        });
-      }
-    }, {
-      key: "attributeChangedCallback",
-      value: function attributeChangedCallback(name, oldValue, newValue) {
-        if (!this.dozApp) return;
-        var firstChild = this.dozApp.mainComponent.children[0];
-        firstChild.props[dashToCamel(name)] = newValue;
-      }
-    }]);
-
-    return _class;
-  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
-}
-
-module.exports = createDozWebComponent;
-
-/***/ }),
+/* 59 */,
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7031,6 +6908,172 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n                    <", ">", "</", ">\n                "]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Doz = __webpack_require__(13);
+
+var data = __webpack_require__(10);
+
+var dashToCamel = __webpack_require__(9);
+
+function createStyleSoftEntrance() {
+  if (!document.getElementById('style--soft-entrance--')) {
+    var style = document.createElement('style');
+    style.id = 'style--soft-entrance--';
+    style.innerHTML = "[data-soft-entrance] {visibility: hidden!important;}";
+    document.head.appendChild(style);
+  }
+}
+
+createStyleSoftEntrance();
+
+function createDozWebComponent(tag, cmp) {
+  var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var prefix = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'dwc';
+  var globalTag = arguments.length > 4 ? arguments[4] : undefined;
+  data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
+
+  if (prefix) {
+    prefix += '-';
+  }
+
+  customElements.define(prefix + tag, /*#__PURE__*/function (_HTMLElement) {
+    _inherits(_class, _HTMLElement);
+
+    var _super = _createSuper(_class);
+
+    _createClass(_class, null, [{
+      key: "observedAttributes",
+      get: function get() {
+        return observedAttributes;
+      }
+    }]);
+
+    function _class() {
+      _classCallCheck(this, _class);
+
+      return _super.call(this);
+    }
+
+    _createClass(_class, [{
+      key: "connectedCallback",
+      value: function connectedCallback() {
+        var initialProps = {};
+        var id = null;
+        var contentHTML = '';
+        var hasDataNoShadow = this.hasAttribute('data-no-shadow');
+        var root = !hasDataNoShadow ? this.attachShadow({
+          mode: 'open'
+        }) : this;
+        var thisElement = this;
+
+        for (var att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
+          att = atts[i];
+
+          if (att.nodeName === 'data-id') {
+            id = att.nodeValue;
+            continue;
+          }
+
+          if (observedAttributes.includes(att.nodeName)) {
+            initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
+          }
+        }
+
+        contentHTML = this.innerHTML;
+        this.innerHTML = '';
+        var tagCmp = cmp || globalTag || tag;
+        this.dozApp = new Doz({
+          root: root,
+          useShadowRoot: !hasDataNoShadow,
+          template: function template(h) {
+            return h(_templateObject(), tagCmp, contentHTML, tagCmp);
+          },
+          onMountAsync: function onMountAsync() {
+            thisElement.removeAttribute('data-soft-entrance');
+            var firstChild = this.children[0];
+            firstChild.props = Object.assign({}, firstChild.props, initialProps);
+            var countCmp = Object.keys(data.dozWebComponents.tags[tag]).length++;
+            data.dozWebComponents.tags[tag][id || countCmp] = firstChild;
+
+            if (id !== null) {
+              if (data.dozWebComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
+              data.dozWebComponents.ids[id] = firstChild;
+            }
+          }
+        });
+      }
+    }, {
+      key: "attributeChangedCallback",
+      value: function attributeChangedCallback(name, oldValue, newValue) {
+        if (!this.dozApp) return;
+        var firstChild = this.dozApp.mainComponent.children[0];
+        firstChild.props[dashToCamel(name)] = newValue;
+      }
+    }]);
+
+    return _class;
+  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement)));
+}
+
+function defineWebComponent(tag, cmp) {
+  var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  createDozWebComponent(tag, cmp, observedAttributes, '');
+}
+
+function defineWebComponentFromGlobal(tag, globalTag) {
+  var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  createDozWebComponent(tag, null, observedAttributes, '', globalTag);
+}
+
+module.exports = {
+  defineWebComponent: defineWebComponent,
+  defineWebComponentFromGlobal: defineWebComponentFromGlobal,
+  createDozWebComponent: createDozWebComponent
+};
 
 /***/ })
 /******/ ]);

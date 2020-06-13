@@ -10,7 +10,7 @@ const {compile} = require('./vdom/parser');
 const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
-const createDozWebComponent = require('./create-doz-webcomponent');
+const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
 require('./directives/built-in/bootstrap');
 
 Object.defineProperties(Doz, {
@@ -67,6 +67,14 @@ Object.defineProperties(Doz, {
     },
     createDozWebComponent: {
         value: createDozWebComponent,
+        enumerable: true
+    },
+    defineWebComponent: {
+        value: defineWebComponent,
+        enumerable: true
+    },
+    defineWebComponentFromGlobal: {
+        value: defineWebComponentFromGlobal,
         enumerable: true
     }
 });

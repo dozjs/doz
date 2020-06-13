@@ -156,24 +156,44 @@
 
     ```
   
-### Doz.createDozWebComponent( tag, component )
+### Doz.defineWebComponent( tag, component, [observedAttributes] )
 
 - **Since**: 2.5.0
 - **Arguments**:
     - `tag` string
-    - `component` `function`, `object`
-- **Details**: Create DozWebComponent.
+    - `component` function, object
+    - `observedAttributes` array of attributes to observe
+- **Details**: Create WebComponent.
 - **Usage**:
     ``` js
-    Doz.createDozWebComponent('my-cmp', class extends Component {
+    Doz.defineWebComponent('dwc-my-cmp', class extends Component {
         //....//
     }, ['foo', 'bar']);
     ```
     In your HTML page
     ```html
     <!-- Load Doz library -->
+    <dwc-my-cmp foo="lorem" bar="ipsum"></dwc-my-cmp> 
     <!-- Load Doz component -->
-    <ext-my-cmp foo="lorem" bar="ipsum"></ext-my-cmp> 
+    ```
+  
+### Doz.defineWebComponentFromGlobal( tag, globalTag, [observedAttributes] )
+
+- **Since**: 3.3.0
+- **Arguments**:
+    - `tag` string
+    - `globalTag` string
+    - `observedAttributes` array of attributes to observe
+- **Details**: Create WebComponent.
+- **Usage**:
+    ``` js
+    Doz.defineWebComponentFromGlobal('dwc-my-cmp', 'my-cmp', ['foo', 'bar']);
+    ```
+    In your HTML page
+    ```html
+    <!-- Load Doz library -->
+    <dwc-my-cmp foo="lorem" bar="ipsum"></dwc-my-cmp> 
+    <!-- Load Doz component -->
     ```
 
 ### Doz.version()

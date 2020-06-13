@@ -13,11 +13,15 @@ function createStyleSoftEntrance() {
 
 createStyleSoftEntrance();
 
-function createDozWebComponent(tag, cmp, observedAttributes = []) {
+function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag) {
 
     data.dozWebComponents.tags[tag] = data.dozWebComponents.tags[tag] || {};
 
-    customElements.define('dwc-' + tag, class extends HTMLElement {
+    if (prefix) {
+        prefix += '-';
+    }
+
+    customElements.define(prefix + tag, class extends HTMLElement {
         static get observedAttributes() {
             return observedAttributes;
         }
@@ -49,7 +53,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
             contentHTML = this.innerHTML;
             this.innerHTML = '';
 
-            let tagCmp = cmp || tag;
+            let tagCmp = cmp || globalTag || tag;
 
             this.dozApp = new Doz({
                 root,
@@ -85,4 +89,16 @@ function createDozWebComponent(tag, cmp, observedAttributes = []) {
     });
 }
 
-module.exports = createDozWebComponent;
+function defineWebComponent(tag, cmp, observedAttributes = []) {
+    createDozWebComponent(tag, cmp, observedAttributes, '');
+}
+
+function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = []) {
+    createDozWebComponent(tag, null, observedAttributes, '', globalTag);
+}
+
+module.exports = {
+    defineWebComponent,
+    defineWebComponentFromGlobal,
+    createDozWebComponent
+};

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.3.0] - 2020-06-13
+- **Added** `defineWebComponent`
+- **Added** `defineWebComponentFromGlobal`
+- **Added** `getWebComponentById`
+- **Added** `getWebComponentByTag`
+
 ## [3.2.1] - 2020-06-08
 - **Fixed** the pseudo selectors `:host` and `:host-context` are not modified
 
@@ -40,7 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.5.2] - 2020-05-16
 - **Fixed** update of attributes doesn't work
 - **Improved** all styles now are placed inside shadowRoot
-- **Improved** added observedAttributes array property to createDozWebComponent function
+- **Improved** added observedAttributes array property to webcomponent function
 
 ## [2.5.1] - 2020-05-15
 - **Updated** types definitions
