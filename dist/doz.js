@@ -1756,7 +1756,8 @@ var Doz = /*#__PURE__*/function () {
       },
       useShadowRoot: {
         value: this.cfg.useShadowRoot,
-        writable: true
+        writable: true,
+        enumerable: true
       },
       _root: {
         value: this.cfg.root
