@@ -1962,9 +1962,6 @@ var _require = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
     ALREADY_WALKED = _require.ALREADY_WALKED,
-    COMPONENT_DYNAMIC_INSTANCE = _require.COMPONENT_DYNAMIC_INSTANCE,
-    DEFAULT_SLOT_KEY = _require.DEFAULT_SLOT_KEY,
-    PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES,
     REGEX = _require.REGEX;
 
 var collection = __webpack_require__(2);
@@ -2026,8 +2023,7 @@ function createInstance() {
       }
        */
 
-      cmpName = getComponentName($child); //console.log('cmpName', cmpName)
-
+      cmpName = getComponentName($child);
       directive.callAppComponentAssignName(parent, $child, function (name) {
         cmpName = name;
       });
@@ -2035,11 +2031,9 @@ function createInstance() {
 
       if (parent.cmp && parent.cmp._components) {
         localComponents = parent.cmp._components;
-      } //console.log(cmpName)
+      }
 
-
-      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName); //console.log($child._dozAttach.originalTagName)
-
+      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
       var parentElement = void 0;
 
       if (cmp) {
@@ -2060,42 +2054,9 @@ function createInstance() {
             trash.push($child);
             $child = $child.nextSibling;
             return "continue";
-          } // Disable this because animation doesn't works
-
-          /*
-          // Replace possible child name generated automatically
-          // Tags generated automatically are like my-tag-1-0
-          // This block transforms to original tag like my-tag
-          if (cmp.tag && cmpName !== cmp.tag) {
-              let $newNodeChild = document.createElement(cmp.tag);
-                while ($child.childNodes.length > 0) {
-                  $newNodeChild.appendChild($child.childNodes[0]);
-              }
-                $child.parentNode.replaceChild($newNodeChild, $child);
-              // Copy all attributes
-              [...$child.attributes].forEach(attr => {
-                  $newNodeChild.setAttribute(attr.nodeName, attr.nodeValue)
-              });
-              // Copy all specials Doz properties attached to element
-              if ($child._dozAttach[COMPONENT_INSTANCE])
-                  $newNodeChild._dozAttach[COMPONENT_INSTANCE] = $child._dozAttach[COMPONENT_INSTANCE];
-              if ($child._dozAttach[COMPONENT_DYNAMIC_INSTANCE])
-                  $newNodeChild._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = $child._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
-              if ($child._dozAttach[COMPONENT_ROOT_INSTANCE])
-                  $newNodeChild._dozAttach[COMPONENT_ROOT_INSTANCE] = $child._dozAttach[COMPONENT_ROOT_INSTANCE];
-              if ($child._dozAttach[PROPS_ATTRIBUTES])
-                  $newNodeChild._dozAttach[PROPS_ATTRIBUTES] = $child._dozAttach[PROPS_ATTRIBUTES];
-              if ($child._dozAttach[ALREADY_WALKED])
-                  $newNodeChild._dozAttach[ALREADY_WALKED] = $child._dozAttach[ALREADY_WALKED];
-              if ($child._dozAttach[DEFAULT_SLOT_KEY])
-                  $newNodeChild._dozAttach[DEFAULT_SLOT_KEY] = $child._dozAttach[DEFAULT_SLOT_KEY];
-                $child = $newNodeChild;
           }
-          */
 
-
-          var props = serializeProps($child); //console.log('serialized', props)
-
+          var props = serializeProps($child);
           var componentDirectives = {};
           var newElement = void 0;
 
