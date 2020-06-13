@@ -5,29 +5,10 @@ const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
 const makeSureAttach = require('./component/make-sure-attach');
-/*Object.defineProperty(Node.prototype, '_dozAttach', {
-    get() {
-        if (!this._dozAttachObject)
-            this._dozAttachObject = Object.create(null);
-        return this._dozAttachObject;
-    },
-    set(k, v) {
-        this._dozAttachObject[k] = v;
-        return this._dozAttachObject;
-    },
-    enumerable: true,
-    configurable: true
-});*/
+
 class Doz {
 
     constructor(cfg = {}) {
-
-        //Object.defineProperty(Node.prototype, '_dozAttachObject', {value: {}});
-        //Node.prototype._dozAttachObject = {};
-        //console.log(Node.__proto__)
-        //console.log(Node.prototype)
-        //Node.prototype.addEventListener('')
-
 
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
 
