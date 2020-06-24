@@ -4,9 +4,9 @@ directive(':id', {
 
     createId(instance, id) {
         if (typeof id === 'string') {
-            if (instance.app._ids[id] !== undefined) {
+            /*if (instance.app._ids[id] !== undefined) {
                 throw new Error(`ID already defined: ${id}`);
-            }
+            }*/
             instance.app._ids[id] = instance;
             instance.id = id;
         }
