@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.3.1  
+// [DOZ]  Build version: 3.3.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3686,7 +3686,7 @@ Object.defineProperties(Doz, {
     value: mapper
   },
   version: {
-    value: '3.3.1',
+    value: '3.3.2',
     enumerable: true
   },
   tag: {
@@ -6019,10 +6019,9 @@ var _require = __webpack_require__(0),
 directive(':id', {
   createId: function createId(instance, id) {
     if (typeof id === 'string') {
-      if (instance.app._ids[id] !== undefined) {
-        throw new Error("ID already defined: ".concat(id));
-      }
-
+      /*if (instance.app._ids[id] !== undefined) {
+          throw new Error(`ID already defined: ${id}`);
+      }*/
       instance.app._ids[id] = instance;
       instance.id = id;
     }
