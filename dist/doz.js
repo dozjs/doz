@@ -247,10 +247,14 @@ module.exports = {
 /* 3 */
 /***/ (function(module, exports) {
 
-var raf = window.requestAnimationFrame || window.setTimeout;
+//const raf = window.requestAnimationFrame || window.setTimeout;
+var raf = function raf(cb) {
+  cb();
+};
 /*function delay(cb) {
         return raf(cb);
 }*/
+
 
 module.exports = raf;
 
