@@ -247,14 +247,14 @@ module.exports = {
 /* 3 */
 /***/ (function(module, exports) {
 
-//const raf = window.requestAnimationFrame || window.setTimeout;
-var raf = function raf(cb) {
-  cb();
-};
+var raf = window.requestAnimationFrame || window.setTimeout;
+/*const raf = function (cb) {
+    cb();
+};*/
+
 /*function delay(cb) {
         return raf(cb);
 }*/
-
 
 module.exports = raf;
 
@@ -985,6 +985,8 @@ var cloneObject = __webpack_require__(54);
 
 var toLiteralString = __webpack_require__(25);
 
+var delay = __webpack_require__(3);
+
 var makeSureAttach = __webpack_require__(4);
 
 var data = __webpack_require__(10); //const mapCompiled = require('../vdom/map-compiled');
@@ -1150,9 +1152,9 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
     value: function commit() {
       var _this2 = this;
 
-      requestAnimationFrame(function () {
+      delay(function () {
         return _this2.renderResume();
-      });
+      }); //this.renderResume();
     }
   }, {
     key: "mount",

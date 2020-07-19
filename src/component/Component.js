@@ -18,6 +18,7 @@ const DOMManipulation = require('./DOMManipulation');
 const directive = require('../directives');
 const cloneObject = require('../utils/clone-object');
 const toLiteralString = require('../utils/to-literal-string');
+const delay = require('../utils/delay');
 const makeSureAttach = require('./make-sure-attach');
 const data = require('../data')
 
@@ -217,7 +218,8 @@ class Component extends DOMManipulation {
     }
 
     commit() {
-        requestAnimationFrame(() => this.renderResume());
+        delay(() => this.renderResume());
+        //this.renderResume();
     }
 
     get isRenderPause() {
