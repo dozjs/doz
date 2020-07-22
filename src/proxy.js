@@ -83,7 +83,7 @@ const ObservableSlim = (function () {
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
-            if (domDelay === true) {
+            if (domDelay === true && !observable.disableDOMDelay) {
                 delay(function () {
                     if (numChanges === changes.length) {
                         // invoke any functions that are observing changes
@@ -318,6 +318,8 @@ const ObservableSlim = (function () {
                         // will need to stop monitoring this object and any nested objects underneath the overwritten object else they'll become
                         // orphaned and grow memory usage. we excute this on a setTimeout so that the clean-up process does not block
                         // the UI rendering -- there's no need to execute the clean up immediately
+
+                        /*
                         setTimeout(function () {
 
                             if (typeOfTargetProp === 'object' && targetProp !== null) {
@@ -406,6 +408,7 @@ const ObservableSlim = (function () {
                                 })(targetProp)
                             }
                         }, 10000);
+                        */
 
                         // because the value actually differs than the previous value
                         // we need to store the new value on the original target object
@@ -659,6 +662,42 @@ const ObservableSlim = (function () {
             while (i--) {
                 if (observables[i].parentProxy === proxy) {
                     observables[i].renderMode = false;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('proxy not found.');
+        },
+
+        /**
+         * disableDOMDelayBegin
+         * @description This method set disableDOMDelay to true.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         */
+        disableDOMDelayBegin: function (proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].disableDOMDelay = true;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch === false) throw new Error('proxy not found.');
+        },
+
+        /**
+         * disableDOMDelayEnd
+         * @description This method set disableDOMDelay to false.
+         * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+         */
+        disableDOMDelayEnd: function (proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].disableDOMDelay = false;
                     foundMatch = true;
                     break;
                 }

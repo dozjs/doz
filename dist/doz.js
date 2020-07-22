@@ -1145,21 +1145,20 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
   }, {
     key: "prepareCommit",
     value: function prepareCommit() {
+      proxy.disableDOMDelayBegin(this.props);
       this.renderPause();
     }
   }, {
     key: "commit",
     value: function commit() {
-      var _this2 = this;
-
-      delay(function () {
-        return _this2.renderResume();
-      }); //this.renderResume();
+      //delay(() => this.renderResume());
+      this.renderResume();
+      proxy.disableDOMDelayEnd(this.props);
     }
   }, {
     key: "mount",
     value: function mount(template) {
-      var _this3 = this;
+      var _this2 = this;
 
       var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1174,7 +1173,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         hooks.callMount(this);
 
         var _defined = function _defined(child) {
-          _this3.children[child].mount();
+          _this2.children[child].mount();
         };
 
         var _defined2 = Object.keys(this.children);
@@ -1206,7 +1205,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
   }, {
     key: "unmount",
     value: function unmount() {
-      var _this4 = this;
+      var _this3 = this;
 
       var onlyInstance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       var byDestroy = arguments.length > 1 ? arguments[1] : undefined;
@@ -1236,7 +1235,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       if (!silently) hooks.callUnmount(this);
 
       var _defined3 = function _defined3(child) {
-        _this4.children[child].unmount(onlyInstance, byDestroy, silently);
+        _this3.children[child].unmount(onlyInstance, byDestroy, silently);
       };
 
       var _defined4 = Object.keys(this.children);
@@ -1250,7 +1249,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
   }, {
     key: "destroy",
     value: function destroy(onlyInstance) {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this.lockRemoveInstanceByCallback && typeof this.lockRemoveInstanceByCallback === 'function') {
         this.lockRemoveInstanceByCallback(this.destroy, onlyInstance);
@@ -1268,7 +1267,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       }
 
       var _defined5 = function _defined5(child) {
-        _this5.children[child].destroy();
+        _this4.children[child].destroy();
       };
 
       var _defined6 = Object.keys(this.children);
@@ -2103,7 +2102,7 @@ var ObservableSlim = function () {
       // separately on every change -- this is necessary because the observer functions will often trigger UI updates
 
 
-      if (domDelay === true) {
+      if (domDelay === true && !observable.disableDOMDelay) {
         delay(function () {
           if (numChanges === changes.length) {
             // invoke any functions that are observing changes
@@ -2334,91 +2333,82 @@ var ObservableSlim = function () {
             // orphaned and grow memory usage. we excute this on a setTimeout so that the clean-up process does not block
             // the UI rendering -- there's no need to execute the clean up immediately
 
+            /*
             setTimeout(function () {
-              if (typeOfTargetProp === 'object' && targetProp !== null) {
-                // check if the to-be-overwritten target property still exists on the target object
-                // if it does still exist on the object, then we don't want to stop observing it. this resolves
-                // an issue where array .sort() triggers objects to be overwritten, but instead of being overwritten
-                // and discarded, they are shuffled to a new position in the array
-                var keys = Object.keys(target);
-
-                for (var i = 0, _l2 = keys.length; i < _l2; i++) {
-                  if (target[keys[i]] === targetProp) {
-                    //console.log('target still exists');
-                    return;
-                  }
+                  if (typeOfTargetProp === 'object' && targetProp !== null) {
+                      // check if the to-be-overwritten target property still exists on the target object
+                    // if it does still exist on the object, then we don't want to stop observing it. this resolves
+                    // an issue where array .sort() triggers objects to be overwritten, but instead of being overwritten
+                    // and discarded, they are shuffled to a new position in the array
+                    let keys = Object.keys(target);
+                    for (let i = 0, l = keys.length; i < l; i++) {
+                        if (target[keys[i]] === targetProp) {
+                            //console.log('target still exists');
+                            return;
+                        }
+                    }
+                        let stillExists = false;
+                      // now we perform the more expensive search recursively through the target object.
+                    // if we find the targetProp (that was just overwritten) still exists somewhere else
+                    // further down in the object, then we still need to observe the targetProp on this observable.
+                    (function iterate(target) {
+                        const keys = Object.keys(target);
+                        let i = 0, l = keys.length;
+                        for (; i < l; i++) {
+                              const property = keys[i];
+                            const nestedTarget = target[property];
+                              if (nestedTarget instanceof Object) iterate(nestedTarget);
+                            if (nestedTarget === targetProp) {
+                                stillExists = true;
+                                return;
+                            }
+                        }
+                    })(target);
+                      // even though targetProp was overwritten, if it still exists somewhere else on the object,
+                    // then we don't want to remove the observable for that object (targetProp)
+                    if (stillExists === true) return;
+                      // loop over each property and recursively invoke the `iterate` function for any
+                    // objects nested on targetProp
+                    (function iterate(obj) {
+                          let keys = Object.keys(obj);
+                        for (let i = 0, l = keys.length; i < l; i++) {
+                            let objProp = obj[keys[i]];
+                            if (objProp instanceof Object) iterate(objProp);
+                        }
+                          // if there are any existing target objects (objects that we're already observing)...
+                        //let c = targets.indexOf(obj);
+                        let c = -1;
+                        for (let i = 0, l = targets.length; i < l; i++) {
+                            if (obj === targets[i]) {
+                                c = i;
+                                break;
+                            }
+                        }
+                        if (c > -1) {
+                              // ...then we want to determine if the observables for that object match our current observable
+                            let currentTargetProxy = targetsProxy[c];
+                            let d = currentTargetProxy.length;
+                              while (d--) {
+                                // if we do have an observable monitoring the object thats about to be overwritten
+                                // then we can remove that observable from the target object
+                                if (observable === currentTargetProxy[d].observable) {
+                                    currentTargetProxy.splice(d, 1);
+                                    break;
+                                }
+                            }
+                              // if there are no more observables assigned to the target object, then we can remove
+                            // the target object altogether. this is necessary to prevent growing memory consumption particularly with large data sets
+                            if (currentTargetProxy.length === 0) {
+                                targets[c] = null;
+                                //targetsProxy.splice(c, 1);
+                                //targets.splice(c, 1);
+                            }
+                        }
+                      })(targetProp)
                 }
-
-                var stillExists = false; // now we perform the more expensive search recursively through the target object.
-                // if we find the targetProp (that was just overwritten) still exists somewhere else
-                // further down in the object, then we still need to observe the targetProp on this observable.
-
-                (function iterate(target) {
-                  var keys = Object.keys(target);
-                  var i = 0,
-                      l = keys.length;
-
-                  for (; i < l; i++) {
-                    var _property = keys[i];
-                    var nestedTarget = target[_property];
-                    if (nestedTarget instanceof Object) iterate(nestedTarget);
-
-                    if (nestedTarget === targetProp) {
-                      stillExists = true;
-                      return;
-                    }
-                  }
-                })(target); // even though targetProp was overwritten, if it still exists somewhere else on the object,
-                // then we don't want to remove the observable for that object (targetProp)
-
-
-                if (stillExists === true) return; // loop over each property and recursively invoke the `iterate` function for any
-                // objects nested on targetProp
-
-                (function iterate(obj) {
-                  var keys = Object.keys(obj);
-
-                  for (var _i = 0, _l3 = keys.length; _i < _l3; _i++) {
-                    var objProp = obj[keys[_i]];
-                    if (objProp instanceof Object) iterate(objProp);
-                  } // if there are any existing target objects (objects that we're already observing)...
-                  //let c = targets.indexOf(obj);
-
-
-                  var c = -1;
-
-                  for (var _i2 = 0, _l4 = targets.length; _i2 < _l4; _i2++) {
-                    if (obj === targets[_i2]) {
-                      c = _i2;
-                      break;
-                    }
-                  }
-
-                  if (c > -1) {
-                    // ...then we want to determine if the observables for that object match our current observable
-                    var _currentTargetProxy = targetsProxy[c];
-                    var d = _currentTargetProxy.length;
-
-                    while (d--) {
-                      // if we do have an observable monitoring the object thats about to be overwritten
-                      // then we can remove that observable from the target object
-                      if (observable === _currentTargetProxy[d].observable) {
-                        _currentTargetProxy.splice(d, 1);
-
-                        break;
-                      }
-                    } // if there are no more observables assigned to the target object, then we can remove
-                    // the target object altogether. this is necessary to prevent growing memory consumption particularly with large data sets
-
-
-                    if (_currentTargetProxy.length === 0) {
-                      targets[c] = null; //targetsProxy.splice(c, 1);
-                      //targets.splice(c, 1);
-                    }
-                  }
-                })(targetProp);
-              }
-            }, 10000); // because the value actually differs than the previous value
+            }, 10000);
+            */
+            // because the value actually differs than the previous value
             // we need to store the new value on the original target object
 
             target[property] = value; // TO DO: the next block of code resolves test case #24, but it results in poor IE11 performance. Find a solution.
@@ -2430,9 +2420,9 @@ var ObservableSlim = function () {
                 var target = proxy.__getTarget;
                 var keys = Object.keys(target);
 
-                for (var i = 0, _l5 = keys.length; i < _l5; i++) {
-                  var _property2 = keys[i];
-                  if (target[_property2] instanceof Object && target[_property2] !== null) iterate(proxy[_property2]);
+                for (var i = 0, _l2 = keys.length; i < _l2; i++) {
+                  var _property = keys[i];
+                  if (target[_property] instanceof Object && target[_property] !== null) iterate(proxy[_property]);
                 }
               })(proxy[property]);
             }
@@ -2677,6 +2667,46 @@ var ObservableSlim = function () {
       while (i--) {
         if (observables[i].parentProxy === proxy) {
           observables[i].renderMode = false;
+          foundMatch = true;
+          break;
+        }
+      }
+
+      if (foundMatch === false) throw new Error('proxy not found.');
+    },
+
+    /**
+     * disableDOMDelayBegin
+     * @description This method set disableDOMDelay to true.
+     * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+     */
+    disableDOMDelayBegin: function disableDOMDelayBegin(proxy) {
+      var i = observables.length;
+      var foundMatch = false;
+
+      while (i--) {
+        if (observables[i].parentProxy === proxy) {
+          observables[i].disableDOMDelay = true;
+          foundMatch = true;
+          break;
+        }
+      }
+
+      if (foundMatch === false) throw new Error('proxy not found.');
+    },
+
+    /**
+     * disableDOMDelayEnd
+     * @description This method set disableDOMDelay to false.
+     * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
+     */
+    disableDOMDelayEnd: function disableDOMDelayEnd(proxy) {
+      var i = observables.length;
+      var foundMatch = false;
+
+      while (i--) {
+        if (observables[i].parentProxy === proxy) {
+          observables[i].disableDOMDelay = false;
           foundMatch = true;
           break;
         }
