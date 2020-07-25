@@ -38,9 +38,9 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
         // like onclick, onmousedown etc. ...
         // handlers are associated to the element only once.
         // at the moment the only way to remove the keys is to take them.
-        if (isEventAttribute(name) && typeof value === 'string') {
-            mapper.getAll(value);
-        }
+        //if (isEventAttribute(name) && typeof value === 'string') {
+            //mapper.getAll(value);
+        //}
         /*} else if (typeof value === 'boolean') {
             setBooleanAttribute($target, name, value);*/
     } else {
@@ -241,7 +241,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 function attach($target, nodeProps, cmp, cmpParent, isSVG) {
 
     let name;
-
+//console.log(nodeProps)
     const propsKeys = Object.keys(nodeProps);
 
     for (let i = 0, len = propsKeys.length; i < len; i++) {

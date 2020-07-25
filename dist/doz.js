@@ -697,7 +697,7 @@ var Element = /*#__PURE__*/function () {
         this.hasKeys = true;
       }
 
-      this.children.push(node);
+      if (Array.isArray(node)) this.children = node;else this.children.push(node);
       return node;
     }
   }]);
@@ -712,8 +712,6 @@ function placeholderIndex(str, arr) {
     return arr[matched[1]];
   } else return str;
 }
-
-var cacheTpl = Object.create(null);
 
 function compile(data, values) {
   if (!data) return '';
@@ -751,7 +749,7 @@ function compile(data, values) {
         if (text) {
           //console.log(text)
           //let possibleCompiled = mapper.get(text.trim());
-          var possibleCompiled = placeholderIndex(text.trim(), values);
+          var possibleCompiled = placeholderIndex(text, values);
 
           if (!Array.isArray(possibleCompiled)) {
             //console.log(currentParent)
@@ -759,8 +757,10 @@ function compile(data, values) {
               //console.log('currentParent.style', currentParent.style)
               currentParent.style = possibleCompiled === undefined ? text : possibleCompiled; //console.log(currentParent)
             } else {
-              currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+              currentParent.appendChild(possibleCompiled);
             }
+          } else {
+            currentParent.appendChild(possibleCompiled);
           }
         }
       }
@@ -896,16 +896,16 @@ function propsFixer(nName, aName, aValue, props, $node) {
       propsName = newPropsName;
     });
   }
-
-  if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
-    aValue = mapper.getAll(aValue);
-  } else {
-    var objValue = mapper.get(aValue);
-
-    if (objValue !== undefined) {
-      aValue = objValue;
-    }
-  } //console.log('AFTER :', aName, aValue)
+  /*
+      if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
+          aValue = mapper.getAll(aValue);
+      } else {
+          let objValue = mapper.get(aValue);
+          if (objValue !== undefined) {
+              aValue = objValue;
+          }
+      }*/
+  //console.log('AFTER :', aName, aValue)
 
 
   props[propsName] = aName === ATTR.FORCE_UPDATE ? true : aValue;
@@ -2858,10 +2858,9 @@ function isChanged(nodeA, nodeB) {
 function create(node, cmp, initial, cmpParent) {
   if (typeof node === 'undefined') return;
   var nodeStored;
-  var $el;
-  var originalTagName;
+  var $el; //let originalTagName;
 
-  if (typeof node === 'string') {
+  if (_typeof(node) !== 'object') {
     return document.createTextNode( // use decode only if necessary
     canDecode(node));
   }
@@ -2883,7 +2882,8 @@ function create(node, cmp, initial, cmpParent) {
     //originalTagName = node.props['data-attributeoriginaletagname'];
     $el = node.isSVG ? document.createElementNS(NS.SVG, node.type) : document.createElement(node.type);
     storeElementNode[node.type] = $el.cloneNode(true);
-  }
+  } //console.log(node);
+
 
   attach($el, node.props, cmp, cmpParent, node.isSVG); // The children with keys will be created later
 
@@ -3345,7 +3345,8 @@ var _require2 = __webpack_require__(8),
 var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
 var LESSER = '<';
-var GREATER = '>'; //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
+var GREATER = '>';
+var cacheTpl = Object.create(null); //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
 //const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
@@ -3363,12 +3364,13 @@ module.exports = function (strings) {
   //console.log('val', value);
   // Why? cycling require :D
   //let Component = require('../component/Component');
-  var result = strings[0];
-  var result2 = strings[0];
+  var tpl = strings[0]; //et result2 = strings[0];
+
   var allowTag = false;
   var isInStyle = false;
   var thereIsStyle = false;
   var isBoundedToComponent = !!this._components;
+  var compiled;
 
   for (var _len = arguments.length, value = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     value[_key - 1] = arguments[_key];
@@ -3377,27 +3379,23 @@ module.exports = function (strings) {
   var valueLength = value.length;
 
   for (var i = 0; i < valueLength; ++i) {
-    var isComponentConstructor = false;
+    var isComponentConstructor = false; //if (Array.isArray(value[i])) {
 
-    if (Array.isArray(value[i])) {
-      var newValueString = '';
-
-      for (var j = 0; j < value[i].length; j++) {
-        var obj = value[i][j];
-
-        if (_typeof(obj) === 'object' && obj.constructor && obj.constructor === Element) {
-          newValueString += "<".concat(tagIterate, ">").concat(mapper.set(obj), "</").concat(tagIterate, ">");
+    /*let newValueString = '';
+    for (let j = 0; j < value[i].length; j++) {
+        let obj = value[i][j];
+        if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
+            newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
         }
-      }
-
-      if (newValueString) {
-        console.error('aaaaaaaaaaaaaaaa');
+    }
+    if (newValueString) {
+        console.error('aaaaaaaaaaaaaaaa')
         value[i] = newValueString;
-      }
-    }
-
-    if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {//value[i] = mapper.set(value[i]);
-    }
+    }*/
+    //}
+    //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
+    //value[i] = mapper.set(value[i]);
+    //}
 
     var stringsI = strings[i];
     var stringLength = stringsI.length;
@@ -3421,7 +3419,7 @@ module.exports = function (strings) {
 
     if (isInStyle) {
       allowTag = false;
-      result = result.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
+      tpl = tpl.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
     } //
 
 
@@ -3485,29 +3483,37 @@ module.exports = function (strings) {
 
     if (allowTag) {
       //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-      result += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
+      if (Array.isArray(value[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
     } else {
       // If is not component constructor then add to map.
       // Exclude string type and style also
-      if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {//value[i] = mapper.set(value[i]);
-      }
-
+      //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
+      //value[i] = mapper.set(value[i]);
+      //}
       if (attributeOriginalTagName) {
         //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-        result += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+        tpl += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
       } else {
         //result += `${value[i]}${strings[i + 1]}`;
-        result += "___{".concat(i, "}___").concat(strings[i + 1]);
+        tpl += "___{".concat(i, "}___").concat(strings[i + 1]);
       }
     }
   }
 
-  result = result.trim();
-  console.log('RESULT --->', result); //console.log('RESULT2 -->', result2, value)
+  tpl = tpl.trim();
 
-  result = compile(result, value);
-  console.log('COMPILED', result);
-  return result;
+  if (!cacheTpl[tpl]) {
+    //console.log('RESULT --->', result)
+    //console.log('RESULT2 -->', result2, value)
+    compiled = compile(tpl, value); //console.log('COMPILED', result)
+
+    cacheTpl[tpl] = compiled;
+  } else {
+    compiled = cacheTpl[tpl];
+    console.log(value);
+  }
+
+  return compiled;
 };
 
 /***/ }),
@@ -4722,17 +4728,16 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
 
   if (_isDirective) $target._dozAttach.hasDirective = true;
 
-  if ((isCustomAttribute(name) || typeof value === 'function' || _typeof(value) === 'object') && !_isDirective) {
-    // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
+  if ((isCustomAttribute(name) || typeof value === 'function' || _typeof(value) === 'object') && !_isDirective) {// why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
     // like onclick, onmousedown etc. ...
     // handlers are associated to the element only once.
     // at the moment the only way to remove the keys is to take them.
-    if (isEventAttribute(name) && typeof value === 'string') {
-      mapper.getAll(value);
-    }
+    //if (isEventAttribute(name) && typeof value === 'string') {
+    //mapper.getAll(value);
+    //}
+
     /*} else if (typeof value === 'boolean') {
         setBooleanAttribute($target, name, value);*/
-
   } else {
     if (value === undefined) value = '';
 
@@ -4921,7 +4926,8 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 }
 
 function attach($target, nodeProps, cmp, cmpParent, isSVG) {
-  var name;
+  var name; //console.log(nodeProps)
+
   var propsKeys = Object.keys(nodeProps);
 
   for (var i = 0, len = propsKeys.length; i < len; i++) {

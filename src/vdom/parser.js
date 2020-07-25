@@ -69,7 +69,10 @@ class Element {
         if (node.props && node.props.key !== undefined) {
             this.hasKeys = true;
         }
-        this.children.push(node);
+        if (Array.isArray(node))
+            this.children = node;
+        else
+            this.children.push(node);
         return node;
     }
 
@@ -83,7 +86,7 @@ function placeholderIndex(str, arr) {
         return str;
 }
 
-let cacheTpl = Object.create(null);
+
 function compile(data, values) {
     if (!data) return '';
 
@@ -120,7 +123,7 @@ function compile(data, values) {
                 if (text) {
                     //console.log(text)
                     //let possibleCompiled = mapper.get(text.trim());
-                    let possibleCompiled = placeholderIndex(text.trim(), values);
+                    let possibleCompiled = placeholderIndex(text, values);
                     if (!Array.isArray(possibleCompiled)) {
                         //console.log(currentParent)
                         if (currentParent.style === true) {
@@ -128,8 +131,10 @@ function compile(data, values) {
                             currentParent.style = possibleCompiled === undefined ? text : possibleCompiled;
                             //console.log(currentParent)
                         } else {
-                            currentParent.appendChild(possibleCompiled === undefined ? text : possibleCompiled);
+                            currentParent.appendChild(possibleCompiled);
                         }
+                    } else {
+                        currentParent.appendChild(possibleCompiled);
                     }
                 }
             }
@@ -270,7 +275,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
-
+/*
     if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
         aValue = mapper.getAll(aValue);
     } else {
@@ -278,7 +283,7 @@ function propsFixer(nName, aName, aValue, props, $node) {
         if (objValue !== undefined) {
             aValue = objValue;
         }
-    }
+    }*/
 
     //console.log('AFTER :', aName, aValue)
     props[propsName] = aName === ATTR.FORCE_UPDATE

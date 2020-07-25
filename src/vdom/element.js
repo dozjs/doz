@@ -21,9 +21,9 @@ function create(node, cmp, initial, cmpParent) {
 
     let nodeStored;
     let $el;
-    let originalTagName;
+    //let originalTagName;
 
-    if (typeof node === 'string') {
+    if (typeof node !== 'object') {
         return document.createTextNode(
             // use decode only if necessary
             canDecode(node)
@@ -52,6 +52,7 @@ function create(node, cmp, initial, cmpParent) {
         storeElementNode[node.type] = $el.cloneNode(true);
     }
 
+    //console.log(node);
     attach($el, node.props, cmp, cmpParent, node.isSVG);
     // The children with keys will be created later
     if (!node.hasKeys) {
