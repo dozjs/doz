@@ -96,7 +96,6 @@ const ObservableSlim = (function () {
                 for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                 changes = [];
             }
-
         };
 
         let handler = {
