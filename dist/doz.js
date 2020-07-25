@@ -705,8 +705,33 @@ var Element = /*#__PURE__*/function () {
   return Element;
 }();
 
-function compile(data, cmp) {
+function placeholderIndex(str, arr) {
+  var matched = /___{(\d+)}___/g.exec(str);
+
+  if (matched && matched[1] && arr[matched[1]] !== undefined) {
+    return arr[matched[1]];
+  } else return str;
+}
+
+var cacheTpl = Object.create(null);
+
+function compile(data, values) {
   if (!data) return '';
+  /*let tplNoPlaceholder = data.replace(/(\/\*.*?=%{\d+}%=\*\/)|<dz-text-node>(.*?)<\/dz-text-node>/g, (x, p1, p2) => {
+      //console.log(p1, p2)
+      return '';
+  });*/
+  //tplNoPlaceholder = tplNoPlaceholder.replace(/<dz-text-node>.*?<\/dz-text-node>/g, '');
+  //let noCached = false;
+
+  /*if (cacheTpl[tplNoPlaceholder]) {
+      //console.log('a', tplNoPlaceholder)
+      //console.log('b', cacheTpl[tplNoPlaceholder])
+      return cacheTpl[tplNoPlaceholder];
+  } else {
+      noCached = true;
+  }*/
+
   var root = new Element(null, {});
   var stack = [root];
   var currentParent = root;
@@ -724,7 +749,9 @@ function compile(data, cmp) {
         // if has content
 
         if (text) {
-          var possibleCompiled = mapper.get(text.trim());
+          //console.log(text)
+          //let possibleCompiled = mapper.get(text.trim());
+          var possibleCompiled = placeholderIndex(text.trim(), values);
 
           if (!Array.isArray(possibleCompiled)) {
             //console.log(currentParent)
@@ -762,7 +789,8 @@ function compile(data, cmp) {
         //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
         //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
         //console.log(attMatch[2])
-        props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
+        props[attMatch[2]] = placeholderIndex(attMatch[5] || attMatch[6] || '', values); //console.warn(props[attMatch[2]])
+
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
 
@@ -819,11 +847,15 @@ function compile(data, cmp) {
       root.children[0].style = root.style;
       root.children[0].styleScoped = root.styleScoped;
     }
-  }
+  } //console.log(data);
+
 
   if (root.children.length > 1) {
     root.type = TAG.ROOT;
   } else if (root.children.length) {
+    /*if (noCached) {
+        cacheTpl[tplNoPlaceholder] = root.children[0];
+    }*/
     return root.children[0];
   }
 
@@ -3332,6 +3364,7 @@ module.exports = function (strings) {
   // Why? cycling require :D
   //let Component = require('../component/Component');
   var result = strings[0];
+  var result2 = strings[0];
   var allowTag = false;
   var isInStyle = false;
   var thereIsStyle = false;
@@ -3357,34 +3390,25 @@ module.exports = function (strings) {
         }
       }
 
-      if (newValueString) value[i] = newValueString;
+      if (newValueString) {
+        console.error('aaaaaaaaaaaaaaaa');
+        value[i] = newValueString;
+      }
     }
 
-    if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {
-      value[i] = mapper.set(value[i]);
-    } //console.log(strings[i].split(''));
-    //console.log([...strings[i]]);
-    //let char;
-    //console.log(strings[i])
-
+    if (value[i] !== null && _typeof(value[i]) === 'object' && value[i].constructor && value[i].constructor === Element) {//value[i] = mapper.set(value[i]);
+    }
 
     var stringsI = strings[i];
     var stringLength = stringsI.length;
 
     for (var x = 0; x < stringLength; x++) {
-      //char = strings[i][x];
       if (stringsI[x] === LESSER) {
-        //console.log('a', strings[i][x], x)
-        allowTag = false; //continue
+        allowTag = false;
       } else if (stringsI[x] === GREATER) {
-        //console.log('b', strings[i][x], x)
         allowTag = true;
       }
     }
-    /*console.log('---------------')
-    console.log('-a', strings[i].indexOf(LESSER));
-    console.log('-b', strings[i].indexOf(GREATER));*/
-
 
     if (stringsI.indexOf('<style') > -1) {
       isInStyle = true;
@@ -3397,7 +3421,7 @@ module.exports = function (strings) {
 
     if (isInStyle) {
       allowTag = false;
-      result = result.replace(/ scoped>/, ' data-scoped>');
+      result = result.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
     } //
 
 
@@ -3411,8 +3435,7 @@ module.exports = function (strings) {
         isInHandler = true;
       } //}
 
-    } //console.log(isInHandler, value[i]);
-
+    }
 
     var attributeOriginalTagName = void 0; // if this function is bound to Doz component
 
@@ -3427,9 +3450,7 @@ module.exports = function (strings) {
 
         if (tagName.indexOf('-') === -1) {
           tagName = "".concat(tagName, "-").concat(tagName);
-        } //attributeOriginalTagName = tagName;
-        //let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
-
+        }
 
         var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
 
@@ -3446,11 +3467,7 @@ module.exports = function (strings) {
             tag: tagName,
             cfg: cmp
           };
-        }
-        /*else {
-          //attributeOriginalTagName = tagCmp;
-        }*/
-        // add to local app components
+        } // add to local app components
 
 
         if (this.app._components[tagCmp] === undefined) {
@@ -3460,69 +3477,36 @@ module.exports = function (strings) {
             cfg: cmp
           };
         }
-        /*else {
-          //attributeOriginalTagName = tagCmp;
-        }*/
 
-
-        attributeOriginalTagName = tagCmp; //console.log('---------->', tagCmp);
-
-        value[i] = tagName; //value[i] = tagCmp;
+        attributeOriginalTagName = tagCmp;
+        value[i] = tagName;
       }
     }
 
     if (allowTag) {
-      result += "<".concat(tagText, ">").concat(value[i], "</").concat(tagText, ">").concat(strings[i + 1]);
+      //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
+      result += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
     } else {
       // If is not component constructor then add to map.
       // Exclude string type and style also
-      //console.log(!isInStyle, !isComponentConstructor, typeof value[i] !== 'string', value[i])
-      if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-        value[i] = mapper.set(value[i]);
+      if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {//value[i] = mapper.set(value[i]);
       }
 
       if (attributeOriginalTagName) {
-        //console.log(attributeOriginalTagName)
-        result += "".concat(value[i], " data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
-      } else
-        /**/
-        result += "".concat(value[i]).concat(strings[i + 1]); //console.log('--------------', value[i], attributeOriginalTagName, strings[i + 1])
-
-    }
-  } // Funziona anche senza?
-
-  /*
-          result = result
-              .replace(regOpen, LESSER)
-              .replace(regClose, GREATER);*/
-  // Prima crea l'elemento e poi mette lo stile, dando un effetto poco piacevole, meglio lasciare
-  // il tag script con il tipo text/style
-
-  /*
-      if (isBoundedToComponent) {
-          // Now get style from complete string
-          if (thereIsStyle)
-              result = result.replace(regStyle, (match, p1) => {
-                  if (!this._rootElement || p1 === this._currentStyle) return '';
-                  if (match && p1) {
-                      // Here should be create the tag style
-                      this._currentStyle = p1;
-                      let isScoped = /scoped/.test(match);
-                      const dataSetUId = this.uId;
-                      this.getHTMLElement().dataset.uid = this.uId;
-                      let tagByData = `[data-uid="${dataSetUId}"]`;
-                      scopedInner(this._currentStyle, dataSetUId, tagByData, isScoped);
-                  }
-  
-                  return '';
-              });
+        //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+        result += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+      } else {
+        //result += `${value[i]}${strings[i + 1]}`;
+        result += "___{".concat(i, "}___").concat(strings[i + 1]);
       }
-  */
-  //console.log(result)
-
+    }
+  }
 
   result = result.trim();
-  result = compile(result);
+  console.log('RESULT --->', result); //console.log('RESULT2 -->', result2, value)
+
+  result = compile(result, value);
+  console.log('COMPILED', result);
   return result;
 };
 

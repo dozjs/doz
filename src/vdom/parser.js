@@ -75,9 +75,32 @@ class Element {
 
 }
 
-function compile(data, cmp) {
+function placeholderIndex(str, arr) {
+    let matched = /___{(\d+)}___/g.exec(str);
+    if (matched && matched[1] && arr[matched[1]] !== undefined) {
+        return arr[matched[1]]
+    } else
+        return str;
+}
 
+let cacheTpl = Object.create(null);
+function compile(data, values) {
     if (!data) return '';
+
+    /*let tplNoPlaceholder = data.replace(/(\/\*.*?=%{\d+}%=\*\/)|<dz-text-node>(.*?)<\/dz-text-node>/g, (x, p1, p2) => {
+        //console.log(p1, p2)
+        return '';
+    });*/
+    //tplNoPlaceholder = tplNoPlaceholder.replace(/<dz-text-node>.*?<\/dz-text-node>/g, '');
+    //let noCached = false;
+
+    /*if (cacheTpl[tplNoPlaceholder]) {
+        //console.log('a', tplNoPlaceholder)
+        //console.log('b', cacheTpl[tplNoPlaceholder])
+        return cacheTpl[tplNoPlaceholder];
+    } else {
+        noCached = true;
+    }*/
 
     const root = new Element(null, {});
     const stack = [root];
@@ -95,7 +118,9 @@ function compile(data, cmp) {
                 //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
-                    let possibleCompiled = mapper.get(text.trim());
+                    //console.log(text)
+                    //let possibleCompiled = mapper.get(text.trim());
+                    let possibleCompiled = placeholderIndex(text.trim(), values);
                     if (!Array.isArray(possibleCompiled)) {
                         //console.log(currentParent)
                         if (currentParent.style === true) {
@@ -132,7 +157,8 @@ function compile(data, cmp) {
                 //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
                 //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
                 //console.log(attMatch[2])
-                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
+                props[attMatch[2]] = placeholderIndex(attMatch[5] || attMatch[6] || '', values);
+                //console.warn(props[attMatch[2]])
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
                     attMatch[2],
@@ -192,10 +218,15 @@ function compile(data, cmp) {
             root.children[0].styleScoped = root.styleScoped;
         }
     }
+    //console.log(data);
+
 
     if (root.children.length > 1) {
         root.type = TAG.ROOT;
     } else if (root.children.length) {
+        /*if (noCached) {
+            cacheTpl[tplNoPlaceholder] = root.children[0];
+        }*/
         return root.children[0];
     }
 

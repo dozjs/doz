@@ -100,7 +100,6 @@ const ObservableSlim = (function () {
 
         let handler = {
             get: function (target, property) {
-
                 // implement a simple check for whether or not the object is a proxy, this helps the .create() method avoid
                 // creating Proxies of Proxies.
                 if (property === '__getTarget') {
@@ -237,7 +236,6 @@ const ObservableSlim = (function () {
 
             },
             set: function (target, property, value, receiver) {
-
                 // was this change an original change or was it a change that was re-triggered below
                 let originalChange = true;
                 if (dupProxy === proxy) {

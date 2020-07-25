@@ -165,7 +165,6 @@ class Component extends DOMManipulation {
         this.beginSafeRender();
         const propsKeys = Object.keys(this.props);
         const templateArgs = [this.h];
-
         for (let i = 0; i < propsKeys.length; i++) {
             templateArgs.push(this.props[propsKeys[i]]);
         }
