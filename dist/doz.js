@@ -3313,11 +3313,12 @@ module.exports = camelToDash;
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var _require = __webpack_require__(1),
-    TAG = _require.TAG;
+    TAG = _require.TAG; //const mapper = require('./mapper');
 
-var mapper = __webpack_require__(6);
 
-var camelToDash = __webpack_require__(21); //const eventsAttributes = require('../utils/events-attributes');
+var camelToDash = __webpack_require__(21);
+
+var deepCopy = __webpack_require__(75); //const eventsAttributes = require('../utils/events-attributes');
 //const {scopedInner} = require('../component/helpers/style');
 
 
@@ -3325,8 +3326,8 @@ var _require2 = __webpack_require__(8),
     compile = _require2.compile,
     Element = _require2.Element;
 
-var tagText = TAG.TEXT_NODE_PLACE;
-var tagIterate = TAG.ITERATE_NODE_PLACE;
+var tagText = TAG.TEXT_NODE_PLACE; //const tagIterate = TAG.ITERATE_NODE_PLACE;
+
 var LESSER = '<';
 var GREATER = '>';
 
@@ -3500,32 +3501,6 @@ module.exports = function (strings) {
   return cloned;
 };
 
-function deepCopy(obj) {
-  // if not array or object or is null return self
-  if (_typeof(obj) !== 'object' || obj === null) return obj;
-  var newObj, i; // handle case: array
-
-  if (Array.isArray(obj)) {
-    var l;
-    newObj = [];
-
-    for (i = 0, l = obj.length; i < l; i++) {
-      newObj[i] = deepCopy(obj[i]);
-    }
-
-    return newObj;
-  } // handle case: object
-
-
-  newObj = {};
-
-  for (i in obj) {
-    if (obj.hasOwnProperty(i)) newObj[i] = deepCopy(obj[i]);
-  }
-
-  return newObj;
-}
-
 function fillCompiled(obj, values, parent) {
   var keys = Object.keys(obj);
 
@@ -3540,6 +3515,7 @@ function fillCompiled(obj, values, parent) {
       if (Array.isArray(value)) {
         //console.log(parent, value)
         parent.children = value;
+        if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
       } else obj[keys[i]] = value;
     }
   }
@@ -7077,6 +7053,40 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function deepCopy(obj) {
+  // if not array or object or is null return self
+  if (_typeof(obj) !== 'object' || obj === null) return obj;
+  var newObj, i; // handle case: array
+
+  if (Array.isArray(obj)) {
+    var l;
+    newObj = [];
+
+    for (i = 0, l = obj.length; i < l; i++) {
+      newObj[i] = deepCopy(obj[i]);
+    }
+
+    return newObj;
+  } // handle case: object
+
+
+  newObj = {};
+
+  for (i in obj) {
+    if (obj.hasOwnProperty(i)) newObj[i] = deepCopy(obj[i]);
+  }
+
+  return newObj;
+}
+
+module.exports = deepCopy;
 
 /***/ })
 /******/ ]);

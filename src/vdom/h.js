@@ -1,11 +1,12 @@
 const {TAG} = require('../constants');
-const mapper = require('./mapper');
+//const mapper = require('./mapper');
 const camelToDash = require('../utils/camel-to-dash');
+const deepCopy = require('../utils/deep-copy');
 //const eventsAttributes = require('../utils/events-attributes');
 //const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
-const tagIterate = TAG.ITERATE_NODE_PLACE;
+//const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
 
@@ -183,27 +184,6 @@ module.exports = function (strings, ...values) {
     return cloned;
 };
 
-function deepCopy(obj) {
-    // if not array or object or is null return self
-    if (typeof obj !== 'object' || obj === null) return obj;
-    let newObj, i;
-    // handle case: array
-    if (Array.isArray(obj)) {
-        let l;
-        newObj = [];
-        for (i = 0, l = obj.length; i < l; i++)
-            newObj[i] = deepCopy(obj[i]);
-        return newObj;
-    }
-    // handle case: object
-    newObj = {};
-    for (i in obj)
-        if (obj.hasOwnProperty(i))
-            newObj[i] = deepCopy(obj[i]);
-
-    return newObj;
-}
-
 function fillCompiled(obj, values, parent) {
     let keys = Object.keys(obj);
 
@@ -217,6 +197,8 @@ function fillCompiled(obj, values, parent) {
             if (Array.isArray(value)) {
                 //console.log(parent, value)
                 parent.children = value;
+                if (value[0] && value[0].key !== undefined)
+                    parent.hasKeys = true;
             } else
                 obj[keys[i]] = value;
         }

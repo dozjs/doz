@@ -30,6 +30,7 @@ const actions = {
     },
 
     del(id) {
+        console.log(id);
         this.mainComponent.prepareCommit();
         const data = this.getStore('records').data;
         const idx = data.findIndex(d => d.id === id);
@@ -131,7 +132,7 @@ new Doz({
                     <tr key="${item.id}" onclick="${() => this.action.select(item.id)}" class="${item.selected ? 'danger' : ''}" >
                         <td class="col-md-1">${item.id}</td>
                         <td class="col-md-4" >
-                            <a>${item.label}</a>
+                            <a>${item.label} ${item.id}</a>
                         </td>
                         <td class="col-md-1">
                             <a>
