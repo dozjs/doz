@@ -178,7 +178,8 @@ class Component extends DOMManipulation {
 
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
-
+//console.log(next)
+//console.log(this._prev)
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag

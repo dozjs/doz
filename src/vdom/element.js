@@ -17,7 +17,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-    if (typeof node === 'undefined') return;
+    if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0) return;
 
     let nodeStored;
     let $el;
@@ -31,7 +31,7 @@ function create(node, cmp, initial, cmpParent) {
     }
 
     if (node.type == null || node.type[0] === '#') {
-        node.type = TAG.EMPTY;
+        node = {type: TAG.EMPTY, props: {}, children: []};
     }
 
     if (node.props && node.props.slot && !node.isNewSlotEl) {
@@ -62,7 +62,8 @@ function create(node, cmp, initial, cmpParent) {
         } else {
             for (let i = 0; i < node.children.length; i++) {
                 let $childEl = create(node.children[i], cmp, initial, cmpParent);
-                $el.appendChild($childEl)
+                if ($childEl)
+                    $el.appendChild($childEl)
             }
         }
     }

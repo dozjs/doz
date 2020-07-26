@@ -606,6 +606,7 @@ var _require2 = __webpack_require__(5),
 var mapper = __webpack_require__(6); //const eventsAttributes = require('../utils/events-attributes');
 
 
+var cacheTpl = Object.create(null);
 var selfClosingElements = {
   meta: true,
   img: true,
@@ -697,7 +698,7 @@ var Element = /*#__PURE__*/function () {
         this.hasKeys = true;
       }
 
-      if (Array.isArray(node)) this.children = node;else this.children.push(node);
+      this.children.push(node);
       return node;
     }
   }]);
@@ -705,30 +706,12 @@ var Element = /*#__PURE__*/function () {
   return Element;
 }();
 
-function placeholderIndex(str, arr) {
-  var matched = /___{(\d+)}___/g.exec(str);
+function compile(tpl) {
+  if (!tpl) return '';
 
-  if (matched && matched[1] && arr[matched[1]] !== undefined) {
-    return arr[matched[1]];
-  } else return str;
-}
-
-function compile(data, values) {
-  if (!data) return '';
-  /*let tplNoPlaceholder = data.replace(/(\/\*.*?=%{\d+}%=\*\/)|<dz-text-node>(.*?)<\/dz-text-node>/g, (x, p1, p2) => {
-      //console.log(p1, p2)
-      return '';
-  });*/
-  //tplNoPlaceholder = tplNoPlaceholder.replace(/<dz-text-node>.*?<\/dz-text-node>/g, '');
-  //let noCached = false;
-
-  /*if (cacheTpl[tplNoPlaceholder]) {
-      //console.log('a', tplNoPlaceholder)
-      //console.log('b', cacheTpl[tplNoPlaceholder])
-      return cacheTpl[tplNoPlaceholder];
-  } else {
-      noCached = true;
-  }*/
+  if (cacheTpl[tpl]) {
+    return cacheTpl[tpl];
+  }
 
   var root = new Element(null, {});
   var stack = [root];
@@ -737,30 +720,29 @@ function compile(data, values) {
   var match;
   var props;
 
-  while (match = REGEX.HTML_MARKUP.exec(data)) {
+  while (match = REGEX.HTML_MARKUP.exec(tpl)) {
     if (lastTextPos > -1) {
       if (
       /*lastTextPos > -1 && */
       lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
         // remove new line space
-        var text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length)); //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+        var text = removeNLS(tpl.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length)); //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
         // if has content
 
         if (text) {
           //console.log(text)
           //let possibleCompiled = mapper.get(text.trim());
-          var possibleCompiled = placeholderIndex(text, values);
-
-          if (!Array.isArray(possibleCompiled)) {
+          //text = placeholderIndex(text, values);
+          if (!Array.isArray(text)) {
             //console.log(currentParent)
             if (currentParent.style === true) {
               //console.log('currentParent.style', currentParent.style)
-              currentParent.style = possibleCompiled === undefined ? text : possibleCompiled; //console.log(currentParent)
+              currentParent.style = text; //console.log(currentParent)
             } else {
-              currentParent.appendChild(possibleCompiled);
+              currentParent.appendChild(text);
             }
           } else {
-            currentParent.appendChild(possibleCompiled);
+            currentParent.appendChild(text);
           }
         }
       }
@@ -786,10 +768,7 @@ function compile(data, values) {
       props = {};
 
       for (var attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-        //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-        //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
-        //console.log(attMatch[2])
-        props[attMatch[2]] = placeholderIndex(attMatch[5] || attMatch[6] || '', values); //console.warn(props[attMatch[2]])
+        props[attMatch[2]] = attMatch[5] || attMatch[6] || ''; //console.warn(props[attMatch[2]])
 
         propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
       }
@@ -847,18 +826,16 @@ function compile(data, values) {
       root.children[0].style = root.style;
       root.children[0].styleScoped = root.styleScoped;
     }
-  } //console.log(data);
-
+  }
 
   if (root.children.length > 1) {
     root.type = TAG.ROOT;
   } else if (root.children.length) {
-    /*if (noCached) {
-        cacheTpl[tplNoPlaceholder] = root.children[0];
-    }*/
+    cacheTpl[tpl] = root.children[0];
     return root.children[0];
   }
 
+  cacheTpl[tpl] = root;
   return root;
 }
 
@@ -1143,7 +1120,9 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       this.endSafeRender();
       var next = template && _typeof(template) === 'object' ? template : compile(template, this);
       this.app.emit('draw', next, this._prev, this);
-      queueDraw.emit(this, next, this._prev);
+      queueDraw.emit(this, next, this._prev); //console.log(next)
+      //console.log(this._prev)
+
       var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
 
       removeAllAttributes(this._cfgRoot, ['style', 'class'
@@ -2856,7 +2835,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-  if (typeof node === 'undefined') return;
+  if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0) return;
   var nodeStored;
   var $el; //let originalTagName;
 
@@ -2866,7 +2845,11 @@ function create(node, cmp, initial, cmpParent) {
   }
 
   if (node.type == null || node.type[0] === '#') {
-    node.type = TAG.EMPTY;
+    node = {
+      type: TAG.EMPTY,
+      props: {},
+      children: []
+    };
   }
 
   if (node.props && node.props.slot && !node.isNewSlotEl) {
@@ -2893,7 +2876,7 @@ function create(node, cmp, initial, cmpParent) {
     } else {
       for (var i = 0; i < node.children.length; i++) {
         var $childEl = create(node.children[i], cmp, initial, cmpParent);
-        $el.appendChild($childEl);
+        if ($childEl) $el.appendChild($childEl);
       }
     }
   }
@@ -3346,7 +3329,14 @@ var tagText = TAG.TEXT_NODE_PLACE;
 var tagIterate = TAG.ITERATE_NODE_PLACE;
 var LESSER = '<';
 var GREATER = '>';
-var cacheTpl = Object.create(null); //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
+
+function placeholderIndex(str, values) {
+  var matched = /___{(\d+)}___/g.exec(str); //console.log(str, values)
+
+  if (matched && matched[1] && values[matched[1]] !== undefined) {
+    return values[matched[1]];
+  } else return str;
+} //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
 //const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 
@@ -3355,9 +3345,10 @@ var cacheTpl = Object.create(null); //const regOpen = new RegExp(`<${tagText}>(\
 /**
  * This method add special tag to value placeholder
  * @param strings
- * @param value
+ * @param values
  * @returns {*}
  */
+
 
 module.exports = function (strings) {
   //hCache.get(strings, value);
@@ -3372,11 +3363,11 @@ module.exports = function (strings) {
   var isBoundedToComponent = !!this._components;
   var compiled;
 
-  for (var _len = arguments.length, value = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    value[_key - 1] = arguments[_key];
+  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    values[_key - 1] = arguments[_key];
   }
 
-  var valueLength = value.length;
+  var valueLength = values.length;
 
   for (var i = 0; i < valueLength; ++i) {
     var isComponentConstructor = false; //if (Array.isArray(value[i])) {
@@ -3425,7 +3416,7 @@ module.exports = function (strings) {
 
     var isInHandler = false; // Check if value is a function and is after an event attribute like onclick for example.
 
-    if (typeof value[i] === 'function' || _typeof(value[i]) === 'object') {
+    if (typeof values[i] === 'function' || _typeof(values[i]) === 'object') {
       //for (let x = 0; x < eventsAttributes.length; x++) {
       var r = stringsI.split("=");
 
@@ -3439,9 +3430,9 @@ module.exports = function (strings) {
 
     if (isBoundedToComponent && !isInStyle && !isInHandler) {
       // if before is to <
-      if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || _typeof(value[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
+      if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || _typeof(values[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
         isComponentConstructor = true;
-        var cmp = value[i];
+        var cmp = values[i];
         var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
 
         tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
@@ -3452,10 +3443,10 @@ module.exports = function (strings) {
 
         var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
 
-        if (this._componentsMap.has(value[i])) {
-          tagCmp = this._componentsMap.get(value[i]);
+        if (this._componentsMap.has(values[i])) {
+          tagCmp = this._componentsMap.get(values[i]);
         } else {
-          this._componentsMap.set(value[i], tagCmp);
+          this._componentsMap.set(values[i], tagCmp);
         } // add to local components
 
 
@@ -3477,13 +3468,13 @@ module.exports = function (strings) {
         }
 
         attributeOriginalTagName = tagCmp;
-        value[i] = tagName;
+        values[i] = tagName;
       }
     }
 
     if (allowTag) {
       //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-      if (Array.isArray(value[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
+      if (Array.isArray(values[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
     } else {
       // If is not component constructor then add to map.
       // Exclude string type and style also
@@ -3501,20 +3492,58 @@ module.exports = function (strings) {
   }
 
   tpl = tpl.trim();
+  var model = compile(tpl); //clone
 
-  if (!cacheTpl[tpl]) {
-    //console.log('RESULT --->', result)
-    //console.log('RESULT2 -->', result2, value)
-    compiled = compile(tpl, value); //console.log('COMPILED', result)
+  var cloned = deepCopy(model);
+  fillCompiled(cloned, values); //console.log(cloned);
 
-    cacheTpl[tpl] = compiled;
-  } else {
-    compiled = cacheTpl[tpl];
-    console.log(value);
+  return cloned;
+};
+
+function deepCopy(obj) {
+  // if not array or object or is null return self
+  if (_typeof(obj) !== 'object' || obj === null) return obj;
+  var newObj, i; // handle case: array
+
+  if (Array.isArray(obj)) {
+    var l;
+    newObj = [];
+
+    for (i = 0, l = obj.length; i < l; i++) {
+      newObj[i] = deepCopy(obj[i]);
+    }
+
+    return newObj;
+  } // handle case: object
+
+
+  newObj = {};
+
+  for (i in obj) {
+    if (obj.hasOwnProperty(i)) newObj[i] = deepCopy(obj[i]);
   }
 
-  return compiled;
-};
+  return newObj;
+}
+
+function fillCompiled(obj, values, parent) {
+  var keys = Object.keys(obj);
+
+  for (var i = 0; i < keys.length; i++) {
+    //for (let k in obj) {
+    if (obj[keys[i]] && _typeof(obj[keys[i]]) === 'object') {
+      fillCompiled(obj[keys[i]], values, obj);
+    } else {
+      //console.log(k, obj[k])
+      var value = placeholderIndex(obj[keys[i]], values);
+
+      if (Array.isArray(value)) {
+        //console.log(parent, value)
+        parent.children = value;
+      } else obj[keys[i]] = value;
+    }
+  }
+}
 
 /***/ }),
 /* 23 */

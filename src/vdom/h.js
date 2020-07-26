@@ -8,7 +8,15 @@ const tagText = TAG.TEXT_NODE_PLACE;
 const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
-let cacheTpl = Object.create(null);
+
+function placeholderIndex(str, values) {
+    let matched = /___{(\d+)}___/g.exec(str);
+    //console.log(str, values)
+    if (matched && matched[1] && values[matched[1]] !== undefined) {
+        return values[matched[1]]
+    } else
+        return str;
+}
 
 //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
@@ -18,10 +26,10 @@ let cacheTpl = Object.create(null);
 /**
  * This method add special tag to value placeholder
  * @param strings
- * @param value
+ * @param values
  * @returns {*}
  */
-module.exports = function (strings, ...value) {
+module.exports = function (strings, ...values) {
 
     //hCache.get(strings, value);
     //console.log('val', value);
@@ -37,25 +45,25 @@ module.exports = function (strings, ...value) {
     let isBoundedToComponent = !!this._components;
     let compiled;
 
-    let valueLength = value.length;
+    let valueLength = values.length;
     for (let i = 0; i < valueLength; ++i) {
         let isComponentConstructor = false;
         //if (Array.isArray(value[i])) {
-            /*let newValueString = '';
-            for (let j = 0; j < value[i].length; j++) {
-                let obj = value[i][j];
-                if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
-                    newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
-                }
+        /*let newValueString = '';
+        for (let j = 0; j < value[i].length; j++) {
+            let obj = value[i][j];
+            if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
+                newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
             }
-            if (newValueString) {
-                console.error('aaaaaaaaaaaaaaaa')
-                value[i] = newValueString;
-            }*/
+        }
+        if (newValueString) {
+            console.error('aaaaaaaaaaaaaaaa')
+            value[i] = newValueString;
+        }*/
         //}
 
         //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
-            //value[i] = mapper.set(value[i]);
+        //value[i] = mapper.set(value[i]);
         //}
 
         let stringsI = strings[i];
@@ -77,7 +85,7 @@ module.exports = function (strings, ...value) {
             isInStyle = false;
         }
 
-        if(isInStyle) {
+        if (isInStyle) {
             allowTag = false;
             tpl = tpl
                 .replace(/ scoped>/, ' data-scoped>');
@@ -87,12 +95,12 @@ module.exports = function (strings, ...value) {
         //
         let isInHandler = false;
         // Check if value is a function and is after an event attribute like onclick for example.
-        if (typeof value[i] === 'function' || typeof value[i] === 'object') {
+        if (typeof values[i] === 'function' || typeof values[i] === 'object') {
             //for (let x = 0; x < eventsAttributes.length; x++) {
-                let r = stringsI.split(`=`);
-                if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
-                    isInHandler = true;
-                }
+            let r = stringsI.split(`=`);
+            if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+                isInHandler = true;
+            }
             //}
         }
 
@@ -101,9 +109,9 @@ module.exports = function (strings, ...value) {
         if (isBoundedToComponent && !isInStyle && !isInHandler) {
 
             // if before is to <
-            if (value[i] && !Array.isArray(value[i]) && (typeof value[i] === 'function' || typeof value[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
+            if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || typeof values[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
                 isComponentConstructor = true;
-                let cmp = value[i];
+                let cmp = values[i];
                 let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
                 // Sanitize tag name
                 tagName = tagName.replace(/_+/, '');
@@ -114,10 +122,10 @@ module.exports = function (strings, ...value) {
 
                 let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
 
-                if (this._componentsMap.has(value[i])) {
-                    tagCmp = this._componentsMap.get(value[i]);
+                if (this._componentsMap.has(values[i])) {
+                    tagCmp = this._componentsMap.get(values[i]);
                 } else {
-                    this._componentsMap.set(value[i], tagCmp);
+                    this._componentsMap.set(values[i], tagCmp);
                 }
 
                 // add to local components
@@ -139,13 +147,13 @@ module.exports = function (strings, ...value) {
                 }
 
                 attributeOriginalTagName = tagCmp;
-                value[i] = tagName;
+                values[i] = tagName;
             }
         }
 
-        if(allowTag) {
+        if (allowTag) {
             //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-            if (Array.isArray(value[i]))
+            if (Array.isArray(values[i]))
                 tpl += `___{${i}}___${strings[i + 1]}`;
             else
                 tpl += `<${tagText}>___{${i}}___</${tagText}>${strings[i + 1]}`;
@@ -153,7 +161,7 @@ module.exports = function (strings, ...value) {
             // If is not component constructor then add to map.
             // Exclude string type and style also
             //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-                //value[i] = mapper.set(value[i]);
+            //value[i] = mapper.set(value[i]);
             //}
             if (attributeOriginalTagName) {
                 //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
@@ -166,17 +174,51 @@ module.exports = function (strings, ...value) {
     }
 
     tpl = tpl.trim();
-    if (!cacheTpl[tpl]) {
-        //console.log('RESULT --->', result)
-        //console.log('RESULT2 -->', result2, value)
-        compiled = compile(tpl, value);
-        //console.log('COMPILED', result)
-        cacheTpl[tpl] = compiled;
-    } else {
-        compiled = cacheTpl[tpl];
-        console.log(value)
-    }
+    let model = compile(tpl);
+    //clone
+    let cloned = deepCopy(model);
+    fillCompiled(cloned, values);
 
-
-    return compiled;
+    //console.log(cloned);
+    return cloned;
 };
+
+function deepCopy(obj) {
+    // if not array or object or is null return self
+    if (typeof obj !== 'object' || obj === null) return obj;
+    let newObj, i;
+    // handle case: array
+    if (Array.isArray(obj)) {
+        let l;
+        newObj = [];
+        for (i = 0, l = obj.length; i < l; i++)
+            newObj[i] = deepCopy(obj[i]);
+        return newObj;
+    }
+    // handle case: object
+    newObj = {};
+    for (i in obj)
+        if (obj.hasOwnProperty(i))
+            newObj[i] = deepCopy(obj[i]);
+
+    return newObj;
+}
+
+function fillCompiled(obj, values, parent) {
+    let keys = Object.keys(obj);
+
+    for (let i = 0; i < keys.length; i++) {
+        //for (let k in obj) {
+        if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
+            fillCompiled(obj[keys[i]], values, obj);
+        } else {
+            //console.log(k, obj[k])
+            let value = placeholderIndex(obj[keys[i]], values);
+            if (Array.isArray(value)) {
+                //console.log(parent, value)
+                parent.children = value;
+            } else
+                obj[keys[i]] = value;
+        }
+    }
+}

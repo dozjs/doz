@@ -7,6 +7,7 @@ const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
 const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
+const cacheTpl = Object.create(null);
 
 const selfClosingElements = {
     meta: true,
@@ -69,41 +70,18 @@ class Element {
         if (node.props && node.props.key !== undefined) {
             this.hasKeys = true;
         }
-        if (Array.isArray(node))
-            this.children = node;
-        else
-            this.children.push(node);
+        this.children.push(node);
         return node;
     }
 
 }
 
-function placeholderIndex(str, arr) {
-    let matched = /___{(\d+)}___/g.exec(str);
-    if (matched && matched[1] && arr[matched[1]] !== undefined) {
-        return arr[matched[1]]
-    } else
-        return str;
-}
+function compile(tpl) {
+    if (!tpl) return '';
 
-
-function compile(data, values) {
-    if (!data) return '';
-
-    /*let tplNoPlaceholder = data.replace(/(\/\*.*?=%{\d+}%=\*\/)|<dz-text-node>(.*?)<\/dz-text-node>/g, (x, p1, p2) => {
-        //console.log(p1, p2)
-        return '';
-    });*/
-    //tplNoPlaceholder = tplNoPlaceholder.replace(/<dz-text-node>.*?<\/dz-text-node>/g, '');
-    //let noCached = false;
-
-    /*if (cacheTpl[tplNoPlaceholder]) {
-        //console.log('a', tplNoPlaceholder)
-        //console.log('b', cacheTpl[tplNoPlaceholder])
-        return cacheTpl[tplNoPlaceholder];
-    } else {
-        noCached = true;
-    }*/
+    if (cacheTpl[tpl]) {
+        return cacheTpl[tpl]
+    }
 
     const root = new Element(null, {});
     const stack = [root];
@@ -112,29 +90,29 @@ function compile(data, values) {
     let match;
     let props;
 
-    while (match = REGEX.HTML_MARKUP.exec(data)) {
+    while (match = REGEX.HTML_MARKUP.exec(tpl)) {
 
         if (lastTextPos > -1) {
             if (/*lastTextPos > -1 && */lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
-                const text = removeNLS(data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
+                let text = removeNLS(tpl.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
                     //console.log(text)
                     //let possibleCompiled = mapper.get(text.trim());
-                    let possibleCompiled = placeholderIndex(text, values);
-                    if (!Array.isArray(possibleCompiled)) {
+                    //text = placeholderIndex(text, values);
+                    if (!Array.isArray(text)) {
                         //console.log(currentParent)
                         if (currentParent.style === true) {
                             //console.log('currentParent.style', currentParent.style)
-                            currentParent.style = possibleCompiled === undefined ? text : possibleCompiled;
+                            currentParent.style = text;
                             //console.log(currentParent)
                         } else {
-                            currentParent.appendChild(possibleCompiled);
+                            currentParent.appendChild(text);
                         }
                     } else {
-                        currentParent.appendChild(possibleCompiled);
+                        currentParent.appendChild(text);
                     }
                 }
             }
@@ -159,10 +137,7 @@ function compile(data, values) {
             // not </ tags
             props = {};
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
-                //props[attMatch[2]] = removeNLS(attMatch[5] || attMatch[6] || '');
-                //props[attMatch[2]] = attMatch[5] || attMatch[6] || removeDoubleQuotes(attMatch[7]) || '';
-                //console.log(attMatch[2])
-                props[attMatch[2]] = placeholderIndex(attMatch[5] || attMatch[6] || '', values);
+                props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
                 //console.warn(props[attMatch[2]])
                 propsFixer(
                     match[0].substring(1, match[0].length - 1),
@@ -223,18 +198,17 @@ function compile(data, values) {
             root.children[0].styleScoped = root.styleScoped;
         }
     }
-    //console.log(data);
-
 
     if (root.children.length > 1) {
         root.type = TAG.ROOT;
     } else if (root.children.length) {
-        /*if (noCached) {
-            cacheTpl[tplNoPlaceholder] = root.children[0];
-        }*/
+
+        cacheTpl[tpl] = root.children[0];
+
         return root.children[0];
     }
 
+    cacheTpl[tpl] = root;
     return root;
 }
 
