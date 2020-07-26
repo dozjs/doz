@@ -9,14 +9,42 @@ const tagText = TAG.TEXT_NODE_PLACE;
 //const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
+const PLACEHOLDER_REGEX = /___{(\d+)}___/g;
 
-function placeholderIndex(str, values) {
+function _placeholderIndex(str, values) {
     let matched = /___{(\d+)}___/g.exec(str);
     //console.log(str, values)
     if (matched && matched[1] && values[matched[1]] !== undefined) {
+        //console.log(str, values[matched[1]]);
         return values[matched[1]]
     } else
         return str;
+}
+
+function placeholderIndex(str, values) {
+    //console.log(str);
+    if (typeof str !== 'string') {
+        return str
+    }
+
+    if (str[0] === '_') {
+        let match = /___{(\d+)}___/g.exec(str);
+        //console.log(str, values)
+        if (match && match[1] && values[match[1]] !== undefined) {
+            //console.log(str, values[matched[1]]);
+            return values[match[1]]
+        } else
+            return str;
+    } else {
+        return str.replace(PLACEHOLDER_REGEX, (match, p1) => {
+            if (p1 && values[p1] !== undefined) {
+                //console.log(str, values[p1]);
+                return values[p1];
+            } else {
+                return match;
+            }
+        })
+    }
 }
 
 //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
@@ -175,9 +203,13 @@ module.exports = function (strings, ...values) {
     }
 
     tpl = tpl.trim();
+
+    //console.log(tpl);
+
     let model = compile(tpl);
     //clone
     let cloned = deepCopy(model);
+    //console.log(model)
     fillCompiled(cloned, values);
 
     //console.log(cloned);
@@ -194,6 +226,7 @@ function fillCompiled(obj, values, parent) {
         } else {
             //console.log(k, obj[k])
             let value = placeholderIndex(obj[keys[i]], values);
+            //console.log('--->', obj[keys[i]], value);
             if (Array.isArray(value)) {
                 //console.log(parent, value)
                 parent.children = value;

@@ -89,7 +89,7 @@ function compile(tpl) {
     let lastTextPos = -1;
     let match;
     let props;
-
+//console.log(tpl)
     while (match = REGEX.HTML_MARKUP.exec(tpl)) {
 
         if (lastTextPos > -1) {

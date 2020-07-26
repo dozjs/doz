@@ -718,7 +718,7 @@ function compile(tpl) {
   var currentParent = root;
   var lastTextPos = -1;
   var match;
-  var props;
+  var props; //console.log(tpl)
 
   while (match = REGEX.HTML_MARKUP.exec(tpl)) {
     if (lastTextPos > -1) {
@@ -3330,13 +3330,40 @@ var tagText = TAG.TEXT_NODE_PLACE; //const tagIterate = TAG.ITERATE_NODE_PLACE;
 
 var LESSER = '<';
 var GREATER = '>';
+var PLACEHOLDER_REGEX = /___{(\d+)}___/g;
 
-function placeholderIndex(str, values) {
+function _placeholderIndex(str, values) {
   var matched = /___{(\d+)}___/g.exec(str); //console.log(str, values)
 
   if (matched && matched[1] && values[matched[1]] !== undefined) {
+    //console.log(str, values[matched[1]]);
     return values[matched[1]];
   } else return str;
+}
+
+function placeholderIndex(str, values) {
+  //console.log(str);
+  if (typeof str !== 'string') {
+    return str;
+  }
+
+  if (str[0] === '_') {
+    var match = /___{(\d+)}___/g.exec(str); //console.log(str, values)
+
+    if (match && match[1] && values[match[1]] !== undefined) {
+      //console.log(str, values[matched[1]]);
+      return values[match[1]];
+    } else return str;
+  } else {
+    return str.replace(PLACEHOLDER_REGEX, function (match, p1) {
+      if (p1 && values[p1] !== undefined) {
+        //console.log(str, values[p1]);
+        return values[p1];
+      } else {
+        return match;
+      }
+    });
+  }
 } //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
 //const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
 //const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
@@ -3492,10 +3519,12 @@ module.exports = function (strings) {
     }
   }
 
-  tpl = tpl.trim();
+  tpl = tpl.trim(); //console.log(tpl);
+
   var model = compile(tpl); //clone
 
-  var cloned = deepCopy(model);
+  var cloned = deepCopy(model); //console.log(model)
+
   fillCompiled(cloned, values); //console.log(cloned);
 
   return cloned;
@@ -3510,7 +3539,7 @@ function fillCompiled(obj, values, parent) {
       fillCompiled(obj[keys[i]], values, obj);
     } else {
       //console.log(k, obj[k])
-      var value = placeholderIndex(obj[keys[i]], values);
+      var value = placeholderIndex(obj[keys[i]], values); //console.log('--->', obj[keys[i]], value);
 
       if (Array.isArray(value)) {
         //console.log(parent, value)

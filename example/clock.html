@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - clock</title>
-    <script src="../dist/doz.js?5890654984e3"></script>
+    <script src="../dist/doz.js?528906524984e3"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -25,12 +25,13 @@
     Doz.component('doz-clock', {
         template(h){
             return h`
-                <div style="color: ${this.props.color}">${this.props.title}: ${this.props.time}</div>
+                <div style="color: ${this.props.color}; font-weight: ${this.props.fontWeight}">${this.props.title}: ${this.props.time}</div>
             `
         },
         props: {
             time: '--:--:--',
-            color: 'black'
+            color: 'black',
+            fontWeight: 'normal'
         },
         propsConvert: {
             time: function (v) {
@@ -43,6 +44,7 @@
         currentTime() {
             this.props.time = new Date().toLocaleTimeString();
             this.props.color = this.props.color === 'violet' ? 'red' : 'violet';
+            this.props.fontWeight = this.props.fontWeight === 'normal' ? 'bold' : 'normal';
         }
     });
 
