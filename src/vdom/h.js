@@ -208,8 +208,9 @@ module.exports = function (strings, ...values) {
 
     let model = compile(tpl);
     //clone
+    //let cloned = cloneAndFill(model, values);
+
     let cloned = deepCopy(model);
-    //console.log(model)
     fillCompiled(cloned, values);
 
     //console.log(cloned);
@@ -236,4 +237,49 @@ function fillCompiled(obj, values, parent) {
                 obj[keys[i]] = value;
         }
     }
+}
+
+function cloneAndFill(obj, values, parent) {
+    // if not array or object or is null return self
+    if (typeof obj !== 'object' || obj === null) return obj;
+    let newObj, i;
+    // handle case: array
+    if (Array.isArray(obj)) {
+        let l;
+        newObj = [];
+        for (i = 0, l = obj.length; i < l; i++) {
+            newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj);
+        }
+        return newObj;
+    }
+    // handle case: object
+    newObj = {};
+    for (i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj);
+            //console.log('i', i)
+            /*if (i === 'children') {
+                if (newObj[i].length === 1 && Array.isArray(newObj[i][0])) {
+                    //console.log(newObj[i])
+                    //console.log('children')
+                    newObj[i] = newObj[i][0];
+                    //if (newObj[i][0] && newObj[i][0].key !== undefined)
+                        //parent.hasKeys = true;
+                }
+            }*/
+            /*if (i === 'hasKeys') {
+                console.log('hasKeys')
+            }*/
+            /*if (parent && Array.isArray(newObj[i]) && newObj[i].length) {
+                console.log('a')
+                //console.log('newObj[i]', newObj[i])
+                //console.log('parent', parent)
+                parent.children = newObj[i];
+                if (newObj[i][0] && newObj[i][0].key !== undefined)
+                    parent.hasKeys = true;
+                //console.log(parent.children)
+            }*/
+        }
+    }
+    return newObj;
 }

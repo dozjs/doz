@@ -58,12 +58,15 @@ class Element {
         this.type = name;
         this.props = props;//Object.assign({}, props);
         this.children = [];
-        this.style = style;
-        this.styleScoped = styleScoped;
-        this.isSVG = isSVG || name === 'svg';
+        if (style)
+            this.style = style;
+        if (styleScoped)
+            this.styleScoped = styleScoped;
+        if (isSVG || name === 'svg')
+            this.isSVG = true;
         if (props.key !== undefined)
             this.key = props.key;
-        this.hasKeys = undefined;
+        //this.hasKeys = undefined;
     }
 
     appendChild(node) {
@@ -249,15 +252,15 @@ function propsFixer(nName, aName, aValue, props, $node) {
             propsName = newPropsName;
         });
     }
-/*
-    if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
-        aValue = mapper.getAll(aValue);
-    } else {
-        let objValue = mapper.get(aValue);
-        if (objValue !== undefined) {
-            aValue = objValue;
-        }
-    }*/
+    /*
+        if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
+            aValue = mapper.getAll(aValue);
+        } else {
+            let objValue = mapper.get(aValue);
+            if (objValue !== undefined) {
+                aValue = objValue;
+            }
+        }*/
 
     //console.log('AFTER :', aName, aValue)
     props[propsName] = aName === ATTR.FORCE_UPDATE

@@ -13,9 +13,11 @@ function deepCopy(obj) {
     // handle case: object
     newObj = {};
     for (i in obj)
-        if (obj.hasOwnProperty(i))
+        if (obj.hasOwnProperty(i)) {
+            //if (obj[i] === undefined)
+            //console.log(i, obj[i])
             newObj[i] = deepCopy(obj[i]);
-
+        }
     return newObj;
 }
 
