@@ -141,16 +141,20 @@ const ObservableSlim = (function () {
 
                     // if we've previously setup a proxy on this target, then...
                     //let a = observable.targets.indexOf(targetProp);
+                    //console.log('',a);
+
                     let a = -1;
                     let observableTargets = observable.targets;
                     for (let i = 0, l = observableTargets.length; i < l; i++) {
                         if (targetProp === observableTargets[i]) {
+                            //console.log('aaaaa', i)
                             a = i;
                             break;
                         }
                     }
                     if (a > -1) return observable.proxies[a];
 
+                    //console.log('oooo')
                     // if we're arrived here, then that means there is no proxy for the object the user just accessed, so we
                     // have to create a new proxy for it
                     let newPath = (path !== '') ? (path + '.' + property) : property;
@@ -297,9 +301,9 @@ const ObservableSlim = (function () {
                         let currentTargetProxy = targetsProxy[a];
                         if (currentTargetProxy)
                             for (let b = 0, l = currentTargetProxy.length; b < l; b++) {
+
                                 // if the same target has a different proxy
                                 if (currentTargetProxy[b].proxy !== proxy) {
-
                                     // !!IMPORTANT!! store the proxy as a duplicate proxy (dupProxy) -- this will adjust the behavior above appropriately (that is,
                                     // prevent a change on dupProxy from re-triggering the same change on other proxies)
                                     dupProxy = currentTargetProxy[b].proxy;

@@ -2172,18 +2172,21 @@ var ObservableSlim = function () {
           // if we've found a proxy nested on the object, then we want to retrieve the original object behind that proxy
           if (targetProp.__isProxy === true) targetProp = targetProp.__getTarget; // if we've previously setup a proxy on this target, then...
           //let a = observable.targets.indexOf(targetProp);
+          //console.log('',a);
 
           var a = -1;
           var observableTargets = observable.targets;
 
           for (var i = 0, l = observableTargets.length; i < l; i++) {
             if (targetProp === observableTargets[i]) {
+              //console.log('aaaaa', i)
               a = i;
               break;
             }
           }
 
-          if (a > -1) return observable.proxies[a]; // if we're arrived here, then that means there is no proxy for the object the user just accessed, so we
+          if (a > -1) return observable.proxies[a]; //console.log('oooo')
+          // if we're arrived here, then that means there is no proxy for the object the user just accessed, so we
           // have to create a new proxy for it
 
           var newPath = path !== '' ? path + '.' + property : property;
@@ -3369,6 +3372,8 @@ function placeholderIndex(str, values) {
 
 /**/
 
+
+var hCache = new Map();
 /**
  * This method add special tag to value placeholder
  * @param strings
@@ -3376,149 +3381,153 @@ function placeholderIndex(str, values) {
  * @returns {*}
  */
 
-
 module.exports = function (strings) {
-  //hCache.get(strings, value);
-  //console.log('val', value);
+  //console.log(strings)
+  //console.log(values)
+  var tpl = hCache.get(strings); //console.log('val', value);
   // Why? cycling require :D
   //let Component = require('../component/Component');
-  var tpl = strings[0]; //et result2 = strings[0];
-
-  var allowTag = false;
-  var isInStyle = false;
-  var thereIsStyle = false;
-  var isBoundedToComponent = !!this._components;
-  var compiled;
 
   for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     values[_key - 1] = arguments[_key];
   }
 
-  var valueLength = values.length;
+  if (!tpl) {
+    tpl = strings[0]; //et result2 = strings[0];
 
-  for (var i = 0; i < valueLength; ++i) {
-    var isComponentConstructor = false; //if (Array.isArray(value[i])) {
+    var allowTag = false;
+    var isInStyle = false;
+    var thereIsStyle = false;
+    var isBoundedToComponent = !!this._components;
+    var compiled;
+    var valueLength = values.length;
 
-    /*let newValueString = '';
-    for (let j = 0; j < value[i].length; j++) {
-        let obj = value[i][j];
-        if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
-            newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
-        }
-    }
-    if (newValueString) {
-        console.error('aaaaaaaaaaaaaaaa')
-        value[i] = newValueString;
-    }*/
-    //}
-    //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
-    //value[i] = mapper.set(value[i]);
-    //}
+    for (var i = 0; i < valueLength; ++i) {
+      var isComponentConstructor = false; //if (Array.isArray(value[i])) {
 
-    var stringsI = strings[i];
-    var stringLength = stringsI.length;
-
-    for (var x = 0; x < stringLength; x++) {
-      if (stringsI[x] === LESSER) {
-        allowTag = false;
-      } else if (stringsI[x] === GREATER) {
-        allowTag = true;
+      /*let newValueString = '';
+      for (let j = 0; j < value[i].length; j++) {
+          let obj = value[i][j];
+          if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
+              newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
+          }
       }
-    }
-
-    if (stringsI.indexOf('<style') > -1) {
-      isInStyle = true;
-      thereIsStyle = true;
-    }
-
-    if (stringsI.indexOf('</style') > -1) {
-      isInStyle = false;
-    }
-
-    if (isInStyle) {
-      allowTag = false;
-      tpl = tpl.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
-    } //
-
-
-    var isInHandler = false; // Check if value is a function and is after an event attribute like onclick for example.
-
-    if (typeof values[i] === 'function' || _typeof(values[i]) === 'object') {
-      //for (let x = 0; x < eventsAttributes.length; x++) {
-      var r = stringsI.split("=");
-
-      if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
-        isInHandler = true;
-      } //}
-
-    }
-
-    var attributeOriginalTagName = void 0; // if this function is bound to Doz component
-
-    if (isBoundedToComponent && !isInStyle && !isInHandler) {
-      // if before is to <
-      if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || _typeof(values[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
-        isComponentConstructor = true;
-        var cmp = values[i];
-        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
-
-        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
-
-        if (tagName.indexOf('-') === -1) {
-          tagName = "".concat(tagName, "-").concat(tagName);
-        }
-
-        var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
-
-        if (this._componentsMap.has(values[i])) {
-          tagCmp = this._componentsMap.get(values[i]);
-        } else {
-          this._componentsMap.set(values[i], tagCmp);
-        } // add to local components
-
-
-        if (this._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
-          this._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        } // add to local app components
-
-
-        if (this.app._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
-          this.app._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        }
-
-        attributeOriginalTagName = tagCmp;
-        values[i] = tagName;
-      }
-    }
-
-    if (allowTag) {
-      //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-      if (Array.isArray(values[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
-    } else {
-      // If is not component constructor then add to map.
-      // Exclude string type and style also
-      //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
+      if (newValueString) {
+          console.error('aaaaaaaaaaaaaaaa')
+          value[i] = newValueString;
+      }*/
+      //}
+      //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
       //value[i] = mapper.set(value[i]);
       //}
-      if (attributeOriginalTagName) {
-        //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-        tpl += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+
+      var stringsI = strings[i];
+      var stringLength = stringsI.length;
+
+      for (var x = 0; x < stringLength; x++) {
+        if (stringsI[x] === LESSER) {
+          allowTag = false;
+        } else if (stringsI[x] === GREATER) {
+          allowTag = true;
+        }
+      }
+
+      if (stringsI.indexOf('<style') > -1) {
+        isInStyle = true;
+        thereIsStyle = true;
+      }
+
+      if (stringsI.indexOf('</style') > -1) {
+        isInStyle = false;
+      }
+
+      if (isInStyle) {
+        allowTag = false;
+        tpl = tpl.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
+      } //
+
+
+      var isInHandler = false; // Check if value is a function and is after an event attribute like onclick for example.
+
+      if (typeof values[i] === 'function' || _typeof(values[i]) === 'object') {
+        //for (let x = 0; x < eventsAttributes.length; x++) {
+        var r = stringsI.split("=");
+
+        if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
+          isInHandler = true;
+        } //}
+
+      }
+
+      var attributeOriginalTagName = void 0; // if this function is bound to Doz component
+
+      if (isBoundedToComponent && !isInStyle && !isInHandler) {
+        // if before is to <
+        if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || _typeof(values[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
+          isComponentConstructor = true;
+          var cmp = values[i];
+          var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
+
+          tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
+
+          if (tagName.indexOf('-') === -1) {
+            tagName = "".concat(tagName, "-").concat(tagName);
+          }
+
+          var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
+
+          if (this._componentsMap.has(values[i])) {
+            tagCmp = this._componentsMap.get(values[i]);
+          } else {
+            this._componentsMap.set(values[i], tagCmp);
+          } // add to local components
+
+
+          if (this._components[tagCmp] === undefined) {
+            //attributeOriginalTagName = tagCmp;
+            this._components[tagCmp] = {
+              tag: tagName,
+              cfg: cmp
+            };
+          } // add to local app components
+
+
+          if (this.app._components[tagCmp] === undefined) {
+            //attributeOriginalTagName = tagCmp;
+            this.app._components[tagCmp] = {
+              tag: tagName,
+              cfg: cmp
+            };
+          }
+
+          attributeOriginalTagName = tagCmp;
+          values[i] = tagName;
+        }
+      }
+
+      if (allowTag) {
+        //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
+        if (Array.isArray(values[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
       } else {
-        //result += `${value[i]}${strings[i + 1]}`;
-        tpl += "___{".concat(i, "}___").concat(strings[i + 1]);
+        // If is not component constructor then add to map.
+        // Exclude string type and style also
+        //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
+        //value[i] = mapper.set(value[i]);
+        //}
+        if (attributeOriginalTagName) {
+          //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+          tpl += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+        } else {
+          //result += `${value[i]}${strings[i + 1]}`;
+          tpl += "___{".concat(i, "}___").concat(strings[i + 1]);
+        }
       }
     }
-  }
 
-  tpl = tpl.trim(); //console.log(tpl);
+    tpl = tpl.trim();
+    hCache.set(strings, tpl); //console.log(strings)
+  } //console.log(tpl);
+
 
   var model = compile(tpl); //clone
   //let cloned = cloneAndFill(model, values);
