@@ -132,7 +132,7 @@ new Doz({
                     <tr key="${item.id}" onclick="${() => this.action.select(item.id)}" class="${item.selected ? 'danger' : ''}" >
                         <td class="col-md-1">${item.id}</td>
                         <td class="col-md-4" >
-                            <a>${item.label} ${item.id}</a>
+                            <a>${item.label}</a>
                         </td>
                         <td class="col-md-1">
                             <a>

@@ -55,7 +55,7 @@ class DOMManipulation extends Base {
             }
             return $oldElement;
         }
-    };
+    }
 
     // noinspection JSMethodCanBeStatic
     $$afterNodeChange($newElement, $oldElement) {
@@ -67,7 +67,7 @@ class DOMManipulation extends Base {
             $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
             $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
         }
-    };
+    }
 
     // noinspection JSMethodCanBeStatic
     $$beforeNodeWalk($parent, index, attributesUpdated) {

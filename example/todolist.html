@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p1254p8464542544GF5d441r557547r425055444234"></script>
+    <script src="../dist/doz.js?p1254p843234"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -85,7 +85,7 @@
 
         add() {
             const store = this.getStore('todo');
-            console.log('add', store);
+            //console.log('add', store);
             if (store.todo !== '') {
                 store.record.push({
                     time: Date.now(),
@@ -198,15 +198,18 @@
     Doz.component('doz-todo', {
         store: 'todo',
         template(h) {
+            //console.log('this.props.totalDone', this.props.totalDone)
             return h`
                 <div>
                     <div class="todo-input">
                         <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">&nbsp;
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
-                    ${this.each(this.props.record, (item, i) =>
-                        h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
-                    )}
+                    <div>
+                        ${this.each(this.props.record, (item, i) =>
+                            h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        )}
+                    </div>
                     <div class="todo-info">
                         Total: ${this.props.total} - Done: ${this.props.totalDone}
                     </div>

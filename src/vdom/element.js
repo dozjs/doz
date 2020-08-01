@@ -17,6 +17,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
+    //console.log(node)
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0) return;
 
     let nodeStored;
@@ -58,9 +59,11 @@ function create(node, cmp, initial, cmpParent) {
     if (!node.hasKeys) {
         if (!node.children.length) {
         } else if (node.children.length === 1 && typeof node.children[0] === 'string') {
+            //console.log('node.children[0]', node.children[0])
             $el.textContent = canDecode(node.children[0]);
         } else {
             for (let i = 0; i < node.children.length; i++) {
+                //console.log(node.children[i])
                 let $childEl = create(node.children[i], cmp, initial, cmpParent);
                 if ($childEl)
                     $el.appendChild($childEl)
@@ -153,6 +156,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     }
 
     if (!oldNode) {
+    //if (oldNode === undefined || oldNode == null) {
         //console.log('create node');
         // create node
 
@@ -176,6 +180,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         return $newElement;
 
     } else if (!newNode) {
+    //} else if (newNode === undefined || newNode == null) {
         //console.log('remove node', $parent);
         // remove node
         if ($parent.childNodes[index]) {

@@ -6,10 +6,12 @@ const deepCopy = require('../utils/deep-copy');
 //const {scopedInner} = require('../component/helpers/style');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
+const hCache = new Map();
 //const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
-const PLACEHOLDER_REGEX = /___{(\d+)}___/g;
+const PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
+const PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
 
 function _placeholderIndex(str, values) {
     let matched = /___{(\d+)}___/g.exec(str);
@@ -22,23 +24,28 @@ function _placeholderIndex(str, values) {
 }
 
 function placeholderIndex(str, values) {
-    //console.log(str);
+    //console.log(str)
     if (typeof str !== 'string') {
         return str
     }
 
-    if (str[0] === '_') {
-        let match = /___{(\d+)}___/g.exec(str);
-        //console.log(str, values)
-        if (match && match[1] && values[match[1]] !== undefined) {
-            //console.log(str, values[matched[1]]);
-            return values[match[1]]
+    if (str[0] === 'e' && str[1] === '-') {
+        let match = PLACEHOLDER_REGEX.exec(str);
+        //let match = /e-0_(\d+)_0-e/g.exec(str);
+        //let match = str.match(PLACEHOLDER_REGEX);
+        if (match) {
+            // if is a possible text node
+            if (match[1][0] === '0' && match[1].length >= 2) {
+                // remove first fake 0 that identify a text node and cast to string every
+                return values[match[1].substr(1)] + '';
+            } else {
+                return values[match[1]]
+            }
         } else
             return str;
     } else {
-        return str.replace(PLACEHOLDER_REGEX, (match, p1) => {
-            if (p1 && values[p1] !== undefined) {
-                //console.log(str, values[p1]);
+        return str.replace(PLACEHOLDER_REGEX_GLOBAL, (match, p1) => {
+            if (p1) {
                 return values[p1];
             } else {
                 return match;
@@ -52,7 +59,6 @@ function placeholderIndex(str, values) {
 //const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
 /**/
 
-let hCache = new Map();
 
 /**
  * This method add special tag to value placeholder
@@ -188,9 +194,10 @@ module.exports = function (strings, ...values) {
             if (allowTag) {
                 //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
                 if (Array.isArray(values[i]))
-                    tpl += `___{${i}}___${strings[i + 1]}`;
+                    tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 else
-                    tpl += `<${tagText}>___{${i}}___</${tagText}>${strings[i + 1]}`;
+                    // add a fake 0 before index useful to identify a text node so cast to string every
+                    tpl += `<${tagText}>e-0_0${i}_0-e</${tagText}>${strings[i + 1]}`;
             } else {
                 // If is not component constructor then add to map.
                 // Exclude string type and style also
@@ -199,10 +206,10 @@ module.exports = function (strings, ...values) {
                 //}
                 if (attributeOriginalTagName) {
                     //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-                    tpl += `___{${i}}___ data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+                    tpl += `e-0_${i}_0-e data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
                 } else {
                     //result += `${value[i]}${strings[i + 1]}`;
-                    tpl += `___{${i}}___${strings[i + 1]}`;
+                    tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 }
             }
         }
@@ -214,6 +221,8 @@ module.exports = function (strings, ...values) {
     //console.log(tpl);
 
     let model = compile(tpl);
+    //console.log(model);
+
     //clone
     //let cloned = cloneAndFill(model, values);
 

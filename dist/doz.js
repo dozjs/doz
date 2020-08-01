@@ -2837,6 +2837,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
+  //console.log(node)
   if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0) return;
   var nodeStored;
   var $el; //let originalTagName;
@@ -2874,9 +2875,11 @@ function create(node, cmp, initial, cmpParent) {
 
   if (!node.hasKeys) {
     if (!node.children.length) {} else if (node.children.length === 1 && typeof node.children[0] === 'string') {
+      //console.log('node.children[0]', node.children[0])
       $el.textContent = canDecode(node.children[0]);
     } else {
       for (var i = 0; i < node.children.length; i++) {
+        //console.log(node.children[i])
         var $childEl = create(node.children[i], cmp, initial, cmpParent);
         if ($childEl) $el.appendChild($childEl);
       }
@@ -2963,6 +2966,7 @@ function update($parent, newNode, oldNode) {
   }
 
   if (!oldNode) {
+    //if (oldNode === undefined || oldNode == null) {
     //console.log('create node');
     // create node
     var $newElement;
@@ -2985,6 +2989,7 @@ function update($parent, newNode, oldNode) {
     $parent.appendChild($newElement);
     return $newElement;
   } else if (!newNode) {
+    //} else if (newNode === undefined || newNode == null) {
     //console.log('remove node', $parent);
     // remove node
     if ($parent.childNodes[index]) {
@@ -3328,11 +3333,13 @@ var _require2 = __webpack_require__(7),
     compile = _require2.compile,
     Element = _require2.Element;
 
-var tagText = TAG.TEXT_NODE_PLACE; //const tagIterate = TAG.ITERATE_NODE_PLACE;
+var tagText = TAG.TEXT_NODE_PLACE;
+var hCache = new Map(); //const tagIterate = TAG.ITERATE_NODE_PLACE;
 
 var LESSER = '<';
 var GREATER = '>';
-var PLACEHOLDER_REGEX = /___{(\d+)}___/g;
+var PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
+var PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
 
 function _placeholderIndex(str, values) {
   var matched = /___{(\d+)}___/g.exec(str); //console.log(str, values)
@@ -3344,22 +3351,27 @@ function _placeholderIndex(str, values) {
 }
 
 function placeholderIndex(str, values) {
-  //console.log(str);
+  //console.log(str)
   if (typeof str !== 'string') {
     return str;
   }
 
-  if (str[0] === '_') {
-    var match = /___{(\d+)}___/g.exec(str); //console.log(str, values)
+  if (str[0] === 'e' && str[1] === '-') {
+    var match = PLACEHOLDER_REGEX.exec(str); //let match = /e-0_(\d+)_0-e/g.exec(str);
+    //let match = str.match(PLACEHOLDER_REGEX);
 
-    if (match && match[1] && values[match[1]] !== undefined) {
-      //console.log(str, values[matched[1]]);
-      return values[match[1]];
+    if (match) {
+      // if is a possible text node
+      if (match[1][0] === '0' && match[1].length >= 2) {
+        // remove first fake 0 that identify a text node and cast to string every
+        return values[match[1].substr(1)] + '';
+      } else {
+        return values[match[1]];
+      }
     } else return str;
   } else {
-    return str.replace(PLACEHOLDER_REGEX, function (match, p1) {
-      if (p1 && values[p1] !== undefined) {
-        //console.log(str, values[p1]);
+    return str.replace(PLACEHOLDER_REGEX_GLOBAL, function (match, p1) {
+      if (p1) {
         return values[p1];
       } else {
         return match;
@@ -3372,14 +3384,13 @@ function placeholderIndex(str, values) {
 
 /**/
 
-
-var hCache = new Map();
 /**
  * This method add special tag to value placeholder
  * @param strings
  * @param values
  * @returns {*}
  */
+
 
 module.exports = function (strings) {
   //console.log(strings)
@@ -3507,7 +3518,8 @@ module.exports = function (strings) {
 
       if (allowTag) {
         //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        if (Array.isArray(values[i])) tpl += "___{".concat(i, "}___").concat(strings[i + 1]);else tpl += "<".concat(tagText, ">___{").concat(i, "}___</").concat(tagText, ">").concat(strings[i + 1]);
+        if (Array.isArray(values[i])) tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);else // add a fake 0 before index useful to identify a text node so cast to string every
+          tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
       } else {
         // If is not component constructor then add to map.
         // Exclude string type and style also
@@ -3516,10 +3528,10 @@ module.exports = function (strings) {
         //}
         if (attributeOriginalTagName) {
           //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-          tpl += "___{".concat(i, "}___ data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
+          tpl += "e-0_".concat(i, "_0-e data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
         } else {
           //result += `${value[i]}${strings[i + 1]}`;
-          tpl += "___{".concat(i, "}___").concat(strings[i + 1]);
+          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
         }
       }
     }
@@ -3529,7 +3541,8 @@ module.exports = function (strings) {
   } //console.log(tpl);
 
 
-  var model = compile(tpl); //clone
+  var model = compile(tpl); //console.log(model);
+  //clone
   //let cloned = cloneAndFill(model, values);
 
   var cloned = deepCopy(model);
@@ -5543,10 +5556,10 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
 
         return $oldElement;
       }
-    }
+    } // noinspection JSMethodCanBeStatic
+
   }, {
     key: "$$afterNodeChange",
-    // noinspection JSMethodCanBeStatic
     value: function $$afterNodeChange($newElement, $oldElement) {
       makeSureAttach($oldElement);
       makeSureAttach($newElement); //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
@@ -5556,10 +5569,10 @@ var DOMManipulation = /*#__PURE__*/function (_Base) {
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
         $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
       }
-    }
+    } // noinspection JSMethodCanBeStatic
+
   }, {
     key: "$$beforeNodeWalk",
-    // noinspection JSMethodCanBeStatic
     value: function $$beforeNodeWalk($parent, index, attributesUpdated) {
       if ($parent.childNodes[index]) {
         makeSureAttach($parent.childNodes[index]);
