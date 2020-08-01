@@ -41,10 +41,10 @@ describe('parser2', function () {
         `);
 
         //printObj(root);
-        assert.strictEqual(root.isSVG, false);
+        assert.strictEqual(root.isSVG, undefined);
         assert.strictEqual(root.children[0].isSVG, true);
         assert.strictEqual(root.children[0].children[0].isSVG, true);
-        assert.strictEqual(root.children[1].isSVG, false);
+        assert.strictEqual(root.children[1].isSVG, undefined);
 
     });
 
