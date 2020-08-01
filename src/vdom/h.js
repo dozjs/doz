@@ -71,7 +71,10 @@ module.exports = function (strings, ...values) {
     //console.log(strings)
     //console.log(values)
     let tpl = hCache.get(strings);
-    //console.log('val', value);
+    //let foundClonedCount = 0;
+
+    //let cloned = hCache.get(values);
+    //console.log(values.length);
 
     // Why? cycling require :D
     //let Component = require('../component/Component');
@@ -220,15 +223,24 @@ module.exports = function (strings, ...values) {
     }
     //console.log(tpl);
 
-    let model = compile(tpl);
+
     //console.log(model);
 
     //clone
     //let cloned = cloneAndFill(model, values);
+    //let cloned = undefined;// hCache.get(values.join()+strings.join())
+    //console.log(strings.raw)
 
+    //if (!cloned) {
+    let model = compile(tpl);
     let cloned = deepCopy(model);
     fillCompiled(cloned, values);
 
+        //hCache.set(values.join()+strings.join(), cloned);
+
+        //console.log('set cloned');
+    //}
+    //console.log(hCache.get(values) === cloned);
     //console.log(cloned);
     return cloned;
 };
