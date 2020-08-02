@@ -84,10 +84,11 @@
 
     const actions = {
         done(key) {
+            //console.log(key)
             const store = this.getStore('todo');
             const index = store.record.findIndex(item => item.key === key);
-            //console.log('key', key)
-            //console.log('index', index)
+            console.log('key', key)
+            console.log('index', index)
             store.record[index].done = !store.record[index].done;
         },
 
@@ -170,14 +171,14 @@
                     }
                 </style>
                 <div forceupdate class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="console.log(this.uId, this.props.title, this.props.key)" title="HTML">H</button>
-                    <button onclick="this.action.remove(${this.props.key})" title="Delete">&cross;</button>
-                    <button onclick="this.action.done(${this.props.key})" title="Done">&check;</button>
-                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                    <button onclick="${() => console.log(this.uId, this.props.title, this.props.key)}" title="HTML">H</button>
+                    <button onclick="${() => this.action.remove(this.props.key)}" title="Delete">&cross;</button>
+                    <button onclick="${() => this.action.done(this.props.key)}" title="Done">&check;</button>
+                    <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.key})"
-                            onkeypress="this.action.inputEnterPress(${this.props.key})"
+                            onblur="${(e) => this.action.hideInput(this.props.key, e)}"
+                            onkeypress="${(e) => this.action.inputEnterPress(this.props.key, e)}"
                             style="display: none"
                             type="text"
                         >
@@ -287,7 +288,7 @@
                     </div>
                     <ul>
                     ${this.each(this.props.record, (item, i) =>
-                        h`<li d-is="doz-todo-item" key="${item.key}" title="${item.title}" done="${item.done}" onclick="console.log(123)"></li>`
+                        h`<li d-is="doz-todo-item" key="${item.key}" title="${item.title}" done="${item.done}"></li>`
                     )}
                     </ul>
                     <div class="todo-info">

@@ -237,6 +237,7 @@ module.exports = function (strings, ...values) {
         if (clonedKey) {
             hCache.set(clonedKey, cloned);
         }
+        //console.log(cloned, model)
     }
 
     return cloned;

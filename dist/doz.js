@@ -2904,9 +2904,8 @@ function setHeadStyle(node, cmp) {
   var dataSetUId = cmp.uId;
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
   scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
-}
+} //let xy = 0;
 
-var xy = 0;
 
 function update($parent, newNode, oldNode) {
   var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
@@ -3560,7 +3559,8 @@ module.exports = function (strings) {
 
     if (clonedKey) {
       hCache.set(clonedKey, cloned);
-    }
+    } //console.log(cloned, model)
+
   }
 
   return cloned;
