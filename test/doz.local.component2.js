@@ -88,7 +88,7 @@ describe('Doz.local.component2', function () {
                 }
 
                 template(h) {
-                    console.log(this.props.data)
+                    //console.log(this.props.data)
                     let res = h`
                         <div>
                             ${this.props.data.map(item => h`

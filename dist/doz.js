@@ -3410,13 +3410,14 @@ module.exports = function (strings) {
 
     var allowTag = false;
     var isInStyle = false;
-    var thereIsStyle = false;
-    var isBoundedToComponent = !!this._components;
-    var compiled;
+    var thereIsStyle = false; //let isBoundedToComponent = !!this._components;
+    //let compiled;
+
     var valueLength = values.length;
 
     for (var i = 0; i < valueLength; ++i) {
-      var isComponentConstructor = false; //if (Array.isArray(value[i])) {
+      //let isComponentConstructor = false;
+      //if (Array.isArray(value[i])) {
 
       /*let newValueString = '';
       for (let j = 0; j < value[i].length; j++) {
@@ -3433,7 +3434,6 @@ module.exports = function (strings) {
       //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
       //value[i] = mapper.set(value[i]);
       //}
-
       var stringsI = strings[i];
       var stringLength = stringsI.length;
 
@@ -3470,9 +3470,8 @@ module.exports = function (strings) {
           isInHandler = true;
         } //}
 
-      }
-
-      var attributeOriginalTagName = void 0; // if this function is bound to Doz component
+      } //let attributeOriginalTagName;
+      // if this function is bound to Doz component
 
       /*
       if (isBoundedToComponent && !isInStyle && !isInHandler) {
@@ -3515,9 +3514,13 @@ module.exports = function (strings) {
       }
       */
 
+
       if (allowTag) {
         //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        if (Array.isArray(values[i])) tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);else // add a fake 0 before index useful to identify a text node so cast to string every
+        if (Array.isArray(values[i])) {
+          //console.log(values[i])
+          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
+        } else // add a fake 0 before index useful to identify a text node so cast to string every
           tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
       } else {
         // If is not component constructor then add to map.
@@ -3574,10 +3577,9 @@ function fillCompiled(obj, values, parent, _this) {
       fillCompiled(obj[keys[i]], values, obj, _this);
     } else {
       //console.log(i, keys[i])
-      var value = placeholderIndex(obj[keys[i]], values);
+      var value = placeholderIndex(obj[keys[i]], values); //if (typeof value === 'function' && keys[i] === 'type') {
 
-      if (typeof value === 'function' && keys[i] === 'type') {
-        //console.log('--->', keys[i], value);
+      if ('type' === keys[i] && 'string' !== typeof value) {
         var cmp = value;
         var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
 
@@ -3597,7 +3599,6 @@ function fillCompiled(obj, values, parent, _this) {
 
 
         if (_this._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
           _this._components[tagCmp] = {
             tag: tagName,
             cfg: cmp
@@ -3606,29 +3607,20 @@ function fillCompiled(obj, values, parent, _this) {
 
 
         if (_this.app._components[tagCmp] === undefined) {
-          //attributeOriginalTagName = tagCmp;
           _this.app._components[tagCmp] = {
             tag: tagName,
             cfg: cmp
           };
-        } //attributeOriginalTagName = tagCmp;
+        }
 
-
-        value = tagName; //console.log('_______', value)
-        //console.log('.......', tagCmp)
-        //console.log(parent);
-
-        obj.props['data-attributeoriginaletagname'] = tagCmp; //data-attributeoriginaletagname="${attributeOriginalTagName}"
+        value = tagName;
+        obj.props['data-attributeoriginaletagname'] = tagCmp;
       }
 
-      if (Array.isArray(value)
-      /*&& keys[i] === 'children'*/
-      ) {
-          //console.log(keys[i], value, obj[keys[i]])
-          //console.log('ppppppp', value)
-          parent.children = value;
-          if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
-        } else obj[keys[i]] = value;
+      if (Array.isArray(value) && keys[i] === '0') {
+        parent.children = value;
+        if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
+      } else obj[keys[i]] = value;
     }
   }
 }

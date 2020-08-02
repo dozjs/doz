@@ -85,12 +85,12 @@ module.exports = function (strings, ...values) {
         let allowTag = false;
         let isInStyle = false;
         let thereIsStyle = false;
-        let isBoundedToComponent = !!this._components;
-        let compiled;
+        //let isBoundedToComponent = !!this._components;
+        //let compiled;
 
         let valueLength = values.length;
         for (let i = 0; i < valueLength; ++i) {
-            let isComponentConstructor = false;
+            //let isComponentConstructor = false;
             //if (Array.isArray(value[i])) {
             /*let newValueString = '';
             for (let j = 0; j < value[i].length; j++) {
@@ -147,7 +147,7 @@ module.exports = function (strings, ...values) {
                 //}
             }
 
-            let attributeOriginalTagName;
+            //let attributeOriginalTagName;
             // if this function is bound to Doz component
             /*
             if (isBoundedToComponent && !isInStyle && !isInHandler) {
@@ -197,9 +197,10 @@ module.exports = function (strings, ...values) {
 */
             if (allowTag) {
                 //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-                if (Array.isArray(values[i]))
+                if (Array.isArray(values[i])) {
+                    //console.log(values[i])
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
-                else
+                } else
                     // add a fake 0 before index useful to identify a text node so cast to string every
                     tpl += `<${tagText}>e-0_0${i}_0-e</${tagText}>${strings[i + 1]}`;
             } else {
@@ -240,7 +241,7 @@ module.exports = function (strings, ...values) {
         }
         //console.log(cloned, model)
     }
-//console.log(cloned)
+    //console.log(cloned)
     return cloned;
 };
 
@@ -255,8 +256,8 @@ function fillCompiled(obj, values, parent, _this) {
             //console.log(i, keys[i])
             let value = placeholderIndex(obj[keys[i]], values);
 
-            if (typeof value === 'function' && keys[i] === 'type') {
-                //console.log('--->', keys[i], value);
+            //if (typeof value === 'function' && keys[i] === 'type') {
+            if ('type' === keys[i] && 'string' !== typeof value) {
 
                 let cmp = value;
                 let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
@@ -277,7 +278,6 @@ function fillCompiled(obj, values, parent, _this) {
 
                 // add to local components
                 if (_this._components[tagCmp] === undefined) {
-                    //attributeOriginalTagName = tagCmp;
                     _this._components[tagCmp] = {
                         tag: tagName,
                         cfg: cmp
@@ -286,25 +286,17 @@ function fillCompiled(obj, values, parent, _this) {
 
                 // add to local app components
                 if (_this.app._components[tagCmp] === undefined) {
-                    //attributeOriginalTagName = tagCmp;
                     _this.app._components[tagCmp] = {
                         tag: tagName,
                         cfg: cmp
                     };
                 }
 
-                //attributeOriginalTagName = tagCmp;
                 value = tagName;
-                //console.log('_______', value)
-                //console.log('.......', tagCmp)
-                //console.log(parent);
                 obj.props['data-attributeoriginaletagname'] = tagCmp;
-                //data-attributeoriginaletagname="${attributeOriginalTagName}"
 
             }
-            if (Array.isArray(value) /*&& keys[i] === 'children'*/) {
-                //console.log(keys[i], value, obj[keys[i]])
-                //console.log('ppppppp', value)
+            if (Array.isArray(value) && keys[i] === '0') {
                 parent.children = value;
                 if (value[0] && value[0].key !== undefined)
                     parent.hasKeys = true;
