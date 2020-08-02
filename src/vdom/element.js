@@ -93,15 +93,15 @@ function setHeadStyle(node, cmp) {
     let tagByData = `[data-uid="${dataSetUId}"]`;
     scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
 }
-//let xy = 0;
+let xy = 0;
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
     //console.log('a')
+    if (!$parent || newNode === oldNode) return;
+
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
-
-    if (!$parent) return;
 
     // Update style
     if (newNode && oldNode && newNode.style !== oldNode.style) {

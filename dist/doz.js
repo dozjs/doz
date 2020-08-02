@@ -2904,8 +2904,9 @@ function setHeadStyle(node, cmp) {
   var dataSetUId = cmp.uId;
   var tagByData = "[data-uid=\"".concat(dataSetUId, "\"]");
   scopedInner(node.style, dataSetUId, tagByData, isScoped, cmp);
-} //let xy = 0;
+}
 
+var xy = 0;
 
 function update($parent, newNode, oldNode) {
   var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
@@ -2914,8 +2915,8 @@ function update($parent, newNode, oldNode) {
   var cmpParent = arguments.length > 6 ? arguments[6] : undefined;
   //directive.callComponentVNodeTick(cmp, newNode, oldNode);
   //console.log('a')
-  if (newNode && newNode.cmp) cmp = newNode.cmp;
-  if (!$parent) return; // Update style
+  if (!$parent || newNode === oldNode) return;
+  if (newNode && newNode.cmp) cmp = newNode.cmp; // Update style
 
   if (newNode && oldNode && newNode.style !== oldNode.style) {
     setHeadStyle(newNode, cmp);
@@ -3540,22 +3541,27 @@ module.exports = function (strings) {
 
     tpl = tpl.trim();
     hCache.set(strings, tpl); //console.log(strings)
-  } //console.log(tpl);
-  //console.log(model);
-  //clone
-  //let cloned = cloneAndFill(model, values);
-  //let cloned = undefined;// hCache.get(values.join()+strings.join())
-  //console.log(strings.raw)
-  //if (!cloned) {
+  }
 
-
+  var cloned;
   var model = compile(tpl);
-  var cloned = deepCopy(model);
-  fillCompiled(cloned, values); //hCache.set(values.join()+strings.join(), cloned);
-  //console.log('set cloned');
-  //}
-  //console.log(hCache.get(values) === cloned);
-  //console.log(cloned);
+  var clonedKey;
+
+  if (model.key !== undefined) {
+    clonedKey = values.filter(function (item) {
+      return typeof item !== 'function' && _typeof(item) !== 'object';
+    }).join('');
+    cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+  }
+
+  if (!cloned) {
+    cloned = deepCopy(model);
+    fillCompiled(cloned, values);
+
+    if (clonedKey) {
+      hCache.set(clonedKey, cloned);
+    }
+  }
 
   return cloned;
 };

@@ -221,27 +221,24 @@ module.exports = function (strings, ...values) {
         hCache.set(strings, tpl);
         //console.log(strings)
     }
-    //console.log(tpl);
 
-
-    //console.log(model);
-
-    //clone
-    //let cloned = cloneAndFill(model, values);
-    //let cloned = undefined;// hCache.get(values.join()+strings.join())
-    //console.log(strings.raw)
-
-    //if (!cloned) {
+    let cloned;
     let model = compile(tpl);
-    let cloned = deepCopy(model);
-    fillCompiled(cloned, values);
+    let clonedKey;
 
-        //hCache.set(values.join()+strings.join(), cloned);
+    if (model.key !== undefined) {
+        clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
+        cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+    }
 
-        //console.log('set cloned');
-    //}
-    //console.log(hCache.get(values) === cloned);
-    //console.log(cloned);
+    if (!cloned) {
+        cloned = deepCopy(model);
+        fillCompiled(cloned, values);
+        if (clonedKey) {
+            hCache.set(clonedKey, cloned);
+        }
+    }
+
     return cloned;
 };
 
