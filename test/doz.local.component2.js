@@ -88,9 +88,10 @@ describe('Doz.local.component2', function () {
                 }
 
                 template(h) {
+                    console.log(this.props.data)
                     let res = h`
                         <div>
-                            ${this.each(this.props.data, item => h`
+                            ${this.props.data.map(item => h`
                                 <${RowComponent} name="${item.name}" theobj="${globalObj}"/>
                             `)}
                         </div>

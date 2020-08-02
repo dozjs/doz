@@ -3474,49 +3474,46 @@ module.exports = function (strings) {
 
       var attributeOriginalTagName = void 0; // if this function is bound to Doz component
 
+      /*
       if (isBoundedToComponent && !isInStyle && !isInHandler) {
-        // if before is to <
-        if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || _typeof(values[i]) === 'object') && strings[i].indexOf(LESSER) > -1) {
-          isComponentConstructor = true;
-          var cmp = values[i];
-          var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
-
-          tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
-
-          if (tagName.indexOf('-') === -1) {
-            tagName = "".concat(tagName, "-").concat(tagName);
+            // if before is to <
+          if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || typeof values[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
+              isComponentConstructor = true;
+              let cmp = values[i];
+              let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
+              // Sanitize tag name
+              tagName = tagName.replace(/_+/, '');
+              // if is a single word, rename with double word
+              if (tagName.indexOf('-') === -1) {
+                  tagName = `${tagName}-${tagName}`;
+              }
+                let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
+                if (this._componentsMap.has(values[i])) {
+                  tagCmp = this._componentsMap.get(values[i]);
+              } else {
+                  this._componentsMap.set(values[i], tagCmp);
+              }
+                // add to local components
+              if (this._components[tagCmp] === undefined) {
+                  //attributeOriginalTagName = tagCmp;
+                  this._components[tagCmp] = {
+                      tag: tagName,
+                      cfg: cmp
+                  };
+              }
+                // add to local app components
+              if (this.app._components[tagCmp] === undefined) {
+                  //attributeOriginalTagName = tagCmp;
+                  this.app._components[tagCmp] = {
+                      tag: tagName,
+                      cfg: cmp
+                  };
+              }
+                attributeOriginalTagName = tagCmp;
+              values[i] = tagName;
           }
-
-          var tagCmp = tagName + '-' + this.uId + '-' + this._localComponentLastId++;
-
-          if (this._componentsMap.has(values[i])) {
-            tagCmp = this._componentsMap.get(values[i]);
-          } else {
-            this._componentsMap.set(values[i], tagCmp);
-          } // add to local components
-
-
-          if (this._components[tagCmp] === undefined) {
-            //attributeOriginalTagName = tagCmp;
-            this._components[tagCmp] = {
-              tag: tagName,
-              cfg: cmp
-            };
-          } // add to local app components
-
-
-          if (this.app._components[tagCmp] === undefined) {
-            //attributeOriginalTagName = tagCmp;
-            this.app._components[tagCmp] = {
-              tag: tagName,
-              cfg: cmp
-            };
-          }
-
-          attributeOriginalTagName = tagCmp;
-          values[i] = tagName;
-        }
       }
+      */
 
       if (allowTag) {
         //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
@@ -3528,19 +3525,20 @@ module.exports = function (strings) {
         //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
         //value[i] = mapper.set(value[i]);
         //}
-        if (attributeOriginalTagName) {
-          //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-          tpl += "e-0_".concat(i, "_0-e data-attributeoriginaletagname=\"").concat(attributeOriginalTagName, "\" ").concat(strings[i + 1]);
-        } else {
-          //result += `${value[i]}${strings[i + 1]}`;
-          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
-        }
+
+        /*if (attributeOriginalTagName) {
+            //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+            tpl += `e-0_${i}_0-e data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
+        } else {*/
+        //result += `${value[i]}${strings[i + 1]}`;
+        tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]); //}
       }
     }
 
     tpl = tpl.trim();
     hCache.set(strings, tpl); //console.log(strings)
-  }
+  } //console.log(tpl)
+
 
   var cloned;
   var model = compile(tpl);
@@ -3555,87 +3553,84 @@ module.exports = function (strings) {
 
   if (!cloned) {
     cloned = deepCopy(model);
-    fillCompiled(cloned, values);
+    fillCompiled(cloned, values, null, this);
 
     if (clonedKey) {
       hCache.set(clonedKey, cloned);
     } //console.log(cloned, model)
 
-  }
+  } //console.log(cloned)
+
 
   return cloned;
 };
 
-function fillCompiled(obj, values, parent) {
+function fillCompiled(obj, values, parent, _this) {
   var keys = Object.keys(obj);
 
   for (var i = 0; i < keys.length; i++) {
     //for (let k in obj) {
     if (obj[keys[i]] && _typeof(obj[keys[i]]) === 'object') {
-      fillCompiled(obj[keys[i]], values, obj);
+      fillCompiled(obj[keys[i]], values, obj, _this);
     } else {
-      //console.log(k, obj[k])
-      var value = placeholderIndex(obj[keys[i]], values); //console.log('--->', obj[keys[i]], value);
+      //console.log(i, keys[i])
+      var value = placeholderIndex(obj[keys[i]], values);
 
-      if (Array.isArray(value)) {
-        //console.log(parent, value)
-        parent.children = value;
-        if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
-      } else obj[keys[i]] = value;
+      if (typeof value === 'function' && keys[i] === 'type') {
+        //console.log('--->', keys[i], value);
+        var cmp = value;
+        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
+
+        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
+
+        if (tagName.indexOf('-') === -1) {
+          tagName = "".concat(tagName, "-").concat(tagName);
+        }
+
+        var tagCmp = tagName + '-' + _this.uId + '-' + _this._localComponentLastId++;
+
+        if (_this._componentsMap.has(value)) {
+          tagCmp = _this._componentsMap.get(value);
+        } else {
+          _this._componentsMap.set(value, tagCmp);
+        } // add to local components
+
+
+        if (_this._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
+          _this._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        } // add to local app components
+
+
+        if (_this.app._components[tagCmp] === undefined) {
+          //attributeOriginalTagName = tagCmp;
+          _this.app._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        } //attributeOriginalTagName = tagCmp;
+
+
+        value = tagName; //console.log('_______', value)
+        //console.log('.......', tagCmp)
+        //console.log(parent);
+
+        obj.props['data-attributeoriginaletagname'] = tagCmp; //data-attributeoriginaletagname="${attributeOriginalTagName}"
+      }
+
+      if (Array.isArray(value)
+      /*&& keys[i] === 'children'*/
+      ) {
+          //console.log(keys[i], value, obj[keys[i]])
+          //console.log('ppppppp', value)
+          parent.children = value;
+          if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
+        } else obj[keys[i]] = value;
     }
   }
-}
-
-function cloneAndFill(obj, values, parent) {
-  // if not array or object or is null return self
-  if (_typeof(obj) !== 'object' || obj === null) return obj;
-  var newObj, i; // handle case: array
-
-  if (Array.isArray(obj)) {
-    var l;
-    newObj = [];
-
-    for (i = 0, l = obj.length; i < l; i++) {
-      newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj);
-    }
-
-    return newObj;
-  } // handle case: object
-
-
-  newObj = {};
-
-  for (i in obj) {
-    if (obj.hasOwnProperty(i)) {
-      newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj); //console.log('i', i)
-
-      /*if (i === 'children') {
-          if (newObj[i].length === 1 && Array.isArray(newObj[i][0])) {
-              //console.log(newObj[i])
-              //console.log('children')
-              newObj[i] = newObj[i][0];
-              //if (newObj[i][0] && newObj[i][0].key !== undefined)
-                  //parent.hasKeys = true;
-          }
-      }*/
-
-      /*if (i === 'hasKeys') {
-          console.log('hasKeys')
-      }*/
-
-      /*if (parent && Array.isArray(newObj[i]) && newObj[i].length) {
-          console.log('a')
-          //console.log('newObj[i]', newObj[i])
-          //console.log('parent', parent)
-          parent.children = newObj[i];
-          if (newObj[i][0] && newObj[i][0].key !== undefined)
-              parent.hasKeys = true;
-          //console.log(parent.children)
-      }*/
-    }
-  }
-
-  return newObj;
 }
 
 /***/ }),

@@ -149,6 +149,7 @@ module.exports = function (strings, ...values) {
 
             let attributeOriginalTagName;
             // if this function is bound to Doz component
+            /*
             if (isBoundedToComponent && !isInStyle && !isInHandler) {
 
                 // if before is to <
@@ -193,7 +194,7 @@ module.exports = function (strings, ...values) {
                     values[i] = tagName;
                 }
             }
-
+*/
             if (allowTag) {
                 //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
                 if (Array.isArray(values[i]))
@@ -207,13 +208,13 @@ module.exports = function (strings, ...values) {
                 //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
                 //value[i] = mapper.set(value[i]);
                 //}
-                if (attributeOriginalTagName) {
+                /*if (attributeOriginalTagName) {
                     //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
                     tpl += `e-0_${i}_0-e data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-                } else {
+                } else {*/
                     //result += `${value[i]}${strings[i + 1]}`;
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
-                }
+                //}
             }
         }
 
@@ -221,7 +222,7 @@ module.exports = function (strings, ...values) {
         hCache.set(strings, tpl);
         //console.log(strings)
     }
-
+//console.log(tpl)
     let cloned;
     let model = compile(tpl);
     let clonedKey;
@@ -233,29 +234,77 @@ module.exports = function (strings, ...values) {
 
     if (!cloned) {
         cloned = deepCopy(model);
-        fillCompiled(cloned, values);
+        fillCompiled(cloned, values, null, this);
         if (clonedKey) {
             hCache.set(clonedKey, cloned);
         }
         //console.log(cloned, model)
     }
-
+//console.log(cloned)
     return cloned;
 };
 
-function fillCompiled(obj, values, parent) {
+function fillCompiled(obj, values, parent, _this) {
     let keys = Object.keys(obj);
 
     for (let i = 0; i < keys.length; i++) {
         //for (let k in obj) {
         if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
-            fillCompiled(obj[keys[i]], values, obj);
+            fillCompiled(obj[keys[i]], values, obj, _this);
         } else {
-            //console.log(k, obj[k])
+            //console.log(i, keys[i])
             let value = placeholderIndex(obj[keys[i]], values);
-            //console.log('--->', obj[keys[i]], value);
-            if (Array.isArray(value)) {
-                //console.log(parent, value)
+
+            if (typeof value === 'function' && keys[i] === 'type') {
+                //console.log('--->', keys[i], value);
+
+                let cmp = value;
+                let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
+                // Sanitize tag name
+                tagName = tagName.replace(/_+/, '');
+                // if is a single word, rename with double word
+                if (tagName.indexOf('-') === -1) {
+                    tagName = `${tagName}-${tagName}`;
+                }
+
+                let tagCmp = tagName + '-' + _this.uId + '-' + (_this._localComponentLastId++);
+
+                if (_this._componentsMap.has(value)) {
+                    tagCmp = _this._componentsMap.get(value);
+                } else {
+                    _this._componentsMap.set(value, tagCmp);
+                }
+
+                // add to local components
+                if (_this._components[tagCmp] === undefined) {
+                    //attributeOriginalTagName = tagCmp;
+                    _this._components[tagCmp] = {
+                        tag: tagName,
+                        cfg: cmp
+                    };
+                }
+
+                // add to local app components
+                if (_this.app._components[tagCmp] === undefined) {
+                    //attributeOriginalTagName = tagCmp;
+                    _this.app._components[tagCmp] = {
+                        tag: tagName,
+                        cfg: cmp
+                    };
+                }
+
+                //attributeOriginalTagName = tagCmp;
+                value = tagName;
+                //console.log('_______', value)
+                //console.log('.......', tagCmp)
+                //console.log(parent);
+                obj.props['data-attributeoriginaletagname'] = tagCmp;
+                //data-attributeoriginaletagname="${attributeOriginalTagName}"
+
+            }
+            if (Array.isArray(value) /*&& keys[i] === 'children'*/) {
+                //console.log(keys[i], value, obj[keys[i]])
+                //console.log('ppppppp', value)
                 parent.children = value;
                 if (value[0] && value[0].key !== undefined)
                     parent.hasKeys = true;
@@ -263,49 +312,4 @@ function fillCompiled(obj, values, parent) {
                 obj[keys[i]] = value;
         }
     }
-}
-
-function cloneAndFill(obj, values, parent) {
-    // if not array or object or is null return self
-    if (typeof obj !== 'object' || obj === null) return obj;
-    let newObj, i;
-    // handle case: array
-    if (Array.isArray(obj)) {
-        let l;
-        newObj = [];
-        for (i = 0, l = obj.length; i < l; i++) {
-            newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj);
-        }
-        return newObj;
-    }
-    // handle case: object
-    newObj = {};
-    for (i in obj) {
-        if (obj.hasOwnProperty(i)) {
-            newObj[i] = cloneAndFill(placeholderIndex(obj[i], values), values, newObj);
-            //console.log('i', i)
-            /*if (i === 'children') {
-                if (newObj[i].length === 1 && Array.isArray(newObj[i][0])) {
-                    //console.log(newObj[i])
-                    //console.log('children')
-                    newObj[i] = newObj[i][0];
-                    //if (newObj[i][0] && newObj[i][0].key !== undefined)
-                        //parent.hasKeys = true;
-                }
-            }*/
-            /*if (i === 'hasKeys') {
-                console.log('hasKeys')
-            }*/
-            /*if (parent && Array.isArray(newObj[i]) && newObj[i].length) {
-                console.log('a')
-                //console.log('newObj[i]', newObj[i])
-                //console.log('parent', parent)
-                parent.children = newObj[i];
-                if (newObj[i][0] && newObj[i][0].key !== undefined)
-                    parent.hasKeys = true;
-                //console.log(parent.children)
-            }*/
-        }
-    }
-    return newObj;
 }
