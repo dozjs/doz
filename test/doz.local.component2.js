@@ -55,14 +55,14 @@ describe('Doz.local.component2', function () {
                 }
             });
 
-            setTimeout(() => {
+            //setTimeout(() => {
                 const html = document.body.innerHTML;
                 console.log(html);
                 be.err.true(/Doz component/g.test(html));
                 be.err.true(/my button by wrapper component/g.test(html));
                 be.err.true(/my button by Doz/g.test(html));
                 be.err(done).true(/Luis component/g.test(html));
-            }, 100);
+            //}, 50);
 
         });
     });
@@ -96,7 +96,7 @@ describe('Doz.local.component2', function () {
                             `)}
                         </div>
                     `;
-                    //console.log(JSON.stringify(res, null, 4))
+                    console.log(JSON.stringify(res, null, 4))
                     //console.log(res.children[0].props.theobj === globalObj)
                     return res;
                 }
@@ -131,7 +131,7 @@ describe('Doz.local.component2', function () {
                 }
             });
 
-            setTimeout(() => {
+            //setTimeout(() => {
                 const html = document.body.innerHTML;
                 //console.log(require('../src/vdom/map-compiled').data);
                 console.log(html);
@@ -141,7 +141,7 @@ describe('Doz.local.component2', function () {
                 be.err.true(/my name is Fred/g.test(html));
                 be.err.true(/my name is Ted/g.test(html));
                 done();
-            }, 100);
+            //}, 100);
 
         });
 
