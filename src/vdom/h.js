@@ -194,14 +194,23 @@ module.exports = function (strings, ...values) {
                 }
             }
 */
+            /*if ('string' === typeof values[i]) {
+                if (/<.*>/.test(values[i]))
+                    allowTag = false;
+                console.log('allow', allowTag)
+            }
+
+            console.log(values[i])*/
             if (allowTag) {
                 //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-                if (Array.isArray(values[i])) {
+                //if (Array.isArray(values[i])) {
+                if (typeof values[i] !== 'string') {
                     //console.log(values[i])
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
-                } else
+                } else {
                     // add a fake 0 before index useful to identify a text node so cast to string every
                     tpl += `<${tagText}>e-0_0${i}_0-e</${tagText}>${strings[i + 1]}`;
+                }
             } else {
                 // If is not component constructor then add to map.
                 // Exclude string type and style also
@@ -222,7 +231,7 @@ module.exports = function (strings, ...values) {
         hCache.set(strings, tpl);
         //console.log(strings)
     }
-//console.log(tpl)
+    //console.log(tpl)
     let cloned;
     let model = compile(tpl);
     let clonedKey;
