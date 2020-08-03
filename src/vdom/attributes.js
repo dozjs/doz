@@ -2,7 +2,7 @@ const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 //const castStringTo = require('../utils/cast-string-to');
 const objectPath = require('../utils/object-path');
 const isListener = require('../utils/is-listener');
-const mapper = require('./mapper');
+//const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
 const makeSureAttach = require('../component/make-sure-attach');
 const booleanAttributes = require('../utils/boolean-attributes');
@@ -142,9 +142,9 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 args = stringArgs.split(',').map(item => {
                     item = trimQuotes(item.trim());
                     //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                    let itemMap = mapper.get(item);
+                    /*let itemMap = mapper.get(item);
                     if (itemMap !== undefined)
-                        item = itemMap;
+                        item = itemMap;*/
 
                     return item === 'scope'
                         ? cmpParent
@@ -172,9 +172,9 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 if (stringArgs) {
                     args = stringArgs.split(',').map(item => {
                         item = trimQuotes(item.trim());
-                        let itemMap = mapper.get(item);
+                        /*let itemMap = mapper.get(item);
                         if (itemMap !== undefined)
-                            item = itemMap;
+                            item = itemMap;*/
                         //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
                         return item === 'this'
                             ? cmp

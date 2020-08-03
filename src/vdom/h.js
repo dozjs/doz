@@ -12,7 +12,7 @@ const LESSER = '<';
 const GREATER = '>';
 const PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
 const PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
-
+/*
 function _placeholderIndex(str, values) {
     let matched = /___{(\d+)}___/g.exec(str);
     //console.log(str, values)
@@ -22,7 +22,7 @@ function _placeholderIndex(str, values) {
     } else
         return str;
 }
-
+*/
 function placeholderIndex(str, values) {
     //console.log(str)
     if (typeof str !== 'string') {
@@ -100,7 +100,6 @@ module.exports = function (strings, ...values) {
                 }
             }
             if (newValueString) {
-                console.error('aaaaaaaaaaaaaaaa')
                 value[i] = newValueString;
             }*/
             //}
@@ -136,7 +135,7 @@ module.exports = function (strings, ...values) {
             }
 
             //
-            let isInHandler = false;
+            /*let isInHandler = false;
             // Check if value is a function and is after an event attribute like onclick for example.
             if (typeof values[i] === 'function' || typeof values[i] === 'object') {
                 //for (let x = 0; x < eventsAttributes.length; x++) {
@@ -145,7 +144,7 @@ module.exports = function (strings, ...values) {
                     isInHandler = true;
                 }
                 //}
-            }
+            }*/
 
             //let attributeOriginalTagName;
             // if this function is bound to Doz component

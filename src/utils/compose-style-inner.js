@@ -5,12 +5,12 @@
 // Add tag prefix to animation
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
-const mapper = require('../vdom/mapper');
+//const mapper = require('../vdom/mapper');
 
 function composeStyleInner(cssContent, tag) {
     if (typeof cssContent !== 'string') return;
 
-    cssContent = mapper.getAll(cssContent);
+    //cssContent = mapper.getAll(cssContent);
 
     let sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
