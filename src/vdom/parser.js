@@ -43,7 +43,7 @@ function last(arr) {
 function removeNLS(str) {
     return str.replace(REGEX.MATCH_NLS, '');
 }
-
+/*
 function removeDoubleQuotes(str) {
     if (typeof str === 'string') {
         if (str === '""' || str === "''")
@@ -51,6 +51,7 @@ function removeDoubleQuotes(str) {
     }
     return str;
 }
+*/
 
 class Element {
 
@@ -105,18 +106,20 @@ function compile(tpl) {
                     //console.log(text)
                     //let possibleCompiled = mapper.get(text.trim());
                     //text = placeholderIndex(text, values);
-                    if (!Array.isArray(text)) {
+                    //if (!Array.isArray(text)) {
                         //console.log(currentParent)
                         if (currentParent.style === true) {
                             //console.log('currentParent.style', currentParent.style)
                             currentParent.style = text;
                             //console.log(currentParent)
                         } else {
+                            if (text.substr(0, 5) === ' e-0_')
+                                text = text.trim();
                             currentParent.appendChild(text);
                         }
-                    } else {
+                    /*} else {
                         currentParent.appendChild(text);
-                    }
+                    }*/
                 }
             }
         }

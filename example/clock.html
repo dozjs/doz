@@ -22,15 +22,10 @@
 <div id="app"></div>
 <script>
 
-    let lnk = () => `<a href="#">lnk</a>`
-
-    //let lnk = `<a href="#">lnk</a>`;
-
     Doz.component('doz-clock', {
         template(h){
             return h`
                 <div style="color: ${this.props.color}; font-weight: ${this.props.fontWeight}">${this.props.title}: ${this.props.time}</div>
-                <${lnk}/>
             `
         },
         props: {
