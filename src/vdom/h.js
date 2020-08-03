@@ -249,7 +249,7 @@ module.exports = function (strings, ...values) {
         }
         //console.log(cloned, model)
     }
-    //console.log(cloned)
+    // console.log(cloned)
     return cloned;
 };
 
