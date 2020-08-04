@@ -244,7 +244,16 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     $myListParent.removeChild($oldElement);
                 }
                 $myListParent._dozAttach.keyList.delete(oldKeyDoRemove[i]);
+                //console.log('cancellato in posizione', oldKeyDoRemove[i])
             }
+        }
+
+        //console.log(oldKeyDoRemove)
+        //console.log(newNodeKeyList)
+
+        if (oldKeyDoRemove.length) {
+            // Remove from old the removed keys so preventing diff position
+            oldNodeKeyList = oldNodeKeyList.filter(x => !~oldKeyDoRemove.indexOf(x));
         }
 
         let listOfElement = [];
@@ -315,7 +324,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 }
             }
         }
-
+        //console.log(diffIndex);
         // No differences so exit or items are removed
         if (diffIndex[0] === undefined /*|| oldKeyDoRemove.length*/) return;
 
@@ -327,15 +336,13 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         }
 
+        //return ;
         let useIndexI = true;
         let $currentElementAtPosition;
         let $element;
 
         let i = 0;
         let j = listOfElement.length - 1;
-
-        //console.log('diffIndex', diffIndex);
-
 
         // Try to reorder the list...
         while (i <= j) {

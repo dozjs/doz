@@ -3036,8 +3036,8 @@ function update($parent, newNode, oldNode) {
 
     var newNodeKeyList = new Array(_defined3.length);
 
-    for (var _i10 = 0; _i10 <= _defined3.length - 1; _i10++) {
-      newNodeKeyList[_i10] = _defined4(_defined3[_i10], _i10, _defined3);
+    for (var _i12 = 0; _i12 <= _defined3.length - 1; _i12++) {
+      newNodeKeyList[_i12] = _defined4(_defined3[_i12], _i12, _defined3);
     }
 
     var _defined5 = oldNode.children;
@@ -3049,8 +3049,8 @@ function update($parent, newNode, oldNode) {
     var oldNodeKeyList = new Array(_defined5.length); // here my new logic for keys
     // Check if $myListParent has _dozAttach.keyList
 
-    for (var _i11 = 0; _i11 <= _defined5.length - 1; _i11++) {
-      oldNodeKeyList[_i11] = _defined6(_defined5[_i11], _i11, _defined5);
+    for (var _i13 = 0; _i13 <= _defined5.length - 1; _i13++) {
+      oldNodeKeyList[_i13] = _defined6(_defined5[_i13], _i13, _defined5);
     }
 
     if ($myListParent._dozAttach.keyList === undefined) {
@@ -3064,8 +3064,8 @@ function update($parent, newNode, oldNode) {
     var oldKeyDoRemove = []; //console.log('diff', oldKeyDoRemove)
     // Ci sono key da rimuovere?
 
-    for (var _i12 = 0; _i12 <= oldNodeKeyList.length - 1; _i12++) {
-      if (_defined7(oldNodeKeyList[_i12], _i12, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i12]);
+    for (var _i14 = 0; _i14 <= oldNodeKeyList.length - 1; _i14++) {
+      if (_defined7(oldNodeKeyList[_i14], _i14, oldNodeKeyList)) oldKeyDoRemove.push(oldNodeKeyList[_i14]);
     }
 
     for (var _i6 = 0; _i6 < oldKeyDoRemove.length; _i6++) {
@@ -3079,7 +3079,24 @@ function update($parent, newNode, oldNode) {
           $myListParent.removeChild(_$oldElement);
         }
 
-        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]);
+        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]); //console.log('cancellato in posizione', oldKeyDoRemove[i])
+
+      }
+    } //console.log(oldKeyDoRemove)
+    //console.log(newNodeKeyList)
+
+
+    if (oldKeyDoRemove.length) {
+      var _arr = oldNodeKeyList;
+      oldNodeKeyList = [];
+
+      var _defined8 = function _defined8(x) {
+        return !~oldKeyDoRemove.indexOf(x);
+      };
+
+      // Remove from old the removed keys so preventing diff position
+      for (var _i8 = 0; _i8 <= _arr.length - 1; _i8++) {
+        if (_defined8(_arr[_i8], _i8, _arr)) oldNodeKeyList.push(_arr[_i8]);
       }
     }
 
@@ -3087,21 +3104,21 @@ function update($parent, newNode, oldNode) {
     var diffIndex = [];
     var diffIndexMap = Object.create(null);
 
-    for (var _i7 = 0; _i7 < newNodeKeyList.length; _i7++) {
-      if (newNodeKeyList[_i7] !== oldNodeKeyList[_i7]) {
+    for (var _i9 = 0; _i9 < newNodeKeyList.length; _i9++) {
+      if (newNodeKeyList[_i9] !== oldNodeKeyList[_i9]) {
         //console.log('indice diverso ', i)
-        diffIndex.push(_i7);
-        diffIndexMap[_i7] = true;
+        diffIndex.push(_i9);
+        diffIndexMap[_i9] = true;
       } // This is the key of all
 
 
-      var theKey = newNodeKeyList[_i7]; // console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
+      var theKey = newNodeKeyList[_i9]; // console.log('esiste nella mappa?', newNode.children[i].props.key,$myListParent._dozAttach.keyList.has(newNode.children[i].props.key))
 
       var _$element = $myListParent._dozAttach.keyList.get(theKey); // Se non esiste creo il nodo
 
 
       if (!_$element) {
-        var _$newElement2 = create(newNode.children[_i7], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+        var _$newElement2 = create(newNode.children[_i9], cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
 
         $myListParent._dozAttach.keyList.set(theKey, _$newElement2); // console.log('elemento creato', $newElement);
         // appendo per il momento
@@ -3123,14 +3140,15 @@ function update($parent, newNode, oldNode) {
         var newChildByKeyLength = newChildByKey.children.length;
         var oldChildByKeyLength = oldChildByKey.children.length; //console.log(diffIndex)
 
-        for (var _i8 = 0; _i8 < newChildByKeyLength || _i8 < oldChildByKeyLength; _i8++) {
-          if (newChildByKey.children[_i8] === undefined || oldChildByKey.children[_i8] === undefined) continue; //console.log(newChildByKey.children[i])
+        for (var _i10 = 0; _i10 < newChildByKeyLength || _i10 < oldChildByKeyLength; _i10++) {
+          if (newChildByKey.children[_i10] === undefined || oldChildByKey.children[_i10] === undefined) continue; //console.log(newChildByKey.children[i])
           //console.log(oldChildByKey.children[i])
 
-          update(_$element, newChildByKey.children[_i8], oldChildByKey.children[_i8], _i8, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+          update(_$element, newChildByKey.children[_i10], oldChildByKey.children[_i10], _i10, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
       }
-    } // No differences so exit or items are removed
+    } //console.log(diffIndex);
+    // No differences so exit or items are removed
 
 
     if (diffIndex[0] === undefined
@@ -3138,19 +3156,19 @@ function update($parent, newNode, oldNode) {
     ) return; // If first item index is equal to childNodes length then just append..
 
     if ($myListParent.childNodes.length === diffIndex[0]) {
-      for (var _i9 = 0; _i9 < listOfElement.length; _i9++) {
-        $myListParent.appendChild(listOfElement[_i9]);
+      for (var _i11 = 0; _i11 < listOfElement.length; _i11++) {
+        $myListParent.appendChild(listOfElement[_i11]);
       }
 
       return;
-    }
+    } //return ;
+
 
     var useIndexI = true;
     var $currentElementAtPosition;
     var $element;
     var i = 0;
-    var j = listOfElement.length - 1; //console.log('diffIndex', diffIndex);
-    // Try to reorder the list...
+    var j = listOfElement.length - 1; // Try to reorder the list...
 
     while (i <= j) {
       //console.log(i)
@@ -3216,8 +3234,8 @@ function update($parent, newNode, oldNode) {
     var newLength = newNode.children.length;
     var oldLength = oldNode.children.length;
 
-    for (var _i13 = 0; _i13 < newLength || _i13 < oldLength; _i13++) {
-      update($parent.childNodes[index], newNode.children[_i13], oldNode.children[_i13], _i13, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+    for (var _i15 = 0; _i15 < newLength || _i15 < oldLength; _i15++) {
+      update($parent.childNodes[index], newNode.children[_i15], oldNode.children[_i15], _i15, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
     }
 
     clearDead();
@@ -3532,8 +3550,13 @@ module.exports = function (strings) {
           //console.log(values[i])
           tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
         } else {
-          // add a fake 0 before index useful to identify a text node so cast to string every
-          tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
+          // possible html as string
+          if (/<.*>/.test(values[i])) {
+            tpl += "".concat(values[i]).concat(strings[i + 1]);
+          } else {
+            // add a fake 0 before index useful to identify a text node so cast to string every
+            tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
+          }
         }
       } else {
         // If is not component constructor then add to map.
@@ -6532,18 +6555,13 @@ directive('bind', {
     });
   },
   onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
-    var _this2 = this;
+    if (!Object.keys(instance._boundElements).length) return; //delay(() => {
 
-    delay(function () {
-      _this2.updateBoundElementsByChanges(instance, changes);
-    });
+    this.updateBoundElementsByChanges(instance, changes); //});
   },
   onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
-    var _this3 = this;
-
-    delay(function () {
-      _this3.updateBoundElementsByPropsIteration(instance);
-    });
+    //delay(() => {
+    this.updateBoundElementsByPropsIteration(instance); //});
   },
   onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
     if (!this.canBind($target)) return;
@@ -6555,7 +6573,7 @@ directive('bind', {
     return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
   },
   setBind: function setBind(instance, $target, value) {
-    var _this4 = this;
+    var _this2 = this;
 
     if (instance.props[value] === undefined) return; // Add UI events
 
@@ -6631,17 +6649,17 @@ directive('bind', {
 
 
     delay(function () {
-      _this4.updateBoundElement($target, instance.props[value], instance);
+      _this2.updateBoundElement($target, instance.props[value], instance);
     });
   },
   updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
-    var _this5 = this;
+    var _this3 = this;
 
     var _defined8 = function _defined8(item) {
       var value = item.newValue;
       var property = item.property;
 
-      _this5.updateBoundElements(instance, value, property);
+      _this3.updateBoundElements(instance, value, property);
     };
 
     for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
@@ -6666,11 +6684,11 @@ directive('bind', {
     })(instance._rawProps);
   },
   updateBoundElements: function updateBoundElements(instance, value, property) {
-    var _this6 = this;
+    var _this4 = this;
 
     if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
       var _defined9 = function _defined9($target) {
-        _this6.updateBoundElement($target, value, instance);
+        _this4.updateBoundElement($target, value, instance);
       };
 
       var _defined10 = instance._boundElements[property];

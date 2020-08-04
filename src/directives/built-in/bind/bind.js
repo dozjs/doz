@@ -16,15 +16,16 @@ directive('bind', {
     },
 
     onAppComponentUpdate(instance, changes) {
-        delay(() => {
+        if(!Object.keys(instance._boundElements).length) return ;
+        //delay(() => {
             this.updateBoundElementsByChanges(instance, changes);
-        });
+        //});
     },
 
     onAppComponentLoadProps(instance) {
-        delay(() => {
+        //delay(() => {
             this.updateBoundElementsByPropsIteration(instance);
-        });
+        //});
     },
 
     onComponentDOMElementCreate(instance, $target, directiveValue, initial) {

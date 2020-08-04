@@ -208,8 +208,13 @@ module.exports = function (strings, ...values) {
                     //console.log(values[i])
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 } else {
-                    // add a fake 0 before index useful to identify a text node so cast to string every
-                    tpl += `<${tagText}>e-0_0${i}_0-e</${tagText}>${strings[i + 1]}`;
+                    // possible html as string
+                    if (/<.*>/.test(values[i])) {
+                        tpl += `${values[i]}${strings[i + 1]}`;
+                    } else {
+                        // add a fake 0 before index useful to identify a text node so cast to string every
+                        tpl += `<${tagText}>e-0_0${i}_0-e</${tagText}>${strings[i + 1]}`;
+                    }
                 }
             } else {
                 // If is not component constructor then add to map.

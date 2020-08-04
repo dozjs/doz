@@ -26,7 +26,9 @@ const actions = {
     },
 
     clear() {
+        this.mainComponent.prepareCommit();
         this.getStore('records').data = [];
+        this.mainComponent.commit();
     },
 
     del(id) {
