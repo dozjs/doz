@@ -5,7 +5,7 @@ const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
-const mapper = require('./mapper');
+//const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
 const cacheTpl = Object.create(null);
 

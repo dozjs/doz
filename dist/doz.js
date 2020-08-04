@@ -554,9 +554,8 @@ var regExcludeSpecial = new RegExp("</?(".concat(TAG.TEXT_NODE_PLACE, "|").conca
 var directive = __webpack_require__(0);
 
 var _require2 = __webpack_require__(5),
-    isDirective = _require2.isDirective;
-
-var mapper = __webpack_require__(9); //const eventsAttributes = require('../utils/events-attributes');
+    isDirective = _require2.isDirective; //const mapper = require('./mapper');
+//const eventsAttributes = require('../utils/events-attributes');
 
 
 var cacheTpl = Object.create(null);
@@ -866,53 +865,7 @@ function dashToCamel(s) {
 module.exports = dashToCamel;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-var RND = Math.random();
-var MAX_ID = 9007199254740990;
-var REGEX_1 = new RegExp('(\\/\\*' + RND + '=%{\\d+}%=\\*\\/)', 'g');
-var REGEX_2 = new RegExp('^\\/\\*' + RND + '=%{\\d+}%=\\*\\/$');
-module.exports = {
-  lastId: 0,
-  data: {},
-  set: function set(value, from) {
-    // Reset counter
-    if (this.lastId >= MAX_ID) this.lastId = 0;
-    var id = ++this.lastId;
-    id = "/*".concat(RND, "=%{").concat(id, "}%=*/"); //console.log('--->', id, value, from)
-
-    this.data[id] = value;
-    return id;
-  },
-  get: function get(id) {
-    if (!this.isValidId(id)) return;
-    id = id.trim();
-    var res = this.data[id];
-    delete this.data[id]; //this.flush()
-
-    return res;
-  },
-  getAll: function getAll(str) {
-    var _this = this;
-
-    return str.replace(REGEX_1, function (match) {
-      var objValue = _this.get(match);
-
-      if (objValue !== undefined) {
-        return objValue;
-      } else return match;
-    });
-  },
-  isValidId: function isValidId(id) {
-    return REGEX_2.test(id);
-  },
-  flush: function flush() {
-    this.data = {};
-  }
-};
-
-/***/ }),
+/* 9 */,
 /* 10 */
 /***/ (function(module, exports) {
 
@@ -3808,9 +3761,8 @@ var mixin = __webpack_require__(58);
 var h = __webpack_require__(22);
 
 var _require3 = __webpack_require__(7),
-    compile = _require3.compile;
+    compile = _require3.compile; //const mapper = require('./vdom/mapper');
 
-var mapper = __webpack_require__(9);
 
 var _require4 = __webpack_require__(18),
     update = _require4.update;
@@ -3865,9 +3817,10 @@ Object.defineProperties(Doz, {
     value: directive,
     enumerable: true
   },
-  mapper: {
-    value: mapper
-  },
+
+  /*mapper: {
+      value: mapper
+  },*/
   version: {
     value: '3.3.3',
     enumerable: true

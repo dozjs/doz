@@ -7,7 +7,7 @@ const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
 const {compile} = require('./vdom/parser');
-const mapper = require('./vdom/mapper');
+//const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
 const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
@@ -54,9 +54,9 @@ Object.defineProperties(Doz, {
         value: directive,
         enumerable: true
     },
-    mapper: {
+    /*mapper: {
         value: mapper
-    },
+    },*/
     version: {
         value: '[AIV]{version}[/AIV]',
         enumerable: true
