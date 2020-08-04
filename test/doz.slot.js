@@ -131,5 +131,43 @@ describe('Doz.slot', function () {
                 done()
             },100);
         });
+
+        it('should be ok with slot unnamed using mount method', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            Doz.component('salutation-card', {
+                template(h) {
+                    return h`
+                        <div>
+                            <slot>default position</slot>
+                        </div>
+                    `
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template(h) {
+                    return h`
+                        <div></div>
+                    `
+                },
+                onMount() {
+                    this.mount(this.h`
+                        <salutation-card>
+                            <h1>Hello</h1>
+                        </salutation-card>
+                    `)
+                }
+            });
+
+            setTimeout(()=>{
+                const html = document.body.innerHTML;
+                console.log(html);
+                be.err.equal(html, '<div id="app"><dz-app><div><dz-mount><dz-root><salutation-card><!--slot--><div><h1>Hello</h1></div></salutation-card></dz-root></dz-mount></div></dz-app></div>');
+                done()
+            },100);
+        });
     });
 });

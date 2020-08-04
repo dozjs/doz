@@ -98,7 +98,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
     //console.log('a')
-    if (!$parent || newNode === oldNode) return;
+    //console.log(newNode)
+    /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
+        //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
+        console.log('uguali', newNode.type, cmpParent)
+    }*/
+
+    // For the moment I exclude the check on the comparison between newNode and oldNode
+    // only if the component is DZ-MOUNT because the slots do not work
+    if (!$parent || (newNode === oldNode && cmp.tag !== TAG.MOUNT)) return;
 
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
@@ -107,7 +115,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     if (newNode && oldNode && newNode.style !== oldNode.style) {
         setHeadStyle(newNode, cmp)
     }
-
+    //console.log(JSON.stringify(newNode, null, 4))
     if (cmpParent && $parent._dozAttach[COMPONENT_INSTANCE]) {
 
         let result = hooks.callDrawByParent($parent._dozAttach[COMPONENT_INSTANCE], newNode, oldNode);
@@ -125,6 +133,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
 
         if (typeof newNode === 'object' && propsSlot && $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot]) {
+            //console.log(newNode === oldNode)
+            //console.log(JSON.stringify(newNode, null, 4))
             $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot].forEach($slot => {
                 // Slot is on DOM
                 if ($slot.parentNode) {
@@ -157,7 +167,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 
     if (!oldNode) {
     //if (oldNode === undefined || oldNode == null) {
-        //console.log('create node');
+        //console.log('create node', newNode.type);
         // create node
 
         let $newElement;
@@ -382,7 +392,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log('$myListParent ', Array.from($myListParent.childNodes).map(item => item._dozAttach.key))
         //console.log('----------------');
     } else if (newNode.type) {
-        //console.log('walk node', xy++)
+        //console.log('walk node', newNode.type)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:

@@ -24,7 +24,7 @@ describe('Doz.runtime.mount', function () {
                 drawOther() {
                     if (this.other) return;
 
-                    this.other = this.mount(`
+                    this.other = this.mount(this.h`
                         <div>
                             <second-component></second-component>
                             <thirty-component></thirty-component>

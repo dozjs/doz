@@ -2918,12 +2918,21 @@ function update($parent, newNode, oldNode) {
   var cmpParent = arguments.length > 6 ? arguments[6] : undefined;
   //directive.callComponentVNodeTick(cmp, newNode, oldNode);
   //console.log('a')
-  if (!$parent || newNode === oldNode) return;
+  //console.log(newNode)
+
+  /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
+      //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
+      console.log('uguali', newNode.type, cmpParent)
+  }*/
+  // For the moment I exclude the check on the comparison between newNode and oldNode
+  // only if the component is DZ-MOUNT because the slots do not work
+  if (!$parent || newNode === oldNode && cmp.tag !== TAG.MOUNT) return;
   if (newNode && newNode.cmp) cmp = newNode.cmp; // Update style
 
   if (newNode && oldNode && newNode.style !== oldNode.style) {
     setHeadStyle(newNode, cmp);
-  }
+  } //console.log(JSON.stringify(newNode, null, 4))
+
 
   if (cmpParent && $parent._dozAttach[COMPONENT_INSTANCE]) {
     var result = hooks.callDrawByParent($parent._dozAttach[COMPONENT_INSTANCE], newNode, oldNode);
@@ -2961,6 +2970,8 @@ function update($parent, newNode, oldNode) {
 
       var _defined2 = $parent._dozAttach[COMPONENT_INSTANCE]._slots[propsSlot];
 
+      //console.log(newNode === oldNode)
+      //console.log(JSON.stringify(newNode, null, 4))
       for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
         _defined(_defined2[_i2], _i2, _defined2);
       }
@@ -2971,7 +2982,7 @@ function update($parent, newNode, oldNode) {
 
   if (!oldNode) {
     //if (oldNode === undefined || oldNode == null) {
-    //console.log('create node');
+    //console.log('create node', newNode.type);
     // create node
     var $newElement;
 
@@ -3208,7 +3219,7 @@ function update($parent, newNode, oldNode) {
     //console.log('----------------');
 
   } else if (newNode.type) {
-    //console.log('walk node', xy++)
+    //console.log('walk node', newNode.type)
     // walk node
 
     /*
