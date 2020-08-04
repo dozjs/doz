@@ -204,7 +204,8 @@ module.exports = function (strings, ...values) {
             if (allowTag) {
                 //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
                 //if (Array.isArray(values[i])) {
-                if (typeof values[i] !== 'string') {
+                //if (typeof values[i] !== 'string') {
+                if (typeof values[i] === 'object' || typeof values[i] === 'function') {
                     //console.log(values[i])
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 } else {
