@@ -214,14 +214,16 @@ class Component extends DOMManipulation {
     }
 
     prepareCommit() {
-        proxy.disableDOMDelayBegin(this.props);
+        //proxy.disableDOMDelayBegin(this.props);
+        proxy.pause(this.props);
         this.renderPause();
     }
 
     commit() {
         //delay(() => this.renderResume());
         this.renderResume();
-        proxy.disableDOMDelayEnd(this.props);
+        proxy.resume(this.props);
+        //proxy.disableDOMDelayEnd(this.props);
     }
 
     get isRenderPause() {

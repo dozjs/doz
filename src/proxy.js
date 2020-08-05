@@ -70,6 +70,7 @@ const ObservableSlim = (function () {
         let calls = 0;
 
         let _notifyObservers = function (numChanges) {
+            if (observable.paused === true) return;
 
             // reset calls number after 10ms
             if (autoDomDelay) {
@@ -83,7 +84,7 @@ const ObservableSlim = (function () {
 
             // execute observer functions on a 10ms setTimeout, this prevents the observer functions from being executed
             // separately on every change -- this is necessary because the observer functions will often trigger UI updates
-            if (domDelay === true && !observable.disableDOMDelay) {
+            if (domDelay === true /*&& !observable.disableDOMDelay*/) {
                 delay(function () {
                     if (numChanges === changes.length) {
                         // invoke any functions that are observing changes
@@ -93,6 +94,8 @@ const ObservableSlim = (function () {
                 });
             } else {
                 // invoke any functions that are observing changes
+                //console.log(numChanges, changes.length, observable.observers.length)
+                //console.log(changes)
                 for (let i = 0; i < observable.observers.length; i++) observable.observers[i](changes);
                 changes = [];
             }
@@ -102,6 +105,7 @@ const ObservableSlim = (function () {
             get: function (target, property) {
                 // implement a simple check for whether or not the object is a proxy, this helps the .create() method avoid
                 // creating Proxies of Proxies.
+
                 if (property === '__getTarget') {
                     return target;
                 } else if (property === '__isProxy') {
@@ -152,6 +156,7 @@ const ObservableSlim = (function () {
                             break;
                         }
                     }
+                    //console.log('get')
                     if (a > -1) return observable.proxies[a];
 
                     //console.log('oooo')
@@ -186,27 +191,29 @@ const ObservableSlim = (function () {
                 // get the path of the property being deleted
                 let currentPath = _getPath(target, property);
 
-                // record the deletion that just took place
-                changes.push({
-                    type: 'delete',
-                    target: target,
-                    property: property,
-                    newValue: null,
-                    previousValue: previousValue[property],
-                    currentPath: currentPath,
-                    proxy: proxy
-                });
-
-                if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
-                    observable.checkBeforeChange = currentPath;
-                    let res = observable.beforeChange(changes);
-                    if (res === false) {
-                        observable.checkBeforeChange = '';
-                        return false
+                if (!observable.paused) {
+                    // record the deletion that just took place
+                    changes.push({
+                        type: 'delete',
+                        target: target,
+                        property: property,
+                        newValue: null,
+                        previousValue: previousValue[property],
+                        currentPath: currentPath,
+                        proxy: proxy
+                    });
+                    //console.log('delete', changes)
+                    if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
+                        observable.checkBeforeChange = currentPath;
+                        let res = observable.beforeChange(changes);
+                        if (res === false) {
+                            observable.checkBeforeChange = '';
+                            return false
+                        }
                     }
-                }
 
-                observable.checkBeforeChange = '';
+                    observable.checkBeforeChange = '';
+                }
 
                 if (originalChange === true) {
                     let a, l;
@@ -253,6 +260,7 @@ const ObservableSlim = (function () {
                 // only record a change if the new value differs from the old one OR if this proxy was not the original proxy to receive the change
                 if (targetProp !== value || originalChange === false) {
 
+                    //console.dir(target)
                     let typeOfTargetProp = (typeof targetProp);
 
                     // get the path of the object property being modified
@@ -268,26 +276,29 @@ const ObservableSlim = (function () {
                     }
 
                     // store the change that just occurred. it is important that we store the change before invoking the other proxies so that the previousValue is correct
-                    changes.push({
-                        type: type,
-                        target: target,
-                        property: property,
-                        newValue: value,
-                        previousValue: receiver[property],
-                        currentPath: currentPath,
-                        proxy: proxy
-                    });
 
-                    if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
-                        observable.checkBeforeChange = currentPath;
-                        let res = observable.beforeChange(changes);
-                        if (res === false) {
-                            observable.checkBeforeChange = '';
-                            return false
+                    if (!observable.paused) {
+                        changes.push({
+                            type: type,
+                            target: target,
+                            property: property,
+                            newValue: value,
+                            previousValue: receiver[property],
+                            currentPath: currentPath,
+                            proxy: proxy
+                        });
+
+                        if (typeof observable.beforeChange === 'function' && observable.checkBeforeChange !== currentPath) {
+                            observable.checkBeforeChange = currentPath;
+                            let res = observable.beforeChange(changes);
+                            if (res === false) {
+                                observable.checkBeforeChange = '';
+                                return false
+                            }
                         }
-                    }
 
-                    observable.checkBeforeChange = '';
+                        observable.checkBeforeChange = '';
+                    }
 
                     // !!IMPORTANT!! if this proxy was the first proxy to receive the change, then we need to go check and see
                     // if there are other proxies for the same project. if there are, then we will modify those proxies as well so the other
@@ -675,7 +686,7 @@ const ObservableSlim = (function () {
          * @description This method set disableDOMDelay to true.
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
          */
-        disableDOMDelayBegin: function (proxy) {
+        /*disableDOMDelayBegin: function (proxy) {
             let i = observables.length;
             let foundMatch = false;
             while (i--) {
@@ -686,14 +697,14 @@ const ObservableSlim = (function () {
                 }
             }
             if (foundMatch === false) throw new Error('proxy not found.');
-        },
+        },*/
 
         /**
          * disableDOMDelayEnd
          * @description This method set disableDOMDelay to false.
          * @param proxy {Proxy} the ES6 Proxy returned by the create() method.
          */
-        disableDOMDelayEnd: function (proxy) {
+        /*disableDOMDelayEnd: function (proxy) {
             let i = observables.length;
             let foundMatch = false;
             while (i--) {
@@ -704,6 +715,34 @@ const ObservableSlim = (function () {
                 }
             }
             if (foundMatch === false) throw new Error('proxy not found.');
+        },*/
+
+        pause: function(proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].paused = true;
+                    foundMatch = true;
+                    break;
+                }
+            }
+
+            if (foundMatch === false) throw new Error("proxy not found.");
+        },
+
+        resume: function(proxy) {
+            let i = observables.length;
+            let foundMatch = false;
+            while (i--) {
+                if (observables[i].parentProxy === proxy) {
+                    observables[i].paused = false;
+                    foundMatch = true;
+                    break;
+                }
+            }
+
+            if (foundMatch === false) throw new Error("proxy not found.");
         }
     };
 })();
