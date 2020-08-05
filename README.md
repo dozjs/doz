@@ -37,13 +37,6 @@ Almost like writing in VanillaJS. For modern browser.
 - ⛏ Extensible through: plugins, mixin, components
 - 📽 CSS animation support
 
-## Another framework?
-On the web there are many frameworks that do all the same things. A lot of them are complex,
-we need to know a lot of directives, and they make confusion for example with the context of "this".
-Doz was created to make the development of web applications easy, by reading this simple documentation
-you will be able to immediately start creating something without getting lost in words and multiple import of functions.
-I like to make stuff :).
-
 ## Get started
 ```
 $ npx doz-cli app my-app
