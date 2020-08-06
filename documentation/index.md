@@ -1196,7 +1196,7 @@ Doz.component('my-list', {
     template(h) {
         return h`
             <ul>
-                ${this.each(this.props.colors, color => h`
+                ${this.props.colors.map(color => h`
                     <li d-is="my-item" color="${color.name}"></li>
                 `)}
             </ul>
@@ -1691,7 +1691,7 @@ new Doz({
 ---
 
 ### Loops
-Same situation like conditional statements but using the method `each` provided by component:
+Same situation like conditional statements but using the array method `map` provided by component:
 
 ```javascript
 Doz.component('my-list', {
@@ -1714,7 +1714,7 @@ Doz.component('my-list', {
     template(h) {
         return h`
             <ul>
-                ${this.each(this.props.colors, (color,  i) => h`
+                ${this.props.colors.map((color,  i) => h`
                     <li key="${color.id}">${i}) ${color.name}</li>
                 `)}
             </ul>
@@ -1732,6 +1732,8 @@ new Doz({
     }
 });
 ```
+
+**Very important**: It is always necessary for the loop to be contained by a tag with no other child elements.
 
 **Important**: The attribute `key` help Doz identify which items have changed, are added, or are removed.
 
@@ -1760,10 +1762,10 @@ Doz.define('user-card', class extends Doz.Component {
         return h`
             <div>
             	<h1>${this.props.name}</h1>
-              <div> 
-              	<h2>Biography</h2>
-              	<slot/>
-              </div>
+                <div> 
+                    <h2>Biography</h2>
+                    <slot/>
+                </div>
             </div>
         `
     }
