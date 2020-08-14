@@ -32,12 +32,22 @@ const actions = {
     },
 
     del(id) {
-        console.log(id);
         this.mainComponent.prepareCommit();
         const data = this.getStore('records').data;
         const idx = data.findIndex(d => d.id === id);
         data.splice(idx, 1);
         this.mainComponent.commit();
+    },
+
+    interact(e) {
+        const td = e.target.closest('td');
+        const interaction = td.getAttribute('data-interaction');
+        const id = parseInt(td.parentNode.id);
+        if (interaction === 'delete') {
+            this.action.del(id);
+        } else {
+            this.action.select(id);
+        }
     },
 
     select(id) {
@@ -101,7 +111,7 @@ new Doz({
     <div class="jumbotron">
         <div class="row">
             <div class="col-md-6">
-                <h1>Doz - non keyed</h1>
+                <h1>Doz</h1>
             </div>
             <div class="col-md-6">
                 <div class="row">
@@ -127,27 +137,27 @@ new Doz({
             </div>
         </div>
     </div>
-    <table class="table table-hover table-striped test-data">
+    <table onclick="${this.action.interact}" class="table table-hover table-striped test-data">
         <tbody>
             ${this.props.data.map(
-                item => h`
-                    <tr key="${item.id}" onclick="${() => this.action.select(item.id)}" class="${item.selected ? 'danger' : ''}" >
+            item => h`
+                    <tr id="${item.id}" class="${item.selected ? 'danger' : ''}" >
                         <td class="col-md-1">${item.id}</td>
                         <td class="col-md-4" >
                             <a>${item.label}</a>
                         </td>
-                        <td class="col-md-1">
+                        <td data-interaction="delete" class="col-md-1">
                             <a>
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true" onclick="${(e) => {e.stopPropagation(); this.action.del(item.id)}}"></span>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             </a>
                         </td>
                         <td class="col-md-6"></td>
                     </tr>`
-            )}
+        )}
         </tbody>
     </table>
     <span class="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
 </div>
 `
-    }
+    },
 });
