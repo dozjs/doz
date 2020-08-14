@@ -3357,7 +3357,8 @@ var _require2 = __webpack_require__(7),
     Element = _require2.Element;
 
 var tagText = TAG.TEXT_NODE_PLACE;
-var hCache = new Map(); //const tagIterate = TAG.ITERATE_NODE_PLACE;
+var hCache = new Map();
+var fCache = new Map(); //const tagIterate = TAG.ITERATE_NODE_PLACE;
 
 var LESSER = '<';
 var GREATER = '>';
@@ -3584,28 +3585,55 @@ module.exports = function (strings) {
 
   var cloned;
   var model = compile(tpl);
-  var clonedKey;
+  var clonedKey; //generateItemKey(values)
 
-  if (model.key !== undefined) {
-    clonedKey = values.filter(function (item) {
-      return typeof item !== 'function' && _typeof(item) !== 'object';
-    }).join('');
+  if (model.key !== undefined || model.props['item-list'] === '') {
+    //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
+    clonedKey = generateItemKey(values);
     cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+    /*console.log(tpl)
+    console.log(model)
+    console.log(values)
+    console.log(strings)*/
+    //console.log('--->', model.props);
   }
+  /*
+  console.log('values', values)
+  clonedKey = generateItemKey(values);
+  //console.log('clonedKey --->', clonedKey)
+  cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+  //console.log('cloned    --->', cloned)
+  */
+
 
   if (!cloned) {
     cloned = deepCopy(model);
     fillCompiled(cloned, values, null, this);
 
     if (clonedKey) {
+      //console.log('set cloned key', clonedKey, cloned)
       hCache.set(clonedKey, cloned);
     } //console.log(cloned, model)
 
-  } // console.log(cloned)
+  } //console.log(cloned)
+  //console.log(hCache)
 
 
   return cloned;
 };
+
+function generateItemKey(values) {
+  var key = '';
+
+  for (var i = 0; i < values.length; i++) {
+    if (typeof values[i] !== 'function' && _typeof(values[i]) !== 'object') {
+      key += values[i];
+    }
+  } //console.log(key);
+
+
+  return key;
+}
 
 function fillCompiled(obj, values, parent, _this) {
   var keys = Object.keys(obj);

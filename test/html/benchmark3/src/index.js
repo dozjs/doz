@@ -111,7 +111,7 @@ new Doz({
     <div class="jumbotron">
         <div class="row">
             <div class="col-md-6">
-                <h1>Doz</h1>
+                <h1>Doz - non keyed</h1>
             </div>
             <div class="col-md-6">
                 <div class="row">
@@ -141,7 +141,7 @@ new Doz({
         <tbody>
             ${this.props.data.map(
             item => h`
-                    <tr id="${item.id}" class="${item.selected ? 'danger' : ''}" >
+                    <tr item-list id="${item.id}" class="${item.selected ? 'danger' : ''}" >
                         <td class="col-md-1">${item.id}</td>
                         <td class="col-md-4" >
                             <a>${item.label}</a>

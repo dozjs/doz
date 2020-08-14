@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - vdom">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom</title>
-    <script src="../dist/doz.js?p1254p84234"></script>
+    <script src="../dist/doz.js?p1254p8423"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -161,6 +161,7 @@
                     <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>&nbsp;
                     <button onclick="${() => this.action.done(this.props.id)}" title="Done">&check;</button>&nbsp;
                     <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                        ${this.props.id} -
                         <strong>${this.props.title}</strong>
                         <input
                             onblur="${(e) => this.action.hideInput(this.props.id, e)}"
@@ -206,8 +207,8 @@
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     <div>
-                        ${this.each(this.props.record, (item, i) =>
-                            h`<doz-todo-item id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
+                        ${this.props.record.map((item, i) =>
+                            h`<doz-todo-item item-list id="${i}" title="${item.title}" done="${item.done}"></doz-todo-item>`
                         )}
                     </div>
                     <div class="todo-info">

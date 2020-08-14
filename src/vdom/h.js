@@ -7,11 +7,13 @@ const deepCopy = require('../utils/deep-copy');
 const {compile, Element} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
 const hCache = new Map();
+const fCache = new Map();
 //const tagIterate = TAG.ITERATE_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
 const PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
 const PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
+
 /*
 function _placeholderIndex(str, values) {
     let matched = /___{(\d+)}___/g.exec(str);
@@ -227,8 +229,8 @@ module.exports = function (strings, ...values) {
                     //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
                     tpl += `e-0_${i}_0-e data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
                 } else {*/
-                    //result += `${value[i]}${strings[i + 1]}`;
-                    tpl += `e-0_${i}_0-e${strings[i + 1]}`;
+                //result += `${value[i]}${strings[i + 1]}`;
+                tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 //}
             }
         }
@@ -242,22 +244,50 @@ module.exports = function (strings, ...values) {
     let model = compile(tpl);
     let clonedKey;
 
-    if (model.key !== undefined) {
-        clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
+    //generateItemKey(values)
+
+    if (model.key !== undefined || model.props['item-list'] === '') {
+        //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
+        clonedKey = generateItemKey(values);
         cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+        /*console.log(tpl)
+        console.log(model)
+        console.log(values)
+        console.log(strings)*/
+        //console.log('--->', model.props);
     }
 
+    /*
+    console.log('values', values)
+    clonedKey = generateItemKey(values);
+    //console.log('clonedKey --->', clonedKey)
+    cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+    //console.log('cloned    --->', cloned)
+*/
     if (!cloned) {
         cloned = deepCopy(model);
         fillCompiled(cloned, values, null, this);
         if (clonedKey) {
+            //console.log('set cloned key', clonedKey, cloned)
             hCache.set(clonedKey, cloned);
         }
         //console.log(cloned, model)
     }
-    // console.log(cloned)
+    //console.log(cloned)
+    //console.log(hCache)
     return cloned;
 };
+
+function generateItemKey(values) {
+    let key = '';
+    for (let i = 0; i < values.length; i++) {
+        if (typeof values[i] !== 'function' && typeof values[i] !== 'object'){
+            key += values[i]
+        }
+    }
+    //console.log(key);
+    return key;
+}
 
 function fillCompiled(obj, values, parent, _this) {
     let keys = Object.keys(obj);
