@@ -1,13 +1,13 @@
 //const castStringTo = require('../utils/cast-string-to');
 const dashToCamel = require('../utils/dash-to-camel');
-const isListener = require('../utils/is-listener');
+//const isListener = require('../utils/is-listener');
 const {REGEX, ATTR, TAG, PROPS_ATTRIBUTES} = require('../constants');
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
 //const mapper = require('./mapper');
 //const eventsAttributes = require('../utils/events-attributes');
-const cacheTpl = Object.create(null);
+const {tplCache} = require('./stores');
 
 const selfClosingElements = {
     meta: true,
@@ -83,8 +83,8 @@ class Element {
 function compile(tpl) {
     if (!tpl) return '';
 
-    if (cacheTpl[tpl]) {
-        return cacheTpl[tpl]
+    if (tplCache[tpl]) {
+        return tplCache[tpl]
     }
 
     const root = new Element(null, {});
@@ -209,12 +209,12 @@ function compile(tpl) {
         root.type = TAG.ROOT;
     } else if (root.children.length) {
 
-        cacheTpl[tpl] = root.children[0];
+        tplCache[tpl] = root.children[0];
 
         return root.children[0];
     }
 
-    cacheTpl[tpl] = root;
+    tplCache[tpl] = root;
     return root;
 }
 

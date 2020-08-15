@@ -5,6 +5,7 @@ const hooks = require('../component/hooks');
 //const directive = require('../directives');
 const makeSureAttach = require('../component/make-sure-attach');
 const {scopedInner} = require('../component/helpers/style');
+const {kCache} = require('./stores');
 
 const storeElementNode = Object.create(null);
 const deadChildren = [];
@@ -254,7 +255,9 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     $myListParent.removeChild($oldElement);
                 }
                 $myListParent._dozAttach.keyList.delete(oldKeyDoRemove[i]);
-                //console.log('cancellato in posizione', oldKeyDoRemove[i])
+                //delete kCache[oldKeyDoRemove[i]];
+                kCache.delete(oldKeyDoRemove[i]);
+                //console.log('cancellato in posizione', oldKeyDoRemove[i], i)
             }
         }
 
@@ -291,8 +294,19 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 //$myListParent.appendChild($newElement);
             } else {
                 // Get the child from newNode and oldNode by the same key
-                let newChildByKey = getChildByKey(theKey, newNode.children);
-                let oldChildByKey = getChildByKey(theKey, oldNode.children);
+                /*let newChildByKey = getChildByKey(theKey, newNode.children);
+                let oldChildByKey = getChildByKey(theKey, oldNode.children);*/
+
+                //if (!kCache[theKey].isChanged) continue;
+
+                /*let newChildByKey = kCache[theKey].next;// getChildByKey(theKey, newNode.children);
+                let oldChildByKey = kCache[theKey].prev;// getChildByKey(theKey, oldNode.children);*/
+
+                let _kCacheValue = kCache.get(theKey);
+                let newChildByKey = _kCacheValue.next;// getChildByKey(theKey, newNode.children);
+                let oldChildByKey = _kCacheValue.prev;// getChildByKey(theKey, oldNode.children);
+
+                //console.log(theKey, kCache[theKey].isChanged)
 
                 if (!newChildByKey.children)
                     newChildByKey.children = [];
@@ -301,18 +315,22 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     oldChildByKey.children = [];
 
                 listOfElement.push($element);
-                // Update attributes?
-                // Remember that the operation must be on the key and not on the index
-                updateAttributes(
-                    $element,
-                    newChildByKey.props,
-                    oldChildByKey.props,
-                    cmp,
-                    $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent,
-                    newChildByKey.isSVG
-                );
-                // Here also update function using the key
-                // update(...
+
+                //if (kCache[theKey].isChanged) {
+                if (_kCacheValue.isChanged) {
+                    // Update attributes?
+                    // Remember that the operation must be on the key and not on the index
+                    updateAttributes(
+                        $element,
+                        newChildByKey.props,
+                        oldChildByKey.props,
+                        cmp,
+                        $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent,
+                        newChildByKey.isSVG
+                    );
+                    // Here also update function using the key
+                    // update(...
+                }
 
                 const newChildByKeyLength = newChildByKey.children.length;
                 const oldChildByKeyLength = oldChildByKey.children.length;
@@ -445,6 +463,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
 }
 
 function getChildByKey(key, children) {
+    //console.log(key, children)
     let res = {};
     for (let i = 0; i < children.length; i++) {
         if (key === children[i].key) {

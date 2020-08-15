@@ -68,10 +68,10 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp, cmpParent, isSVG) {
-    if (newVal !== oldVal) {
+    //if (newVal !== oldVal) {
         setAttribute($target, name, newVal, cmp, cmpParent, isSVG);
         cmp.$$afterAttributeUpdate($target, name, newVal);
-    }
+    //}
 }
 
 function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent, isSVG) {
@@ -79,12 +79,13 @@ function updateAttributes($target, newProps, oldProps = {}, cmp, cmpParent, isSV
     let updated = [];
 
     let propsKeys = Object.keys(props);
+    let name;
 
     for (let i = 0; i < propsKeys.length; i++) {
-        let name = propsKeys[i];
+        name = propsKeys[i];
         if (!$target || $target.nodeType !== 1) continue;
-        updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent, isSVG);
         if (newProps[name] !== oldProps[name]) {
+            updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent, isSVG);
             let obj = {};
             obj[name] = newProps[name];
             updated.push(obj);

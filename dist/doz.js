@@ -539,9 +539,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 //const castStringTo = require('../utils/cast-string-to');
-var dashToCamel = __webpack_require__(8);
+var dashToCamel = __webpack_require__(8); //const isListener = require('../utils/is-listener');
 
-var isListener = __webpack_require__(14);
 
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX,
@@ -558,7 +557,9 @@ var _require2 = __webpack_require__(5),
 //const eventsAttributes = require('../utils/events-attributes');
 
 
-var cacheTpl = Object.create(null);
+var _require3 = __webpack_require__(75),
+    tplCache = _require3.tplCache;
+
 var selfClosingElements = {
   meta: true,
   img: true,
@@ -662,8 +663,8 @@ var Element = /*#__PURE__*/function () {
 function compile(tpl) {
   if (!tpl) return '';
 
-  if (cacheTpl[tpl]) {
-    return cacheTpl[tpl];
+  if (tplCache[tpl]) {
+    return tplCache[tpl];
   }
 
   var root = new Element(null, {});
@@ -786,11 +787,11 @@ function compile(tpl) {
   if (root.children.length > 1) {
     root.type = TAG.ROOT;
   } else if (root.children.length) {
-    cacheTpl[tpl] = root.children[0];
+    tplCache[tpl] = root.children[0];
     return root.children[0];
   }
 
-  cacheTpl[tpl] = root;
+  tplCache[tpl] = root;
   return root;
 }
 
@@ -2824,6 +2825,9 @@ var makeSureAttach = __webpack_require__(4);
 var _require3 = __webpack_require__(40),
     scopedInner = _require3.scopedInner;
 
+var _require4 = __webpack_require__(75),
+    kCache = _require4.kCache;
+
 var storeElementNode = Object.create(null);
 var deadChildren = [];
 
@@ -3081,8 +3085,10 @@ function update($parent, newNode, oldNode) {
           $myListParent.removeChild(_$oldElement);
         }
 
-        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]); //console.log('cancellato in posizione', oldKeyDoRemove[i])
+        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]); //delete kCache[oldKeyDoRemove[i]];
 
+
+        kCache["delete"](oldKeyDoRemove[_i6]); //console.log('cancellato in posizione', oldKeyDoRemove[i], i)
       }
     } //console.log(oldKeyDoRemove)
     //console.log(newNodeKeyList)
@@ -3129,15 +3135,30 @@ function update($parent, newNode, oldNode) {
         listOfElement.push(_$newElement2); //$myListParent.appendChild($newElement);
       } else {
         // Get the child from newNode and oldNode by the same key
-        var newChildByKey = getChildByKey(theKey, newNode.children);
-        var oldChildByKey = getChildByKey(theKey, oldNode.children);
+
+        /*let newChildByKey = getChildByKey(theKey, newNode.children);
+        let oldChildByKey = getChildByKey(theKey, oldNode.children);*/
+        //if (!kCache[theKey].isChanged) continue;
+
+        /*let newChildByKey = kCache[theKey].next;// getChildByKey(theKey, newNode.children);
+        let oldChildByKey = kCache[theKey].prev;// getChildByKey(theKey, oldNode.children);*/
+        var _kCacheValue = kCache.get(theKey);
+
+        var newChildByKey = _kCacheValue.next; // getChildByKey(theKey, newNode.children);
+
+        var oldChildByKey = _kCacheValue.prev; // getChildByKey(theKey, oldNode.children);
+        //console.log(theKey, kCache[theKey].isChanged)
+
         if (!newChildByKey.children) newChildByKey.children = [];
         if (!oldChildByKey.children) oldChildByKey.children = [];
-        listOfElement.push(_$element); // Update attributes?
-        // Remember that the operation must be on the key and not on the index
+        listOfElement.push(_$element); //if (kCache[theKey].isChanged) {
 
-        updateAttributes(_$element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newChildByKey.isSVG); // Here also update function using the key
-        // update(...
+        if (_kCacheValue.isChanged) {
+          // Update attributes?
+          // Remember that the operation must be on the key and not on the index
+          updateAttributes(_$element, newChildByKey.props, oldChildByKey.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newChildByKey.isSVG); // Here also update function using the key
+          // update(...
+        }
 
         var newChildByKeyLength = newChildByKey.children.length;
         var oldChildByKeyLength = oldChildByKey.children.length; //console.log(diffIndex)
@@ -3245,6 +3266,7 @@ function update($parent, newNode, oldNode) {
 }
 
 function getChildByKey(key, children) {
+  //console.log(key, children)
   var res = {};
 
   for (var i = 0; i < children.length; i++) {
@@ -3343,38 +3365,25 @@ module.exports = camelToDash;
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var _require = __webpack_require__(1),
-    TAG = _require.TAG; //const mapper = require('./mapper');
-
+    TAG = _require.TAG;
 
 var camelToDash = __webpack_require__(20);
 
-var deepCopy = __webpack_require__(49); //const eventsAttributes = require('../utils/events-attributes');
-//const {scopedInner} = require('../component/helpers/style');
-
+var deepCopy = __webpack_require__(49);
 
 var _require2 = __webpack_require__(7),
-    compile = _require2.compile,
-    Element = _require2.Element;
+    compile = _require2.compile;
 
 var tagText = TAG.TEXT_NODE_PLACE;
-var hCache = new Map();
-var fCache = new Map(); //const tagIterate = TAG.ITERATE_NODE_PLACE;
+
+var _require3 = __webpack_require__(75),
+    hCache = _require3.hCache,
+    kCache = _require3.kCache;
 
 var LESSER = '<';
 var GREATER = '>';
 var PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
 var PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
-/*
-function _placeholderIndex(str, values) {
-    let matched = /___{(\d+)}___/g.exec(str);
-    //console.log(str, values)
-    if (matched && matched[1] && values[matched[1]] !== undefined) {
-        //console.log(str, values[matched[1]]);
-        return values[matched[1]]
-    } else
-        return str;
-}
-*/
 
 function placeholderIndex(str, values) {
   //console.log(str)
@@ -3383,8 +3392,7 @@ function placeholderIndex(str, values) {
   }
 
   if (str[0] === 'e' && str[1] === '-') {
-    var match = PLACEHOLDER_REGEX.exec(str); //let match = /e-0_(\d+)_0-e/g.exec(str);
-    //let match = str.match(PLACEHOLDER_REGEX);
+    var match = PLACEHOLDER_REGEX.exec(str);
 
     if (match) {
       // if is a possible text node
@@ -3404,12 +3412,7 @@ function placeholderIndex(str, values) {
       }
     });
   }
-} //const regOpen = new RegExp(`<${tagText}>(\\s+)?<`, 'gi');
-//const regClose = new RegExp(`>(\\s+)?<\/${tagText}>`, 'gi');
-//const regStyle = /<style(?: scoped)?>((?:.|\n)*?)<\/style>/gi;
-
-/**/
-
+}
 /**
  * This method add special tag to value placeholder
  * @param strings
@@ -3419,46 +3422,20 @@ function placeholderIndex(str, values) {
 
 
 module.exports = function (strings) {
-  //console.log(strings)
-  //console.log(values)
-  var tpl = hCache.get(strings); //let foundClonedCount = 0;
-  //let cloned = hCache.get(values);
-  //console.log(values.length);
-  // Why? cycling require :D
-  //let Component = require('../component/Component');
+  var tpl = hCache.get(strings);
 
   for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     values[_key - 1] = arguments[_key];
   }
 
   if (!tpl) {
-    tpl = strings[0]; //et result2 = strings[0];
-
+    tpl = strings[0];
     var allowTag = false;
     var isInStyle = false;
-    var thereIsStyle = false; //let isBoundedToComponent = !!this._components;
-    //let compiled;
-
+    var thereIsStyle = false;
     var valueLength = values.length;
 
     for (var i = 0; i < valueLength; ++i) {
-      //let isComponentConstructor = false;
-      //if (Array.isArray(value[i])) {
-
-      /*let newValueString = '';
-      for (let j = 0; j < value[i].length; j++) {
-          let obj = value[i][j];
-          if(typeof obj === 'object' && obj.constructor && obj.constructor === Element) {
-              newValueString += `<${tagIterate}>${mapper.set(obj)}</${tagIterate}>`;
-          }
-      }
-      if (newValueString) {
-          value[i] = newValueString;
-      }*/
-      //}
-      //if(value[i] !== null && typeof value[i] === 'object' && value[i].constructor && value[i].constructor === Element) {
-      //value[i] = mapper.set(value[i]);
-      //}
       var stringsI = strings[i];
       var stringLength = stringsI.length;
 
@@ -3481,77 +3458,11 @@ module.exports = function (strings) {
 
       if (isInStyle) {
         allowTag = false;
-        tpl = tpl.replace(/ scoped>/, ' data-scoped>'); //result2 = result;
-      } //
-
-      /*let isInHandler = false;
-      // Check if value is a function and is after an event attribute like onclick for example.
-      if (typeof values[i] === 'function' || typeof values[i] === 'object') {
-          //for (let x = 0; x < eventsAttributes.length; x++) {
-          let r = stringsI.split(`=`);
-          if (['"', "'", ''].indexOf(r[r.length - 1]) > -1) {
-              isInHandler = true;
-          }
-          //}
-      }*/
-      //let attributeOriginalTagName;
-      // if this function is bound to Doz component
-
-      /*
-      if (isBoundedToComponent && !isInStyle && !isInHandler) {
-            // if before is to <
-          if (values[i] && !Array.isArray(values[i]) && (typeof values[i] === 'function' || typeof values[i] === 'object') && strings[i].indexOf(LESSER) > -1) {
-              isComponentConstructor = true;
-              let cmp = values[i];
-              let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
-              // Sanitize tag name
-              tagName = tagName.replace(/_+/, '');
-              // if is a single word, rename with double word
-              if (tagName.indexOf('-') === -1) {
-                  tagName = `${tagName}-${tagName}`;
-              }
-                let tagCmp = tagName + '-' + this.uId + '-' + (this._localComponentLastId++);
-                if (this._componentsMap.has(values[i])) {
-                  tagCmp = this._componentsMap.get(values[i]);
-              } else {
-                  this._componentsMap.set(values[i], tagCmp);
-              }
-                // add to local components
-              if (this._components[tagCmp] === undefined) {
-                  //attributeOriginalTagName = tagCmp;
-                  this._components[tagCmp] = {
-                      tag: tagName,
-                      cfg: cmp
-                  };
-              }
-                // add to local app components
-              if (this.app._components[tagCmp] === undefined) {
-                  //attributeOriginalTagName = tagCmp;
-                  this.app._components[tagCmp] = {
-                      tag: tagName,
-                      cfg: cmp
-                  };
-              }
-                attributeOriginalTagName = tagCmp;
-              values[i] = tagName;
-          }
+        tpl = tpl.replace(/ scoped>/, ' data-scoped>');
       }
-      */
-
-      /*if ('string' === typeof values[i]) {
-          if (/<.*>/.test(values[i]))
-              allowTag = false;
-          console.log('allow', allowTag)
-      }
-        console.log(values[i])*/
-
 
       if (allowTag) {
-        //result += `<${tagText}>${value[i]}</${tagText}>${strings[i + 1]}`;
-        //if (Array.isArray(values[i])) {
-        //if (typeof values[i] !== 'string') {
         if (_typeof(values[i]) === 'object' || typeof values[i] === 'function') {
-          //console.log(values[i])
           tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
         } else {
           // possible html as string
@@ -3563,61 +3474,75 @@ module.exports = function (strings) {
           }
         }
       } else {
-        // If is not component constructor then add to map.
-        // Exclude string type and style also
-        //if (!isInStyle && !isComponentConstructor && typeof value[i] !== 'string') {
-        //value[i] = mapper.set(value[i]);
-        //}
-
-        /*if (attributeOriginalTagName) {
-            //result += `${value[i]} data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-            tpl += `e-0_${i}_0-e data-attributeoriginaletagname="${attributeOriginalTagName}" ${strings[i + 1]}`;
-        } else {*/
-        //result += `${value[i]}${strings[i + 1]}`;
-        tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]); //}
+        tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
       }
     }
 
     tpl = tpl.trim();
-    hCache.set(strings, tpl); //console.log(strings)
-  } //console.log(tpl)
-
+    hCache.set(strings, tpl);
+  }
 
   var cloned;
   var model = compile(tpl);
-  var clonedKey; //generateItemKey(values)
+  var clonedKey;
 
-  if (model.key !== undefined || model.props['item-list'] === '') {
+  if (model.key !== undefined || model.props['item-list'] !== undefined) {
     //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
     clonedKey = generateItemKey(values);
     cloned = clonedKey ? hCache.get(clonedKey) : undefined;
-    /*console.log(tpl)
-    console.log(model)
-    console.log(values)
-    console.log(strings)*/
-    //console.log('--->', model.props);
   }
-  /*
-  console.log('values', values)
-  clonedKey = generateItemKey(values);
-  //console.log('clonedKey --->', clonedKey)
-  cloned = clonedKey ? hCache.get(clonedKey) : undefined;
-  //console.log('cloned    --->', cloned)
-  */
-
 
   if (!cloned) {
     cloned = deepCopy(model);
     fillCompiled(cloned, values, null, this);
 
     if (clonedKey) {
-      //console.log('set cloned key', clonedKey, cloned)
       hCache.set(clonedKey, cloned);
-    } //console.log(cloned, model)
+    }
+  }
+  /*
+  if (model.key !== undefined) {
+      if (kCache[cloned.key] !== undefined) {
+          kCache[cloned.key] = {
+              isChanged: clonedKey !== kCache[cloned.key].clonedKey,
+              clonedKey,
+              next: cloned,
+              prev: kCache[cloned.key].next
+          }
+      } else {
+          kCache[cloned.key] = {
+              isChanged: true,
+              clonedKey,
+              next: cloned,
+              prev: undefined
+          }
+      }
+  }
+  */
 
-  } //console.log(cloned)
-  //console.log(hCache)
 
+  if (model.key !== undefined) {
+    var _kCacheValue = kCache.get(cloned.key);
+
+    if (_kCacheValue
+    /*&& clonedKey !== _kCacheValue.clonedKey*/
+    ) {
+        kCache.set(cloned.key, {
+          isChanged: clonedKey !== _kCacheValue.clonedKey,
+          //isChanged: true,
+          clonedKey: clonedKey,
+          next: cloned,
+          prev: _kCacheValue.next
+        });
+      } else {
+      kCache.set(cloned.key, {
+        isChanged: true,
+        clonedKey: clonedKey,
+        next: cloned,
+        prev: {}
+      });
+    }
+  }
 
   return cloned;
 };
@@ -4933,10 +4858,9 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
 }
 
 function updateAttribute($target, name, newVal, oldVal, cmp, cmpParent, isSVG) {
-  if (newVal !== oldVal) {
-    setAttribute($target, name, newVal, cmp, cmpParent, isSVG);
-    cmp.$$afterAttributeUpdate($target, name, newVal);
-  }
+  //if (newVal !== oldVal) {
+  setAttribute($target, name, newVal, cmp, cmpParent, isSVG);
+  cmp.$$afterAttributeUpdate($target, name, newVal); //}
 }
 
 function updateAttributes($target, newProps) {
@@ -4947,13 +4871,14 @@ function updateAttributes($target, newProps) {
   var props = Object.assign({}, newProps, oldProps);
   var updated = [];
   var propsKeys = Object.keys(props);
+  var name;
 
   for (var i = 0; i < propsKeys.length; i++) {
-    var name = propsKeys[i];
+    name = propsKeys[i];
     if (!$target || $target.nodeType !== 1) continue;
-    updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent, isSVG);
 
     if (newProps[name] !== oldProps[name]) {
+      updateAttribute($target, name, newProps[name], oldProps[name], cmp, cmpParent, isSVG);
       var obj = {};
       obj[name] = newProps[name];
       updated.push(obj);
@@ -7260,6 +7185,17 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  //kCache: Object.create(null),
+  kCache: new Map(),
+  tplCache: Object.create(null),
+  hCache: new Map()
+};
 
 /***/ })
 /******/ ]);
