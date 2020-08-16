@@ -3387,6 +3387,8 @@ var GREATER = '>';
 var PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
 var PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
 
+var Component = __webpack_require__(11);
+
 function placeholderIndex(str, values) {
   //console.log(str)
   if (typeof str !== 'string') {
@@ -3496,32 +3498,12 @@ module.exports = function (strings) {
 
   if (!cloned) {
     cloned = deepCopy(model);
-    fillCompiled(cloned, values, null, this);
+    cloned = fillCompiled(cloned, values, null, this) || cloned;
 
     if (clonedKey) {
       hCache.set(clonedKey, cloned);
     }
   }
-  /*
-  if (model.key !== undefined) {
-      if (kCache[cloned.key] !== undefined) {
-          kCache[cloned.key] = {
-              isChanged: clonedKey !== kCache[cloned.key].clonedKey,
-              clonedKey,
-              next: cloned,
-              prev: kCache[cloned.key].next
-          }
-      } else {
-          kCache[cloned.key] = {
-              isChanged: true,
-              clonedKey,
-              next: cloned,
-              prev: undefined
-          }
-      }
-  }
-  */
-
 
   if (model.key !== undefined) {
     var _kCacheValue = kCache.get(cloned.key);
@@ -3568,53 +3550,65 @@ function fillCompiled(obj, values, parent, _this) {
   for (var i = 0; i < keys.length; i++) {
     //for (let k in obj) {
     if (obj[keys[i]] && _typeof(obj[keys[i]]) === 'object') {
-      fillCompiled(obj[keys[i]], values, obj, _this);
+      obj[keys[i]] = fillCompiled(obj[keys[i]], values, obj, _this) || obj[keys[i]];
     } else {
-      //console.log(i, keys[i])
-      var value = placeholderIndex(obj[keys[i]], values); //if (typeof value === 'function' && keys[i] === 'type') {
+      var value = placeholderIndex(obj[keys[i]], values);
 
-      if ('type' === keys[i] && 'string' !== typeof value) {
-        var cmp = value;
-        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
+      if (!_this.app.legacy) {
+        if (typeof value === 'function' && keys[i] === 'type') {
+          var retFunc = value(_this.h, values[1]);
 
-        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
+          for (var x = 0; x < obj.children.length; x++) {
+            retFunc.children.push(fillCompiled(obj.children[x], values, null, _this));
+          }
 
-        if (tagName.indexOf('-') === -1) {
-          tagName = "".concat(tagName, "-").concat(tagName);
+          return retFunc;
         }
+      } else {
+        if ('type' === keys[i] && 'string' !== typeof value) {
+          var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
 
-        var tagCmp = tagName + '-' + _this.uId + '-' + _this._localComponentLastId++;
+          tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
 
-        if (_this._componentsMap.has(value)) {
-          tagCmp = _this._componentsMap.get(value);
-        } else {
-          _this._componentsMap.set(value, tagCmp);
-        } // add to local components
+          if (tagName.indexOf('-') === -1) {
+            tagName = "".concat(tagName, "-").concat(tagName);
+          }
 
+          var tagCmp = tagName + '-' + _this.uId + '-' + _this._localComponentLastId++;
 
-        if (_this._components[tagCmp] === undefined) {
-          _this._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        } // add to local app components
+          if (_this._componentsMap.has(value)) {
+            tagCmp = _this._componentsMap.get(value);
+          } else {
+            _this._componentsMap.set(value, tagCmp);
+          } // add to local components
 
 
-        if (_this.app._components[tagCmp] === undefined) {
-          _this.app._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
+          if (_this._components[tagCmp] === undefined) {
+            _this._components[tagCmp] = {
+              tag: tagName,
+              cfg: cmp
+            };
+          } // add to local app components
+
+
+          if (_this.app._components[tagCmp] === undefined) {
+            _this.app._components[tagCmp] = {
+              tag: tagName,
+              cfg: cmp
+            };
+          }
+
+          value = tagName;
+          obj.props['data-attributeoriginaletagname'] = tagCmp;
         }
-
-        value = tagName;
-        obj.props['data-attributeoriginaletagname'] = tagCmp;
       }
 
       if (Array.isArray(value) && keys[i] === '0') {
         parent.children = value;
         if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
-      } else obj[keys[i]] = value;
+      } else {
+        obj[keys[i]] = value;
+      }
     }
   }
 }
