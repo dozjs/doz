@@ -38,7 +38,7 @@ function createInstance(cfg = {}) {
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
             } else {
-                $child = $child.nextSibling;
+                $child = $child.nextElementSibling;
                 continue;
             }
 
@@ -82,13 +82,13 @@ function createInstance(cfg = {}) {
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
-                    $child = $child.nextSibling;
+                    $child = $child.nextElementSibling;
                     continue;
                 }
 
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push($child);
-                    $child = $child.nextSibling;
+                    $child = $child.nextElementSibling;
                     continue;
                 }
 
@@ -128,7 +128,7 @@ function createInstance(cfg = {}) {
                 }
 
                 if (!newElement) {
-                    $child = $child.nextSibling;
+                    $child = $child.nextElementSibling;
                     continue;
                 }
 
@@ -194,13 +194,13 @@ function createInstance(cfg = {}) {
 
             if ($child.hasChildNodes()) {
                 if (parentElement) {
-                    walk($child.firstChild, {cmp: parentElement})
+                    walk($child.firstElementChild, {cmp: parentElement})
                 } else {
-                    walk($child.firstChild, {cmp: parent.cmp})
+                    walk($child.firstElementChild, {cmp: parent.cmp})
                 }
             }
 
-            $child = $child.nextSibling;
+            $child = $child.nextElementSibling;
         }
     }
 
