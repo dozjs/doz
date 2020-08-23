@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.4.1  
+// [DOZ]  Build version: 3.4.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1760,7 +1760,7 @@ function createInstance() {
       if (!$child._dozAttach[ALREADY_WALKED]) {
         $child._dozAttach[ALREADY_WALKED] = true;
       } else {
-        $child = $child.nextSibling;
+        $child = $child.nextElementSibling;
         continue;
       }
 
@@ -1796,13 +1796,13 @@ function createInstance() {
 
 
           if (parent.cmp && parent.cmp.mounted) {
-            $child = $child.nextSibling;
+            $child = $child.nextElementSibling;
             return "continue";
           }
 
           if (parent.cmp && parent.cmp.autoCreateChildren === false) {
             trash.push($child);
-            $child = $child.nextSibling;
+            $child = $child.nextElementSibling;
             return "continue";
           }
 
@@ -1853,7 +1853,7 @@ function createInstance() {
           }
 
           if (!newElement) {
-            $child = $child.nextSibling;
+            $child = $child.nextElementSibling;
             return "continue";
           }
 
@@ -1917,17 +1917,17 @@ function createInstance() {
 
       if ($child.hasChildNodes()) {
         if (parentElement) {
-          walk($child.firstChild, {
+          walk($child.firstElementChild, {
             cmp: parentElement
           });
         } else {
-          walk($child.firstChild, {
+          walk($child.firstElementChild, {
             cmp: parent.cmp
           });
         }
       }
 
-      $child = $child.nextSibling;
+      $child = $child.nextElementSibling;
     }
   }
 
@@ -3815,7 +3815,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.4.1',
+    value: '3.4.2',
     enumerable: true
   },
   tag: {
