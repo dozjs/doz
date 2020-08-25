@@ -32,7 +32,7 @@ function create(node, cmp, initial, cmpParent) {
         );
     }
 
-    if (node.type == null || node.type[0] === '#') {
+    if (!node || node.type == null || node.type[0] === '#') {
         node = {type: TAG.EMPTY, props: {}, children: []};
     }
 

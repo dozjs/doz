@@ -106,6 +106,10 @@ module.exports = function (strings, ...values) {
     let model = compile(tpl);
     let clonedKey;
 
+    if (model.props.forceupdate) {
+        hCache.delete(strings);
+    }
+
     if (model.key !== undefined || model.props['item-list'] !== undefined) {
         //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
         clonedKey = generateItemKey(values);
