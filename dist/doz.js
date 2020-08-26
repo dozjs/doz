@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.4.2  
+// [DOZ]  Build version: 3.4.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2848,7 +2848,7 @@ function create(node, cmp, initial, cmpParent) {
     canDecode(node));
   }
 
-  if (node.type == null || node.type[0] === '#') {
+  if (!node || node.type == null || node.type[0] === '#') {
     node = {
       type: TAG.EMPTY,
       props: {},
@@ -3488,6 +3488,10 @@ module.exports = function (strings) {
   var model = compile(tpl);
   var clonedKey;
 
+  if (model.props.forceupdate) {
+    hCache["delete"](strings);
+  }
+
   if (model.key !== undefined || model.props['item-list'] !== undefined) {
     //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
     clonedKey = generateItemKey(values);
@@ -3815,7 +3819,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.4.2',
+    value: '3.4.3',
     enumerable: true
   },
   tag: {
