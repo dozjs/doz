@@ -1473,7 +1473,7 @@ new Doz({
 
 If you need to create a custom directive please look this directory.
 
-[https://github.com/dozjs/doz/tree/master/src/directive/built-in](https://github.com/dozjs/doz/tree/master/src/directive/built-in)
+[https://github.com/dozjs/doz/tree/master/src/directives/built-in](https://github.com/dozjs/doz/tree/master/src/directives/built-in)
 
 ---
 
