@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.4.4] - 2021-01-08
+- **Improved** directives engine
+
 ## [3.4.3] - 2020-08-26
 - **Fixed** remove cache when use forceupdate attribute
 
