@@ -319,10 +319,25 @@ function extractStyleDisplayFromDozProps($target) {
   return null;
 }
 
+function extractDirectiveNameAndKeyValues(attributeName) {
+  attributeName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+  var directiveName = attributeName;
+  var keyArgumentsValues = [];
+
+  if (directiveName.indexOf('-') !== -1) {
+    keyArgumentsValues = directiveName.split('-');
+    directiveName = keyArgumentsValues[0];
+    keyArgumentsValues.shift();
+  }
+
+  return [directiveName, keyArgumentsValues];
+}
+
 module.exports = {
   isDirective: isDirective,
   extractDirectivesFromProps: extractDirectivesFromProps,
-  extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps
+  extractStyleDisplayFromDozProps: extractStyleDisplayFromDozProps,
+  extractDirectiveNameAndKeyValues: extractDirectiveNameAndKeyValues
 };
 
 /***/ }),
@@ -4254,12 +4269,25 @@ module.exports = {
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var _require = __webpack_require__(2),
     data = _require.data;
 
 var _require2 = __webpack_require__(5),
     extractDirectivesFromProps = _require2.extractDirectivesFromProps,
-    isDirective = _require2.isDirective;
+    isDirective = _require2.isDirective,
+    extractDirectiveNameAndKeyValues = _require2.extractDirectiveNameAndKeyValues;
 
 var _require3 = __webpack_require__(1),
     REGEX = _require3.REGEX,
@@ -4487,14 +4515,19 @@ function callComponentDOMElementCreate(instance, $target, initial) {
     var attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
 
     if (isDirective(attributeName)) {
-      var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+      var _extractDirectiveName = extractDirectiveNameAndKeyValues(attributeName),
+          _extractDirectiveName2 = _slicedToArray(_extractDirectiveName, 2),
+          directiveName = _extractDirectiveName2[0],
+          keyArgumentsValues = _extractDirectiveName2[1]; // attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+
+
       var directiveValue = attributeValue; //console.log('directiveValue', directiveValue)
 
       var directiveObj = data.directives[directiveName];
 
       if (directiveObj && directiveObj[method]) {
         //$target.removeAttribute(attribute.name);
-        directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial]);
+        directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial, keyArgumentsValues]);
       }
     }
   }
@@ -4510,13 +4543,18 @@ function callComponentDOMElementUpdate(instance, $target) {
     var attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
 
     if (isDirective(attributeName)) {
-      var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+      var _extractDirectiveName3 = extractDirectiveNameAndKeyValues(attributeName),
+          _extractDirectiveName4 = _slicedToArray(_extractDirectiveName3, 2),
+          directiveName = _extractDirectiveName4[0],
+          keyArgumentsValues = _extractDirectiveName4[1]; // attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+
+
       var directiveValue = attributeValue;
       var directiveObj = data.directives[directiveName];
 
       if (directiveObj && directiveObj[method]) {
         //$target.removeAttribute(attribute.name);
-        directiveObj[method].apply(directiveObj, [instance, $target, directiveValue]);
+        directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, keyArgumentsValues]);
       }
     }
   }
@@ -4531,7 +4569,12 @@ function callComponentVNodeTick(instance, newNode, oldNode) {
     var attributeName = propsKey[i];
 
     if (isDirective(attributeName)) {
-      var directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+      var _extractDirectiveName5 = extractDirectiveNameAndKeyValues(attributeName),
+          _extractDirectiveName6 = _slicedToArray(_extractDirectiveName5, 2),
+          directiveName = _extractDirectiveName6[0],
+          keyArgumentsValues = _extractDirectiveName6[1]; //attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+
+
       var directiveValue = newNode.props[attributeName]; // || attribute.value;
       //console.log('directiveValue',directiveName, directiveValue)
 
@@ -4539,7 +4582,7 @@ function callComponentVNodeTick(instance, newNode, oldNode) {
 
       if (directiveObj && directiveObj[method]) {
         //delete newNode.props[attributeName];
-        directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue]);
+        directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue, keyArgumentsValues]);
       }
     }
   }

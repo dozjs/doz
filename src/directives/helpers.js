@@ -39,8 +39,21 @@ function extractStyleDisplayFromDozProps($target) {
     return null;
 }
 
+function extractDirectiveNameAndKeyValues(attributeName) {
+    attributeName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+    let directiveName = attributeName;
+    let keyArgumentsValues = [];
+    if (directiveName.indexOf('-') !== -1) {
+        keyArgumentsValues = directiveName.split('-');
+        directiveName = keyArgumentsValues[0];
+        keyArgumentsValues.shift();
+    }
+    return [directiveName, keyArgumentsValues];
+}
+
 module.exports = {
     isDirective,
     extractDirectivesFromProps,
-    extractStyleDisplayFromDozProps
+    extractStyleDisplayFromDozProps,
+    extractDirectiveNameAndKeyValues
 };

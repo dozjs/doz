@@ -1,5 +1,5 @@
 const {data} = require('../../collection');
-const {extractDirectivesFromProps, isDirective} = require('../helpers');
+const {extractDirectivesFromProps, isDirective, extractDirectiveNameAndKeyValues} = require('../helpers');
 const {REGEX, PROPS_ATTRIBUTES} = require('../../constants.js');
 
 // Hooks for the component
@@ -140,13 +140,13 @@ function callComponentDOMElementCreate(instance, $target, initial) {
         let attributeName = keys[i];
         let attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
-            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let [directiveName, keyArgumentsValues] = extractDirectiveNameAndKeyValues(attributeName);// attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attributeValue;
             //console.log('directiveValue', directiveValue)
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);
-                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial])
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, initial, keyArgumentsValues])
             }
         }
     }
@@ -160,12 +160,12 @@ function callComponentDOMElementUpdate(instance, $target) {
         let attributeName = keys[i];
         let attributeValue = $target._dozAttach[PROPS_ATTRIBUTES][keys[i]];
         if (isDirective(attributeName)) {
-            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let [directiveName, keyArgumentsValues] = extractDirectiveNameAndKeyValues(attributeName);// attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = attributeValue;
             let directiveObj = data.directives[directiveName];
             if (directiveObj && directiveObj[method]) {
                 //$target.removeAttribute(attribute.name);
-                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue])
+                directiveObj[method].apply(directiveObj, [instance, $target, directiveValue, keyArgumentsValues])
             }
         }
     }
@@ -180,14 +180,14 @@ function callComponentVNodeTick(instance, newNode, oldNode) {
         let attributeName = propsKey[i];
 
         if (isDirective(attributeName)) {
-            let directiveName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            let [directiveName, keyArgumentsValues] = extractDirectiveNameAndKeyValues(attributeName);//attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             let directiveValue = newNode.props[attributeName];// || attribute.value;
             //console.log('directiveValue',directiveName, directiveValue)
             let directiveObj = data.directives[directiveName];
             //console.log('aaaaaaa', attributeName, directiveObj)
             if (directiveObj && directiveObj[method]) {
                 //delete newNode.props[attributeName];
-                directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue])
+                directiveObj[method].apply(directiveObj, [instance, newNode, oldNode, directiveValue, keyArgumentsValues])
             }
         }
     }
