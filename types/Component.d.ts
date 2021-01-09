@@ -197,4 +197,16 @@ export class Component {
      * This method disable prepareCommit status and call render with a delay
      */
     commit():void
+
+    /**
+     * This method sets props using prepareCommit and commit.
+     * @param {object} obj
+     */
+    setProps(obj: object): void
+
+    /**
+     * This method sets props using delay and without prepareCommit and commit.
+     * @param {object} obj
+     */
+    setPropsAsync(obj: object): void
 }
