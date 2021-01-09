@@ -390,6 +390,24 @@ class Component extends DOMManipulation {
     getWebComponentByTag(name) {
         return data.webComponents.tags[name] || null;
     }
+
+    _setProps(obj) {
+        for (let p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                this.props[p] = obj[p];
+            }
+        }
+    }
+
+    setProps(obj) {
+        this.prepareCommit();
+        this._setProps(obj);
+        this.commit();
+    }
+
+    setPropsAsync(obj) {
+        delay(() => this._setProps(obj));
+    }
 }
 
 

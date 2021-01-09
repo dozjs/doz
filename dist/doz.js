@@ -1335,6 +1335,33 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       return data.webComponents.tags[name] || null;
     }
   }, {
+    key: "_setProps",
+    value: function _setProps(obj) {
+      for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+          this.props[p] = obj[p];
+        }
+      }
+    }
+  }, {
+    key: "setProps",
+    value: function setProps(obj) {
+      this.prepareCommit();
+
+      this._setProps(obj);
+
+      this.commit();
+    }
+  }, {
+    key: "setPropsAsync",
+    value: function setPropsAsync(obj) {
+      var _this5 = this;
+
+      delay(function () {
+        return _this5._setProps(obj);
+      });
+    }
+  }, {
     key: "props",
     set: function set(props) {
       if (typeof props === 'function') props = props();
