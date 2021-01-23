@@ -165,7 +165,7 @@ describe('Doz.slot', function () {
             setTimeout(()=>{
                 const html = document.body.innerHTML;
                 console.log(html);
-                be.err.equal(html, '<div id="app"><dz-app><div><dz-mount><dz-root><salutation-card><!--slot--><div><h1>Hello</h1></div></salutation-card></dz-root></dz-mount></div></dz-app></div>');
+                be.err.equal(html, '<div id="app"><dz-app><div><dz-mount><salutation-card><!--slot--><div><h1>Hello</h1></div></salutation-card></dz-mount></div></dz-app></div>');
                 done()
             },100);
         });

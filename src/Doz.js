@@ -127,7 +127,8 @@ class Doz {
                         cfg: {
                             props: {},
                             template(h) {
-                                return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
+                                //return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
+                                return contentStr;
                             }
                         }
                     };

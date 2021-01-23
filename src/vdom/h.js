@@ -180,7 +180,6 @@ function generateItemKey(values) {
 
 function fillCompiled(obj, values, parent, _this) {
     let keys = Object.keys(obj);
-
     for (let i = 0; i < keys.length; i++) {
         //for (let k in obj) {
         if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
@@ -192,8 +191,8 @@ function fillCompiled(obj, values, parent, _this) {
             //if (typeof value === 'function' && keys[i] === 'type') {
             if ('type' === keys[i] && 'string' !== typeof value) {
 
-                let cmp = value;
-                let tagName = camelToDash(cmp.tag || cmp.name || 'obj');
+                let cmp = value || {};
+                let tagName = camelToDash(cmp.tag || cmp.name || TAG.ROOT);
                 // Sanitize tag name
                 tagName = tagName.replace(/_+/, '');
                 // if is a single word, rename with double word

@@ -207,10 +207,9 @@ function compile(tpl) {
 
     if (root.children.length > 1) {
         root.type = TAG.ROOT;
+        //console.log(root)
     } else if (root.children.length) {
-
         tplCache[tpl] = root.children[0];
-
         return root.children[0];
     }
 

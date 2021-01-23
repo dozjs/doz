@@ -16,7 +16,7 @@ describe('Doz.external.template', function () {
             document.body.innerHTML = `
                 <div id="app"></div>
                 <template id="salutation-tpl">
-                    hello <b>{{this.props.title}}</b>
+                    <span>hello <b>{{this.props.title}}</b></span>
                 </template>
             `;
 

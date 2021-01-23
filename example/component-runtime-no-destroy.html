@@ -32,8 +32,8 @@
 
     Doz.component('fist-component', {
         $allowMount: true,
-        template() {
-            return `
+        template(h) {
+            return h`
                 <button forceupdate onclick="this.drawOther()">Mount second</i></button>
                 <button forceupdate onclick="this.removeOther()">Unmount second</i></button>
                 <button forceupdate onclick="this.drawOther2()">Mount second 2</i></button>
@@ -43,7 +43,7 @@
         drawOther() {
             if (!this.other) {
 
-                this.other = this.mount(`
+                this.other = this.mount(this.h`
                     <div>
                         <second-component/>
                         <div>
@@ -83,7 +83,7 @@
         drawOther2() {
             if (!this.other2) {
 
-                this.other2 = this.mount(`<div>other</div>`);
+                this.other2 = this.mount(this.h`<div>other</div>`);
 
                 this.other2.onBeforeMount = () => {
                     console.log('main component before mount');
@@ -116,8 +116,8 @@
         props: {
             state: false
         },
-        template() {
-            return `<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        template(h) {
+            return h`<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;
@@ -140,8 +140,8 @@
         props: {
             state: false
         },
-        template() {
-            return `<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+        template(h) {
+            return h`<button style="color: red" onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;

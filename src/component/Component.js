@@ -250,20 +250,21 @@ class Component extends DOMManipulation {
 
             return this;
         } else if (template) {
-            if (this._rootElement.nodeType !== 1) {
-                const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
-                newElement._dozAttach = {};
-                this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
-                this._rootElement = newElement;
-                this._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = this;
-            }
-
             let root = this._rootElement;
 
             if (typeof cfg.selector === 'string')
                 root = root.querySelector(cfg.selector);
             else if (cfg.selector instanceof HTMLElement)
                 root = cfg.selector;
+            else if (this._rootElement.nodeType !== 1) {
+                /*const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+                newElement._dozAttach = {};
+                this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
+                this._rootElement = newElement;
+                this._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = this;
+                root = this._rootElement;*/
+                root = this.getHTMLElement();
+            }
 
             this._unmounted = false;
             this._unmountedParentNode = null;

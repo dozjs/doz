@@ -800,7 +800,7 @@ function compile(tpl) {
   }
 
   if (root.children.length > 1) {
-    root.type = TAG.ROOT;
+    root.type = TAG.ROOT; //console.log(root)
   } else if (root.children.length) {
     tplCache[tpl] = root.children[0];
     return root.children[0];
@@ -1178,18 +1178,16 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
         return this;
       } else if (template) {
-        if (this._rootElement.nodeType !== 1) {
-          var newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
+        var root = this._rootElement;
+        if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;else if (this._rootElement.nodeType !== 1) {
+          /*const newElement = document.createElement(this.tag + TAG.SUFFIX_ROOT);
           newElement._dozAttach = {};
-
           this._rootElement.parentNode.replaceChild(newElement, this._rootElement);
-
           this._rootElement = newElement;
           this._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = this;
+          root = this._rootElement;*/
+          root = this.getHTMLElement();
         }
-
-        var root = this._rootElement;
-        if (typeof cfg.selector === 'string') root = root.querySelector(cfg.selector);else if (cfg.selector instanceof HTMLElement) root = cfg.selector;
         this._unmounted = false;
         this._unmountedParentNode = null;
         this._unmountedPlaceholder = null;
@@ -1420,18 +1418,6 @@ module.exports._Component = Component;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _templateObject() {
-  var data = _taggedTemplateLiteral(["<", ">", "</", ">"]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -1586,7 +1572,8 @@ var Doz = /*#__PURE__*/function () {
             cfg: {
               props: {},
               template: function template(h) {
-                return h(_templateObject(), TAG.ROOT, contentStr, TAG.ROOT);
+                //return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
+                return contentStr;
               }
             }
           };
@@ -3620,8 +3607,8 @@ function fillCompiled(obj, values, parent, _this) {
       var value = placeholderIndex(obj[keys[i]], values); //if (typeof value === 'function' && keys[i] === 'type') {
 
       if ('type' === keys[i] && 'string' !== typeof value) {
-        var cmp = value;
-        var tagName = camelToDash(cmp.tag || cmp.name || 'obj'); // Sanitize tag name
+        var cmp = value || {};
+        var tagName = camelToDash(cmp.tag || cmp.name || TAG.ROOT); // Sanitize tag name
 
         tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
 
