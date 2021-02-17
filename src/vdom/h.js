@@ -58,6 +58,7 @@ module.exports = function (strings, ...values) {
         for (let i = 0; i < valueLength; ++i) {
             let stringsI = strings[i];
             let stringLength = stringsI.length;
+            let lastChar = stringsI[stringLength - 1];
             for (let x = 0; x < stringLength; x++) {
                 if (stringsI[x] === LESSER) {
                     allowTag = false;
@@ -94,14 +95,20 @@ module.exports = function (strings, ...values) {
                     }
                 }
             } else {
-                tpl += `e-0_${i}_0-e${strings[i + 1]}`;
+                // Gestico eventuale caso di chiusura tag con placeholder
+                // tipo: </${FooBar}>
+                if (lastChar === '/') {
+                    tpl += strings[i + 1];
+                } else {
+                    tpl += `e-0_${i}_0-e${strings[i + 1]}`;
+                }
             }
         }
 
         tpl = tpl.trim();
         hCache.set(strings, tpl);
     }
-
+    //console.log('TPL ------>', tpl)
     let cloned;
     let model = compile(tpl);
     let clonedKey;
@@ -163,9 +170,10 @@ module.exports = function (strings, ...values) {
             })
         }
     }
-
+    //console.log('CLN ------>', cloned)
     return cloned;
 };
+
 
 function generateItemKey(values) {
     let key = '';

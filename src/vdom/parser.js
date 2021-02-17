@@ -129,6 +129,17 @@ function compile(tpl) {
             // this is a comment or style
             continue;
         }
+        // Gestisco anche tag chiusura vuoto: <${FooBar}>...</>
+        if (match[0] === '</>') {
+            let lastTag = last(stack).type;
+            // assegno come tag l'ulitmo inserito in modo di avere una corrispondenza
+            // <foo-bar>...</foo-bar>
+            if (lastTag) {
+                match[0] = `</${lastTag}>`;
+                match[1] = '/';
+                match[2] = lastTag;
+            }
+        }
 
         // exclude special text node
         if (regExcludeSpecial.test(match[0])) {
@@ -139,7 +150,7 @@ function compile(tpl) {
         if (match[2] === 'slot')
             match[2] = TAG.SLOT;
 
-        if (!match[1]) {
+        if (!match[1] && match[0]) {
             // not </ tags
             props = {};
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
@@ -182,6 +193,7 @@ function compile(tpl) {
                     currentParent = last(stack);
                     break;
                 } else {
+
                     // Trying to close current tag, and move on
                     if (elementsClosedByClosing[currentParent.type]) {
                         if (elementsClosedByClosing[currentParent.type][match[2]]) {

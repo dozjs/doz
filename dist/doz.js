@@ -132,7 +132,8 @@ module.exports = {
     IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
     TRIM_QUOTES: /^["'](.*)["']$/,
     THIS_TARGET: /\B\$this(?!\w)/g,
-    HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
+    //HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>/ig,
+    HTML_MARKUP: /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.0-9_a-z]*)\s*([^>]*?)(\/?)>|<\/>/ig,
     HTML_ATTRIBUTE: /(^|\s)([\w-:]+)(\s*=\s*("([^"]+)"|'([^']+)'|(\S+)))?/ig,
     MATCH_NLS: /\n\s+/gm,
     REPLACE_QUOT: /"/g,
@@ -724,6 +725,18 @@ function compile(tpl) {
     if (match[0][1] === '!') {
       // this is a comment or style
       continue;
+    } // Gestisco anche tag chiusura vuoto: <${FooBar}>...</>
+
+
+    if (match[0] === '</>') {
+      var lastTag = last(stack).type; // assegno come tag l'ulitmo inserito in modo di avere una corrispondenza
+      // <foo-bar>...</foo-bar>
+
+      if (lastTag) {
+        match[0] = "</".concat(lastTag, ">");
+        match[1] = '/';
+        match[2] = lastTag;
+      }
     } // exclude special text node
 
 
@@ -734,7 +747,7 @@ function compile(tpl) {
 
     if (match[2] === 'slot') match[2] = TAG.SLOT;
 
-    if (!match[1]) {
+    if (!match[1] && match[0]) {
       // not </ tags
       props = {};
 
@@ -3469,6 +3482,7 @@ module.exports = function (strings) {
     for (var i = 0; i < valueLength; ++i) {
       var stringsI = strings[i];
       var stringLength = stringsI.length;
+      var lastChar = stringsI[stringLength - 1];
 
       for (var x = 0; x < stringLength; x++) {
         if (stringsI[x] === LESSER) {
@@ -3505,13 +3519,20 @@ module.exports = function (strings) {
           }
         }
       } else {
-        tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
+        // Gestico eventuale caso di chiusura tag con placeholder
+        // tipo: </${FooBar}>
+        if (lastChar === '/') {
+          tpl += strings[i + 1];
+        } else {
+          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
+        }
       }
     }
 
     tpl = tpl.trim();
     hCache.set(strings, tpl);
-  }
+  } //console.log('TPL ------>', tpl)
+
 
   var cloned;
   var model = compile(tpl);
@@ -3577,7 +3598,8 @@ module.exports = function (strings) {
         prev: {}
       });
     }
-  }
+  } //console.log('CLN ------>', cloned)
+
 
   return cloned;
 };
