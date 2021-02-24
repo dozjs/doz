@@ -216,6 +216,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         );
         cmp.$$afterNodeChange($newElement, $oldElement);
 
+        // Provo a cancellare eventuale istanza
+        if ($oldElement._dozAttach && $oldElement._dozAttach[COMPONENT_INSTANCE]) {
+            $oldElement._dozAttach[COMPONENT_INSTANCE].unmount();
+            $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
+        }
+
         return $newElement;
     } else if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
         //console.log('key')
@@ -479,6 +485,10 @@ function clearDead() {
 
     while (dl--) {
         deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+        if (deadChildren[dl]._dozAttach && deadChildren[dl]._dozAttach[COMPONENT_INSTANCE]) {
+            deadChildren[dl]._dozAttach[COMPONENT_INSTANCE].unmount();
+            deadChildren[dl]._dozAttach[COMPONENT_INSTANCE].destroy();
+        }
         deadChildren.splice(dl, 1);
     }
 }

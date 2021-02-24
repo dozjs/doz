@@ -329,6 +329,19 @@ class Component extends DOMManipulation {
         });
 
         hooks.callDestroy(this);
+        if (this.parent && this.parent.children) {
+            for (let i in this.parent.children) {
+                if (this.parent.children.hasOwnProperty(i) && this === this.parent.children[i]) {
+                    delete this.parent.children[i];
+                }
+            }
+            if (this.parent.childrenByTag[this.tag]) {
+                let indexOfThis = this.parent.childrenByTag[this.tag].indexOf(this);
+                if (indexOfThis !== -1) {
+                    this.parent.childrenByTag[this.tag].splice(indexOfThis, 1);
+                }
+            }
+        }
         return true;
     }
 

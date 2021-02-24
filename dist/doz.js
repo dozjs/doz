@@ -1282,6 +1282,23 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       }
 
       hooks.callDestroy(this);
+
+      if (this.parent && this.parent.children) {
+        for (var i in this.parent.children) {
+          if (this.parent.children.hasOwnProperty(i) && this === this.parent.children[i]) {
+            delete this.parent.children[i];
+          }
+        }
+
+        if (this.parent.childrenByTag[this.tag]) {
+          var indexOfThis = this.parent.childrenByTag[this.tag].indexOf(this);
+
+          if (indexOfThis !== -1) {
+            this.parent.childrenByTag[this.tag].splice(indexOfThis, 1);
+          }
+        }
+      }
+
       return true;
     } // noinspection JSMethodCanBeStatic
 
@@ -3062,7 +3079,14 @@ function update($parent, newNode, oldNode) {
 
 
     $parent.replaceChild(_$newElement, $oldElement);
-    cmp.$$afterNodeChange(_$newElement, $oldElement);
+    cmp.$$afterNodeChange(_$newElement, $oldElement); // Provo a cancellare eventuale istanza
+
+    if ($oldElement._dozAttach && $oldElement._dozAttach[COMPONENT_INSTANCE]) {
+      $oldElement._dozAttach[COMPONENT_INSTANCE].unmount();
+
+      $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
+    }
+
     return _$newElement;
   } else if (newNode.hasKeys !== undefined || oldNode.hasKeys !== undefined) {
     //console.log('key')
@@ -3328,6 +3352,13 @@ function clearDead() {
 
   while (dl--) {
     deadChildren[dl].parentNode.removeChild(deadChildren[dl]);
+
+    if (deadChildren[dl]._dozAttach && deadChildren[dl]._dozAttach[COMPONENT_INSTANCE]) {
+      deadChildren[dl]._dozAttach[COMPONENT_INSTANCE].unmount();
+
+      deadChildren[dl]._dozAttach[COMPONENT_INSTANCE].destroy();
+    }
+
     deadChildren.splice(dl, 1);
   }
 }

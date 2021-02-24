@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.6.1] - 2021-02-24
+- **Fixed** memory leak
+
 ## [3.6.0] - 2021-02-17
 - **Added** support to empty closed tag like "<${FooBar}>...</>"
 - **Fixed** closed tag using a placeholder component
