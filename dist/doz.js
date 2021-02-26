@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.6.1  
+// [DOZ]  Build version: 3.7.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3901,7 +3901,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.6.1',
+    value: '3.7.0',
     enumerable: true
   },
   tag: {
@@ -6461,91 +6461,117 @@ var _require = __webpack_require__(0),
 
 directive(':onbeforecreate', {
   onComponentBeforeCreate: function onComponentBeforeCreate(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':oncreate', {
   onComponentCreate: function onComponentCreate(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onbeforemount', {
   onComponentBeforeMount: function onComponentBeforeMount(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onmount', {
   onComponentMount: function onComponentMount(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onmountasync', {
   onComponentMountAsync: function onComponentMountAsync(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onafterrender', {
   onComponentAfterRender: function onComponentAfterRender(instance, changes, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance, changes);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance, changes);
     }
   }
 });
 directive(':onbeforeupdate', {
   onComponentBeforeUpdate: function onComponentBeforeUpdate(instance, changes, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance, changes);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance, changes);
     }
   }
 });
 directive(':onupdate', {
   onComponentUpdate: function onComponentUpdate(instance, changes, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance, changes);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance, changes);
     }
   }
 });
 directive(':onbeforeunmount', {
   onComponentBeforeUnmount: function onComponentBeforeUnmount(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onunmount', {
   onComponentUnmount: function onComponentUnmount(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onbeforedestroy', {
   onComponentBeforeDestroy: function onComponentBeforeDestroy(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      return directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       return instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':ondestroy', {
   onComponentDestroy: function onComponentDestroy(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
 });
 directive(':onloadprops', {
   onComponentLoadProps: function onComponentLoadProps(instance, directiveValue) {
-    if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+    if (typeof directiveValue === 'function') {
+      directiveValue(instance);
+    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
       instance.parent[directiveValue].call(instance.parent, instance);
     }
   }
