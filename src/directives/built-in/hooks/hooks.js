@@ -2,7 +2,9 @@ const {directive} = require('../../index');
 
 directive(':onbeforecreate', {
     onComponentBeforeCreate(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -10,7 +12,9 @@ directive(':onbeforecreate', {
 
 directive(':oncreate', {
     onComponentCreate(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -18,7 +22,9 @@ directive(':oncreate', {
 
 directive(':onbeforemount', {
     onComponentBeforeMount(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -26,7 +32,9 @@ directive(':onbeforemount', {
 
 directive(':onmount', {
     onComponentMount(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -34,7 +42,9 @@ directive(':onmount', {
 
 directive(':onmountasync', {
     onComponentMountAsync(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -42,7 +52,9 @@ directive(':onmountasync', {
 
 directive(':onafterrender', {
     onComponentAfterRender(instance, changes, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance, changes);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance, changes);
         }
     }
@@ -50,7 +62,9 @@ directive(':onafterrender', {
 
 directive(':onbeforeupdate', {
     onComponentBeforeUpdate(instance, changes, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance, changes);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance, changes);
         }
     }
@@ -58,7 +72,9 @@ directive(':onbeforeupdate', {
 
 directive(':onupdate', {
     onComponentUpdate(instance, changes, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance, changes);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance, changes);
         }
     }
@@ -66,7 +82,9 @@ directive(':onupdate', {
 
 directive(':onbeforeunmount', {
     onComponentBeforeUnmount(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -74,7 +92,9 @@ directive(':onbeforeunmount', {
 
 directive(':onunmount', {
     onComponentUnmount(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -82,7 +102,9 @@ directive(':onunmount', {
 
 directive(':onbeforedestroy', {
     onComponentBeforeDestroy(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             return instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -90,7 +112,9 @@ directive(':onbeforedestroy', {
 
 directive(':ondestroy', {
     onComponentDestroy(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
@@ -98,7 +122,9 @@ directive(':ondestroy', {
 
 directive(':onloadprops', {
     onComponentLoadProps(instance, directiveValue) {
-        if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
