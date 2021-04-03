@@ -29,16 +29,18 @@ export function use(plugin: Function, options?: object): void
  * @param {string} tag
  * @param {object} component
  * @param {Array<string>} observedAttributes
+ * @param {Array<string>} exposedMethods
  */
-export function defineWebComponent(tag: string, component?: ConfigComponent | object | Function, observedAttributes?: Array<string>): void
+export function defineWebComponent(tag: string, component?: ConfigComponent | object | Function, observedAttributes?: Array<string>, exposedMethods?: Array<string>): void
 
 /**
  * Create WebComponent from global Doz component.
  * @param {string} tag
  * @param {object} globalTag
  * @param {Array<string>} observedAttributes
+ * @param {Array<string>} exposedMethods
  */
-export function defineWebComponentFromGlobal(tag: string, globalTag:string, observedAttributes?: Array<string>): void
+export function defineWebComponentFromGlobal(tag: string, globalTag:string, observedAttributes?: Array<string>, exposedMethods?: Array<string>): void
 
 /**
  * Add external functions to global components.

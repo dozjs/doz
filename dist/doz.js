@@ -248,16 +248,7 @@ module.exports = {
 /* 3 */
 /***/ (function(module, exports) {
 
-var raf = window.requestAnimationFrame || window.setTimeout;
-/*const raf = function (cb) {
-    cb();
-};*/
-
-/*function delay(cb) {
-        return raf(cb);
-}*/
-
-module.exports = raf;
+module.exports = window.requestAnimationFrame || window.setTimeout;
 
 /***/ }),
 /* 4 */
@@ -6090,6 +6081,7 @@ function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var prefix = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'dwc';
   var globalTag = arguments.length > 4 ? arguments[4] : undefined;
+  var exposedMethods = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
   data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
   if (prefix) {
@@ -6148,9 +6140,23 @@ function createDozWebComponent(tag, cmp) {
           template: function template(h) {
             return h(_templateObject(), tagCmp, contentHTML, tagCmp);
           },
-          onMountAsync: function onMountAsync() {
-            thisElement.removeAttribute('data-soft-entrance');
+          onAppReady: function onAppReady() {
             var firstChild = this.children[0];
+
+            var _defined = function _defined(method) {
+              if (firstChild[method]) {
+                thisElement[method] = firstChild[method].bind(firstChild);
+              }
+            };
+
+            for (var _i2 = 0; _i2 <= exposedMethods.length - 1; _i2++) {
+              _defined(exposedMethods[_i2], _i2, exposedMethods);
+            } //},
+            //onMountAsync() {
+
+
+            thisElement.removeAttribute('data-soft-entrance'); //let firstChild = this.children[0];
+
             firstChild.props = Object.assign({}, firstChild.props, initialProps);
             var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
             data.webComponents.tags[tag][id || countCmp] = firstChild;
@@ -6177,12 +6183,14 @@ function createDozWebComponent(tag, cmp) {
 
 function defineWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  createDozWebComponent(tag, cmp, observedAttributes, '');
+  var exposedMethods = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods);
 }
 
 function defineWebComponentFromGlobal(tag, globalTag) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  createDozWebComponent(tag, null, observedAttributes, '', globalTag);
+  var exposedMethods = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods);
 }
 
 module.exports = {

@@ -1564,18 +1564,20 @@ const myCmp2 = class extends Doz.Component {
             <div>${this.props.title}</div>
         `
     }
+    
+    myMethod(value) {
+        console.log('hello ' + value);
+    }
 }
 
 defineWebComponent('dwc-my-cmp1', myCmp1, ['title']);
-defineWebComponent('dwc-my-cmp2', myCmp2, ['title']);
+defineWebComponent('dwc-my-cmp2', myCmp2, ['title'], ['myMethod']);
 ```
 
-**Super Important**: Keep in mind to add a prefix like this: 'dwc-' to the name of the component you are going to define, this to prevent Doz from processing possible web components that
-have the same name as the doz components.
-
-**Important note**: The last parameters of `defineWebComponent` is referred to "observedAttributes", 
+**Important note**: The third parameter of `defineWebComponent` is referred to "observedAttributes", 
 an array of attributes names linked to doz component props, so you can update the props also
-using native method `myWebComponentRef.setAttribute('title', 'hello')`.
+using native method `document.getElementById('foo-my-wc').setAttribute('title', 'hello')` while the fourth parameter is 
+referred to "exposedMethods", for example you can call a method in this way `document.getElementById('foo-my-wc').myMethod('bar foo')`.
 
 HTML
 ```html
@@ -1592,6 +1594,9 @@ HTML
     </body>
 </html>
 ```
+
+**Super Important**: Keep in mind to add a prefix like this: 'dwc-' to the name of the component you are going to define, this to prevent Doz from processing possible web components that
+have the same name as the doz components.
 
 The "data-id" attribute allows us to access a Web Component from other components
 using the method (in this case) `this.getWebComponentById ('my-cmp2')`.

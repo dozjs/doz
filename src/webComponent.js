@@ -3,7 +3,7 @@ const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
 require('./utils/create-style-soft-entrance')();
 
-function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag) {
+function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = []) {
 
     data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
@@ -53,9 +53,17 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     <${tagCmp}>${contentHTML}</${tagCmp}>
                 `
                 },
-                onMountAsync() {
-                    thisElement.removeAttribute('data-soft-entrance');
+                onAppReady() {
                     let firstChild = this.children[0];
+                    exposedMethods.forEach(method => {
+                        if (firstChild[method]) {
+                            thisElement[method] = firstChild[method].bind(firstChild);
+                        }
+                    })
+                //},
+                //onMountAsync() {
+                    thisElement.removeAttribute('data-soft-entrance');
+                    //let firstChild = this.children[0];
                     firstChild.props = Object.assign({}, firstChild.props, initialProps);
 
                     let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
@@ -79,12 +87,12 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
     });
 }
 
-function defineWebComponent(tag, cmp, observedAttributes = []) {
-    createDozWebComponent(tag, cmp, observedAttributes, '');
+function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = []) {
+    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods);
 }
 
-function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = []) {
-    createDozWebComponent(tag, null, observedAttributes, '', globalTag);
+function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = []) {
+    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods);
 }
 
 module.exports = {

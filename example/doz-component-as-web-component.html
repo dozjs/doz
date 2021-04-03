@@ -16,9 +16,12 @@
 </head>
 <body>
 
-<dwc-my-cmp id="my-element"></dwc-my-cmp>
+<dwc-my-cmp id="my-element" my-prop="hello prop"></dwc-my-cmp>
 <button onclick="document.getElementById('my-element').setAttribute('time', new Date().getTime())">
     Set timestamp
+</button>
+<button onclick="document.getElementById('my-element').myMethod('woooow ' + new Date().getTime())">
+    Call exposed method
 </button>
 
 <script>
@@ -37,12 +40,17 @@
             return h`
                 <div>
                     Timestamp: ${this.props.time}
+                    prop: ${this.props.myProp}
                 </div>
             `
         }
+
+        myMethod(value) {
+            console.log('hello ' + value, this)
+        }
     }
 
-    defineWebComponent('dwc-my-cmp', myCmp, ['time']);
+    defineWebComponent('dwc-my-cmp', myCmp, ['time', 'my-prop'], ['myMethod']);
 </script>
 
 </body>

@@ -163,12 +163,13 @@
     - `tag` string
     - `component` function, object
     - `observedAttributes` array of attributes to observe
+    - `exposedMethods` array of exposed methods
 - **Details**: Create WebComponent.
 - **Usage**:
     ``` js
     Doz.defineWebComponent('dwc-my-cmp', class extends Component {
         //....//
-    }, ['foo', 'bar']);
+    }, ['foo', 'bar'], ['myDozComponentMethod']);
     ```
     In your HTML page
     ```html
@@ -184,10 +185,11 @@
     - `tag` string
     - `globalTag` string
     - `observedAttributes` array of attributes to observe
+    - `exposedMethods` array of exposed methods
 - **Details**: Create WebComponent.
 - **Usage**:
     ``` js
-    Doz.defineWebComponentFromGlobal('dwc-my-cmp', 'my-cmp', ['foo', 'bar']);
+    Doz.defineWebComponentFromGlobal('dwc-my-cmp', 'my-cmp', ['foo', 'bar'], ['myDozComponentMethod']);
     ```
     In your HTML page
     ```html
