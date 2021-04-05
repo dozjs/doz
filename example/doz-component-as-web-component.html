@@ -38,7 +38,13 @@
 
         template(h) {
             return h`
-                <div>
+                <style>
+                    .card {
+                        border: 1px solid #ccc;
+                        padding: 24px;
+                    }
+                </style>
+                <div class="card">
                     Timestamp: ${this.props.time}
                     prop: ${this.props.myProp}
                 </div>

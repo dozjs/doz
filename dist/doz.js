@@ -1470,7 +1470,14 @@ var Doz = /*#__PURE__*/function () {
 
     _classCallCheck(this, Doz);
 
-    this.baseTemplate = "<".concat(TAG.APP, "></").concat(TAG.APP, ">");
+    this.appTag = cfg.appTag || TAG.APP;
+
+    if (this.appTag && typeof this.appTag !== 'string') {
+      this.appTag = TAG.APP;
+      this.appTagObject = cfg.appTag;
+    }
+
+    this.baseTemplate = "<".concat(this.appTag, "></").concat(this.appTag, ">");
 
     if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
       cfg.root = document.getElementById(cfg.root.substring(1));
@@ -1489,7 +1496,7 @@ var Doz = /*#__PURE__*/function () {
       throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
     }
 
-    var appNode = document.querySelector(TAG.APP); // This fix double app rendering in SSR
+    var appNode = document.querySelector(this.appTag); // This fix double app rendering in SSR
 
     makeSureAttach(appNode);
 
@@ -1549,7 +1556,7 @@ var Doz = /*#__PURE__*/function () {
         writable: true
       },
       _onAppCB: {
-        value: {},
+        value: cfg.listeners || {},
         writable: true
       },
       useShadowRoot: {
@@ -1638,9 +1645,9 @@ var Doz = /*#__PURE__*/function () {
       }
     }
 
-    this._components[TAG.APP] = {
-      tag: TAG.APP,
-      cfg: {
+    this._components[this.appTag] = {
+      tag: this.appTag,
+      cfg: this.appTagObject ? this.appTagObject : {
         template: typeof cfg.template === 'function' ? cfg.template : function () {
           var contentStr = toLiteralString(cfg.template);
           if (/\${.*?}/g.test(contentStr)) return eval('`' + contentStr + '`');else return contentStr;
@@ -1649,7 +1656,7 @@ var Doz = /*#__PURE__*/function () {
     };
 
     var _defined7 = function _defined7(p) {
-      if (!['template', 'root'].includes(p)) _this._components[TAG.APP].cfg[p] = cfg[p];
+      if (!['template', 'root'].includes(p)) _this._components[_this.appTag].cfg[p] = cfg[p];
     };
 
     var _defined8 = Object.keys(cfg);
@@ -5221,9 +5228,6 @@ module.exports = {
 
 var tagList = __webpack_require__(43);
 
-var _require = __webpack_require__(1),
-    TAG = _require.TAG;
-
 function createStyle(cssContent, uId, tag, scoped, cmp) {
   var result;
   var styleId = "".concat(uId, "--style");
@@ -5251,7 +5255,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
       styleResetEl.innerHTML = resetContent;
 
       if (cmp && cmp.app.useShadowRoot) {
-        var tagApp = cmp.app._root.querySelector(TAG.APP);
+        var tagApp = cmp.app._root.querySelector(cmp.app.appTag);
 
         cmp.app._root.insertBefore(styleResetEl, tagApp);
       } else {
@@ -5264,7 +5268,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
     result = styleEl.innerHTML = cssContent;
 
     if (cmp && cmp.app.useShadowRoot) {
-      var _tagApp = cmp.app._root.querySelector(TAG.APP);
+      var _tagApp = cmp.app._root.querySelector(cmp.app.appTag);
 
       cmp.app._root.insertBefore(styleEl, _tagApp);
     } else {
@@ -6031,18 +6035,6 @@ module.exports = function tag(name) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n                    <", ">", "</", ">\n                "]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -6135,44 +6127,66 @@ function createDozWebComponent(tag, cmp) {
         this.innerHTML = '';
         var tagCmp = cmp || globalTag || tag;
         this.dozApp = new Doz({
+          appTag: tagCmp,
           root: root,
           useShadowRoot: !hasDataNoShadow,
-          template: function template(h) {
-            return h(_templateObject(), tagCmp, contentHTML, tagCmp);
-          },
-          onAppReady: function onAppReady() {
-            var firstChild = this.children[0];
 
-            var _defined = function _defined(method) {
-              if (firstChild[method]) {
-                thisElement[method] = firstChild[method].bind(firstChild);
+          /*template(h) {
+              return h`
+                  <${tagCmp}>${contentHTML}</${tagCmp}>
+              `
+          },*/
+          template: contentHTML,
+          listeners: {
+            ready: [function () {
+              var firstChild = this.mainComponent;
+
+              var _defined = function _defined(method) {
+                if (firstChild[method]) {
+                  thisElement[method] = firstChild[method].bind(firstChild);
+                }
+              };
+
+              for (var _i2 = 0; _i2 <= exposedMethods.length - 1; _i2++) {
+                _defined(exposedMethods[_i2], _i2, exposedMethods);
               }
-            };
 
-            for (var _i2 = 0; _i2 <= exposedMethods.length - 1; _i2++) {
-              _defined(exposedMethods[_i2], _i2, exposedMethods);
-            } //},
-            //onMountAsync() {
+              thisElement.removeAttribute('data-soft-entrance');
+              firstChild.props = Object.assign({}, firstChild.props, initialProps);
+              var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+              data.webComponents.tags[tag][id || countCmp] = firstChild;
 
-
-            thisElement.removeAttribute('data-soft-entrance'); //let firstChild = this.children[0];
-
-            firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
-            data.webComponents.tags[tag][id || countCmp] = firstChild;
-
-            if (id !== null) {
-              if (data.webComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
-              data.webComponents.ids[id] = firstChild;
-            }
+              if (id !== null) {
+                if (data.webComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
+                data.webComponents.ids[id] = firstChild;
+              }
+            }]
           }
+          /*onAppReady() {
+              let firstChild = this.children[0] || this.dozApp.mainComponent;
+              exposedMethods.forEach(method => {
+                  if (firstChild[method]) {
+                      thisElement[method] = firstChild[method].bind(firstChild);
+                  }
+              })
+                thisElement.removeAttribute('data-soft-entrance');
+              firstChild.props = Object.assign({}, firstChild.props, initialProps);
+                let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+                data.webComponents.tags[tag][id || countCmp] = firstChild;
+              if (id !== null) {
+                  if (data.webComponents.ids[id])
+                      return console.warn(id + ': id already exists for DozWebComponent');
+                    data.webComponents.ids[id] = firstChild;
+              }
+          }*/
+
         });
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, oldValue, newValue) {
         if (!this.dozApp) return;
-        var firstChild = this.dozApp.mainComponent.children[0];
+        var firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
         firstChild.props[dashToCamel(name)] = newValue;
       }
     }]);

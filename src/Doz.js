@@ -10,7 +10,14 @@ class Doz {
 
     constructor(cfg = {}) {
 
-        this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
+        this.appTag = cfg.appTag || TAG.APP;
+
+        if (this.appTag && typeof this.appTag !== 'string') {
+            this.appTag = TAG.APP;
+            this.appTagObject = cfg.appTag;
+        }
+
+        this.baseTemplate = `<${this.appTag}></${this.appTag}>`;
 
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
@@ -29,7 +36,7 @@ class Doz {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
-        const appNode = document.querySelector(TAG.APP);
+        const appNode = document.querySelector(this.appTag);
 
         // This fix double app rendering in SSR
         makeSureAttach(appNode);
@@ -84,7 +91,7 @@ class Doz {
                 writable: true
             },
             _onAppCB: {
-                value: {},
+                value: cfg.listeners || {},
                 writable: true
             },
             useShadowRoot: {
@@ -161,9 +168,9 @@ class Doz {
             });
         }
 
-        this._components[TAG.APP] = {
-            tag: TAG.APP,
-            cfg: {
+        this._components[this.appTag] = {
+            tag: this.appTag,
+            cfg: this.appTagObject ? this.appTagObject : {
                 template: typeof cfg.template === 'function' ? cfg.template : function () {
                     const contentStr = toLiteralString(cfg.template);
                     if (/\${.*?}/g.test(contentStr))
@@ -176,7 +183,7 @@ class Doz {
 
         Object.keys(cfg).forEach(p => {
             if (!['template', 'root'].includes(p))
-                this._components[TAG.APP].cfg[p] = cfg[p];
+                this._components[this.appTag].cfg[p] = cfg[p];
         });
 
         plugin.load(this);

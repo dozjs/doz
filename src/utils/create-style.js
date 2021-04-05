@@ -1,12 +1,10 @@
 const tagList = require('./tags');
-const {TAG} = require('../constants');
 
 function createStyle(cssContent, uId, tag, scoped, cmp) {
     let result;
     const styleId = `${uId}--style`;
     const styleResetId = `${uId}--style-reset`;
     //const styleExists = document.getElementById(styleId);
-
     let styleExists;
 
     if (cmp && cmp.app.useShadowRoot) {
@@ -26,7 +24,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
             styleResetEl.id = styleResetId;
             styleResetEl.innerHTML = resetContent;
             if (cmp && cmp.app.useShadowRoot) {
-                let tagApp = cmp.app._root.querySelector(TAG.APP);
+                let tagApp = cmp.app._root.querySelector(cmp.app.appTag);
                 cmp.app._root.insertBefore(styleResetEl, tagApp);
             } else {
                 document.head.appendChild(styleResetEl);
@@ -37,7 +35,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
         styleEl.id = styleId;
         result = styleEl.innerHTML = cssContent;
         if (cmp && cmp.app.useShadowRoot) {
-            let tagApp = cmp.app._root.querySelector(TAG.APP);
+            let tagApp = cmp.app._root.querySelector(cmp.app.appTag);
             cmp.app._root.insertBefore(styleEl, tagApp);
         } else {
             document.head.appendChild(styleEl);

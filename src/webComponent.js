@@ -46,24 +46,47 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
             let tagCmp = cmp || globalTag || tag;
 
             this.dozApp = new Doz({
+                appTag: tagCmp,
                 root,
                 useShadowRoot: !hasDataNoShadow,
-                template(h) {
+                /*template(h) {
                     return h`
-                    <${tagCmp}>${contentHTML}</${tagCmp}>
-                `
+                        <${tagCmp}>${contentHTML}</${tagCmp}>
+                    `
+                },*/
+                template: contentHTML,
+                listeners: {
+                    ready: [function () {
+                        let firstChild = this.mainComponent;
+                        exposedMethods.forEach(method => {
+                            if (firstChild[method]) {
+                                thisElement[method] = firstChild[method].bind(firstChild);
+                            }
+                        })
+
+                        thisElement.removeAttribute('data-soft-entrance');
+                        firstChild.props = Object.assign({}, firstChild.props, initialProps);
+
+                        let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+
+                        data.webComponents.tags[tag][id || countCmp] = firstChild;
+                        if (id !== null) {
+                            if (data.webComponents.ids[id])
+                                return console.warn(id + ': id already exists for DozWebComponent');
+
+                            data.webComponents.ids[id] = firstChild;
+                        }
+                    }]
                 },
-                onAppReady() {
-                    let firstChild = this.children[0];
+                /*onAppReady() {
+                    let firstChild = this.children[0] || this.dozApp.mainComponent;
                     exposedMethods.forEach(method => {
                         if (firstChild[method]) {
                             thisElement[method] = firstChild[method].bind(firstChild);
                         }
                     })
-                //},
-                //onMountAsync() {
+
                     thisElement.removeAttribute('data-soft-entrance');
-                    //let firstChild = this.children[0];
                     firstChild.props = Object.assign({}, firstChild.props, initialProps);
 
                     let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
@@ -75,13 +98,14 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
 
                         data.webComponents.ids[id] = firstChild;
                     }
-                }
+                }*/
             });
+
         }
 
         attributeChangedCallback(name, oldValue, newValue) {
             if (!this.dozApp) return;
-            let firstChild = this.dozApp.mainComponent.children[0];
+            let firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
             firstChild.props[dashToCamel(name)] = newValue;
         }
     });
