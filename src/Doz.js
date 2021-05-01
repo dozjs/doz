@@ -1,5 +1,6 @@
 const bind = require('./utils/bind');
 const createInstance = require('./component/create-instance');
+const createInstance2 = require('./component/create-instance-2');
 const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
@@ -25,7 +26,7 @@ class Doz {
             throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
 
-        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+        if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
@@ -161,28 +162,39 @@ class Doz {
             });
         }
 
-        this._components[TAG.APP] = {
-            tag: TAG.APP,
-            cfg: {
-                template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    const contentStr = toLiteralString(cfg.template);
-                    if (/\${.*?}/g.test(contentStr))
-                        return eval('`' + contentStr + '`');
-                    else
-                        return contentStr;
-                }
-            }
-        };
+        if (this.cfg.mainComponent) {
+            this._tree = createInstance2({
+                root: this.cfg.root,
+                component: this.cfg.mainComponent,
+                app: this
+            });// || [];
 
-        Object.keys(cfg).forEach(p => {
-            if (!['template', 'root'].includes(p))
-                this._components[TAG.APP].cfg[p] = cfg[p];
-        });
+            console.log(this._tree)
+        } else {
+            this._components[TAG.APP] = {
+                tag: TAG.APP,
+                cfg: {
+                    template: typeof cfg.template === 'function' ? cfg.template : function () {
+                        const contentStr = toLiteralString(cfg.template);
+                        if (/\${.*?}/g.test(contentStr))
+                            return eval('`' + contentStr + '`');
+                        else
+                            return contentStr;
+                    }
+                }
+            };
+
+            Object.keys(cfg).forEach(p => {
+                if (!['template', 'root'].includes(p))
+                    this._components[TAG.APP].cfg[p] = cfg[p];
+            });
+
+        }
 
         plugin.load(this);
         directive.callAppInit(this);
 
-        if (this.cfg.autoDraw)
+        if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
 
         this._callAppReady();

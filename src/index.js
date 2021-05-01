@@ -6,6 +6,7 @@ const component = require('./component');
 const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
+const mount = require('./mount');
 const {compile} = require('./vdom/parser');
 //const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
@@ -75,6 +76,10 @@ Object.defineProperties(Doz, {
     },
     defineWebComponentFromGlobal: {
         value: defineWebComponentFromGlobal,
+        enumerable: true
+    },
+    mount : {
+        value: mount,
         enumerable: true
     }
 });
