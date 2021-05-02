@@ -16,9 +16,9 @@ function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
 
-
     let componentInstance = null;
     let cmpName;
+    const trash = [];
 
     function walk($child, parent = {}) {
         while ($child) {
@@ -34,7 +34,6 @@ function createInstance(cfg = {}) {
             }
 
             directive.callAppWalkDOM(parent, $child);
-
 
             cmpName = getComponentName($child);
 
@@ -65,6 +64,12 @@ function createInstance(cfg = {}) {
 
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
+                    $child = $child.nextElementSibling;
+                    continue;
+                }
+
+                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                    trash.push($child);
                     $child = $child.nextElementSibling;
                     continue;
                 }
@@ -181,8 +186,7 @@ function createInstance(cfg = {}) {
         }
     }
 
-    //walk(cfg.template);
-
+    // Monto il componente principale
 
     let newElement = new cfg.component({
         //tag: 'bbb-bbb',//cmp.tag || cmpName,
@@ -196,9 +200,13 @@ function createInstance(cfg = {}) {
 
     newElement._isRendered = true;
     newElement.render(true);
+    walk(newElement.getHTMLElement())
+    trash.forEach($child => $child.remove());
+
     hooks.callMount(newElement);
     hooks.callMountAsync(newElement);
-    //return componentInstance;
+
+    return newElement;
 }
 
 module.exports = createInstance;

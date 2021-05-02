@@ -169,7 +169,7 @@ class Doz {
                 app: this
             });// || [];
 
-            console.log(this._tree)
+            //console.log(this._tree)
         } else {
             this._components[TAG.APP] = {
                 tag: TAG.APP,

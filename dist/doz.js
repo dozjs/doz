@@ -1097,8 +1097,7 @@ var Doz = /*#__PURE__*/function () {
         component: this.cfg.mainComponent,
         app: this
       }); // || [];
-
-      console.log(this._tree);
+      //console.log(this._tree)
     } else {
       this._components[TAG.APP] = {
         tag: TAG.APP,
@@ -6037,7 +6036,6 @@ module.exports = globalMixin;
 var Doz = __webpack_require__(9);
 
 function mount(root, component, options) {
-  console.log(root);
   var cfg = Object.assign({
     root: root,
     mainComponent: component
@@ -7434,6 +7432,7 @@ function createInstance() {
   if (!cfg.root) return;
   var componentInstance = null;
   var cmpName;
+  var trash = [];
 
   function walk($child) {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -7472,6 +7471,12 @@ function createInstance() {
 
 
           if (parent.cmp && parent.cmp.mounted) {
+            $child = $child.nextElementSibling;
+            return "continue";
+          }
+
+          if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+            trash.push($child);
             $child = $child.nextElementSibling;
             return "continue";
           }
@@ -7599,7 +7604,7 @@ function createInstance() {
 
       $child = $child.nextElementSibling;
     }
-  } //walk(cfg.template);
+  } // Monto il componente principale
 
 
   var newElement = new cfg.component({
@@ -7614,8 +7619,19 @@ function createInstance() {
   });
   newElement._isRendered = true;
   newElement.render(true);
+  walk(newElement.getHTMLElement());
+
+  var _defined = function _defined($child) {
+    return $child.remove();
+  };
+
+  for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
+    _defined(trash[_i2], _i2, trash);
+  }
+
   hooks.callMount(newElement);
-  hooks.callMountAsync(newElement); //return componentInstance;
+  hooks.callMountAsync(newElement);
+  return newElement;
 }
 
 module.exports = createInstance;
