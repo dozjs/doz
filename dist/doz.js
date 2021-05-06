@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.8.0  
+// [DOZ]  Build version: 3.8.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3308,7 +3308,7 @@ function update($parent, newNode, oldNode) {
       // subtract 1 (should be dz-root) to child nodes length
       // check if last child node is a root of the component
       var lastIndex = $parent.childNodes.length - 1;
-      if ($parent.childNodes[lastIndex]._dozAttach[COMPONENT_ROOT_INSTANCE]) index += lastIndex;
+      if ($parent.childNodes[lastIndex]._dozAttach && $parent.childNodes[lastIndex]._dozAttach[COMPONENT_ROOT_INSTANCE]) index += lastIndex;
     }
 
     var attributesUpdated = updateAttributes($parent.childNodes[index], newNode.props, oldNode.props, cmp, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent, newNode.isSVG);
@@ -3892,7 +3892,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.8.0',
+    value: '3.8.1',
     enumerable: true
   },
   tag: {
