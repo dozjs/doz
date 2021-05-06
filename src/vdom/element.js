@@ -434,7 +434,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
             let lastIndex = $parent.childNodes.length - 1;
-            if ($parent.childNodes[lastIndex]._dozAttach[COMPONENT_ROOT_INSTANCE])
+            if ($parent.childNodes[lastIndex]._dozAttach && $parent.childNodes[lastIndex]._dozAttach[COMPONENT_ROOT_INSTANCE])
                 index += lastIndex;
         }
 
