@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.8.1  
+// [DOZ]  Build version: 3.8.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3025,9 +3025,10 @@ function update($parent, newNode, oldNode) {
 
       return;
     }
-  }
+  } //Escludo le stringhe vuote
 
-  if (!oldNode) {
+
+  if (!oldNode && oldNode !== '') {
     //if (oldNode === undefined || oldNode == null) {
     //console.log('create node', newNode.type);
     // create node
@@ -3892,7 +3893,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.8.1',
+    value: '3.8.2',
     enumerable: true
   },
   tag: {
