@@ -166,7 +166,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
     }
 
-    if (!oldNode) {
+    //Escludo le stringhe vuote
+    if (!oldNode && oldNode !== '') {
     //if (oldNode === undefined || oldNode == null) {
         //console.log('create node', newNode.type);
         // create node

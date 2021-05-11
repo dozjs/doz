@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.8.2] - 2021-05-11
+- **Fixed** double text node insert when props is an empty text
+
 ## [3.8.1] - 2021-05-06
 - **Fixed** possible error using slot
 
