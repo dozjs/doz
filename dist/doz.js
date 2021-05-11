@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.8.2  
+// [DOZ]  Build version: 3.8.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3025,10 +3025,9 @@ function update($parent, newNode, oldNode) {
 
       return;
     }
-  } //Escludo le stringhe vuote
+  }
 
-
-  if (!oldNode && oldNode !== '') {
+  if (!oldNode) {
     //if (oldNode === undefined || oldNode == null) {
     //console.log('create node', newNode.type);
     // create node
@@ -3533,7 +3532,15 @@ module.exports = function (strings) {
         if (_typeof(values[i]) === 'object' || typeof values[i] === 'function') {
           tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
         } else {
-          // possible html as string
+          // Questo serve ad evitare che "oldNode" o "newNode" siano stringhe vuote
+          // dal momento che se un placeholder allora anche il suo corrispettivo
+          // nodo di testo dev'essere creato o modificato.
+          // Senza questo eventuali strighe vuote potevano non essere considerate.
+          if (values[i] === '') {
+            values[i] = ' ';
+          } // possible html as string
+
+
           if (/<.*>/.test(values[i])) {
             tpl += "".concat(values[i]).concat(strings[i + 1]);
           } else {
@@ -3893,7 +3900,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.8.2',
+    value: '3.8.3',
     enumerable: true
   },
   tag: {
