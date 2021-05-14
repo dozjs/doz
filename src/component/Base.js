@@ -101,7 +101,8 @@ class Base {
             //Public
             tag: {
                 value: opt.cmp.tag,
-                enumerable: true
+                enumerable: true,
+                writable: true
             },
             /*uId: {
                 value: opt.uId,
