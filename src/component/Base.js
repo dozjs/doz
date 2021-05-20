@@ -112,6 +112,11 @@ class Base {
                 value: opt.app,
                 enumerable: true
             },
+            exposeAttributes: {
+                value: ['style', 'class'],
+                enumerable: true,
+                writable: true
+            },
             parent: {
                 value: opt.parentCmp,
                 enumerable: true,

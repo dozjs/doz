@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.8.3  
+// [DOZ]  Build version: 3.8.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1110,10 +1110,9 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       //console.log(this._prev)
 
       var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
+      //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
 
-      removeAllAttributes(this._cfgRoot, ['style', 'class'
-      /*, 'key'*/
-      ]);
+      removeAllAttributes(this._cfgRoot, this.exposeAttributes);
 
       if (!this._rootElement && rootElement) {
         this._rootElement = rootElement;
@@ -3900,7 +3899,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.8.3',
+    value: '3.8.4',
     enumerable: true
   },
   tag: {
@@ -5869,7 +5868,8 @@ var Base = function Base() {
     //Public
     tag: {
       value: opt.cmp.tag,
-      enumerable: true
+      enumerable: true,
+      writable: true
     },
 
     /*uId: {
@@ -5879,6 +5879,11 @@ var Base = function Base() {
     app: {
       value: opt.app,
       enumerable: true
+    },
+    exposeAttributes: {
+      value: ['style', 'class'],
+      enumerable: true,
+      writable: true
     },
     parent: {
       value: opt.parentCmp,

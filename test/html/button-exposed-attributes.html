@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - button exposed attributes</title>
+    <script src="../../dist/doz.js?589654448488"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        button {
+            padding: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+
+    const MyComponent = class extends Doz.Component {
+        constructor(obj) {
+            super(obj);
+            this.exposeAttributes = ['style', 'class', 'title']
+        }
+
+        //language=html
+        template(h) {
+            return h`
+                <button>My Button</button>
+            `;
+        }
+    }
+
+    new Doz({
+        root: '#app',
+        props: {
+            state: false,
+            count: 0
+        },
+        template(h) {
+            return h`
+                <${MyComponent} title="Click"/>
+            `;
+        }
+    });
+
+</script>
+</body>
+</html>

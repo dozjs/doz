@@ -183,7 +183,8 @@ class Component extends DOMManipulation {
         const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag
-        removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/]);
+        //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
+        removeAllAttributes(this._cfgRoot, this.exposeAttributes);
 
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.9.0] - 2021-05-20
+- **Added** `exposeAttributes` to component
+
 ## [3.8.4] - 2021-05-14
 - **Improvement** property tag of a Doz component now is writable
 
