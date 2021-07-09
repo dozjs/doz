@@ -269,7 +269,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Added** magic word "scope" for listener referred to manipulation of v-dom inside `onDrawByParent` event 
 
 ## [1.22.2] - 2019-08-15
-- **Fixed** last dynamic component created into a list don't works fine
+- **Fixed** last dynamic component created into a list does not work fine
 
 ## [1.22.1] - 2019-08-15
 - **Added** alias pseudo element :component
@@ -393,7 +393,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Fixed** possible issues of `propsConvert` and `propsComputed`
 
 ## [1.12.2] - 2019-02-01
-- **Fixed** drawDynamics may not works
+- **Fixed** drawDynamics which may not work
 - **Changed** remove new line space from attributes during the compiling
 
 ## [1.12.1] - 2018-12-24
