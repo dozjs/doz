@@ -2115,7 +2115,7 @@ provide you "Doz.use". Write a plugin is very easy:
 ```javascript
 const myPlugin = function(Doz, app, options) {
 
-    // You can adds mixin function
+    // You can add mixin function
     Doz.mixin({
         localTime() {
             return new Date().toLocaleTimeString();
