@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Doz - props context">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - props context</title>
+    <title>Title</title>
+    <script src="../dist/doz.js?589654"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+    class MyChild1 extends Doz.Component {
+        template(h) {
+            //language=HTML
+            return h`
+                <style>
+                    :component {
+                        display: block;
+                        border: 1px solid #c1e2b3;
+                        padding: 10px;
+                    }
+                </style>
+                <${MyChild2}/>
+            `;
+        }
+    }
+
+    class MyChild2 extends Doz.Component {
+        template(h) {
+            return h`<${MyChild3}/>`;
+        }
+    }
+
+    class MyChild3 extends Doz.Component {
+        template(h) {
+            return h`<div>${this.props.description}</div>`;
+        }
+    }
+
+    class MyParent extends Doz.Component{
+
+        constructor(obj) {
+            super(obj);
+
+            this.props = {
+                description: ''
+            }
+
+            this.propsContext = [
+                'description'
+            ]
+        }
+
+        template(h){
+            return h`
+                <div>
+                    <h3>Props context example</h3>
+                    <div>
+                        <input placeholder="description" d-bind="description">
+                    </div>
+                    <h4>Child component</h4>
+                    <${MyChild1}/>
+                </div>
+            `
+        }
+
+    }
+
+    new Doz({
+        root: document.getElementById('app'),
+        template(h) {
+            return h`
+                <${MyParent}/>
+            `
+        }
+    });
+
+</script>
+</body>
+</html>

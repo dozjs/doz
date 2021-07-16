@@ -22,5 +22,4 @@ module.exports = function(Doz, app) {
             })
         }
     });
-
 };
