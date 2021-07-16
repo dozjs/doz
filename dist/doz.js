@@ -6007,9 +6007,18 @@ module.exports = getComponentName;
 /***/ (function(module, exports) {
 
 module.exports = function (Doz, app) {
-  app.on('componentCreate', function (component) {
+  app.on('componentMount', function (component) {
     if (component.parent && component.parent.propsContext) {
       component.propsContext = component.parent.propsContext;
+      console.log(component.tag, component.excludeFromPropsContext);
+
+      if (component.excludeFromPropsContext) {
+        Object.defineProperty(component, 'excludeFromPropsContext', {
+          value: true
+        });
+        return;
+      }
+
       var propsContextIsArray = Array.isArray(component.propsContext);
 
       var _defined = function _defined(propParent) {
@@ -6031,7 +6040,13 @@ module.exports = function (Doz, app) {
       var _defined3 = function _defined3(child) {
         var _defined5 = function _defined5(propParent) {
           if (propsContextIsArray && component.propsContext.indexOf(propParent) === -1) return;
-          component.children[child].props[propParent] = component.props[propParent];
+
+          if (component.children[child].excludeFromPropsContext) {
+            console.log('ssss');
+            app.emit('componentUpdate', component.children[child], {});
+          } else {
+            component.children[child].props[propParent] = component.props[propParent];
+          }
         };
 
         var _defined6 = Object.keys(component.props);

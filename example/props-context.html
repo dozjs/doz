@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - props context</title>
     <title>Title</title>
-    <script src="../dist/doz.js?589654"></script>
+    <script src="../dist/doz.js?5896454"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -31,24 +31,60 @@
                 <style>
                     :component {
                         display: block;
-                        border: 1px solid #c1e2b3;
+                        border: 1px solid #5fb840;
                         padding: 10px;
                     }
                 </style>
-                <${MyChild2}/>
+                <div>
+                    <span>My Child 1</span>
+                    <div>${this.props.description}</div>
+                    <${MyChild2}/>
+                </div>
             `;
         }
     }
 
     class MyChild2 extends Doz.Component {
+        constructor(o) {
+            super(o);
+            this.excludeFromPropsContext = true;
+        }
+
         template(h) {
-            return h`<${MyChild3}/>`;
+            return h`
+                <style>
+                    :component {
+                        display: block;
+                        border: 1px solid #2d820a;
+                        padding: 10px;
+                        margin: 10px;
+                    }
+                </style>
+                <div>
+                    <span>My Child 2</span>
+                    <div>${this.props.description}</div>
+                    <${MyChild3}/>
+                </div>
+            `;
         }
     }
 
     class MyChild3 extends Doz.Component {
         template(h) {
-            return h`<div>${this.props.description}</div>`;
+            return h`
+                <style>
+                    :component {
+                        display: block;
+                        border: 1px solid #224c10;
+                        padding: 10px;
+                        margin: 10px;
+                    }
+                </style>
+                <div>
+                    <span>My Child 3</span>
+                    <div>${this.props.description}</div>
+                </div>
+            `;
         }
     }
 
@@ -58,7 +94,7 @@
             super(obj);
 
             this.props = {
-                description: ''
+                description: 'wow'
             }
 
             this.propsContext = [
