@@ -1,4 +1,6 @@
 const {registerPlugin, data} = require('../collection');
+// Add props-context plugin
+use(require('./built-in/props-context'));
 
 function use(plugin, options = {}) {
     if (typeof plugin !== 'function') {
@@ -11,6 +13,7 @@ function use(plugin, options = {}) {
 }
 
 function load(app) {
+    //console.log(data.plugins)
     data.plugins.forEach(func => {
         func(app.constructor, app, func.options);
     })

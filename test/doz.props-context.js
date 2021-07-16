@@ -5,7 +5,7 @@ describe('Doz.props-context', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
-        Doz.collection.removeAll();
+        //Doz.collection.removeAll();
     });
 
     describe('create app', function () {
@@ -13,8 +13,6 @@ describe('Doz.props-context', function () {
         it('should be ok', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
-
-            const result = [];
 
             class SalutationCard extends Doz.Component{
 
@@ -48,7 +46,6 @@ describe('Doz.props-context', function () {
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 }
-
             }
 
             new Doz({
@@ -69,43 +66,26 @@ describe('Doz.props-context', function () {
                             name="Doz">
                         </>
                     `
-                },
-
-                listeners: {
-                    componentCreate(component) {
-                        if (component.parent && component.parent.propsContext) {
-                            component.propsContext = component.parent.propsContext;
-                            Object.keys(component.parent.props).forEach(propParent => {
-                                component.props[propParent] = component.parent.props[propParent];
-                            })
-                        }
-                    },
-
-                    componentUpdate(component, changes) {
-                        if (component.propsContext) {
-                            //console.log('a', component.tag, changes)
-                            Object.keys(component.children).forEach(child => {
-                                Object.keys(component.props).forEach(propParent => {
-                                    component.children[child].props[propParent] = component.props[propParent];
-                                })
-                            })
-                        }
-                    }
                 }
             });
 
             setTimeout(()=>{
                 const result = document.body.innerHTML;
                 console.log(result);
-                //done()
-                //be.err(done).equal(result, ['a desc', 'a name', 'a title'])
+
+                if(!/Hello MR\. Doz/.test(result))
+                    throw new Error('Fail props-context #1')
             }, 50);
 
             setTimeout(()=>{
                 const result = document.body.innerHTML;
                 console.log(result);
+
+                if(!/Hello Lorem Ipsum/.test(result))
+                    throw new Error('Fail props-context #2')
+
                 done()
-                //be.err(done).equal(result, ['a desc', 'a name', 'a title'])
+
             }, 100);
 
         });
