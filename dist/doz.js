@@ -6007,31 +6007,46 @@ module.exports = getComponentName;
 /***/ (function(module, exports) {
 
 module.exports = function (Doz, app) {
-  function updateContextChild(child) {
+  function updateContextChild(child, changes) {
     var mainParent = child._propsContextMainParent;
 
-    var _defined = function _defined(propParent) {
-      if (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(propParent) === -1) return;
-      child.props[propParent] = mainParent.props[propParent];
-    };
+    if (changes) {
+      var _defined = function _defined(change) {
+        if (change.type !== 'update' || mainParent._propsContextIsArray && mainParent.propsContext.indexOf(change.currentPath) === -1) return;
+        child.props[change.currentPath] = change.newValue;
+      };
 
-    var _defined2 = Object.keys(mainParent.props);
+      //console.log(changes)
+      // when update use this
+      for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+        _defined(changes[_i2], _i2, changes);
+      }
+    } else {
+      var _defined2 = function _defined2(propParent) {
+        if (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(propParent) === -1) return;
+        child.props[propParent] = mainParent.props[propParent];
+      };
 
-    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-      _defined(_defined2[_i2], _i2, _defined2);
+      var _defined3 = Object.keys(mainParent.props);
+
+      //console.log('initial')
+      // when initialize use this
+      for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+        _defined2(_defined3[_i4], _i4, _defined3);
+      }
     }
   }
 
-  function updateContext(mainParent) {
-    var _defined3 = function _defined3(child) {
-      updateContextChild(child);
+  function updateContext(mainParent, changes) {
+    var _defined4 = function _defined4(child) {
+      updateContextChild(child, changes);
     };
 
-    var _defined4 = mainParent._propsContextChildren;
+    var _defined5 = mainParent._propsContextChildren;
 
     //console.log(mainParent._propsContextChildren)
-    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-      _defined3(_defined4[_i4], _i4, _defined4);
+    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+      _defined4(_defined5[_i6], _i6, _defined5);
     }
   }
 
@@ -6072,9 +6087,9 @@ module.exports = function (Doz, app) {
       }
     }
   });
-  app.on('componentUpdate', function (component) {
+  app.on('componentUpdate', function (component, changes) {
     if (component._propsContextIsMainParent) {
-      updateContext(component);
+      updateContext(component, changes);
     }
   });
   app.on('componentDestroy', function (component) {

@@ -1,17 +1,31 @@
 module.exports = function(Doz, app) {
 
-    function updateContextChild(child) {
+    function updateContextChild(child, changes) {
         let mainParent = child._propsContextMainParent;
-        Object.keys(mainParent.props).forEach(propParent => {
-            if (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(propParent) === -1) return;
-            child.props[propParent] = mainParent.props[propParent];
-        })
+        if (changes) {
+            //console.log(changes)
+            // when update use this
+            changes.forEach(change => {
+                if (
+                    change.type !== 'update' ||
+                    (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(change.currentPath) === -1)
+                ) return;
+                child.props[change.currentPath] = change.newValue;
+            })
+        } else {
+            //console.log('initial')
+            // when initialize use this
+            Object.keys(mainParent.props).forEach(propParent => {
+                if (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(propParent) === -1) return;
+                child.props[propParent] = mainParent.props[propParent];
+            })
+        }
     }
 
-    function updateContext(mainParent) {
+    function updateContext(mainParent, changes) {
         //console.log(mainParent._propsContextChildren)
         mainParent._propsContextChildren.forEach(child => {
-            updateContextChild(child)
+            updateContextChild(child, changes)
         })
     }
 
@@ -52,9 +66,9 @@ module.exports = function(Doz, app) {
         }
     });
 
-    app.on('componentUpdate', component => {
+    app.on('componentUpdate', (component, changes) => {
         if (component._propsContextIsMainParent) {
-            updateContext(component);
+            updateContext(component, changes);
         }
     });
 
