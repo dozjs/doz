@@ -6007,60 +6007,80 @@ module.exports = getComponentName;
 /***/ (function(module, exports) {
 
 module.exports = function (Doz, app) {
-  app.on('componentMount', function (component) {
+  function updateContextChild(child) {
+    var mainParent = child._propsContextMainParent;
+
+    var _defined = function _defined(propParent) {
+      if (mainParent._propsContextIsArray && mainParent.propsContext.indexOf(propParent) === -1) return;
+      child.props[propParent] = mainParent.props[propParent];
+    };
+
+    var _defined2 = Object.keys(mainParent.props);
+
+    for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+      _defined(_defined2[_i2], _i2, _defined2);
+    }
+  }
+
+  function updateContext(mainParent) {
+    var _defined3 = function _defined3(child) {
+      updateContextChild(child);
+    };
+
+    var _defined4 = mainParent._propsContextChildren;
+
+    //console.log(mainParent._propsContextChildren)
+    for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
+      _defined3(_defined4[_i4], _i4, _defined4);
+    }
+  }
+
+  function addToContext(child) {
+    child._propsContextMainParent._propsContextChildren.push(child);
+  }
+
+  function removeFromContext(child) {
+    var children = child._propsContextMainParent._propsContextChildren;
+
+    for (var i = children.length - 1; i >= 0; i--) {
+      if (children[i] === child) {
+        children.splice(i, 1);
+      }
+    }
+  }
+
+  app.on('componentPropsInit', function (component) {
+    // for MainParent only
+    if (component.propsContext) {
+      component._propsContextIsArray = Array.isArray(component.propsContext);
+      component._propsContextIsMainParent = true;
+      component._propsContextMainParent = component;
+      component._propsContextChildren = [];
+    }
+
     if (component.parent && component.parent.propsContext) {
       component.propsContext = component.parent.propsContext;
-      console.log(component.tag, component.excludeFromPropsContext);
+      component._propsContextMainParent = component.parent._propsContextMainParent;
 
       if (component.excludeFromPropsContext) {
         Object.defineProperty(component, 'excludeFromPropsContext', {
           value: true
         });
-        return;
-      }
-
-      var propsContextIsArray = Array.isArray(component.propsContext);
-
-      var _defined = function _defined(propParent) {
-        if (propsContextIsArray && component.propsContext.indexOf(propParent) === -1) return;
-        component.props[propParent] = component.parent.props[propParent];
-      };
-
-      var _defined2 = Object.keys(component.parent.props);
-
-      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
+      } else {
+        addToContext(component);
+        updateContextChild(component);
       }
     }
   });
   app.on('componentUpdate', function (component) {
-    if (component.propsContext) {
-      var propsContextIsArray = Array.isArray(component.propsContext); //console.log('a', component.tag, changes)
-
-      var _defined3 = function _defined3(child) {
-        var _defined5 = function _defined5(propParent) {
-          if (propsContextIsArray && component.propsContext.indexOf(propParent) === -1) return;
-
-          if (component.children[child].excludeFromPropsContext) {
-            console.log('ssss');
-            app.emit('componentUpdate', component.children[child], {});
-          } else {
-            component.children[child].props[propParent] = component.props[propParent];
-          }
-        };
-
-        var _defined6 = Object.keys(component.props);
-
-        for (var _i6 = 0; _i6 <= _defined6.length - 1; _i6++) {
-          _defined5(_defined6[_i6], _i6, _defined6);
-        }
-      };
-
-      var _defined4 = Object.keys(component.children);
-
-      for (var _i4 = 0; _i4 <= _defined4.length - 1; _i4++) {
-        _defined3(_defined4[_i4], _i4, _defined4);
-      }
+    if (component._propsContextIsMainParent) {
+      updateContext(component);
+    }
+  });
+  app.on('componentDestroy', function (component) {
+    // belongs to a context
+    if (component._propsContextMainParent) {
+      removeFromContext(component);
     }
   });
 };
