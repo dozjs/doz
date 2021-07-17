@@ -45,7 +45,12 @@
 
         template(h){
             return h`
-                <div style="color: ${this.props.color}">
+                <style>
+                    .my-div {
+                        color: ${this.props.color}
+                    }
+                </style>
+                <div class="my-div">
                     ${this.props.title}: ${this.props.time}
                     <${MyComp}/>
                     <my-cmp/>
