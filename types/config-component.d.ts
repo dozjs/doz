@@ -36,6 +36,11 @@ export default interface ConfigComponent {
     store?: string
 
     /**
+     * An object array or boolean that defines props propagation to the child components.
+     */
+    propsPropagation?: object|boolean
+
+    /**
      * An object for detect props changes.
      */
     propsListener?: object

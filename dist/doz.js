@@ -170,8 +170,8 @@ function registerComponent(cmp) {
 
 
 function removeAll() {
-  data.components = {};
-  data.plugins = []; //data.directives = {};
+  data.components = {}; //data.plugins = [];
+  //data.directives = {};
 }
 /**
  * Get component from global
@@ -1502,6 +1502,7 @@ var Doz = /*#__PURE__*/function () {
       useShadowRoot: false,
       propsListener: null,
       propsListenerAsync: null,
+      listeners: null,
       actions: {},
       autoDraw: true,
       enableExternalTemplate: false
@@ -1657,7 +1658,20 @@ var Doz = /*#__PURE__*/function () {
       _defined7(_defined8[_i8], _i8, _defined8);
     }
 
-    plugin.load(this);
+    plugin.load(this); //Apply listeners
+
+    if (this.cfg.listeners) {
+      var _defined9 = function _defined9(event) {
+        _this.on(event, _this.cfg.listeners[event]);
+      };
+
+      var _defined10 = Object.keys(this.cfg.listeners);
+
+      for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
+        _defined9(_defined10[_i10], _i10, _defined10);
+      }
+    }
+
     directive.callAppInit(this);
     if (this.cfg.autoDraw) this.draw();
 
@@ -1702,14 +1716,14 @@ var Doz = /*#__PURE__*/function () {
       }
 
       if (this._onAppCB[event]) {
-        var _defined9 = function _defined9(func) {
+        var _defined11 = function _defined11(func) {
           func.apply(_this2, args);
         };
 
-        var _defined10 = this._onAppCB[event];
+        var _defined12 = this._onAppCB[event];
 
-        for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
-          _defined9(_defined10[_i10], _i10, _defined10);
+        for (var _i12 = 0; _i12 <= _defined12.length - 1; _i12++) {
+          _defined11(_defined12[_i12], _i12, _defined12);
         }
       }
 
@@ -3779,7 +3793,10 @@ module.exports = toLiteralString;
 
 var _require = __webpack_require__(2),
     registerPlugin = _require.registerPlugin,
-    data = _require.data;
+    data = _require.data; // Add props-propagation plugin
+
+
+use(__webpack_require__(77));
 
 function use(plugin) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -3799,6 +3816,7 @@ function load(app) {
 
   var _defined2 = data.plugins;
 
+  //console.log(data.plugins)
   for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
     _defined(_defined2[_i2], _i2, _defined2);
   }
@@ -3829,11 +3847,11 @@ var _require = __webpack_require__(25),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(57);
+var component = __webpack_require__(58);
 
 var Component = __webpack_require__(11);
 
-var mixin = __webpack_require__(58);
+var mixin = __webpack_require__(59);
 
 var h = __webpack_require__(21);
 
@@ -3844,14 +3862,14 @@ var _require3 = __webpack_require__(7),
 var _require4 = __webpack_require__(17),
     update = _require4.update;
 
-var tag = __webpack_require__(59);
+var tag = __webpack_require__(60);
 
-var _require5 = __webpack_require__(60),
+var _require5 = __webpack_require__(61),
     createDozWebComponent = _require5.createDozWebComponent,
     defineWebComponent = _require5.defineWebComponent,
     defineWebComponentFromGlobal = _require5.defineWebComponentFromGlobal;
 
-__webpack_require__(62);
+__webpack_require__(63);
 
 Object.defineProperties(Doz, {
   collection: {
@@ -5985,7 +6003,8 @@ function getComponentName($child) {
 module.exports = getComponentName;
 
 /***/ }),
-/* 57 */
+/* 57 */,
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(2),
@@ -6015,7 +6034,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(11);
@@ -6029,7 +6048,7 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports) {
 
 module.exports = function tag(name) {
@@ -6039,7 +6058,7 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -6088,7 +6107,7 @@ var data = __webpack_require__(9);
 
 var dashToCamel = __webpack_require__(8);
 
-__webpack_require__(61)();
+__webpack_require__(62)();
 
 function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
@@ -6213,7 +6232,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports) {
 
 function createStyleSoftEntrance() {
@@ -6228,10 +6247,8 @@ function createStyleSoftEntrance() {
 module.exports = createStyleSoftEntrance;
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(63);
 
 __webpack_require__(64);
 
@@ -6249,10 +6266,12 @@ __webpack_require__(70);
 
 __webpack_require__(71);
 
-__webpack_require__(73);
+__webpack_require__(72);
+
+__webpack_require__(74);
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6324,7 +6343,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6388,7 +6407,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6434,7 +6453,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6474,7 +6493,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6599,7 +6618,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6621,7 +6640,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6651,7 +6670,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -6860,7 +6879,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6869,7 +6888,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(5),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(72);
+var queue = __webpack_require__(73);
 
 var delay = __webpack_require__(3);
 
@@ -6974,7 +6993,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports) {
 
 function queue(p, arrayOfP) {
@@ -6987,7 +7006,7 @@ function queue(p, arrayOfP) {
 module.exports = queue;
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -7009,9 +7028,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(74);
+var wait = __webpack_require__(75);
 
-var animateHelper = __webpack_require__(75);
+var animateHelper = __webpack_require__(76);
 
 directive('animate', {
   onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -7226,7 +7245,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports) {
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
@@ -7270,7 +7289,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports) {
 
 function animateHelper($target, animationName, opts, callback) {
@@ -7357,6 +7376,114 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports) {
+
+module.exports = function (Doz, app) {
+  function propagate(child, changes) {
+    var mainParent = child._propsPropagationMainParent;
+
+    if (changes) {
+      var _defined = function _defined(change) {
+        if (change.type !== 'update' || mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
+        child.props[change.currentPath] = change.newValue;
+      };
+
+      //console.log(changes)
+      // when update use this
+      for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+        _defined(changes[_i2], _i2, changes);
+      }
+    } else {
+      var _defined2 = function _defined2(propParent) {
+        if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) return;
+        child.props[propParent] = mainParent.props[propParent];
+      };
+
+      var _defined3 = Object.keys(mainParent.props);
+
+      //console.log('initial')
+      // when initialize use this
+      for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+        _defined2(_defined3[_i4], _i4, _defined3);
+      }
+    }
+  }
+
+  function propagateToAll(mainParent, changes) {
+    var _defined4 = function _defined4(child) {
+      propagate(child, changes);
+    };
+
+    var _defined5 = mainParent._propsPropagationChildren;
+
+    //console.log(mainParent._propsPropagationChildren)
+    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+      _defined4(_defined5[_i6], _i6, _defined5);
+    }
+  }
+
+  function addToPropagation(child) {
+    child._propsPropagationMainParent._propsPropagationChildren.push(child);
+  }
+
+  function removeFromPropagation(child) {
+    var children = child._propsPropagationMainParent._propsPropagationChildren;
+
+    for (var i = children.length - 1; i >= 0; i--) {
+      if (children[i] === child) {
+        children.splice(i, 1);
+      }
+    }
+  }
+
+  app.on('componentPropsInit', function (component) {
+    // for MainParent only
+    if (component.propsPropagation) {
+      Object.defineProperties(component, {
+        _propsPropagationIsArray: {
+          value: Array.isArray(component.propsPropagation)
+        },
+        _propsPropagationIsMainParent: {
+          value: true
+        },
+        _propsPropagationMainParent: {
+          value: component
+        },
+        _propsPropagationChildren: {
+          value: []
+        }
+      });
+    }
+
+    if (component.parent && component.parent.propsPropagation) {
+      component.propsPropagation = component.parent.propsPropagation;
+      component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
+
+      if (component.excludeFromPropsPropagation) {
+        Object.defineProperty(component, 'excludeFromPropsPropagation', {
+          value: true
+        });
+      } else {
+        addToPropagation(component);
+        propagate(component);
+      }
+    }
+  });
+  app.on('componentUpdate', function (component, changes) {
+    if (component._propsPropagationIsMainParent) {
+      propagateToAll(component, changes);
+    }
+  });
+  app.on('componentDestroy', function (component) {
+    // belongs to a context
+    if (component._propsPropagationMainParent) {
+      removeFromPropagation(component);
+    }
+  });
+};
 
 /***/ })
 /******/ ]);

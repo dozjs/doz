@@ -163,6 +163,13 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: false
 - **Description**: If true, the manipulation operation will be performed on the read data.
 
+### propsPropagation
+
+- **Since**: 3.10.0
+- **Type**: `object|boolean`
+- **Default**: undefined
+- **Description**: An object array or boolean that defines props propagation to the child components.
+
 ### delayUpdate
 
 - **Since**: 1.14.0
