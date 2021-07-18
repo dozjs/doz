@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-context', function () {
+describe('Doz.props-propagation', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -155,7 +155,7 @@ describe('Doz.props-context', function () {
                 console.log(result);
 
                 if(!/Hello undefined Doz/.test(result))
-                    throw new Error('Fail props-context #1')
+                    throw new Error('Fail props-propagation #1')
             }, 50);
 
             setTimeout(()=>{
@@ -163,7 +163,7 @@ describe('Doz.props-context', function () {
                 console.log(result);
 
                 if(!/Hello undefined Ipsum/.test(result))
-                    throw new Error('Fail props-context #2')
+                    throw new Error('Fail props-propagation #2')
 
                 done()
 

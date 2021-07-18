@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - props propagation</title>
     <title>Title</title>
-    <script src="../dist/doz.js?5849645414"></script>
+    <script src="../dist/doz.js?5849645f414"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -51,7 +51,8 @@
                 description: 'excluded from props propagation'
             }
 
-            this.excludeFrompropsPropagation = true;
+            // this exclude this component from props propagation
+            this.excludeFromPropsPropagation = true;
         }
 
         template(h) {
@@ -105,7 +106,7 @@
 
             this.propsPropagation = [
                 'description'
-            ]
+            ] // if set to true all props will be propagated
         }
 
         template(h){

@@ -45,19 +45,28 @@ module.exports = function(Doz, app) {
     app.on('componentPropsInit', component => {
         // for MainParent only
         if (component.propsPropagation) {
-            component._propsPropagationIsArray = Array.isArray(component.propsPropagation);
-            component._propsPropagationIsMainParent = true;
-            component._propsPropagationMainParent = component;
-            component._propsPropagationChildren = [];
+            Object.defineProperties(component, {
+                _propsPropagationIsArray: {
+                    value: component.propsPropagation
+                },
+                _propsPropagationIsMainParent: {
+                    value: true
+                },
+                _propsPropagationMainParent: {
+                    value: component
+                },
+                _propsPropagationChildren: {
+                    value: []
+                }
+            })
         }
 
         if (component.parent && component.parent.propsPropagation) {
-
             component.propsPropagation = component.parent.propsPropagation;
             component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
 
-            if (component.excludeFrompropsPropagation) {
-                Object.defineProperty(component, 'excludeFrompropsPropagation', {value: true})
+            if (component.excludeFromPropsPropagation) {
+                Object.defineProperty(component, 'excludeFromPropsPropagation', {value: true})
             } else {
                 addToContext(component);
                 updateContextChild(component);
