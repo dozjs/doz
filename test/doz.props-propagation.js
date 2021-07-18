@@ -18,7 +18,7 @@ describe('Doz.props-context', function () {
 
                 constructor(o) {
                     super(o);
-                    this.propsContext = true;
+                    this.propsPropagation = true;
                 }
 
                 template(h) {
@@ -97,7 +97,7 @@ describe('Doz.props-context', function () {
 
                 constructor(o) {
                     super(o);
-                    this.propsContext = [
+                    this.propsPropagation = [
                         'name'
                     ];
                 }

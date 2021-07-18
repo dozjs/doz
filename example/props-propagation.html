@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Doz - props context">
+    <meta name="description" content="Doz - props propagation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Doz - props context</title>
+    <title>Doz - props propagation</title>
     <title>Title</title>
     <script src="../dist/doz.js?5849645414"></script>
     <style>
@@ -48,10 +48,10 @@
         constructor(o) {
             super(o);
             this.props = {
-                description: 'excluded from props context'
+                description: 'excluded from props propagation'
             }
 
-            this.excludeFromPropsContext = true;
+            this.excludeFrompropsPropagation = true;
         }
 
         template(h) {
@@ -103,7 +103,7 @@
                 title: 'lorem'
             }
 
-            this.propsContext = [
+            this.propsPropagation = [
                 'description'
             ]
         }
@@ -111,7 +111,7 @@
         template(h){
             return h`
                 <div>
-                    <h3>Props context example</h3>
+                    <h3>props propagation example</h3>
                     <div>
                         <input placeholder="description" d-bind="description">
                     </div>

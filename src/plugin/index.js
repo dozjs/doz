@@ -1,6 +1,6 @@
 const {registerPlugin, data} = require('../collection');
-// Add props-context plugin
-use(require('./built-in/props-context'));
+// Add props-propagation plugin
+use(require('./built-in/props-propagation'));
 
 function use(plugin, options = {}) {
     if (typeof plugin !== 'function') {
