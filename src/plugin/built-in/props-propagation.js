@@ -1,6 +1,6 @@
 module.exports = function(Doz, app) {
 
-    function updateContextChild(child, changes) {
+    function propagate(child, changes) {
         let mainParent = child._propsPropagationMainParent;
         if (changes) {
             //console.log(changes)
@@ -22,18 +22,18 @@ module.exports = function(Doz, app) {
         }
     }
 
-    function updateContext(mainParent, changes) {
+    function propagateToAll(mainParent, changes) {
         //console.log(mainParent._propsPropagationChildren)
         mainParent._propsPropagationChildren.forEach(child => {
-            updateContextChild(child, changes)
+            propagate(child, changes)
         })
     }
 
-    function addToContext(child) {
+    function addToPropagation(child) {
         child._propsPropagationMainParent._propsPropagationChildren.push(child)
     }
 
-    function removeFromContext(child) {
+    function removeFromPropagation(child) {
         let children = child._propsPropagationMainParent._propsPropagationChildren;
         for(let i= children.length - 1; i>=0; i--) {
             if(children[i] === child) {
@@ -47,7 +47,7 @@ module.exports = function(Doz, app) {
         if (component.propsPropagation) {
             Object.defineProperties(component, {
                 _propsPropagationIsArray: {
-                    value: component.propsPropagation
+                    value: Array.isArray(component.propsPropagation)
                 },
                 _propsPropagationIsMainParent: {
                     value: true
@@ -68,8 +68,8 @@ module.exports = function(Doz, app) {
             if (component.excludeFromPropsPropagation) {
                 Object.defineProperty(component, 'excludeFromPropsPropagation', {value: true})
             } else {
-                addToContext(component);
-                updateContextChild(component);
+                addToPropagation(component);
+                propagate(component);
             }
 
         }
@@ -77,14 +77,14 @@ module.exports = function(Doz, app) {
 
     app.on('componentUpdate', (component, changes) => {
         if (component._propsPropagationIsMainParent) {
-            updateContext(component, changes);
+            propagateToAll(component, changes);
         }
     });
 
     app.on('componentDestroy', component => {
         // belongs to a context
         if (component._propsPropagationMainParent) {
-            removeFromContext(component)
+            removeFromPropagation(component)
         }
     })
 };

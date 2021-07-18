@@ -170,8 +170,8 @@ function registerComponent(cmp) {
 
 
 function removeAll() {
-  data.components = {};
-  data.plugins = []; //data.directives = {};
+  data.components = {}; //data.plugins = [];
+  //data.directives = {};
 }
 /**
  * Get component from global
@@ -7382,7 +7382,7 @@ module.exports = animateHelper;
 /***/ (function(module, exports) {
 
 module.exports = function (Doz, app) {
-  function updateContextChild(child, changes) {
+  function propagate(child, changes) {
     var mainParent = child._propsPropagationMainParent;
 
     if (changes) {
@@ -7412,9 +7412,9 @@ module.exports = function (Doz, app) {
     }
   }
 
-  function updateContext(mainParent, changes) {
+  function propagateToAll(mainParent, changes) {
     var _defined4 = function _defined4(child) {
-      updateContextChild(child, changes);
+      propagate(child, changes);
     };
 
     var _defined5 = mainParent._propsPropagationChildren;
@@ -7425,11 +7425,11 @@ module.exports = function (Doz, app) {
     }
   }
 
-  function addToContext(child) {
+  function addToPropagation(child) {
     child._propsPropagationMainParent._propsPropagationChildren.push(child);
   }
 
-  function removeFromContext(child) {
+  function removeFromPropagation(child) {
     var children = child._propsPropagationMainParent._propsPropagationChildren;
 
     for (var i = children.length - 1; i >= 0; i--) {
@@ -7444,7 +7444,7 @@ module.exports = function (Doz, app) {
     if (component.propsPropagation) {
       Object.defineProperties(component, {
         _propsPropagationIsArray: {
-          value: component.propsPropagation
+          value: Array.isArray(component.propsPropagation)
         },
         _propsPropagationIsMainParent: {
           value: true
@@ -7467,20 +7467,20 @@ module.exports = function (Doz, app) {
           value: true
         });
       } else {
-        addToContext(component);
-        updateContextChild(component);
+        addToPropagation(component);
+        propagate(component);
       }
     }
   });
   app.on('componentUpdate', function (component, changes) {
     if (component._propsPropagationIsMainParent) {
-      updateContext(component, changes);
+      propagateToAll(component, changes);
     }
   });
   app.on('componentDestroy', function (component) {
     // belongs to a context
     if (component._propsPropagationMainParent) {
-      removeFromContext(component);
+      removeFromPropagation(component);
     }
   });
 };

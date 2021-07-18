@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.10.0] - 2021-07-18
+- **Added** `propsPropagation` to component
+- **Added** `listeners` to Doz instance
+
 ## [3.9.0] - 2021-05-20
 - **Added** `exposeAttributes` to component
 
