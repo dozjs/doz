@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.9.0  
+// [DOZ]  Build version: 3.10.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3796,7 +3796,7 @@ var _require = __webpack_require__(2),
     data = _require.data; // Add props-propagation plugin
 
 
-use(__webpack_require__(77));
+use(__webpack_require__(57));
 
 function use(plugin) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -3917,7 +3917,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.9.0',
+    value: '3.10.0',
     enumerable: true
   },
   tag: {
@@ -6003,7 +6003,114 @@ function getComponentName($child) {
 module.exports = getComponentName;
 
 /***/ }),
-/* 57 */,
+/* 57 */
+/***/ (function(module, exports) {
+
+module.exports = function (Doz, app) {
+  function propagate(child, changes) {
+    var mainParent = child._propsPropagationMainParent;
+
+    if (changes) {
+      var _defined = function _defined(change) {
+        if (change.type !== 'update' || mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
+        child.props[change.currentPath] = change.newValue;
+      };
+
+      //console.log(changes)
+      // when update use this
+      for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
+        _defined(changes[_i2], _i2, changes);
+      }
+    } else {
+      var _defined2 = function _defined2(propParent) {
+        if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) return;
+        child.props[propParent] = mainParent.props[propParent];
+      };
+
+      var _defined3 = Object.keys(mainParent.props);
+
+      //console.log('initial')
+      // when initialize use this
+      for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
+        _defined2(_defined3[_i4], _i4, _defined3);
+      }
+    }
+  }
+
+  function propagateToAll(mainParent, changes) {
+    var _defined4 = function _defined4(child) {
+      propagate(child, changes);
+    };
+
+    var _defined5 = mainParent._propsPropagationChildren;
+
+    //console.log(mainParent._propsPropagationChildren)
+    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
+      _defined4(_defined5[_i6], _i6, _defined5);
+    }
+  }
+
+  function addToPropagation(child) {
+    child._propsPropagationMainParent._propsPropagationChildren.push(child);
+  }
+
+  function removeFromPropagation(child) {
+    var children = child._propsPropagationMainParent._propsPropagationChildren;
+
+    for (var i = children.length - 1; i >= 0; i--) {
+      if (children[i] === child) {
+        children.splice(i, 1);
+      }
+    }
+  }
+
+  app.on('componentPropsInit', function (component) {
+    // for MainParent only
+    if (component.propsPropagation) {
+      Object.defineProperties(component, {
+        _propsPropagationIsArray: {
+          value: Array.isArray(component.propsPropagation)
+        },
+        _propsPropagationIsMainParent: {
+          value: true
+        },
+        _propsPropagationMainParent: {
+          value: component
+        },
+        _propsPropagationChildren: {
+          value: []
+        }
+      });
+    }
+
+    if (component.parent && component.parent.propsPropagation) {
+      component.propsPropagation = component.parent.propsPropagation;
+      component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
+
+      if (component.excludeFromPropsPropagation) {
+        Object.defineProperty(component, 'excludeFromPropsPropagation', {
+          value: true
+        });
+      } else {
+        addToPropagation(component);
+        propagate(component);
+      }
+    }
+  });
+  app.on('componentUpdate', function (component, changes) {
+    if (component._propsPropagationIsMainParent) {
+      propagateToAll(component, changes);
+    }
+  });
+  app.on('componentDestroy', function (component) {
+    // belongs to a context
+    if (component._propsPropagationMainParent) {
+      removeFromPropagation(component);
+    }
+  });
+};
+
+/***/ }),
 /* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7376,114 +7483,6 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports) {
-
-module.exports = function (Doz, app) {
-  function propagate(child, changes) {
-    var mainParent = child._propsPropagationMainParent;
-
-    if (changes) {
-      var _defined = function _defined(change) {
-        if (change.type !== 'update' || mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
-        child.props[change.currentPath] = change.newValue;
-      };
-
-      //console.log(changes)
-      // when update use this
-      for (var _i2 = 0; _i2 <= changes.length - 1; _i2++) {
-        _defined(changes[_i2], _i2, changes);
-      }
-    } else {
-      var _defined2 = function _defined2(propParent) {
-        if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) return;
-        child.props[propParent] = mainParent.props[propParent];
-      };
-
-      var _defined3 = Object.keys(mainParent.props);
-
-      //console.log('initial')
-      // when initialize use this
-      for (var _i4 = 0; _i4 <= _defined3.length - 1; _i4++) {
-        _defined2(_defined3[_i4], _i4, _defined3);
-      }
-    }
-  }
-
-  function propagateToAll(mainParent, changes) {
-    var _defined4 = function _defined4(child) {
-      propagate(child, changes);
-    };
-
-    var _defined5 = mainParent._propsPropagationChildren;
-
-    //console.log(mainParent._propsPropagationChildren)
-    for (var _i6 = 0; _i6 <= _defined5.length - 1; _i6++) {
-      _defined4(_defined5[_i6], _i6, _defined5);
-    }
-  }
-
-  function addToPropagation(child) {
-    child._propsPropagationMainParent._propsPropagationChildren.push(child);
-  }
-
-  function removeFromPropagation(child) {
-    var children = child._propsPropagationMainParent._propsPropagationChildren;
-
-    for (var i = children.length - 1; i >= 0; i--) {
-      if (children[i] === child) {
-        children.splice(i, 1);
-      }
-    }
-  }
-
-  app.on('componentPropsInit', function (component) {
-    // for MainParent only
-    if (component.propsPropagation) {
-      Object.defineProperties(component, {
-        _propsPropagationIsArray: {
-          value: Array.isArray(component.propsPropagation)
-        },
-        _propsPropagationIsMainParent: {
-          value: true
-        },
-        _propsPropagationMainParent: {
-          value: component
-        },
-        _propsPropagationChildren: {
-          value: []
-        }
-      });
-    }
-
-    if (component.parent && component.parent.propsPropagation) {
-      component.propsPropagation = component.parent.propsPropagation;
-      component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
-
-      if (component.excludeFromPropsPropagation) {
-        Object.defineProperty(component, 'excludeFromPropsPropagation', {
-          value: true
-        });
-      } else {
-        addToPropagation(component);
-        propagate(component);
-      }
-    }
-  });
-  app.on('componentUpdate', function (component, changes) {
-    if (component._propsPropagationIsMainParent) {
-      propagateToAll(component, changes);
-    }
-  });
-  app.on('componentDestroy', function (component) {
-    // belongs to a context
-    if (component._propsPropagationMainParent) {
-      removeFromPropagation(component);
-    }
-  });
-};
 
 /***/ })
 /******/ ]);
