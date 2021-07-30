@@ -54,9 +54,6 @@ Object.defineProperties(Doz, {
         value: directive,
         enumerable: true
     },
-    /*mapper: {
-        value: mapper
-    },*/
     version: {
         value: '[AIV]{version}[/AIV]',
         enumerable: true
@@ -80,3 +77,18 @@ Object.defineProperties(Doz, {
 });
 
 module.exports = Doz;
+module.exports.collection = collection;
+module.exports.compile = compile;
+module.exports.Component = Component;
+module.exports.component = component;
+module.exports.define = component;
+module.exports.h = h;
+module.exports.update = update;
+module.exports.mixin = mixin;
+module.exports.use = use;
+module.exports.directive = directive;
+module.exports.version = Doz.version;
+module.exports.tag = tag;
+module.exports.createDozWebComponent = createDozWebComponent;
+module.exports.defineWebComponent = defineWebComponent;
+module.exports.defineWebComponentFromGlobal = defineWebComponentFromGlobal;
