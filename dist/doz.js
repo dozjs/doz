@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.12.0  
+// [DOZ]  Build version: 3.12.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2656,9 +2656,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error('proxy not found.');
 
-      if (foundMatch === false) throw new Error('proxy not found.');
     },
 
     /**
@@ -2678,9 +2677,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error('proxy not found.');
 
-      if (foundMatch === false) throw new Error('proxy not found.');
     },
 
     /**
@@ -2698,9 +2696,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error('proxy not found.');
 
-      if (foundMatch === false) throw new Error('proxy not found.');
     },
 
     /**
@@ -2718,9 +2715,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error('proxy not found.');
 
-      if (foundMatch === false) throw new Error('proxy not found.');
     },
 
     /**
@@ -2770,9 +2766,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error("proxy not found.");
 
-      if (foundMatch === false) throw new Error("proxy not found.");
     },
     resume: function resume(proxy) {
       var i = observables.length;
@@ -2784,9 +2779,8 @@ var ObservableSlim = function () {
           foundMatch = true;
           break;
         }
-      }
+      } //if (foundMatch === false) throw new Error("proxy not found.");
 
-      if (foundMatch === false) throw new Error("proxy not found.");
     }
   };
 }();
@@ -3913,7 +3907,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.12.0',
+    value: '3.12.1',
     enumerable: true
   },
   tag: {
