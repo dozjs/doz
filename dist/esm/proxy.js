@@ -544,8 +544,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
         /**
          * beforeChange
@@ -565,8 +564,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
         /**
          * beginRender
@@ -583,8 +581,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
         /**
          * endRender
@@ -601,8 +598,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
         /**
          * disableDOMDelayBegin
@@ -648,8 +644,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error("proxy not found.");
+            //if (foundMatch === false) throw new Error("proxy not found.");
         },
         resume: function (proxy) {
             let i = observables.length;
@@ -661,8 +656,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false)
-                throw new Error("proxy not found.");
+            //if (foundMatch === false) throw new Error("proxy not found.");
         }
     };
 })();
