@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.11.0] - 2021-07-30
+- **Added** ESM version
+
 ## [3.10.0] - 2021-07-18
 - **Added** `propsPropagation` to component
 - **Added** `listeners` to Doz instance

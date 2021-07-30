@@ -3,6 +3,7 @@
     "version": "3.10.0",
     "description": "A JavaScript framework for building UI, almost like writing in VanillaJS.",
     "main": "dist/doz.js",
+    "module": "dist/esm/index.js",
     "typings": "types/index.d.ts",
     "scripts": {
         "release:before": "npm run-script test && npm run-script doc && echo git commit -a -m DOC",
@@ -10,7 +11,7 @@
         "release:minor": "webpack --env.minor && npm run-script release:publish",
         "release:patch": "webpack --env.patch && npm run-script release:publish",
         "release:publish": "echo git commit -a -m BUILD && version-to-tag.sh && npm publish",
-        "to-esm": "node to-esm.js && git commit -a -m esm",
+        "to-esm": "node to-esm.js",
         "watch": "webpack --watch --progress --debug",
         "build": "npm run-script to-esm && webpack --progress",
         "test": "mocha test",
