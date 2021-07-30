@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.12.1] - 2021-07-30
+- **Changed** Disable proxy error when proxy not found
+
 ## [3.12.0] - 2021-07-30
 - **Added** ESM version
 
