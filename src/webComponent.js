@@ -1,4 +1,5 @@
 const Doz = require('./Doz');
+const mount = require('./mount');
 const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
 require('./utils/create-style-soft-entrance')();
@@ -60,14 +61,9 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                             thisElement[method] = firstChild[method].bind(firstChild);
                         }
                     })
-                //},
-                //onMountAsync() {
                     thisElement.removeAttribute('data-soft-entrance');
-                    //let firstChild = this.children[0];
                     firstChild.props = Object.assign({}, firstChild.props, initialProps);
-
                     let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
-
                     data.webComponents.tags[tag][id || countCmp] = firstChild;
                     if (id !== null) {
                         if (data.webComponents.ids[id])

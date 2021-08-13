@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - clock class</title>
-    <script src="../../dist/doz.js?589683"></script>
+    <script src="../../dist/doz.js?589990683"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -23,7 +23,7 @@
 <script>
 
     const MyComp = function (h) {
-        return h`<div>Hello, it is me</div>`
+        return h`<div>Hello, it is me ${this.props.title}</div>`
     }
 
     Doz.define('my-cmp', function (h) {
@@ -52,7 +52,7 @@
                 </style>
                 <div class="my-div">
                     ${this.props.title}: ${this.props.time}
-                    <${MyComp}/>
+                    <${MyComp} title="Doz"/>
                     <my-cmp/>
                 </div>
             `
