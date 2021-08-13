@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.12.1] - 2021-07-30
+- **Changed** Disable proxy error when proxy not found
+
+## [3.12.0] - 2021-07-30
+- **Added** ESM version
+
+## [3.10.0] - 2021-07-18
+- **Added** `propsPropagation` to component
+- **Added** `listeners` to Doz instance
+
+## [3.9.0] - 2021-05-20
+- **Added** `exposeAttributes` to component
+
+## [3.8.4] - 2021-05-14
+- **Improvement** property tag of a Doz component now is writable
+
+## [3.8.3] - 2021-05-11
+- **Fixed** double text node insert when props is an empty text
+
+## [3.8.1] - 2021-05-06
+- **Fixed** possible error using slot
+
 ## [3.8.0] - 2021-04-03
 - **Added** exposed methods for web components
 
@@ -257,7 +279,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Added** magic word "scope" for listener referred to manipulation of v-dom inside `onDrawByParent` event 
 
 ## [1.22.2] - 2019-08-15
-- **Fixed** last dynamic component created into a list don't works fine
+- **Fixed** last dynamic component created into a list does not work fine
 
 ## [1.22.1] - 2019-08-15
 - **Added** alias pseudo element :component
@@ -381,7 +403,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Fixed** possible issues of `propsConvert` and `propsComputed`
 
 ## [1.12.2] - 2019-02-01
-- **Fixed** drawDynamics may not works
+- **Fixed** drawDynamics which may not work
 - **Changed** remove new line space from attributes during the compiling
 
 ## [1.12.1] - 2018-12-24

@@ -101,7 +101,8 @@ class Base {
             //Public
             tag: {
                 value: opt.cmp.tag,
-                enumerable: true
+                enumerable: true,
+                writable: true
             },
             /*uId: {
                 value: opt.uId,
@@ -110,6 +111,11 @@ class Base {
             app: {
                 value: opt.app,
                 enumerable: true
+            },
+            exposeAttributes: {
+                value: ['style', 'class'],
+                enumerable: true,
+                writable: true
             },
             parent: {
                 value: opt.parentCmp,

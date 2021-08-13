@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - clock</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+
+    import Doz from '../esm/src/'
+
+    Doz.component('doz-clock', {
+        template(h){
+            return h`
+                <div style="color: ${this.props.color}; font-weight: ${this.props.fontWeight}">${this.props.title}: ${this.props.time}</div>
+            `
+        },
+        props: {
+            time: '--:--:--',
+            color: 'black',
+            fontWeight: 'normal'
+        },
+        propsConvert: {
+            time: function (v) {
+                return `new time, ${v}`
+            }
+        },
+        onMount() {
+            setInterval(() => this.currentTime(), 1000)
+        },
+        currentTime() {
+            this.props.time = new Date().toLocaleTimeString();
+            this.props.color = this.props.color === 'violet' ? 'red' : 'violet';
+            this.props.fontWeight = this.props.fontWeight === 'normal' ? 'bold' : 'normal';
+        }
+    });
+
+    new Doz({
+        root: document.getElementById('app'),
+        template(h) {
+            return h`<doz-clock title="it's"/>`
+        }
+    });
+
+</script>
+</body>
+</html>

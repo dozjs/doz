@@ -86,6 +86,13 @@ module.exports = function (strings, ...values) {
                 if (typeof values[i] === 'object' || typeof values[i] === 'function') {
                     tpl += `e-0_${i}_0-e${strings[i + 1]}`;
                 } else {
+                    // Questo serve ad evitare che "oldNode" o "newNode" siano stringhe vuote
+                    // dal momento che se un placeholder allora anche il suo corrispettivo
+                    // nodo di testo dev'essere creato o modificato.
+                    // Senza questo eventuali strighe vuote potevano non essere considerate.
+                    if(values[i] === '') {
+                        values[i] = ' ';
+                    }
                     // possible html as string
                     if (/<.*>/.test(values[i])) {
                         tpl += `${values[i]}${strings[i + 1]}`;

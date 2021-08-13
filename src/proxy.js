@@ -620,7 +620,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -642,7 +642,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -660,7 +660,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -678,7 +678,7 @@ const ObservableSlim = (function () {
                     break;
                 }
             }
-            if (foundMatch === false) throw new Error('proxy not found.');
+            //if (foundMatch === false) throw new Error('proxy not found.');
         },
 
         /**
@@ -728,7 +728,7 @@ const ObservableSlim = (function () {
                 }
             }
 
-            if (foundMatch === false) throw new Error("proxy not found.");
+            //if (foundMatch === false) throw new Error("proxy not found.");
         },
 
         resume: function(proxy) {
@@ -742,7 +742,7 @@ const ObservableSlim = (function () {
                 }
             }
 
-            if (foundMatch === false) throw new Error("proxy not found.");
+            //if (foundMatch === false) throw new Error("proxy not found.");
         }
     };
 })();

@@ -43,6 +43,7 @@ class Doz {
             useShadowRoot: false,
             propsListener: null,
             propsListenerAsync: null,
+            listeners: null,
             actions: {},
             autoDraw: true,
             enableExternalTemplate: false
@@ -192,6 +193,14 @@ class Doz {
         }
 
         plugin.load(this);
+
+        //Apply listeners
+        if (this.cfg.listeners) {
+            Object.keys(this.cfg.listeners).forEach(event => {
+                this.on(event, this.cfg.listeners[event])
+            })
+        }
+
         directive.callAppInit(this);
 
         if (!this.cfg.mainComponent && this.cfg.autoDraw)

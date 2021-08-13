@@ -148,7 +148,7 @@ export class Component {
      * This method must be return the component template literals.
      * @returns {string}
      */
-    template(): string
+    template(h: any): string
 
     /**
      * This method is called after changes detected, then updates the component part.

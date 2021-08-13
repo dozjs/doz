@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - DWC">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - component as web-component</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<dwc-my-cmp id="my-element" my-prop="hello prop"></dwc-my-cmp>
+<button onclick="document.getElementById('my-element').setAttribute('time', new Date().getTime())">
+    Set timestamp
+</button>
+<button onclick="document.getElementById('my-element').myMethod('woooow ' + new Date().getTime())">
+    Call exposed method
+</button>
+
+<script type="module">
+    import {Component, defineWebComponent} from '../esm/src/index.js';
+
+    let myCmp = class extends Component {
+        constructor(o) {
+            super(o);
+
+            this.props = {
+                time: new Date().getTime()
+            }
+        }
+
+        template(h) {
+            return h`
+                <div>
+                    Timestamp: ${this.props.time}
+                    prop: ${this.props.myProp}
+                </div>
+            `
+        }
+
+        myMethod(value) {
+            console.log('hello ' + value, this)
+        }
+    }
+
+    defineWebComponent('dwc-my-cmp', myCmp, ['time', 'my-prop'], ['myMethod']);
+</script>
+
+</body>
+</html>

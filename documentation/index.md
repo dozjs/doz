@@ -13,6 +13,7 @@ Below some basic concepts:
 - [Make an app](#make-an-app)
 - [Component definition](#component-definition)
     - [Props](#props)
+    - [Props propagation](#props-propagation)
     - [Props listener](#props-listener)
     - [Props computed](#props-computed)
     - [Props convert](#props-convert)
@@ -165,6 +166,101 @@ new Doz({
 ```
 
 [LIVE](https://codepen.io/pen/eYYZVwz)
+
+---
+
+### Props propagation
+
+**Since 3.10.0**
+
+This API called propsPropagation allows you to propagate your props to child components.
+
+```javascript
+class MyChild1 extends Doz.Component {
+    template(h) {
+        //language=HTML
+        return h`
+            <div>
+                <span>My Child 1</span>
+                <div>${this.props.description}</div>
+                <${MyChild2}/>
+            </div>
+        `;
+    }
+}
+
+class MyChild2 extends Doz.Component {
+    constructor(o) {
+        super(o);
+        this.props = {
+            description: 'excluded from props propagation'
+        }
+
+        // this exclude this component from props propagation
+        this.excludeFromPropsPropagation = true;
+    }
+
+    template(h) {
+        return h`
+            <div>
+                <span>My Child 2</span>
+                <div>${this.props.description}</div>
+                <${MyChild3}/>
+            </div>
+        `;
+    }
+}
+
+class MyChild3 extends Doz.Component {
+    template(h) {
+        return h`
+            <div>
+                <span>My Child 3</span>
+                <div>${this.props.description}</div>
+                <button onclick="${() => this.destroy()}">destroy</button>
+            </div>
+        `;
+    }
+}
+
+class MyParent extends Doz.Component{
+
+    constructor(obj) {
+        super(obj);
+
+        this.props = {
+            description: 'wow',
+            title: 'lorem'
+        }
+
+        this.propsPropagation = [
+            'description'
+        ] // if set to true all props will be propagated
+    }
+
+    template(h){
+        return h`
+            <div>
+                <h3>props propagation example</h3>
+                <div>
+                    <input placeholder="description" d-bind="description">
+                </div>
+                <h4>Child component</h4>
+                <${MyChild1}/>
+            </div>
+        `
+    }
+}
+
+new Doz({
+    root: document.getElementById('app'),
+    template(h) {
+        return h`
+                <${MyParent}/>
+            `
+    }
+});
+```
 
 ---
 
@@ -2115,7 +2211,7 @@ provide you "Doz.use". Write a plugin is very easy:
 ```javascript
 const myPlugin = function(Doz, app, options) {
 
-    // You can adds mixin function
+    // You can add mixin function
     Doz.mixin({
         localTime() {
             return new Date().toLocaleTimeString();
