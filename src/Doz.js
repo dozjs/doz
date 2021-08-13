@@ -1,6 +1,5 @@
 const bind = require('./utils/bind');
 const createInstance = require('./component/create-instance');
-const createInstance2 = require('./component/create-instance-2');
 const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
 const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
@@ -163,7 +162,8 @@ class Doz {
         }
 
         if (this.cfg.mainComponent) {
-            this._tree = createInstance2({
+            this._tree = createInstance({
+                mountMainComponent: true,
                 root: this.cfg.root,
                 component: this.cfg.mainComponent,
                 app: this
