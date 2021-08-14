@@ -197,6 +197,7 @@ class Doz {
         //Apply listeners
         if (this.cfg.listeners) {
             Object.keys(this.cfg.listeners).forEach(event => {
+                //console.log(event)
                 this.on(event, this.cfg.listeners[event])
             })
         }

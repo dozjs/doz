@@ -1124,6 +1124,7 @@ var Doz = /*#__PURE__*/function () {
 
     if (this.cfg.listeners) {
       var _defined9 = function _defined9(event) {
+        //console.log(event)
         _this.on(event, _this.cfg.listeners[event]);
       };
 
@@ -5466,10 +5467,15 @@ module.exports = toInlineStyle;
 /***/ (function(module, exports) {
 
 function add(instance) {
+  //console.log('----->', instance.__proto__.constructor.__postListeners)
   if (typeof instance.onAppReady === 'function') {
     instance.onAppReady._instance = instance;
 
     instance.app._onAppReadyCB.push(instance.onAppReady);
+  } else if (instance.__proto__ && instance.__proto__.constructor && instance.__proto__.constructor.__postListeners && instance.__proto__.constructor.__postListeners.onAppReady) {
+    instance.__proto__.constructor.__postListeners.onAppReady._instance = instance;
+
+    instance.app._onAppReadyCB.push(instance.__proto__.constructor.__postListeners.onAppReady);
   }
 }
 
@@ -5525,8 +5531,7 @@ module.exports = extendInstance;
 function removeAllAttributes(el) {
   var exclude = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var attributeName;
-
-  for (var i = el.attributes.length - 1; i >= 0; i--) {
+  if (el.attributes) for (var i = el.attributes.length - 1; i >= 0; i--) {
     attributeName = el.attributes[i].name; // exclude anyway data attributes
 
     if (exclude.includes(attributeName) || attributeName.split('-')[0] === 'data') continue;
@@ -6230,7 +6235,7 @@ module.exports = function tag(name) {
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n                    <", ">", "</", ">\n                "]);
+  var data = _taggedTemplateLiteral(["\n                            <", ">", "</", ">\n                        "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -6331,45 +6336,59 @@ function createDozWebComponent(tag, cmp) {
           }
         }
 
+        var onAppReady = function onAppReady() {
+          var firstChild = this.children[0] || this;
+
+          var _defined = function _defined(method) {
+            if (firstChild[method]) {
+              thisElement[method] = firstChild[method].bind(firstChild);
+            }
+          };
+
+          for (var _i2 = 0; _i2 <= exposedMethods.length - 1; _i2++) {
+            _defined(exposedMethods[_i2], _i2, exposedMethods);
+          }
+
+          thisElement.removeAttribute('data-soft-entrance');
+          firstChild.props = Object.assign({}, firstChild.props, initialProps);
+          var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+          data.webComponents.tags[tag][id || countCmp] = firstChild;
+
+          if (id !== null) {
+            if (data.webComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
+            data.webComponents.ids[id] = firstChild;
+          }
+        };
+
         contentHTML = this.innerHTML;
         this.innerHTML = '';
         var tagCmp = cmp || globalTag || tag;
-        this.dozApp = new Doz({
-          root: root,
-          useShadowRoot: !hasDataNoShadow,
-          template: function template(h) {
-            return h(_templateObject(), tagCmp, contentHTML, tagCmp);
-          },
-          onAppReady: function onAppReady() {
-            var firstChild = this.children[0];
+        console.log(contentHTML);
 
-            var _defined = function _defined(method) {
-              if (firstChild[method]) {
-                thisElement[method] = firstChild[method].bind(firstChild);
-              }
-            };
-
-            for (var _i2 = 0; _i2 <= exposedMethods.length - 1; _i2++) {
-              _defined(exposedMethods[_i2], _i2, exposedMethods);
-            }
-
-            thisElement.removeAttribute('data-soft-entrance');
-            firstChild.props = Object.assign({}, firstChild.props, initialProps);
-            var countCmp = Object.keys(data.webComponents.tags[tag]).length++;
-            data.webComponents.tags[tag][id || countCmp] = firstChild;
-
-            if (id !== null) {
-              if (data.webComponents.ids[id]) return console.warn(id + ': id already exists for DozWebComponent');
-              data.webComponents.ids[id] = firstChild;
-            }
-          }
-        });
+        if (cmp) {
+          cmp.__postListeners = {
+            onAppReady: onAppReady
+          };
+          this.dozApp = mount(root, cmp, {
+            useShadowRoot: !hasDataNoShadow
+          });
+        } else {
+          this.dozApp = new Doz({
+            root: root,
+            useShadowRoot: !hasDataNoShadow,
+            //language=HTML
+            template: function template(h) {
+              return h(_templateObject(), tagCmp, contentHTML, tagCmp);
+            },
+            onAppReady: onAppReady
+          });
+        }
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, oldValue, newValue) {
         if (!this.dozApp) return;
-        var firstChild = this.dozApp.mainComponent.children[0];
+        var firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
         firstChild.props[dashToCamel(name)] = newValue;
       }
     }]);

@@ -1,6 +1,7 @@
 const Doz = require('./Doz');
 
 function mount(root, component, options) {
+
     let cfg = Object.assign({
         root,
         mainComponent: component
