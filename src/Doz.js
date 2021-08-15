@@ -167,7 +167,8 @@ class Doz {
                 mountMainComponent: true,
                 root: this.cfg.root,
                 component: this.cfg.mainComponent,
-                app: this
+                app: this,
+                innerHTML: this.cfg.innerHTML
             });// || [];
 
             //console.log(this._tree)

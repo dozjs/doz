@@ -1,4 +1,4 @@
-const {TAG, COMPONENT_ROOT_INSTANCE, REGEX} = require('../constants');
+const {REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
 const update = require('../vdom').updateElement;
@@ -190,8 +190,15 @@ class Component extends DOMManipulation {
             this._rootElement = rootElement;
             makeSureAttach(this._rootElement);
             this._parentElement = rootElement.parentNode;
-            if (this.__hasStyle)
-                this._parentElement.dataset.uid = this.uId;
+            if (this.__hasStyle) {
+                if (this._parentElement.dataset) {
+                    this._parentElement.dataset.uid = this.uId;
+                } else {
+                    // prendo l'elemento dopo style
+                    this._parentElement.firstElementChild.nextElementSibling.dataset.uid = this.uId;
+                    //console.log(this.getHTMLElement())
+                }
+            }
         }
 
         this._prev = next;

@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../../dist/doz.js?5894uimj2e8e3"></script>
+    <script src="../../dist/doz.js?58uimj2e8e3"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -28,9 +28,10 @@
 <button onclick="document.getElementById('my-element').setAttribute('title', Math.random())">Set random for my-element</button>
 <hr>
 <dwc-doz-clock></dwc-doz-clock>
-
 <hr>
-<dwc-my-cmp2></dwc-my-cmp2>
+<dwc-my-cmp2>
+    <div>a</div>
+</dwc-my-cmp2>
 
 <script>
     const {component, defineWebComponent, defineWebComponentFromGlobal} = Doz;
@@ -98,7 +99,10 @@
 
         template(h) {
             return h`
-                <div>Hello ${this.props.name}</div>
+                <style>
+                .my-div {color: green}
+                </style>
+                <div class="my-div">Hello ${this.props.name}</div>
             `
         }
     }

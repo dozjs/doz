@@ -64,9 +64,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
             this.innerHTML = '';
 
             let tagCmp = cmp || globalTag || tag;
-            console.log(contentHTML)
 
-            if (cmp) {
+            if (cmp && typeof cmp !== "object") {
 
                 cmp.__postListeners = {
                     onAppReady
@@ -74,6 +73,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
 
                 this.dozApp = mount(root, cmp,{
                     useShadowRoot: !hasDataNoShadow,
+                    innerHTML: contentHTML
                 });
             } else {
                 this.dozApp = new Doz({

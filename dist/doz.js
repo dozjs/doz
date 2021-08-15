@@ -1095,7 +1095,8 @@ var Doz = /*#__PURE__*/function () {
         mountMainComponent: true,
         root: this.cfg.root,
         component: this.cfg.mainComponent,
-        app: this
+        app: this,
+        innerHTML: this.cfg.innerHTML
       }); // || [];
       //console.log(this._tree)
     } else {
@@ -1262,8 +1263,6 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = __webpack_require__(1),
-    TAG = _require.TAG,
-    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
     REGEX = _require.REGEX;
 
 var observer = __webpack_require__(32);
@@ -1443,7 +1442,15 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
         this._rootElement = rootElement;
         makeSureAttach(this._rootElement);
         this._parentElement = rootElement.parentNode;
-        if (this.__hasStyle) this._parentElement.dataset.uid = this.uId;
+
+        if (this.__hasStyle) {
+          if (this._parentElement.dataset) {
+            this._parentElement.dataset.uid = this.uId;
+          } else {
+            // prendo l'elemento dopo style
+            this._parentElement.firstElementChild.nextElementSibling.dataset.uid = this.uId; //console.log(this.getHTMLElement())
+          }
+        }
       }
 
       this._prev = next; //console.log(this._prev)
@@ -2000,6 +2007,7 @@ function createInstance() {
 
   if (cfg.mountMainComponent) {
     // Monto il componente principale
+    //console.log(cfg.component)
     var newElement = new cfg.component({
       //tag: 'bbb-bbb',//cmp.tag || cmpName,
       cmp: cfg.component,
@@ -2012,6 +2020,14 @@ function createInstance() {
     });
     newElement._isRendered = true;
     newElement.render(true);
+
+    if (cfg.innerHTML) {
+      var innerHTMLEl = html.create(cfg.innerHTML); //console.log(innerHTMLEl)
+      //let newElementHTMLElement = newElement.getHTMLElement();
+
+      newElement.getHTMLElement().appendChild(innerHTMLEl);
+    }
+
     walk(newElement.getHTMLElement());
 
     var _defined = function _defined($child) {
@@ -5275,7 +5291,10 @@ var composeStyleInner = __webpack_require__(19);
 var createStyle = __webpack_require__(42);
 
 function scopedInner(cssContent, uId, tag, scoped, cmp) {
-  if (typeof cssContent !== 'string') return;
+  if (typeof cssContent !== 'string') return; // se il componente non ha alcun tag allora imposto il tag per il selettore css a vuoto
+  // questo accade quando si usa Doz.mount il quale "monta" direttamente il componente senza il wrapper "dz-app"
+
+  if (cmp && cmp.tag === undefined) tag = '';
   cssContent = composeStyleInner(cssContent, tag);
   return createStyle(cssContent, uId, tag, scoped, cmp);
 }
@@ -5468,14 +5487,16 @@ module.exports = toInlineStyle;
 
 function add(instance) {
   //console.log('----->', instance.__proto__.constructor.__postListeners)
+  var instanceProto = instance.__proto__;
+
   if (typeof instance.onAppReady === 'function') {
     instance.onAppReady._instance = instance;
 
     instance.app._onAppReadyCB.push(instance.onAppReady);
-  } else if (instance.__proto__ && instance.__proto__.constructor && instance.__proto__.constructor.__postListeners && instance.__proto__.constructor.__postListeners.onAppReady) {
-    instance.__proto__.constructor.__postListeners.onAppReady._instance = instance;
+  } else if (instanceProto && instanceProto.constructor && instanceProto.constructor.__postListeners && instanceProto.constructor.__postListeners.onAppReady) {
+    instanceProto.constructor.__postListeners.onAppReady._instance = instance;
 
-    instance.app._onAppReadyCB.push(instance.__proto__.constructor.__postListeners.onAppReady);
+    instance.app._onAppReadyCB.push(instanceProto.constructor.__postListeners.onAppReady);
   }
 }
 
@@ -6232,8 +6253,6 @@ module.exports = function tag(name) {
 /* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _templateObject() {
   var data = _taggedTemplateLiteral(["\n                            <", ">", "</", ">\n                        "]);
 
@@ -6245,6 +6264,8 @@ function _templateObject() {
 }
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6363,14 +6384,14 @@ function createDozWebComponent(tag, cmp) {
         contentHTML = this.innerHTML;
         this.innerHTML = '';
         var tagCmp = cmp || globalTag || tag;
-        console.log(contentHTML);
 
-        if (cmp) {
+        if (cmp && _typeof(cmp) !== "object") {
           cmp.__postListeners = {
             onAppReady: onAppReady
           };
           this.dozApp = mount(root, cmp, {
-            useShadowRoot: !hasDataNoShadow
+            useShadowRoot: !hasDataNoShadow,
+            innerHTML: contentHTML
           });
         } else {
           this.dozApp = new Doz({

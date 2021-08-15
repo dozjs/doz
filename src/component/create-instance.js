@@ -199,6 +199,8 @@ function createInstance(cfg = {}) {
     if (cfg.mountMainComponent) {
         // Monto il componente principale
 
+        //console.log(cfg.component)
+
         let newElement = new cfg.component({
             //tag: 'bbb-bbb',//cmp.tag || cmpName,
             cmp: cfg.component,
@@ -211,6 +213,14 @@ function createInstance(cfg = {}) {
 
         newElement._isRendered = true;
         newElement.render(true);
+
+        if (cfg.innerHTML) {
+            let innerHTMLEl = html.create(cfg.innerHTML);
+            //console.log(innerHTMLEl)
+            //let newElementHTMLElement = newElement.getHTMLElement();
+            newElement.getHTMLElement().appendChild(innerHTMLEl);
+        }
+
         walk(newElement.getHTMLElement())
         trash.forEach($child => $child.remove());
 
