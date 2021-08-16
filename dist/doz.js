@@ -671,6 +671,8 @@ function compile(tpl) {
   if (!tpl) return '';
 
   if (tplCache[tpl]) {
+    //console.log(tpl)
+    //console.log(tplCache[tpl])
     return tplCache[tpl];
   }
 
@@ -913,6 +915,8 @@ var directive = __webpack_require__(0);
 
 var makeSureAttach = __webpack_require__(4);
 
+var appCounter = 12345;
+
 var Doz = /*#__PURE__*/function () {
   function Doz() {
     var _this = this;
@@ -1016,6 +1020,10 @@ var Doz = /*#__PURE__*/function () {
         value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
         enumerable: true
       },
+      appIntId: {
+        value: appCounter++,
+        enumerable: true
+      },
       action: {
         value: bind(this.cfg.actions, this),
         enumerable: true
@@ -1023,6 +1031,14 @@ var Doz = /*#__PURE__*/function () {
       shared: {
         value: this.cfg.shared,
         writable: true,
+        enumerable: true
+      },
+      cacheStores: {
+        value: {
+          kCache: new Map(),
+          //tplCache: Object.create(null),
+          hCache: new Map()
+        },
         enumerable: true
       },
       mount: {
@@ -1230,7 +1246,6 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = {
-  //kCache: Object.create(null),
   kCache: new Map(),
   tplCache: Object.create(null),
   hCache: new Map()
@@ -2022,6 +2037,7 @@ function createInstance() {
     newElement.render(true);
 
     if (cfg.innerHTML) {
+      //console.log(cfg.innerHTML)
       var innerHTMLEl = html.create(cfg.innerHTML); //console.log(innerHTMLEl)
       //let newElementHTMLElement = newElement.getHTMLElement();
 
@@ -2931,10 +2947,8 @@ var hooks = __webpack_require__(6); //const directive = require('../directives')
 var makeSureAttach = __webpack_require__(4);
 
 var _require3 = __webpack_require__(41),
-    scopedInner = _require3.scopedInner;
+    scopedInner = _require3.scopedInner; //const {kCache} = require('./stores');
 
-var _require4 = __webpack_require__(11),
-    kCache = _require4.kCache;
 
 var storeElementNode = Object.create(null);
 var deadChildren = [];
@@ -3191,7 +3205,7 @@ function update($parent, newNode, oldNode) {
 
     for (var _i6 = 0; _i6 < oldKeyDoRemove.length; _i6++) {
       if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[_i6])) {
-        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[_i6]); ////console.log('da rimuovere', $oldElement);
+        var _$oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[_i6]); //console.log('da rimuovere', $oldElement);
 
 
         if (_$oldElement._dozAttach[COMPONENT_INSTANCE]) {
@@ -3200,10 +3214,9 @@ function update($parent, newNode, oldNode) {
           $myListParent.removeChild(_$oldElement);
         }
 
-        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]); //delete kCache[oldKeyDoRemove[i]];
+        $myListParent._dozAttach.keyList["delete"](oldKeyDoRemove[_i6]);
 
-
-        kCache["delete"](oldKeyDoRemove[_i6]); //console.log('cancellato in posizione', oldKeyDoRemove[i], i)
+        cmp.app.cacheStores.kCache["delete"](oldKeyDoRemove[_i6]); //console.log('cancellato in posizione', oldKeyDoRemove[i], i)
       }
     } //console.log(oldKeyDoRemove)
     //console.log(newNodeKeyList)
@@ -3250,23 +3263,13 @@ function update($parent, newNode, oldNode) {
         listOfElement.push(_$newElement2); //$myListParent.appendChild($newElement);
       } else {
         // Get the child from newNode and oldNode by the same key
+        var _kCacheValue = cmp.app.cacheStores.kCache.get(theKey);
 
-        /*let newChildByKey = getChildByKey(theKey, newNode.children);
-        let oldChildByKey = getChildByKey(theKey, oldNode.children);*/
-        //if (!kCache[theKey].isChanged) continue;
-
-        /*let newChildByKey = kCache[theKey].next;// getChildByKey(theKey, newNode.children);
-        let oldChildByKey = kCache[theKey].prev;// getChildByKey(theKey, oldNode.children);*/
-        var _kCacheValue = kCache.get(theKey);
-
-        var newChildByKey = _kCacheValue.next; // getChildByKey(theKey, newNode.children);
-
-        var oldChildByKey = _kCacheValue.prev; // getChildByKey(theKey, oldNode.children);
-        //console.log(theKey, kCache[theKey].isChanged)
-
+        var newChildByKey = _kCacheValue.next;
+        var oldChildByKey = _kCacheValue.prev;
         if (!newChildByKey.children) newChildByKey.children = [];
         if (!oldChildByKey.children) oldChildByKey.children = [];
-        listOfElement.push(_$element); //if (kCache[theKey].isChanged) {
+        listOfElement.push(_$element);
 
         if (_kCacheValue.isChanged) {
           // Update attributes?
@@ -3498,9 +3501,7 @@ var _require2 = __webpack_require__(7),
 
 var tagText = TAG.TEXT_NODE_PLACE;
 
-var _require3 = __webpack_require__(11),
-    hCache = _require3.hCache,
-    kCache = _require3.kCache;
+var cacheStores = __webpack_require__(11);
 
 var LESSER = '<';
 var GREATER = '>';
@@ -3544,7 +3545,21 @@ function placeholderIndex(str, values) {
 
 
 module.exports = function (strings) {
-  var tpl = hCache.get(strings);
+  var hCache;
+  var kCache; // use internal app cache stores
+
+  if (this.app) {
+    hCache = this.app.cacheStores.hCache;
+    kCache = this.app.cacheStores.kCache;
+  } else {
+    // use global cache stores
+    hCache = cacheStores.hCache;
+    kCache = cacheStores.kCache;
+  }
+
+  var tpl = hCache.get(strings); //console.log(this.app.appIntId);
+  //console.log(strings);
+  //let appIntId = this.app.appIntId;
 
   for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     values[_key - 1] = arguments[_key];
@@ -3642,26 +3657,6 @@ module.exports = function (strings) {
       hCache.set(clonedKey, cloned);
     }
   }
-  /*
-  if (model.key !== undefined) {
-      if (kCache[cloned.key] !== undefined) {
-          kCache[cloned.key] = {
-              isChanged: clonedKey !== kCache[cloned.key].clonedKey,
-              clonedKey,
-              next: cloned,
-              prev: kCache[cloned.key].next
-          }
-      } else {
-          kCache[cloned.key] = {
-              isChanged: true,
-              clonedKey,
-              next: cloned,
-              prev: undefined
-          }
-      }
-  }
-  */
-
 
   if (model.key !== undefined) {
     var _kCacheValue = kCache.get(cloned.key);
@@ -6381,9 +6376,9 @@ function createDozWebComponent(tag, cmp) {
           }
         };
 
-        contentHTML = this.innerHTML;
+        contentHTML = this.innerHTML.trim();
         this.innerHTML = '';
-        var tagCmp = cmp || globalTag || tag;
+        var tagCmp = cmp || globalTag || tag; //console.log(contentHTML)
 
         if (cmp && _typeof(cmp) !== "object") {
           cmp.__postListeners = {

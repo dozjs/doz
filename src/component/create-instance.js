@@ -215,6 +215,7 @@ function createInstance(cfg = {}) {
         newElement.render(true);
 
         if (cfg.innerHTML) {
+            //console.log(cfg.innerHTML)
             let innerHTMLEl = html.create(cfg.innerHTML);
             //console.log(innerHTMLEl)
             //let newElementHTMLElement = newElement.getHTMLElement();

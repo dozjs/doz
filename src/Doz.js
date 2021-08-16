@@ -5,6 +5,7 @@ const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
 const makeSureAttach = require('./component/make-sure-attach');
+let appCounter = 12345;
 
 class Doz {
 
@@ -100,6 +101,10 @@ class Doz {
                 value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
                 enumerable: true
             },
+            appIntId: {
+                value: appCounter++,
+                enumerable: true
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -107,6 +112,14 @@ class Doz {
             shared: {
                 value: this.cfg.shared,
                 writable: true,
+                enumerable: true
+            },
+            cacheStores: {
+                value: {
+                    kCache: new Map(),
+                    //tplCache: Object.create(null),
+                    hCache: new Map()
+                },
                 enumerable: true
             },
             mount: {

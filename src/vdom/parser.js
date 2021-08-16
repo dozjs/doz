@@ -84,6 +84,8 @@ function compile(tpl) {
     if (!tpl) return '';
 
     if (tplCache[tpl]) {
+        //console.log(tpl)
+        //console.log(tplCache[tpl])
         return tplCache[tpl]
     }
 

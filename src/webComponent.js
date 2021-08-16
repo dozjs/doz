@@ -60,10 +60,12 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                 }
             };
 
-            contentHTML = this.innerHTML;
+            contentHTML = this.innerHTML.trim();
             this.innerHTML = '';
 
             let tagCmp = cmp || globalTag || tag;
+
+            //console.log(contentHTML)
 
             if (cmp && typeof cmp !== "object") {
 

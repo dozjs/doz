@@ -3,7 +3,8 @@ const camelToDash = require('../utils/camel-to-dash');
 const deepCopy = require('../utils/deep-copy');
 const {compile} = require('../vdom/parser');
 const tagText = TAG.TEXT_NODE_PLACE;
-const {hCache, kCache} = require('./stores');
+let cacheStores = require('./stores');
+
 const LESSER = '<';
 const GREATER = '>';
 const PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
@@ -45,8 +46,24 @@ function placeholderIndex(str, values) {
  * @returns {*}
  */
 module.exports = function (strings, ...values) {
+    let hCache;
+    let kCache;
+
+    // use internal app cache stores
+    if (this.app) {
+        hCache = this.app.cacheStores.hCache;
+        kCache = this.app.cacheStores.kCache;
+    } else {
+        // use global cache stores
+        hCache = cacheStores.hCache;
+        kCache = cacheStores.kCache;
+    }
 
     let tpl = hCache.get(strings);
+
+    //console.log(this.app.appIntId);
+    //console.log(strings);
+    //let appIntId = this.app.appIntId;
 
     if (!tpl) {
         tpl = strings[0];
@@ -137,26 +154,6 @@ module.exports = function (strings, ...values) {
             hCache.set(clonedKey, cloned);
         }
     }
-
-    /*
-    if (model.key !== undefined) {
-        if (kCache[cloned.key] !== undefined) {
-            kCache[cloned.key] = {
-                isChanged: clonedKey !== kCache[cloned.key].clonedKey,
-                clonedKey,
-                next: cloned,
-                prev: kCache[cloned.key].next
-            }
-        } else {
-            kCache[cloned.key] = {
-                isChanged: true,
-                clonedKey,
-                next: cloned,
-                prev: undefined
-            }
-        }
-    }
-*/
 
     if (model.key !== undefined) {
         let _kCacheValue = kCache.get(cloned.key);
