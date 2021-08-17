@@ -5,7 +5,7 @@ const toLiteralString = require('./utils/to-literal-string');
 const plugin = require('./plugin');
 const directive = require('./directives');
 const makeSureAttach = require('./component/make-sure-attach');
-let appCounter = 12345;
+let appCounter = 0;
 
 class Doz {
 

@@ -82,9 +82,9 @@ class Element {
 
 function compile(tpl) {
     if (!tpl) return '';
-
+    //console.log(tpl)
     if (tplCache[tpl]) {
-        //console.log(tpl)
+        //console.log('CACHED')
         //console.log(tplCache[tpl])
         return tplCache[tpl]
     }
