@@ -1663,11 +1663,12 @@ const myCmp2 = class extends Doz.Component {
     
     myMethod(value) {
         console.log('hello ' + value);
+        this.app.emit('myListener', 'hello', 'another param')
     }
 }
 
 defineWebComponent('dwc-my-cmp1', myCmp1, ['title']);
-defineWebComponent('dwc-my-cmp2', myCmp2, ['title'], ['myMethod']);
+defineWebComponent('dwc-my-cmp2', myCmp2, ['title'], ['myMethod'], ['myListner']);
 ```
 
 **Important note**: The third parameter of `defineWebComponent` is referred to "observedAttributes", 

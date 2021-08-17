@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.13.0] - 2021-08-17
+- **Added** new api called `appCreate`
+- **Added** event listener support to web-component
+- **Fixed** conflict between multiple apps in the same page
+
 ## [3.12.1] - 2021-07-30
 - **Changed** Disable proxy error when proxy not found
 

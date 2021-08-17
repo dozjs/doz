@@ -97,6 +97,11 @@ class Doz {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
             },
+            onAppEmit: {
+                value: this.cfg.onAppEmit,
+                writable: true,
+                enumerable: true
+            },
             shared: {
                 value: this.cfg.shared,
                 writable: true,
@@ -228,6 +233,9 @@ class Doz {
             this._onAppCB[event].forEach(func => {
                 func.apply(this, args);
             });
+        }
+        if (this.onAppEmit) {
+            this.onAppEmit(event, ...args);
         }
         return this;
     }

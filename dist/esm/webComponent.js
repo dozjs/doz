@@ -1,10 +1,10 @@
 import Doz from "./Doz.js";
-import mount from "./mount.js";
+import appCreate from "./app-create.js";
 import data from "./data.js";
 import dashToCamel from "./utils/dash-to-camel.js";
 import createStyleSoftEntrance from "./utils/create-style-soft-entrance.js";
 createStyleSoftEntrance();
-function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = []) {
+function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = [], exposedListeners = []) {
     data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
     if (prefix) {
         prefix += '-';
@@ -50,6 +50,14 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     data.webComponents.ids[id] = firstChild;
                 }
             };
+            let onAppEmit = function (event, ...args) {
+                if (exposedListeners.indexOf(event) > -1) {
+                    let eventInstance = new CustomEvent(event, {
+                        detail: args
+                    });
+                    thisElement.dispatchEvent(eventInstance);
+                }
+            };
             contentHTML = this.innerHTML.trim();
             this.innerHTML = '';
             let tagCmp = cmp || globalTag || tag;
@@ -58,9 +66,10 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                 cmp.__postListeners = {
                     onAppReady
                 };
-                this.dozApp = mount(root, cmp, {
+                this.dozApp = appCreate(root, cmp, {
                     useShadowRoot: !hasDataNoShadow,
-                    innerHTML: contentHTML
+                    innerHTML: contentHTML,
+                    onAppEmit
                 });
             }
             else {
@@ -73,7 +82,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                             <${tagCmp}>${contentHTML}</${tagCmp}>
                         `;
                     },
-                    onAppReady
+                    onAppReady,
+                    onAppEmit
                 });
             }
         }
@@ -85,11 +95,11 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
         }
     });
 }
-function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = []) {
-    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods);
+function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods, exposedListeners);
 }
-function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = []) {
-    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods);
+function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods, exposedListeners);
 }
 export { defineWebComponent };
 export { defineWebComponentFromGlobal };

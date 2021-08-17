@@ -6,7 +6,7 @@ import component from "./component/index.js";
 import Component from "./component/Component.js";
 import mixin from "./component/helpers/global-mixin.js";
 import h from "./vdom/h.js";
-import mount from "./mount.js";
+import appCreate from "./app-create.js";
 import { compile } from "./vdom/parser.js";
 import { update } from "./vdom/element.js";
 import tag from "./decorators/tag.js";
@@ -74,13 +74,14 @@ Object.defineProperties(Doz, {
         value: defineWebComponentFromGlobal,
         enumerable: true
     },
-    mount: {
-        value: mount,
+    appCreate: {
+        value: appCreate,
         enumerable: true
     }
 });
 export const version = Doz.version;
 export default Doz;
+export { appCreate };
 export { collection };
 export { compile };
 export { Component };
