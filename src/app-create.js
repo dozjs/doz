@@ -1,6 +1,6 @@
 const Doz = require('./Doz');
 
-function mount(root, component, options) {
+function appCreate(root, component, options) {
 
     let cfg = Object.assign({
         root,
@@ -10,4 +10,4 @@ function mount(root, component, options) {
     return new Doz(cfg);
 }
 
-module.exports = mount;
+module.exports = appCreate;

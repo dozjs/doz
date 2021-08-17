@@ -75,7 +75,7 @@ export default class ButtonCounter extends Component {
             </style>
 
             <button onclick="${this.increase}">
-                ${this.props.title} ${this.props.counter}
+                count ${this.props.counter}
             </button>
         `
     }
@@ -91,20 +91,10 @@ export default class ButtonCounter extends Component {
 
 app.js
 ```javascript
-import Doz from 'doz'
+import {appCreate} from 'doz'
 import ButtonCounter from './ButtonCounter'
 
-new Doz({
-
-    root: '#app',
-
-    template(h) {
-        return h`
-            <${ButtonCounter} title="Click me!"/>
-        `
-    }
-
-});
+appCreate('#app', ButtonCounter);
 ```
 
 ## Doz ecosystem

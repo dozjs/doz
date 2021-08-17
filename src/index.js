@@ -6,7 +6,7 @@ const component = require('./component');
 const Component = require('./component/Component');
 const mixin = require('./component/helpers/global-mixin');
 const h = require('./vdom/h');
-const mount = require('./mount');
+const appCreate = require('./app-create');
 const {compile} = require('./vdom/parser');
 //const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
@@ -75,13 +75,14 @@ Object.defineProperties(Doz, {
         value: defineWebComponentFromGlobal,
         enumerable: true
     },
-    mount : {
-        value: mount,
+    appCreate : {
+        value: appCreate,
         enumerable: true
     }
 });
 
 module.exports = Doz;
+module.exports.appCreate = appCreate;
 module.exports.collection = collection;
 module.exports.compile = compile;
 module.exports.Component = Component;

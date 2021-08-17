@@ -1,5 +1,5 @@
 const Doz = require('./Doz');
-const mount = require('./mount');
+const appCreate = require('./app-create');
 const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
 require('./utils/create-style-soft-entrance')();
@@ -82,7 +82,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     onAppReady
                 }
 
-                this.dozApp = mount(root, cmp,{
+                this.dozApp = appCreate(root, cmp,{
                     useShadowRoot: !hasDataNoShadow,
                     innerHTML: contentHTML,
                     onAppEmit

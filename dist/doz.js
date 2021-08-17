@@ -3880,7 +3880,7 @@ module.exports = {
 
 var Doz = __webpack_require__(9);
 
-function mount(root, component, options) {
+function appCreate(root, component, options) {
   var cfg = Object.assign({
     root: root,
     mainComponent: component
@@ -3888,7 +3888,7 @@ function mount(root, component, options) {
   return new Doz(cfg);
 }
 
-module.exports = mount;
+module.exports = appCreate;
 
 /***/ }),
 /* 27 */
@@ -3918,7 +3918,7 @@ var mixin = __webpack_require__(60);
 
 var h = __webpack_require__(21);
 
-var mount = __webpack_require__(26);
+var appCreate = __webpack_require__(26);
 
 var _require3 = __webpack_require__(7),
     compile = _require3.compile; //const mapper = require('./vdom/mapper');
@@ -3997,12 +3997,13 @@ Object.defineProperties(Doz, {
     value: defineWebComponentFromGlobal,
     enumerable: true
   },
-  mount: {
-    value: mount,
+  appCreate: {
+    value: appCreate,
     enumerable: true
   }
 });
 module.exports = Doz;
+module.exports.appCreate = appCreate;
 module.exports.collection = collection;
 module.exports.compile = compile;
 module.exports.Component = Component;
@@ -6299,7 +6300,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 var Doz = __webpack_require__(9);
 
-var mount = __webpack_require__(26);
+var appCreate = __webpack_require__(26);
 
 var data = __webpack_require__(10);
 
@@ -6407,7 +6408,7 @@ function createDozWebComponent(tag, cmp) {
           cmp.__postListeners = {
             onAppReady: onAppReady
           };
-          this.dozApp = mount(root, cmp, {
+          this.dozApp = appCreate(root, cmp, {
             useShadowRoot: !hasDataNoShadow,
             innerHTML: contentHTML,
             onAppEmit: onAppEmit
