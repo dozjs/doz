@@ -4,7 +4,7 @@ const data = require('./data');
 const dashToCamel = require('./utils/dash-to-camel');
 require('./utils/create-style-soft-entrance')();
 
-function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = []) {
+function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = [], exposedListeners = []) {
 
     data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
@@ -60,6 +60,15 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                 }
             };
 
+            let onAppEmit = function (event, ...args) {
+                if (exposedListeners.indexOf(event) > -1) {
+                    let eventInstance = new CustomEvent(event, {
+                        detail: args
+                    });
+                    thisElement.dispatchEvent(eventInstance);
+                }
+            }
+
             contentHTML = this.innerHTML.trim();
             this.innerHTML = '';
 
@@ -75,7 +84,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
 
                 this.dozApp = mount(root, cmp,{
                     useShadowRoot: !hasDataNoShadow,
-                    innerHTML: contentHTML
+                    innerHTML: contentHTML,
+                    onAppEmit
                 });
             } else {
                 this.dozApp = new Doz({
@@ -87,7 +97,8 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                             <${tagCmp}>${contentHTML}</${tagCmp}>
                         `
                     },
-                    onAppReady
+                    onAppReady,
+                    onAppEmit
                 });
             }
         }
@@ -100,12 +111,12 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
     });
 }
 
-function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = []) {
-    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods);
+function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods, exposedListeners);
 }
 
-function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = []) {
-    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods);
+function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods, exposedListeners);
 }
 
 module.exports = {

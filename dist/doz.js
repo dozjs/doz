@@ -1028,6 +1028,11 @@ var Doz = /*#__PURE__*/function () {
         value: bind(this.cfg.actions, this),
         enumerable: true
       },
+      onAppEmit: {
+        value: this.cfg.onAppEmit,
+        writable: true,
+        enumerable: true
+      },
       shared: {
         value: this.cfg.shared,
         writable: true,
@@ -1205,6 +1210,10 @@ var Doz = /*#__PURE__*/function () {
         for (var _i12 = 0; _i12 <= _defined12.length - 1; _i12++) {
           _defined11(_defined12[_i12], _i12, _defined12);
         }
+      }
+
+      if (this.onAppEmit) {
+        this.onAppEmit.apply(this, [event].concat(args));
       }
 
       return this;
@@ -6303,6 +6312,7 @@ function createDozWebComponent(tag, cmp) {
   var prefix = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'dwc';
   var globalTag = arguments.length > 4 ? arguments[4] : undefined;
   var exposedMethods = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
+  var exposedListeners = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : [];
   data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
 
   if (prefix) {
@@ -6376,6 +6386,19 @@ function createDozWebComponent(tag, cmp) {
           }
         };
 
+        var onAppEmit = function onAppEmit(event) {
+          if (exposedListeners.indexOf(event) > -1) {
+            for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+              args[_key - 1] = arguments[_key];
+            }
+
+            var eventInstance = new CustomEvent(event, {
+              detail: args
+            });
+            thisElement.dispatchEvent(eventInstance);
+          }
+        };
+
         contentHTML = this.innerHTML.trim();
         this.innerHTML = '';
         var tagCmp = cmp || globalTag || tag; //console.log(contentHTML)
@@ -6386,7 +6409,8 @@ function createDozWebComponent(tag, cmp) {
           };
           this.dozApp = mount(root, cmp, {
             useShadowRoot: !hasDataNoShadow,
-            innerHTML: contentHTML
+            innerHTML: contentHTML,
+            onAppEmit: onAppEmit
           });
         } else {
           this.dozApp = new Doz({
@@ -6396,7 +6420,8 @@ function createDozWebComponent(tag, cmp) {
             template: function template(h) {
               return h(_templateObject(), tagCmp, contentHTML, tagCmp);
             },
-            onAppReady: onAppReady
+            onAppReady: onAppReady,
+            onAppEmit: onAppEmit
           });
         }
       }
@@ -6416,13 +6441,15 @@ function createDozWebComponent(tag, cmp) {
 function defineWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var exposedMethods = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-  createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods);
+  var exposedListeners = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+  createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods, exposedListeners);
 }
 
 function defineWebComponentFromGlobal(tag, globalTag) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var exposedMethods = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-  createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods);
+  var exposedListeners = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+  createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods, exposedListeners);
 }
 
 module.exports = {
