@@ -4,7 +4,7 @@ import canDecode from "../utils/can-decode.js";
 import hooks from "../component/hooks.js";
 import makeSureAttach from "../component/make-sure-attach.js";
 import { scopedInner } from "../component/helpers/style.js";
-import { kCache } from "./stores.js";
+//const {kCache} = require('./stores');
 const storeElementNode = Object.create(null);
 const deadChildren = [];
 function isChanged(nodeA, nodeB) {
@@ -211,7 +211,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         for (let i = 0; i < oldKeyDoRemove.length; i++) {
             if ($myListParent._dozAttach.keyList.has(oldKeyDoRemove[i])) {
                 let $oldElement = $myListParent._dozAttach.keyList.get(oldKeyDoRemove[i]);
-                ////console.log('da rimuovere', $oldElement);
+                //console.log('da rimuovere', $oldElement);
                 if ($oldElement._dozAttach[COMPONENT_INSTANCE]) {
                     $oldElement._dozAttach[COMPONENT_INSTANCE].destroy();
                 }
@@ -219,8 +219,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                     $myListParent.removeChild($oldElement);
                 }
                 $myListParent._dozAttach.keyList.delete(oldKeyDoRemove[i]);
-                //delete kCache[oldKeyDoRemove[i]];
-                kCache.delete(oldKeyDoRemove[i]);
+                cmp.app.cacheStores.kCache.delete(oldKeyDoRemove[i]);
                 //console.log('cancellato in posizione', oldKeyDoRemove[i], i)
             }
         }
@@ -254,21 +253,14 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             }
             else {
                 // Get the child from newNode and oldNode by the same key
-                /*let newChildByKey = getChildByKey(theKey, newNode.children);
-                let oldChildByKey = getChildByKey(theKey, oldNode.children);*/
-                //if (!kCache[theKey].isChanged) continue;
-                /*let newChildByKey = kCache[theKey].next;// getChildByKey(theKey, newNode.children);
-                let oldChildByKey = kCache[theKey].prev;// getChildByKey(theKey, oldNode.children);*/
-                let _kCacheValue = kCache.get(theKey);
-                let newChildByKey = _kCacheValue.next; // getChildByKey(theKey, newNode.children);
-                let oldChildByKey = _kCacheValue.prev; // getChildByKey(theKey, oldNode.children);
-                //console.log(theKey, kCache[theKey].isChanged)
+                let _kCacheValue = cmp.app.cacheStores.kCache.get(theKey);
+                let newChildByKey = _kCacheValue.next;
+                let oldChildByKey = _kCacheValue.prev;
                 if (!newChildByKey.children)
                     newChildByKey.children = [];
                 if (!oldChildByKey.children)
                     oldChildByKey.children = [];
                 listOfElement.push($element);
-                //if (kCache[theKey].isChanged) {
                 if (_kCacheValue.isChanged) {
                     // Update attributes?
                     // Remember that the operation must be on the key and not on the index

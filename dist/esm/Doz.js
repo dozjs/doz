@@ -5,6 +5,7 @@ import toLiteralString from "./utils/to-literal-string.js";
 import plugin from "./plugin/index.js";
 import directive from "./directives/index.js";
 import makeSureAttach from "./component/make-sure-attach.js";
+let appCounter = 0;
 class Doz {
     constructor(cfg = {}) {
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
@@ -18,7 +19,7 @@ class Doz {
         if (!(cfg.root instanceof HTMLElement || cfg.root instanceof ShadowRoot)) {
             throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
-        if (!(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+        if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
         const appNode = document.querySelector(TAG.APP);
@@ -88,6 +89,10 @@ class Doz {
                 value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
                 enumerable: true
             },
+            appIntId: {
+                value: appCounter++,
+                enumerable: true
+            },
             action: {
                 value: bind(this.cfg.actions, this),
                 enumerable: true
@@ -95,6 +100,14 @@ class Doz {
             shared: {
                 value: this.cfg.shared,
                 writable: true,
+                enumerable: true
+            },
+            cacheStores: {
+                value: {
+                    kCache: new Map(),
+                    //tplCache: Object.create(null),
+                    hCache: new Map()
+                },
                 enumerable: true
             },
             mount: {
@@ -144,31 +157,44 @@ class Doz {
                 };
             });
         }
-        this._components[TAG.APP] = {
-            tag: TAG.APP,
-            cfg: {
-                template: typeof cfg.template === 'function' ? cfg.template : function () {
-                    const contentStr = toLiteralString(cfg.template);
-                    if (/\${.*?}/g.test(contentStr))
-                        return eval('`' + contentStr + '`');
-                    else
-                        return contentStr;
+        if (this.cfg.mainComponent) {
+            this._tree = createInstance({
+                mountMainComponent: true,
+                root: this.cfg.root,
+                component: this.cfg.mainComponent,
+                app: this,
+                innerHTML: this.cfg.innerHTML
+            }); // || [];
+            //console.log(this._tree)
+        }
+        else {
+            this._components[TAG.APP] = {
+                tag: TAG.APP,
+                cfg: {
+                    template: typeof cfg.template === 'function' ? cfg.template : function () {
+                        const contentStr = toLiteralString(cfg.template);
+                        if (/\${.*?}/g.test(contentStr))
+                            return eval('`' + contentStr + '`');
+                        else
+                            return contentStr;
+                    }
                 }
-            }
-        };
-        Object.keys(cfg).forEach(p => {
-            if (!['template', 'root'].includes(p))
-                this._components[TAG.APP].cfg[p] = cfg[p];
-        });
+            };
+            Object.keys(cfg).forEach(p => {
+                if (!['template', 'root'].includes(p))
+                    this._components[TAG.APP].cfg[p] = cfg[p];
+            });
+        }
         plugin.load(this);
         //Apply listeners
         if (this.cfg.listeners) {
             Object.keys(this.cfg.listeners).forEach(event => {
+                //console.log(event)
                 this.on(event, this.cfg.listeners[event]);
             });
         }
         directive.callAppInit(this);
-        if (this.cfg.autoDraw)
+        if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
         this._callAppReady();
         this.emit('ready', this);

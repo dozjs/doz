@@ -6,6 +6,7 @@ import component from "./component/index.js";
 import Component from "./component/Component.js";
 import mixin from "./component/helpers/global-mixin.js";
 import h from "./vdom/h.js";
+import mount from "./mount.js";
 import { compile } from "./vdom/parser.js";
 import { update } from "./vdom/element.js";
 import tag from "./decorators/tag.js";
@@ -71,6 +72,10 @@ Object.defineProperties(Doz, {
     },
     defineWebComponentFromGlobal: {
         value: defineWebComponentFromGlobal,
+        enumerable: true
+    },
+    mount: {
+        value: mount,
         enumerable: true
     }
 });

@@ -1,4 +1,4 @@
-import { TAG, COMPONENT_ROOT_INSTANCE, REGEX } from "../constants.js";
+import { REGEX } from "../constants.js";
 import observer from "./observer.js";
 import hooks from "./hooks.js";
 import { updateElement } from "../vdom/index.js";
@@ -155,8 +155,16 @@ class Component extends DOMManipulation {
             this._rootElement = rootElement;
             makeSureAttach(this._rootElement);
             this._parentElement = rootElement.parentNode;
-            if (this.__hasStyle)
-                this._parentElement.dataset.uid = this.uId;
+            if (this.__hasStyle) {
+                if (this._parentElement.dataset) {
+                    this._parentElement.dataset.uid = this.uId;
+                }
+                else {
+                    // prendo l'elemento dopo style
+                    this._parentElement.firstElementChild.nextElementSibling.dataset.uid = this.uId;
+                    //console.log(this.getHTMLElement())
+                }
+            }
         }
         this._prev = next;
         //console.log(this._prev)

@@ -2,7 +2,7 @@ import { TAG } from "../constants.js";
 import camelToDash from "../utils/camel-to-dash.js";
 import deepCopy from "../utils/deep-copy.js";
 import { compile } from "./parser.js";
-import { hCache, kCache } from "./stores.js";
+import cacheStores from "./stores.js";
 const tagText = TAG.TEXT_NODE_PLACE;
 const LESSER = '<';
 const GREATER = '>';
@@ -104,7 +104,22 @@ function fillCompiled(obj, values, parent, _this) {
     }
 }
 export default (function (strings, ...values) {
+    let hCache;
+    let kCache;
+    // use internal app cache stores
+    if (this.app) {
+        hCache = this.app.cacheStores.hCache;
+        kCache = this.app.cacheStores.kCache;
+    }
+    else {
+        // use global cache stores
+        hCache = cacheStores.hCache;
+        kCache = cacheStores.kCache;
+    }
     let tpl = hCache.get(strings);
+    //console.log(this.app.appIntId);
+    //console.log(strings);
+    //let appIntId = this.app.appIntId;
     if (!tpl) {
         tpl = strings[0];
         let allowTag = false;
@@ -190,25 +205,6 @@ export default (function (strings, ...values) {
             hCache.set(clonedKey, cloned);
         }
     }
-    /*
-    if (model.key !== undefined) {
-        if (kCache[cloned.key] !== undefined) {
-            kCache[cloned.key] = {
-                isChanged: clonedKey !== kCache[cloned.key].clonedKey,
-                clonedKey,
-                next: cloned,
-                prev: kCache[cloned.key].next
-            }
-        } else {
-            kCache[cloned.key] = {
-                isChanged: true,
-                clonedKey,
-                next: cloned,
-                prev: undefined
-            }
-        }
-    }
-*/
     if (model.key !== undefined) {
         let _kCacheValue = kCache.get(cloned.key);
         if (_kCacheValue /*&& clonedKey !== _kCacheValue.clonedKey*/) {

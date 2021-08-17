@@ -13,17 +13,18 @@ import makeSureAttach from "./make-sure-attach.js";
 function createInstance(cfg = {}) {
     if (!cfg.root)
         return;
-    if (cfg.template instanceof HTMLElement) {
-        if (!cfg.template.parentNode)
+    if (!cfg.mountMainComponent) {
+        if (cfg.template instanceof HTMLElement) {
+            if (!cfg.template.parentNode)
+                cfg.root.appendChild(cfg.template);
+        }
+        else if (typeof cfg.template === 'string') {
+            cfg.template = html.create(cfg.template);
             cfg.root.appendChild(cfg.template);
-    }
-    else if (typeof cfg.template === 'string') {
-        cfg.template = html.create(cfg.template);
-        cfg.root.appendChild(cfg.template);
+        }
     }
     let componentInstance = null;
     let cmpName;
-    //let isChildStyle;
     const trash = [];
     function walk($child, parent = {}) {
         while ($child) {
@@ -37,14 +38,6 @@ function createInstance(cfg = {}) {
                 continue;
             }
             directive.callAppWalkDOM(parent, $child);
-            /*
-            isChildStyle = transformChildStyle($child, parent);
-
-            if (isChildStyle) {
-                $child = isChildStyle;
-                continue;
-            }
-             */
             cmpName = getComponentName($child);
             directive.callAppComponentAssignName(parent, $child, (name) => {
                 cmpName = name;
@@ -165,8 +158,37 @@ function createInstance(cfg = {}) {
             $child = $child.nextElementSibling;
         }
     }
-    walk(cfg.template);
-    trash.forEach($child => $child.remove());
-    return componentInstance;
+    if (cfg.mountMainComponent) {
+        // Monto il componente principale
+        //console.log(cfg.component)
+        let newElement = new cfg.component({
+            //tag: 'bbb-bbb',//cmp.tag || cmpName,
+            cmp: cfg.component,
+            root: cfg.root,
+            app: cfg.app,
+            props: {},
+            componentDirectives: {},
+            parentCmp: null,
+        });
+        newElement._isRendered = true;
+        newElement.render(true);
+        if (cfg.innerHTML) {
+            //console.log(cfg.innerHTML)
+            let innerHTMLEl = html.create(cfg.innerHTML);
+            //console.log(innerHTMLEl)
+            //let newElementHTMLElement = newElement.getHTMLElement();
+            newElement.getHTMLElement().appendChild(innerHTMLEl);
+        }
+        walk(newElement.getHTMLElement());
+        trash.forEach($child => $child.remove());
+        hooks.callMount(newElement);
+        hooks.callMountAsync(newElement);
+        return newElement;
+    }
+    else {
+        walk(cfg.template);
+        trash.forEach($child => $child.remove());
+        return componentInstance;
+    }
 }
 export default createInstance;

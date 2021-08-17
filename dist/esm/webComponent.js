@@ -1,4 +1,5 @@
 import Doz from "./Doz.js";
+import mount from "./mount.js";
 import data from "./data.js";
 import dashToCamel from "./utils/dash-to-camel.js";
 import createStyleSoftEntrance from "./utils/create-style-soft-entrance.js";
@@ -32,43 +33,54 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
                 }
             }
-            contentHTML = this.innerHTML;
+            let onAppReady = function () {
+                let firstChild = this.children[0] || this;
+                exposedMethods.forEach(method => {
+                    if (firstChild[method]) {
+                        thisElement[method] = firstChild[method].bind(firstChild);
+                    }
+                });
+                thisElement.removeAttribute('data-soft-entrance');
+                firstChild.props = Object.assign({}, firstChild.props, initialProps);
+                let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+                data.webComponents.tags[tag][id || countCmp] = firstChild;
+                if (id !== null) {
+                    if (data.webComponents.ids[id])
+                        return console.warn(id + ': id already exists for DozWebComponent');
+                    data.webComponents.ids[id] = firstChild;
+                }
+            };
+            contentHTML = this.innerHTML.trim();
             this.innerHTML = '';
             let tagCmp = cmp || globalTag || tag;
-            this.dozApp = new Doz({
-                root,
-                useShadowRoot: !hasDataNoShadow,
-                template(h) {
-                    return h `
-                    <${tagCmp}>${contentHTML}</${tagCmp}>
-                `;
-                },
-                onAppReady() {
-                    let firstChild = this.children[0];
-                    exposedMethods.forEach(method => {
-                        if (firstChild[method]) {
-                            thisElement[method] = firstChild[method].bind(firstChild);
-                        }
-                    });
-                    //},
-                    //onMountAsync() {
-                    thisElement.removeAttribute('data-soft-entrance');
-                    //let firstChild = this.children[0];
-                    firstChild.props = Object.assign({}, firstChild.props, initialProps);
-                    let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
-                    data.webComponents.tags[tag][id || countCmp] = firstChild;
-                    if (id !== null) {
-                        if (data.webComponents.ids[id])
-                            return console.warn(id + ': id already exists for DozWebComponent');
-                        data.webComponents.ids[id] = firstChild;
-                    }
-                }
-            });
+            //console.log(contentHTML)
+            if (cmp && typeof cmp !== "object") {
+                cmp.__postListeners = {
+                    onAppReady
+                };
+                this.dozApp = mount(root, cmp, {
+                    useShadowRoot: !hasDataNoShadow,
+                    innerHTML: contentHTML
+                });
+            }
+            else {
+                this.dozApp = new Doz({
+                    root,
+                    useShadowRoot: !hasDataNoShadow,
+                    //language=HTML
+                    template(h) {
+                        return h `
+                            <${tagCmp}>${contentHTML}</${tagCmp}>
+                        `;
+                    },
+                    onAppReady
+                });
+            }
         }
         attributeChangedCallback(name, oldValue, newValue) {
             if (!this.dozApp)
                 return;
-            let firstChild = this.dozApp.mainComponent.children[0];
+            let firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
             firstChild.props[dashToCamel(name)] = newValue;
         }
     });
