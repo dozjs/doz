@@ -212,14 +212,18 @@ function createInstance(cfg = {}) {
         });
 
         newElement._isRendered = true;
+        newElement._mainComponentByAppCreate = true;
         newElement.render(true);
 
         if (cfg.innerHTML) {
             //console.log(cfg.innerHTML)
-            let innerHTMLEl = html.create(cfg.innerHTML);
+            let innerHTMLEl = html.create(cfg.innerHTML, 'div');
             //console.log(innerHTMLEl)
             //let newElementHTMLElement = newElement.getHTMLElement();
-            newElement.getHTMLElement().appendChild(innerHTMLEl);
+            innerHTMLEl.childNodes.forEach(child => {
+                newElement.getHTMLElement().appendChild(child);
+            })
+
         }
 
         //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})

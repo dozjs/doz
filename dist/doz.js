@@ -2039,14 +2039,23 @@ function createInstance() {
 
     });
     newElement._isRendered = true;
+    newElement._mainComponentByAppCreate = true;
     newElement.render(true);
 
     if (cfg.innerHTML) {
       //console.log(cfg.innerHTML)
-      var innerHTMLEl = html.create(cfg.innerHTML); //console.log(innerHTMLEl)
+      var innerHTMLEl = html.create(cfg.innerHTML, 'div'); //console.log(innerHTMLEl)
       //let newElementHTMLElement = newElement.getHTMLElement();
 
-      newElement.getHTMLElement().appendChild(innerHTMLEl);
+      var _defined = function _defined(child) {
+        newElement.getHTMLElement().appendChild(child);
+      };
+
+      var _defined2 = innerHTMLEl.childNodes;
+
+      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+      }
     } //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
 
 
@@ -2054,12 +2063,12 @@ function createInstance() {
       cmp: newElement
     });
 
-    var _defined = function _defined($child) {
+    var _defined3 = function _defined3($child) {
       return $child.remove();
     };
 
-    for (var _i2 = 0; _i2 <= trash.length - 1; _i2++) {
-      _defined(trash[_i2], _i2, trash);
+    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
+      _defined3(trash[_i4], _i4, trash);
     }
 
     hooks.callMount(newElement);
@@ -2068,12 +2077,12 @@ function createInstance() {
   } else {
     walk(cfg.template);
 
-    var _defined2 = function _defined2($child) {
+    var _defined4 = function _defined4($child) {
       return $child.remove();
     };
 
-    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
-      _defined2(trash[_i4], _i4, trash);
+    for (var _i6 = 0; _i6 <= trash.length - 1; _i6++) {
+      _defined4(trash[_i6], _i6, trash);
     }
 
     return componentInstance;
@@ -3580,7 +3589,7 @@ module.exports = function (strings) {
   if (this.app) {
     hCache = this.app.cacheStores.hCache;
     kCache = this.app.cacheStores.kCache;
-    isStyleForWebComponentByAppCreate = this.app.isWebComponent && this.app.byAppCreate;
+    isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
   } else {
     // use global cache stores
     hCache = cacheStores.hCache;
@@ -3622,10 +3631,12 @@ module.exports = function (strings) {
 
       if (stringsI.indexOf('</style') > -1) {
         isInStyle = false;
-      }
+      } // Non va bene, da migliorare
 
-      if (isStyleForWebComponentByAppCreate) {
-        tpl = tpl.replace(/<style/, '<style data-is-webcomponent');
+
+      if (thereIsStyle && isStyleForWebComponentByAppCreate) {
+        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>').replace(/:(component|wrapper|root)/g, ':host');
+        console.log(tpl);
       }
 
       if (isInStyle) {

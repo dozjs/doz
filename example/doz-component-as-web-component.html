@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - DWC">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../dist/doz.js?54151k4448t45w53"></script>
+    <script src="../dist/doz.js?541551k4448t45w53"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -78,7 +78,6 @@
         template(h) {
             //language=HTML
             return h`
-                <div>
                     <style>
                         :host {
                             border: 1px solid green;
@@ -88,7 +87,9 @@
                             color: red
                         }
                     </style>
+                <div>
                     <div class="details">details</div>
+                    :component
                     Timestamp: ${this.props.time}<br>
                     prop: ${this.props.myProp}<br>
                     <${myChildrenCmp}/>
@@ -100,9 +101,11 @@
             this.mount(this.h`
                 <div>
                     <style>
-
+                        .my-label {
+                            color: #1b6d85;
+                        }
                     </style>
-                    <strong>mounted</strong>
+                    <strong class="my-label">mounted</strong>
                 </div>
             `);
         }

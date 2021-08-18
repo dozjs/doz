@@ -54,7 +54,7 @@ module.exports = function (strings, ...values) {
     if (this.app) {
         hCache = this.app.cacheStores.hCache;
         kCache = this.app.cacheStores.kCache;
-        isStyleForWebComponentByAppCreate = this.app.isWebComponent && this.app.byAppCreate;
+        isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
     } else {
         // use global cache stores
         hCache = cacheStores.hCache;
@@ -95,9 +95,12 @@ module.exports = function (strings, ...values) {
                 isInStyle = false;
             }
 
-            if (isStyleForWebComponentByAppCreate) {
+            // Non va bene, da migliorare
+            if (thereIsStyle && isStyleForWebComponentByAppCreate) {
                 tpl = tpl
-                    .replace(/<style/, '<style data-is-webcomponent');
+                    .replace(/<style>/, '<style data-is-webcomponent>')
+                    .replace(/:(component|wrapper|root)/g, ':host');
+                console.log(tpl)
             }
 
             if (isInStyle) {
