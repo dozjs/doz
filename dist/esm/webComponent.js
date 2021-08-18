@@ -67,6 +67,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                     onAppReady
                 };
                 this.dozApp = appCreate(root, cmp, {
+                    isWebComponent: true,
                     useShadowRoot: !hasDataNoShadow,
                     innerHTML: contentHTML,
                     onAppEmit
@@ -75,6 +76,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
             else {
                 this.dozApp = new Doz({
                     root,
+                    isWebComponent: true,
                     useShadowRoot: !hasDataNoShadow,
                     //language=HTML
                     template(h) {

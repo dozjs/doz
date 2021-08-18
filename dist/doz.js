@@ -759,7 +759,7 @@ function compile(tpl) {
       /**/
 
 
-      if (match[2] === 'style') {
+      if (match[2] === 'style' && props['data-is-webcomponent'] === undefined) {
         currentParent.style = true;
 
         if (props['data-scoped'] === '') {
@@ -806,7 +806,7 @@ function compile(tpl) {
   }
 
   if (root.children.length > 1) {
-    root.type = TAG.ROOT; //console.log(root)
+    root.type = TAG.ROOT;
   } else if (root.children.length) {
     tplCache[tpl] = root.children[0];
     return root.children[0];
@@ -1007,6 +1007,12 @@ var Doz = /*#__PURE__*/function () {
       _onAppCB: {
         value: {},
         writable: true
+      },
+      isWebComponent: {
+        value: this.cfg.isWebComponent
+      },
+      byAppCreate: {
+        value: this.cfg.byAppCreate
       },
       useShadowRoot: {
         value: this.cfg.useShadowRoot,
@@ -1450,7 +1456,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
       //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
 
-      removeAllAttributes(this._cfgRoot, this.exposeAttributes);
+      removeAllAttributes(this._cfgRoot, this.exposeAttributes); //console.log(this._rootElement)
 
       if (!this._rootElement && rootElement) {
         this._rootElement = rootElement;
@@ -1982,7 +1988,7 @@ function createInstance() {
             hooks.callMountAsync(newElement);
           }
 
-          parentElement = newElement;
+          parentElement = newElement; //console.log(parent)
 
           if (parent.cmp) {
             var n = Object.keys(parent.cmp.children).length++;
@@ -2041,9 +2047,12 @@ function createInstance() {
       //let newElementHTMLElement = newElement.getHTMLElement();
 
       newElement.getHTMLElement().appendChild(innerHTMLEl);
-    }
+    } //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
 
-    walk(newElement.getHTMLElement());
+
+    walk(newElement.getHTMLElement(), {
+      cmp: newElement
+    });
 
     var _defined = function _defined($child) {
       return $child.remove();
@@ -3451,14 +3460,24 @@ module.exports = canDecode;
 ((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)
  */
 //const mapper = require('../vdom/mapper');
-function composeStyleInner(cssContent, tag) {
+function composeStyleInner(cssContent, tag, cmp) {
   if (typeof cssContent !== 'string') return; //cssContent = mapper.getAll(cssContent);
 
   var sanitizeTagForAnimation = tag.replace(/[^\w]/g, '');
 
   if (/:root/.test(cssContent)) {
     console.warn('[DEPRECATION] the :root pseudo selector is deprecated, use :component or :wrapper instead');
-  }
+  } // se il componente non ha alcun tag allora imposto il tag per il selettore css a vuoto
+  // questo accade quando si usa Doz.mount il quale "monta" direttamente il componente senza il wrapper "dz-app"
+
+  /*if (cmp && cmp.tag === undefined) {
+      tag = '';
+        if (cmp.app.isWebComponent && cmp.app.byAppCreate) {
+          cssContent = cssContent
+              .replace(/:(component|wrapper|root)/g, ':host')
+      }
+  }*/
+
 
   cssContent = cssContent.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/^(\s+)?:(component|wrapper|root)(\s+)?{/gm, tag + ' {').replace(/:(component|wrapper|root)/g, '').replace(/(@(?:[\w-]+-)?keyframes\s+)([\w-_]+)/g, "$1 ".concat(sanitizeTagForAnimation, "-$2")).replace(/((?:[\w-]+-)?animation(?:-name)?(?:\s+)?:(?:\s+))([\w-_]+)/g, "$1 ".concat(sanitizeTagForAnimation, "-$2")) // Remove comments
   .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '').replace(/[^\s].*{/gm, function (match) {
@@ -3555,11 +3574,13 @@ function placeholderIndex(str, values) {
 
 module.exports = function (strings) {
   var hCache;
-  var kCache; // use internal app cache stores
+  var kCache;
+  var isStyleForWebComponentByAppCreate; // use internal app cache stores
 
   if (this.app) {
     hCache = this.app.cacheStores.hCache;
     kCache = this.app.cacheStores.kCache;
+    isStyleForWebComponentByAppCreate = this.app.isWebComponent && this.app.byAppCreate;
   } else {
     // use global cache stores
     hCache = cacheStores.hCache;
@@ -3601,6 +3622,10 @@ module.exports = function (strings) {
 
       if (stringsI.indexOf('</style') > -1) {
         isInStyle = false;
+      }
+
+      if (isStyleForWebComponentByAppCreate) {
+        tpl = tpl.replace(/<style/, '<style data-is-webcomponent');
       }
 
       if (isInStyle) {
@@ -3883,7 +3908,8 @@ var Doz = __webpack_require__(9);
 function appCreate(root, component, options) {
   var cfg = Object.assign({
     root: root,
-    mainComponent: component
+    mainComponent: component,
+    byAppCreate: true
   }, options);
   return new Doz(cfg);
 }
@@ -5312,11 +5338,8 @@ var composeStyleInner = __webpack_require__(19);
 var createStyle = __webpack_require__(43);
 
 function scopedInner(cssContent, uId, tag, scoped, cmp) {
-  if (typeof cssContent !== 'string') return; // se il componente non ha alcun tag allora imposto il tag per il selettore css a vuoto
-  // questo accade quando si usa Doz.mount il quale "monta" direttamente il componente senza il wrapper "dz-app"
-
-  if (cmp && cmp.tag === undefined) tag = '';
-  cssContent = composeStyleInner(cssContent, tag);
+  if (typeof cssContent !== 'string') return;
+  cssContent = composeStyleInner(cssContent, tag, cmp);
   return createStyle(cssContent, uId, tag, scoped, cmp);
 }
 
@@ -6364,7 +6387,7 @@ function createDozWebComponent(tag, cmp) {
         }
 
         var onAppReady = function onAppReady() {
-          var firstChild = this.children[0] || this;
+          var firstChild = this.app.byAppCreate ? this : this.children[0];
 
           var _defined = function _defined(method) {
             if (firstChild[method]) {
@@ -6409,6 +6432,7 @@ function createDozWebComponent(tag, cmp) {
             onAppReady: onAppReady
           };
           this.dozApp = appCreate(root, cmp, {
+            isWebComponent: true,
             useShadowRoot: !hasDataNoShadow,
             innerHTML: contentHTML,
             onAppEmit: onAppEmit
@@ -6416,6 +6440,7 @@ function createDozWebComponent(tag, cmp) {
         } else {
           this.dozApp = new Doz({
             root: root,
+            isWebComponent: true,
             useShadowRoot: !hasDataNoShadow,
             //language=HTML
             template: function template(h) {
@@ -6430,7 +6455,7 @@ function createDozWebComponent(tag, cmp) {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, oldValue, newValue) {
         if (!this.dozApp) return;
-        var firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
+        var firstChild = this.dozApp.byAppCreate ? this.dozApp.mainComponent : this.dozApp.mainComponent.children[0];
         firstChild.props[dashToCamel(name)] = newValue;
       }
     }]);

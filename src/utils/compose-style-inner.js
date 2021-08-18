@@ -7,7 +7,7 @@
  */
 //const mapper = require('../vdom/mapper');
 
-function composeStyleInner(cssContent, tag) {
+function composeStyleInner(cssContent, tag, cmp) {
     if (typeof cssContent !== 'string') return;
 
     //cssContent = mapper.getAll(cssContent);
@@ -17,6 +17,17 @@ function composeStyleInner(cssContent, tag) {
     if (/:root/.test(cssContent)) {
         console.warn('[DEPRECATION] the :root pseudo selector is deprecated, use :component or :wrapper instead');
     }
+
+    // se il componente non ha alcun tag allora imposto il tag per il selettore css a vuoto
+    // questo accade quando si usa Doz.mount il quale "monta" direttamente il componente senza il wrapper "dz-app"
+    /*if (cmp && cmp.tag === undefined) {
+        tag = '';
+
+        if (cmp.app.isWebComponent && cmp.app.byAppCreate) {
+            cssContent = cssContent
+                .replace(/:(component|wrapper|root)/g, ':host')
+        }
+    }*/
 
     cssContent = cssContent
         .replace(/{/g, '{\n')

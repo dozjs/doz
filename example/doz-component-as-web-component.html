@@ -5,7 +5,7 @@
     <meta name="description" content="DOZ - DWC">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../dist/doz.js?54151k85w53"></script>
+    <script src="../dist/doz.js?54151k4448t45w53"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -35,8 +35,34 @@
     const {Component, defineWebComponent} = Doz;
 
     let myChildrenCmp = class extends Component {
+        constructor(o) {
+            super(o);
+            this.props = {
+                color: 'purple'
+            }
+        }
         template(h) {
-            return h`<div>my children</div>`
+            //language=HTML
+            return h`
+                <div class="wow">
+                    <style>
+                        .wow {
+                            color: ${this.props.color};
+                        }
+                    </style>
+                    my children
+                </div>
+            `
+        }
+
+        onMount() {
+            setInterval(() => {
+                if (this.props.color === 'purple') {
+                    this.props.color = 'violet';
+                } else {
+                    this.props.color = 'purple'
+                }
+            }, 1000)
         }
     }
 
@@ -50,13 +76,35 @@
         }
 
         template(h) {
+            //language=HTML
             return h`
                 <div>
+                    <style>
+                        :host {
+                            border: 1px solid green;
+                            display: block;
+                        }
+                        .details {
+                            color: red
+                        }
+                    </style>
+                    <div class="details">details</div>
                     Timestamp: ${this.props.time}<br>
                     prop: ${this.props.myProp}<br>
                     <${myChildrenCmp}/>
                 </div>
             `
+        }
+
+        onMountAsync() {
+            this.mount(this.h`
+                <div>
+                    <style>
+
+                    </style>
+                    <strong>mounted</strong>
+                </div>
+            `);
         }
 
         myMethod(value) {

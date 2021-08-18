@@ -175,7 +175,8 @@ function compile(tpl) {
             }
 
             /**/
-            if (match[2] === 'style') {
+
+            if (match[2] === 'style' && props['data-is-webcomponent'] === undefined) {
                 currentParent.style = true;
                 if (props['data-scoped'] === '') {
                     currentParent.styleScoped = true;
@@ -221,7 +222,6 @@ function compile(tpl) {
 
     if (root.children.length > 1) {
         root.type = TAG.ROOT;
-        //console.log(root)
     } else if (root.children.length) {
         tplCache[tpl] = root.children[0];
         return root.children[0];

@@ -186,6 +186,8 @@ class Component extends DOMManipulation {
         //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
         removeAllAttributes(this._cfgRoot, this.exposeAttributes);
 
+        //console.log(this._rootElement)
+
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
             makeSureAttach(this._rootElement);

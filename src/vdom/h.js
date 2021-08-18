@@ -48,11 +48,13 @@ function placeholderIndex(str, values) {
 module.exports = function (strings, ...values) {
     let hCache;
     let kCache;
+    let isStyleForWebComponentByAppCreate;
 
     // use internal app cache stores
     if (this.app) {
         hCache = this.app.cacheStores.hCache;
         kCache = this.app.cacheStores.kCache;
+        isStyleForWebComponentByAppCreate = this.app.isWebComponent && this.app.byAppCreate;
     } else {
         // use global cache stores
         hCache = cacheStores.hCache;
@@ -91,6 +93,11 @@ module.exports = function (strings, ...values) {
 
             if (stringsI.indexOf('</style') > -1) {
                 isInStyle = false;
+            }
+
+            if (isStyleForWebComponentByAppCreate) {
+                tpl = tpl
+                    .replace(/<style/, '<style data-is-webcomponent');
             }
 
             if (isInStyle) {

@@ -89,6 +89,12 @@ class Doz {
                 value: {},
                 writable: true
             },
+            isWebComponent: {
+                value: this.cfg.isWebComponent
+            },
+            byAppCreate: {
+                value: this.cfg.byAppCreate
+            },
             useShadowRoot: {
                 value: this.cfg.useShadowRoot,
                 writable: true,

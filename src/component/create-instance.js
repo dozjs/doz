@@ -166,7 +166,7 @@ function createInstance(cfg = {}) {
                 }
 
                 parentElement = newElement;
-
+                //console.log(parent)
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length++;
                     directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -222,7 +222,8 @@ function createInstance(cfg = {}) {
             newElement.getHTMLElement().appendChild(innerHTMLEl);
         }
 
-        walk(newElement.getHTMLElement())
+        //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
+        walk(newElement.getHTMLElement(), {cmp: newElement})
         trash.forEach($child => $child.remove());
 
         hooks.callMount(newElement);

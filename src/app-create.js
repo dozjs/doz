@@ -4,7 +4,8 @@ function appCreate(root, component, options) {
 
     let cfg = Object.assign({
         root,
-        mainComponent: component
+        mainComponent: component,
+        byAppCreate: true
     }, options);
 
     return new Doz(cfg);

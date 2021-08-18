@@ -42,7 +42,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
             }
 
             let onAppReady = function () {
-                let firstChild = this.children[0] || this;
+                let firstChild = this.app.byAppCreate ? this : this.children[0];
                 exposedMethods.forEach(method => {
                     if (firstChild[method]) {
                         thisElement[method] = firstChild[method].bind(firstChild);
@@ -83,6 +83,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
                 }
 
                 this.dozApp = appCreate(root, cmp,{
+                    isWebComponent: true,
                     useShadowRoot: !hasDataNoShadow,
                     innerHTML: contentHTML,
                     onAppEmit
@@ -90,6 +91,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
             } else {
                 this.dozApp = new Doz({
                     root,
+                    isWebComponent: true,
                     useShadowRoot: !hasDataNoShadow,
                     //language=HTML
                     template(h) {
@@ -105,7 +107,7 @@ function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc'
 
         attributeChangedCallback(name, oldValue, newValue) {
             if (!this.dozApp) return;
-            let firstChild = this.dozApp.mainComponent.children[0] || this.dozApp.mainComponent;
+            let firstChild = this.dozApp.byAppCreate ? this.dozApp.mainComponent : this.dozApp.mainComponent.children[0];
             firstChild.props[dashToCamel(name)] = newValue;
         }
     });
