@@ -90,11 +90,15 @@ function compile(tpl) {
                 //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
+                    //console.log(currentParent)
                     //console.log(text)
                     //let possibleCompiled = mapper.get(text.trim());
                     //text = placeholderIndex(text, values);
                     //if (!Array.isArray(text)) {
                     //console.log(currentParent)
+                    if (currentParent.type === 'style' && currentParent.props['data-is-webcomponent'] !== undefined) {
+                        text = text.replace(/:(component|wrapper|root)/g, ':host');
+                    }
                     if (currentParent.style === true) {
                         //console.log('currentParent.style', currentParent.style)
                         currentParent.style = text;
@@ -150,11 +154,13 @@ function compile(tpl) {
             }
             /**/
             if (match[2] === 'style') {
-                currentParent.style = true;
-                if (props['data-scoped'] === '') {
-                    currentParent.styleScoped = true;
+                if (props['data-is-webcomponent'] === undefined) {
+                    currentParent.style = true;
+                    if (props['data-scoped'] === '') {
+                        currentParent.styleScoped = true;
+                    }
+                    continue;
                 }
-                continue;
             }
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
             stack.push(currentParent);
@@ -191,7 +197,6 @@ function compile(tpl) {
     }
     if (root.children.length > 1) {
         root.type = TAG.ROOT;
-        //console.log(root)
     }
     else if (root.children.length) {
         tplCache[tpl] = root.children[0];

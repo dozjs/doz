@@ -77,6 +77,12 @@ class Doz {
                 value: {},
                 writable: true
             },
+            isWebComponent: {
+                value: this.cfg.isWebComponent
+            },
+            byAppCreate: {
+                value: this.cfg.byAppCreate
+            },
             useShadowRoot: {
                 value: this.cfg.useShadowRoot,
                 writable: true,
@@ -162,6 +168,7 @@ class Doz {
                 };
             });
         }
+        directive.callAppInit(this);
         if (this.cfg.mainComponent) {
             this._tree = createInstance({
                 mountMainComponent: true,
@@ -198,7 +205,8 @@ class Doz {
                 this.on(event, this.cfg.listeners[event]);
             });
         }
-        directive.callAppInit(this);
+        //console.log('-----');
+        //directive.callAppInit(this);
         if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
         this._callAppReady();

@@ -106,10 +106,12 @@ function fillCompiled(obj, values, parent, _this) {
 export default (function (strings, ...values) {
     let hCache;
     let kCache;
+    let isStyleForWebComponentByAppCreate;
     // use internal app cache stores
     if (this.app) {
         hCache = this.app.cacheStores.hCache;
         kCache = this.app.cacheStores.kCache;
+        isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
     }
     else {
         // use global cache stores
@@ -121,6 +123,7 @@ export default (function (strings, ...values) {
     //console.log(strings);
     //let appIntId = this.app.appIntId;
     if (!tpl) {
+        //console.log(strings[0])
         tpl = strings[0];
         let allowTag = false;
         let isInStyle = false;
@@ -144,6 +147,10 @@ export default (function (strings, ...values) {
             }
             if (stringsI.indexOf('</style') > -1) {
                 isInStyle = false;
+            }
+            if (thereIsStyle && isStyleForWebComponentByAppCreate) {
+                tpl = tpl
+                    .replace(/<style>/, '<style data-is-webcomponent>');
             }
             if (isInStyle) {
                 allowTag = false;

@@ -133,6 +133,7 @@ function createInstance(cfg = {}) {
                     hooks.callMountAsync(newElement);
                 }
                 parentElement = newElement;
+                //console.log(parent)
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length++;
                     directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -160,7 +161,6 @@ function createInstance(cfg = {}) {
     }
     if (cfg.mountMainComponent) {
         // Monto il componente principale
-        //console.log(cfg.component)
         let newElement = new cfg.component({
             //tag: 'bbb-bbb',//cmp.tag || cmpName,
             cmp: cfg.component,
@@ -170,16 +170,22 @@ function createInstance(cfg = {}) {
             componentDirectives: {},
             parentCmp: null,
         });
+        propsInit(newElement);
+        newElement.app.emit('componentPropsInit', newElement);
         newElement._isRendered = true;
+        newElement._mainComponentByAppCreate = true;
         newElement.render(true);
         if (cfg.innerHTML) {
             //console.log(cfg.innerHTML)
-            let innerHTMLEl = html.create(cfg.innerHTML);
+            let innerHTMLEl = html.create(cfg.innerHTML, 'div');
             //console.log(innerHTMLEl)
             //let newElementHTMLElement = newElement.getHTMLElement();
-            newElement.getHTMLElement().appendChild(innerHTMLEl);
+            innerHTMLEl.childNodes.forEach(child => {
+                newElement.getHTMLElement().appendChild(child);
+            });
         }
-        walk(newElement.getHTMLElement());
+        //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
+        walk(newElement.getHTMLElement(), { cmp: newElement });
         trash.forEach($child => $child.remove());
         hooks.callMount(newElement);
         hooks.callMountAsync(newElement);
