@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.13.1] - 2021-08-19
+- **Fixed** style does not work on web-component
+
 ## [3.13.0] - 2021-08-17
 - **Added** new api called `appCreate`
 - **Added** event listener support to web-component
