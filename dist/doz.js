@@ -1117,6 +1117,8 @@ var Doz = /*#__PURE__*/function () {
       }
     }
 
+    directive.callAppInit(this);
+
     if (this.cfg.mainComponent) {
       this._tree = createInstance({
         mountMainComponent: true,
@@ -1161,9 +1163,10 @@ var Doz = /*#__PURE__*/function () {
       for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
         _defined9(_defined10[_i10], _i10, _defined10);
       }
-    }
+    } //console.log('-----');
+    //directive.callAppInit(this);
 
-    directive.callAppInit(this);
+
     if (!this.cfg.mainComponent && this.cfg.autoDraw) this.draw();
 
     this._callAppReady();
@@ -2027,7 +2030,6 @@ function createInstance() {
 
   if (cfg.mountMainComponent) {
     // Monto il componente principale
-    //console.log(cfg.component)
     var newElement = new cfg.component({
       //tag: 'bbb-bbb',//cmp.tag || cmpName,
       cmp: cfg.component,
@@ -2038,6 +2040,8 @@ function createInstance() {
       parentCmp: null //parent.cmp || cfg.parent
 
     });
+    propsInit(newElement);
+    newElement.app.emit('componentPropsInit', newElement);
     newElement._isRendered = true;
     newElement._mainComponentByAppCreate = true;
     newElement.render(true);
@@ -3605,6 +3609,7 @@ module.exports = function (strings) {
   }
 
   if (!tpl) {
+    //console.log(strings[0])
     tpl = strings[0];
     var allowTag = false;
     var isInStyle = false;
@@ -3635,8 +3640,8 @@ module.exports = function (strings) {
 
 
       if (thereIsStyle && isStyleForWebComponentByAppCreate) {
-        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>').replace(/:(component|wrapper|root)/g, ':host');
-        console.log(tpl);
+        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>') //.replace(/(<style(.|\s)+):(component|wrapper|root)((.|\s)+<\/style>)/gm, '$1:host$3')
+        .replace(/:(component|wrapper|root)/g, ':host'); //console.log(tpl)
       }
 
       if (isInStyle) {

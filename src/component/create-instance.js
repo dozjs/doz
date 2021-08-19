@@ -198,9 +198,6 @@ function createInstance(cfg = {}) {
 
     if (cfg.mountMainComponent) {
         // Monto il componente principale
-
-        //console.log(cfg.component)
-
         let newElement = new cfg.component({
             //tag: 'bbb-bbb',//cmp.tag || cmpName,
             cmp: cfg.component,
@@ -210,6 +207,9 @@ function createInstance(cfg = {}) {
             componentDirectives: {},
             parentCmp: null,//parent.cmp || cfg.parent
         });
+
+        propsInit(newElement);
+        newElement.app.emit('componentPropsInit', newElement);
 
         newElement._isRendered = true;
         newElement._mainComponentByAppCreate = true;

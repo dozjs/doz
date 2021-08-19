@@ -186,6 +186,8 @@ class Doz {
             });
         }
 
+        directive.callAppInit(this);
+
         if (this.cfg.mainComponent) {
             this._tree = createInstance({
                 mountMainComponent: true,
@@ -227,7 +229,9 @@ class Doz {
             })
         }
 
-        directive.callAppInit(this);
+        //console.log('-----');
+
+        //directive.callAppInit(this);
 
         if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();

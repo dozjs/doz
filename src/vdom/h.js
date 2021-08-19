@@ -68,6 +68,7 @@ module.exports = function (strings, ...values) {
     //let appIntId = this.app.appIntId;
 
     if (!tpl) {
+        //console.log(strings[0])
         tpl = strings[0];
         let allowTag = false;
         let isInStyle = false;
@@ -99,8 +100,9 @@ module.exports = function (strings, ...values) {
             if (thereIsStyle && isStyleForWebComponentByAppCreate) {
                 tpl = tpl
                     .replace(/<style>/, '<style data-is-webcomponent>')
+                    //.replace(/(<style(.|\s)+):(component|wrapper|root)((.|\s)+<\/style>)/gm, '$1:host$3')
                     .replace(/:(component|wrapper|root)/g, ':host');
-                console.log(tpl)
+                //console.log(tpl)
             }
 
             if (isInStyle) {
