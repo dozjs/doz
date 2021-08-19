@@ -693,11 +693,16 @@ function compile(tpl) {
         // if has content
 
         if (text) {
+          //console.log(currentParent)
           //console.log(text)
           //let possibleCompiled = mapper.get(text.trim());
           //text = placeholderIndex(text, values);
           //if (!Array.isArray(text)) {
           //console.log(currentParent)
+          if (currentParent.type === 'style' && currentParent.props['data-is-webcomponent'] !== undefined) {
+            text = text.replace(/:(component|wrapper|root)/g, ':host');
+          }
+
           if (currentParent.style === true) {
             //console.log('currentParent.style', currentParent.style)
             currentParent.style = text; //console.log(currentParent)
@@ -759,14 +764,16 @@ function compile(tpl) {
       /**/
 
 
-      if (match[2] === 'style' && props['data-is-webcomponent'] === undefined) {
-        currentParent.style = true;
+      if (match[2] === 'style') {
+        if (props['data-is-webcomponent'] === undefined) {
+          currentParent.style = true;
 
-        if (props['data-scoped'] === '') {
-          currentParent.styleScoped = true;
+          if (props['data-scoped'] === '') {
+            currentParent.styleScoped = true;
+          }
+
+          continue;
         }
-
-        continue;
       }
 
       currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));
@@ -3636,12 +3643,10 @@ module.exports = function (strings) {
 
       if (stringsI.indexOf('</style') > -1) {
         isInStyle = false;
-      } // Non va bene, da migliorare
-
+      }
 
       if (thereIsStyle && isStyleForWebComponentByAppCreate) {
-        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>') //.replace(/(<style(.|\s)+):(component|wrapper|root)((.|\s)+<\/style>)/gm, '$1:host$3')
-        .replace(/:(component|wrapper|root)/g, ':host'); //console.log(tpl)
+        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>');
       }
 
       if (isInStyle) {

@@ -43,6 +43,7 @@ function last(arr) {
 function removeNLS(str) {
     return str.replace(REGEX.MATCH_NLS, '');
 }
+
 /*
 function removeDoubleQuotes(str) {
     if (typeof str === 'string') {
@@ -105,20 +106,26 @@ function compile(tpl) {
                 //const text = (data.substring(lastTextPos, REGEX.HTML_MARKUP.lastIndex - match[0].length));
                 // if has content
                 if (text) {
+                    //console.log(currentParent)
                     //console.log(text)
                     //let possibleCompiled = mapper.get(text.trim());
                     //text = placeholderIndex(text, values);
                     //if (!Array.isArray(text)) {
+                    //console.log(currentParent)
+
+                    if (currentParent.type === 'style' && currentParent.props['data-is-webcomponent'] !== undefined) {
+                        text = text.replace(/:(component|wrapper|root)/g, ':host');
+                    }
+
+                    if (currentParent.style === true) {
+                        //console.log('currentParent.style', currentParent.style)
+                        currentParent.style = text;
                         //console.log(currentParent)
-                        if (currentParent.style === true) {
-                            //console.log('currentParent.style', currentParent.style)
-                            currentParent.style = text;
-                            //console.log(currentParent)
-                        } else {
-                            if (text.substr(0, 5) === ' e-0_')
-                                text = text.trim();
-                            currentParent.appendChild(text);
-                        }
+                    } else {
+                        if (text.substr(0, 5) === ' e-0_')
+                            text = text.trim();
+                        currentParent.appendChild(text);
+                    }
                     /*} else {
                         currentParent.appendChild(text);
                     }*/
@@ -176,12 +183,14 @@ function compile(tpl) {
 
             /**/
 
-            if (match[2] === 'style' && props['data-is-webcomponent'] === undefined) {
-                currentParent.style = true;
-                if (props['data-scoped'] === '') {
-                    currentParent.styleScoped = true;
+            if (match[2] === 'style') {
+                if (props['data-is-webcomponent'] === undefined) {
+                    currentParent.style = true;
+                    if (props['data-scoped'] === '') {
+                        currentParent.styleScoped = true;
+                    }
+                    continue;
                 }
-                continue;
             }
 
             currentParent = currentParent.appendChild(new Element(match[2], props, currentParent.isSVG));

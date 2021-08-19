@@ -96,13 +96,9 @@ module.exports = function (strings, ...values) {
                 isInStyle = false;
             }
 
-            // Non va bene, da migliorare
             if (thereIsStyle && isStyleForWebComponentByAppCreate) {
                 tpl = tpl
                     .replace(/<style>/, '<style data-is-webcomponent>')
-                    //.replace(/(<style(.|\s)+):(component|wrapper|root)((.|\s)+<\/style>)/gm, '$1:host$3')
-                    .replace(/:(component|wrapper|root)/g, ':host');
-                //console.log(tpl)
             }
 
             if (isInStyle) {
