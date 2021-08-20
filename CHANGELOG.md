@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.13.2] - 2021-08-20
+- **Fixed** issue using appCreate with doz-ssr
+
 ## [3.13.1] - 2021-08-19
 - **Fixed** style does not work on web-component
 

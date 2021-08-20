@@ -63,6 +63,15 @@ export function h(template: string): string
 export function compile(template: string): object
 
 /**
+ * Creates app by a main component.
+ * @param {string} root
+ * @param {object} component
+ * @param {object} options
+ * @returns {object}
+ */
+export function appCreate(root: string, component: object, options?: object): object
+
+/**
  * Tag decorator.
  * @param {string} name
  */

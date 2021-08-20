@@ -184,7 +184,8 @@ class Component extends DOMManipulation {
 
         //Remove attributes from component tag
         //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
-        removeAllAttributes(this._cfgRoot, this.exposeAttributes);
+        if (!this._mainComponentByAppCreate)
+            removeAllAttributes(this._cfgRoot, this.exposeAttributes);
 
         //console.log(this._rootElement)
 

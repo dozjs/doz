@@ -30,12 +30,13 @@ class Doz {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
 
-        const appNode = document.querySelector(TAG.APP);
-
-        // This fix double app rendering in SSR
-        makeSureAttach(appNode);
-        if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
-            appNode.parentNode.removeChild(appNode);
+        if (cfg.root.hasChildNodes) {
+            const appNode = cfg.root.firstElementChild;// document.querySelector(TAG.APP);
+            // This fix double app rendering in SSR
+            makeSureAttach(appNode);
+            if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
+                appNode.parentNode.removeChild(appNode);
+            }
         }
 
         this.cfg = Object.assign({}, {
