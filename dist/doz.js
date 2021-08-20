@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.13.1  
+// [DOZ]  Build version: 3.13.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -951,12 +951,15 @@ var Doz = /*#__PURE__*/function () {
       throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
     }
 
-    var appNode = document.querySelector(TAG.APP); // This fix double app rendering in SSR
+    if (cfg.root.hasChildNodes) {
+      var appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
+      // This fix double app rendering in SSR
 
-    makeSureAttach(appNode);
+      makeSureAttach(appNode);
 
-    if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
-      appNode.parentNode.removeChild(appNode);
+      if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
+        appNode.parentNode.removeChild(appNode);
+      }
     }
 
     this.cfg = Object.assign({}, {
@@ -1466,7 +1469,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
       //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
 
-      removeAllAttributes(this._cfgRoot, this.exposeAttributes); //console.log(this._rootElement)
+      if (!this._mainComponentByAppCreate) removeAllAttributes(this._cfgRoot, this.exposeAttributes); //console.log(this._rootElement)
 
       if (!this._rootElement && rootElement) {
         this._rootElement = rootElement;
@@ -4025,7 +4028,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.13.1',
+    value: '3.13.2',
     enumerable: true
   },
   tag: {
