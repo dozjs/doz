@@ -7,8 +7,6 @@ const directive = require('./directives');
 const makeSureAttach = require('./component/make-sure-attach');
 let appCounter = 0;
 
-console.log('b')
-
 class Doz {
 
     constructor(cfg = {}) {
