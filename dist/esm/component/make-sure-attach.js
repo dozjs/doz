@@ -1,4 +1,1 @@
-export default (function ($target) {
-    if ($target && !$target._dozAttach)
-        $target._dozAttach = {};
-});
+export default function(t){t&&!t._dozAttach&&(t._dozAttach={})}

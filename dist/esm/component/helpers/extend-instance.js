@@ -1,4 +1,1 @@
-function extendInstance(instance, cfg, dProps) {
-    Object.assign(instance, cfg, dProps);
-}
-export default extendInstance;
+function extendInstance(e,n,t){Object.assign(e,n,t)}export default extendInstance;

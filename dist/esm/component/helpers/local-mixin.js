@@ -1,6 +1,1 @@
-import mixin from "../../utils/mixin.js";
-function localMixin(instance) {
-    mixin(instance, instance.mixin);
-    instance.mixin = [];
-}
-export default localMixin;
+import mixin from"../../utils/mixin.js";function localMixin(i){mixin(i,i.mixin),i.mixin=[]}export default localMixin;

@@ -1,8 +1,1 @@
-import camelToDash from "./camel-to-dash.js";
-function toInlineStyle(obj, withStyle = true) {
-    obj = Object.entries(obj).reduce((styleString, [propName, propValue]) => {
-        return `${styleString}${camelToDash(propName)}:${propValue};`;
-    }, '');
-    return withStyle ? `style="${obj}"` : obj;
-}
-export default toInlineStyle;
+import camelToDash from"./camel-to-dash.js";function toInlineStyle(e,t=!0){return e=Object.entries(e).reduce(((e,[t,l])=>`${e}${camelToDash(t)}:${l};`),""),t?`style="${e}"`:e}export default toInlineStyle;

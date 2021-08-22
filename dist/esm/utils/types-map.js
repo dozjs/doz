@@ -1,11 +1,1 @@
-export { undefined };
-export { NaN };
-export { Infinity };
-export default {
-    undefined: undefined,
-    'null': null,
-    NaN: NaN,
-    Infinity: Infinity,
-    'true': true,
-    'false': false
-};
+export{undefined};export{NaN};export{Infinity};export default{undefined:void 0,null:null,NaN:NaN,Infinity:1/0,true:!0,false:!1};

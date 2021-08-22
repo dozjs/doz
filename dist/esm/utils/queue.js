@@ -1,6 +1,1 @@
-function queue(p, arrayOfP) {
-    if (!p)
-        return;
-    new Promise(p).then(() => queue(arrayOfP.shift(), arrayOfP));
-}
-export default queue;
+function queue(e,u){e&&new Promise(e).then((()=>queue(u.shift(),u)))}export default queue;

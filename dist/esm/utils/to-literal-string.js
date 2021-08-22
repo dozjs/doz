@@ -1,6 +1,1 @@
-function toLiteralString(str) {
-    return str
-        .replace(/{{/gm, '${')
-        .replace(/}}/gm, '}');
-}
-export default toLiteralString;
+function toLiteralString(t){return t.replace(/{{/gm,"${").replace(/}}/gm,"}")}export default toLiteralString;

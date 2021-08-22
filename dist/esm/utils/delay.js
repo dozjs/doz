@@ -1,1 +1,1 @@
-export default window.requestAnimationFrame || window.setTimeout;
+export default window.requestAnimationFrame||window.setTimeout;

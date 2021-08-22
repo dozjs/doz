@@ -1,16 +1,1 @@
-import manipulate from "./manipulate.js";
-function propsInit(instance) {
-    (function iterate(props) {
-        let keys = Object.keys(props);
-        for (let i = 0, l = keys.length; i < l; i++) {
-            let property = keys[i];
-            if (props[property] instanceof Object && props[property] !== null) {
-                iterate(props[property]);
-            }
-            else {
-                props[property] = manipulate(instance, props[property], property, false, true);
-            }
-        }
-    })(instance._rawProps);
-}
-export default propsInit;
+import manipulate from"./manipulate.js";function propsInit(t){!function e(n){let l=Object.keys(n);for(let o=0,p=l.length;o<p;o++){let p=l[o];n[p]instanceof Object&&null!==n[p]?e(n[p]):n[p]=manipulate(t,n[p],p,!1,!0)}}(t._rawProps)}export default propsInit;

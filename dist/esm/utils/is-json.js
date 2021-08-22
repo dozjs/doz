@@ -1,3 +1,1 @@
-export default (function isJSON(obj) {
-    return /^[{\[]/.test(obj);
-});
+export default function(t){return/^[{\[]/.test(t)}
