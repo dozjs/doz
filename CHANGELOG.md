@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.13.4] - 2021-08-22
+- **Improvement** esm size
+
 ## [3.13.3] - 2021-08-22
 - **Improvement** set sideEffects to false on the package.json
 
