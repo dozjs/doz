@@ -6,6 +6,7 @@ import plugin from "./plugin/index.js";
 import directive from "./directives/index.js";
 import makeSureAttach from "./component/make-sure-attach.js";
 let appCounter = 0;
+console.log('b');
 class Doz {
     constructor(cfg = {}) {
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;

@@ -923,6 +923,7 @@ var directive = __webpack_require__(0);
 var makeSureAttach = __webpack_require__(4);
 
 var appCounter = 0;
+console.log('b');
 
 var Doz = /*#__PURE__*/function () {
   function Doz() {
