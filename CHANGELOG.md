@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.13.7] - 2022-01-20
+- **Fixed** possible undefined `this` object in `h` method;
+
 ## [3.13.6] - 2022-01-20
 - **Updated** dependencies;
 - **Removed** esm minification

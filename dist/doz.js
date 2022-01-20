@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.13.6  
+// [DOZ]  Build version: 3.13.5  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3604,7 +3604,7 @@ module.exports = function (strings) {
   var kCache;
   var isStyleForWebComponentByAppCreate; // use internal app cache stores
 
-  if (this.app) {
+  if (this && this.app) {
     hCache = this.app.cacheStores.hCache;
     kCache = this.app.cacheStores.kCache;
     isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
@@ -4032,7 +4032,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.13.6',
+    value: '3.13.5',
     enumerable: true
   },
   tag: {
