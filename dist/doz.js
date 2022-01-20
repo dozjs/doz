@@ -7501,7 +7501,8 @@ directive('animate', {
     this.createAnimations(instance, $target, directiveValue);
   },
   onAppComponentMount: function onAppComponentMount(instance) {
-    //console.log('onAppComponentMount', 'animation');
+    if (!instance.elementsWithAnimation || !instance.elementsWithAnimation.size) return;
+
     var _iterator2 = _createForOfIteratorHelper(instance.elementsWithAnimation),
         _step2;
 

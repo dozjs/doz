@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.13.5] - 2022-01-20
+- **Fixed** in 'd-animate' directive instance.elementsWithAnimation could be "falsy" and therefore generate error on Tizen 6.0
+
 ## [3.13.4] - 2021-08-22
 - **Improvement** esm size
 

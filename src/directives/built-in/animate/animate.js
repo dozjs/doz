@@ -170,7 +170,7 @@ directive('animate', {
     },
 
     onAppComponentMount(instance) {
-        //console.log('onAppComponentMount', 'animation');
+        if (!instance.elementsWithAnimation || !instance.elementsWithAnimation.size) return;
         for (let [key, value] of instance.elementsWithAnimation) {
             this.createAnimations(instance, key, value)
         }
