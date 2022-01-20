@@ -108,7 +108,7 @@ export default (function (strings, ...values) {
     let kCache;
     let isStyleForWebComponentByAppCreate;
     // use internal app cache stores
-    if (this.app) {
+    if (this && this.app) {
         hCache = this.app.cacheStores.hCache;
         kCache = this.app.cacheStores.kCache;
         isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
