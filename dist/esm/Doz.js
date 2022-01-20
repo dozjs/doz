@@ -1,1 +1,256 @@
-import bind from"./utils/bind.js";import createInstance from"./component/create-instance.js";import{TAG,REGEX,ALREADY_WALKED}from"./constants.js";import toLiteralString from"./utils/to-literal-string.js";import plugin from"./plugin/index.js";import directive from"./directives/index.js";import makeSureAttach from"./component/make-sure-attach.js";let appCounter=0;class Doz{constructor(cfg={}){if(this.baseTemplate=`<${TAG.APP}></${TAG.APP}>`,REGEX.IS_ID_SELECTOR.test(cfg.root)&&(cfg.root=document.getElementById(cfg.root.substring(1))),REGEX.IS_ID_SELECTOR.test(cfg.template)&&(cfg.template=document.getElementById(cfg.template.substring(1)),cfg.template=cfg.template.innerHTML),!(cfg.root instanceof HTMLElement||cfg.root instanceof ShadowRoot))throw new TypeError("root must be an HTMLElement or an valid ID selector like #example-root");if(!cfg.mainComponent&&!(cfg.template instanceof HTMLElement||"string"==typeof cfg.template||"function"==typeof cfg.template))throw new TypeError("template must be a string or an HTMLElement or a function or an valid ID selector like #example-template");if(cfg.root.hasChildNodes){const t=cfg.root.firstElementChild;makeSureAttach(t),t&&!t._dozAttach[ALREADY_WALKED]&&t.parentNode.removeChild(t)}this.cfg=Object.assign({},{components:[],shared:{},useShadowRoot:!1,propsListener:null,propsListenerAsync:null,listeners:null,actions:{},autoDraw:!0,enableExternalTemplate:!1},cfg),Object.defineProperties(this,{_lastUId:{value:0,writable:!0},_components:{value:{},writable:!0},_usedComponents:{value:{},writable:!0},_cache:{value:new Map},_onAppReadyCB:{value:[],writable:!0},_callAppReady:{value:function(){this._onAppReadyCB.forEach((t=>{"function"==typeof t&&t._instance&&t.call(t._instance)})),this._onAppReadyCB=[]}},_onAppDrawCB:{value:[],writable:!0},_onAppCB:{value:{},writable:!0},isWebComponent:{value:this.cfg.isWebComponent},byAppCreate:{value:this.cfg.byAppCreate},useShadowRoot:{value:this.cfg.useShadowRoot,writable:!0,enumerable:!0},_root:{value:this.cfg.root},appId:{value:window.DOZ_APP_ID||Math.random().toString(36).substring(2,15),enumerable:!0},appIntId:{value:appCounter++,enumerable:!0},action:{value:bind(this.cfg.actions,this),enumerable:!0},onAppEmit:{value:this.cfg.onAppEmit,writable:!0,enumerable:!0},shared:{value:this.cfg.shared,writable:!0,enumerable:!0},cacheStores:{value:{kCache:new Map,hCache:new Map},enumerable:!0},mount:{value:function(template,root,parent=this._tree){if("string"==typeof root&&(root=document.querySelector(root)),root=root||parent._rootElement,!(root instanceof HTMLElement))throw new TypeError("root must be an HTMLElement or an valid selector like #example-root");const contentStr=this.cfg.enableExternalTemplate?eval("`"+toLiteralString(template)+"`"):template,autoCmp={tag:TAG.MOUNT,cfg:{props:{},template:t=>contentStr}};return createInstance({root:root,template:`<${TAG.MOUNT}></${TAG.MOUNT}>`,app:this,parentCmp:parent,autoCmp:autoCmp,mount:!0})},enumerable:!0}}),Array.isArray(this.cfg.components)?this.cfg.components.forEach((t=>{"object"==typeof t&&"string"==typeof t.tag&&"object"==typeof t.cfg&&(this._components[t.tag]=t)})):"object"==typeof this.cfg.components&&Object.keys(this.cfg.components).forEach((t=>{this._components[t]={tag:t,cfg:this.cfg.components[t]}})),directive.callAppInit(this),this.cfg.mainComponent?this._tree=createInstance({mountMainComponent:!0,root:this.cfg.root,component:this.cfg.mainComponent,app:this,innerHTML:this.cfg.innerHTML}):(this._components[TAG.APP]={tag:TAG.APP,cfg:{template:"function"==typeof cfg.template?cfg.template:function(){const contentStr=toLiteralString(cfg.template);return/\${.*?}/g.test(contentStr)?eval("`"+contentStr+"`"):contentStr}}},Object.keys(cfg).forEach((t=>{["template","root"].includes(t)||(this._components[TAG.APP].cfg[t]=cfg[t])}))),plugin.load(this),this.cfg.listeners&&Object.keys(this.cfg.listeners).forEach((t=>{this.on(t,this.cfg.listeners[t])})),!this.cfg.mainComponent&&this.cfg.autoDraw&&this.draw(),this._callAppReady(),this.emit("ready",this)}draw(){return this.cfg.autoDraw||(this.cfg.root.innerHTML=""),this._tree=createInstance({root:this.cfg.root,template:this.baseTemplate,app:this}),this}get mainComponent(){return this._tree}on(t,e){if("string"!=typeof t)throw new TypeError("Event must be a string");if("function"!=typeof e)throw new TypeError("Callback must be a function");return this._onAppCB[t]||(this._onAppCB[t]=[]),this._onAppCB[t].push(e),this}emit(t,...e){return this._onAppCB[t]&&this._onAppCB[t].forEach((t=>{t.apply(this,e)})),this.onAppEmit&&this.onAppEmit(t,...e),this}generateUId(){return this.appId+"-"+ ++this._lastUId}}export default Doz;
+import bind from "./utils/bind.js";
+import createInstance from "./component/create-instance.js";
+import { TAG, REGEX, ALREADY_WALKED } from "./constants.js";
+import toLiteralString from "./utils/to-literal-string.js";
+import plugin from "./plugin/index.js";
+import directive from "./directives/index.js";
+import makeSureAttach from "./component/make-sure-attach.js";
+let appCounter = 0;
+class Doz {
+    constructor(cfg = {}) {
+        this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
+        if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
+            cfg.root = document.getElementById(cfg.root.substring(1));
+        }
+        if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
+            cfg.template = document.getElementById(cfg.template.substring(1));
+            cfg.template = cfg.template.innerHTML;
+        }
+        if (!(cfg.root instanceof HTMLElement || cfg.root instanceof ShadowRoot)) {
+            throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
+        }
+        if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
+            throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
+        }
+        if (cfg.root.hasChildNodes) {
+            const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
+            // This fix double app rendering in SSR
+            makeSureAttach(appNode);
+            if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
+                appNode.parentNode.removeChild(appNode);
+            }
+        }
+        this.cfg = Object.assign({}, {
+            components: [],
+            shared: {},
+            useShadowRoot: false,
+            propsListener: null,
+            propsListenerAsync: null,
+            listeners: null,
+            actions: {},
+            autoDraw: true,
+            enableExternalTemplate: false
+        }, cfg);
+        Object.defineProperties(this, {
+            _lastUId: {
+                value: 0,
+                writable: true
+            },
+            _components: {
+                value: {},
+                writable: true
+            },
+            _usedComponents: {
+                value: {},
+                writable: true
+            },
+            _cache: {
+                value: new Map()
+            },
+            _onAppReadyCB: {
+                value: [],
+                writable: true
+            },
+            _callAppReady: {
+                value: function () {
+                    this._onAppReadyCB.forEach(cb => {
+                        if (typeof cb === 'function' && cb._instance) {
+                            cb.call(cb._instance);
+                        }
+                    });
+                    this._onAppReadyCB = [];
+                }
+            },
+            _onAppDrawCB: {
+                value: [],
+                writable: true
+            },
+            _onAppCB: {
+                value: {},
+                writable: true
+            },
+            isWebComponent: {
+                value: this.cfg.isWebComponent
+            },
+            byAppCreate: {
+                value: this.cfg.byAppCreate
+            },
+            useShadowRoot: {
+                value: this.cfg.useShadowRoot,
+                writable: true,
+                enumerable: true
+            },
+            _root: {
+                value: this.cfg.root
+            },
+            appId: {
+                value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
+                enumerable: true
+            },
+            appIntId: {
+                value: appCounter++,
+                enumerable: true
+            },
+            action: {
+                value: bind(this.cfg.actions, this),
+                enumerable: true
+            },
+            onAppEmit: {
+                value: this.cfg.onAppEmit,
+                writable: true,
+                enumerable: true
+            },
+            shared: {
+                value: this.cfg.shared,
+                writable: true,
+                enumerable: true
+            },
+            cacheStores: {
+                value: {
+                    kCache: new Map(),
+                    //tplCache: Object.create(null),
+                    hCache: new Map()
+                },
+                enumerable: true
+            },
+            mount: {
+                value: function (template, root, parent = this._tree) {
+                    if (typeof root === 'string') {
+                        root = document.querySelector(root);
+                    }
+                    root = root || parent._rootElement;
+                    if (!(root instanceof HTMLElement)) {
+                        throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
+                    }
+                    const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
+                    const autoCmp = {
+                        tag: TAG.MOUNT,
+                        cfg: {
+                            props: {},
+                            template(h) {
+                                //return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
+                                return contentStr;
+                            }
+                        }
+                    };
+                    return createInstance({
+                        root,
+                        template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
+                        app: this,
+                        parentCmp: parent,
+                        autoCmp,
+                        mount: true
+                    });
+                },
+                enumerable: true
+            }
+        });
+        if (Array.isArray(this.cfg.components)) {
+            this.cfg.components.forEach(cmp => {
+                if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
+                    this._components[cmp.tag] = cmp;
+                }
+            });
+        }
+        else if (typeof this.cfg.components === 'object') {
+            Object.keys(this.cfg.components).forEach(objName => {
+                this._components[objName] = {
+                    tag: objName,
+                    cfg: this.cfg.components[objName]
+                };
+            });
+        }
+        directive.callAppInit(this);
+        if (this.cfg.mainComponent) {
+            this._tree = createInstance({
+                mountMainComponent: true,
+                root: this.cfg.root,
+                component: this.cfg.mainComponent,
+                app: this,
+                innerHTML: this.cfg.innerHTML
+            }); // || [];
+            //console.log(this._tree)
+        }
+        else {
+            this._components[TAG.APP] = {
+                tag: TAG.APP,
+                cfg: {
+                    template: typeof cfg.template === 'function' ? cfg.template : function () {
+                        const contentStr = toLiteralString(cfg.template);
+                        if (/\${.*?}/g.test(contentStr))
+                            return eval('`' + contentStr + '`');
+                        else
+                            return contentStr;
+                    }
+                }
+            };
+            Object.keys(cfg).forEach(p => {
+                if (!['template', 'root'].includes(p))
+                    this._components[TAG.APP].cfg[p] = cfg[p];
+            });
+        }
+        plugin.load(this);
+        //Apply listeners
+        if (this.cfg.listeners) {
+            Object.keys(this.cfg.listeners).forEach(event => {
+                //console.log(event)
+                this.on(event, this.cfg.listeners[event]);
+            });
+        }
+        //console.log('-----');
+        //directive.callAppInit(this);
+        if (!this.cfg.mainComponent && this.cfg.autoDraw)
+            this.draw();
+        this._callAppReady();
+        this.emit('ready', this);
+    }
+    draw() {
+        if (!this.cfg.autoDraw)
+            this.cfg.root.innerHTML = '';
+        this._tree = createInstance({
+            root: this.cfg.root,
+            template: this.baseTemplate,
+            app: this
+        }); // || [];
+        return this;
+    }
+    get mainComponent() {
+        return this._tree;
+    }
+    on(event, callback) {
+        if (typeof event !== 'string')
+            throw new TypeError('Event must be a string');
+        if (typeof callback !== 'function')
+            throw new TypeError('Callback must be a function');
+        if (!this._onAppCB[event]) {
+            this._onAppCB[event] = [];
+        }
+        this._onAppCB[event].push(callback);
+        return this;
+    }
+    emit(event, ...args) {
+        if (this._onAppCB[event]) {
+            this._onAppCB[event].forEach(func => {
+                func.apply(this, args);
+            });
+        }
+        if (this.onAppEmit) {
+            this.onAppEmit(event, ...args);
+        }
+        return this;
+    }
+    generateUId() {
+        return this.appId + '-' + (++this._lastUId);
+    }
+}
+export default Doz;

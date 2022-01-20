@@ -1,1 +1,167 @@
-import delay from"../utils/delay.js";import directive from"../directives/index.js";function callBeforeCreate(e){if(directive.callAppComponentBeforeCreate(e),directive.callComponentBeforeCreate(e),"function"==typeof e.onBeforeCreate)return e.onBeforeCreate.call(e)}function callCreate(e){directive.callAppComponentCreate(e),directive.callComponentCreate(e),"function"==typeof e.onCreate&&e.onCreate.call(e),e.app.emit("componentCreate",e)}function callConfigCreate(e){directive.callAppComponentConfigCreate(e),"function"==typeof e.onConfigCreate&&e.onConfigCreate.call(e),e.parent&&"function"==typeof e.parent[e.__onConfigCreate]&&e.parent[e.__onConfigCreate].call(e.parent,e),e.app.emit("componentConfigCreate",e)}function callBeforeMount(e){if(directive.callAppComponentBeforeMount(e),directive.callComponentBeforeMount(e),"function"==typeof e.onBeforeMount)return e.onBeforeMount.call(e)}function callMount(e){directive.callAppComponentMount(e),directive.callComponentMount(e),"function"==typeof e.onMount&&e.onMount.call(e),e.app.emit("componentMount",e)}function callMountAsync(e){delay((()=>{directive.callAppComponentMountAsync(e),directive.callComponentMountAsync(e)})),"function"==typeof e.onMountAsync&&delay((()=>e.onMountAsync.call(e))),e.app.emit("componentMountAsync",e)}function callBeforeUpdate(e,o){if(directive.callAppComponentBeforeUpdate(e,o),directive.callComponentBeforeUpdate(e,o),"function"==typeof e.onBeforeUpdate)return e.onBeforeUpdate.call(e,o)}function callUpdate(e,o){directive.callAppComponentUpdate(e,o),directive.callComponentUpdate(e,o),"function"==typeof e.onUpdate&&e.onUpdate.call(e,o),e.app.emit("componentUpdate",e,o)}function callDrawByParent(e,o,n){if(e)return directive.callAppComponentDrawByParent(e,o,n),"function"==typeof e.onDrawByParent?e.onDrawByParent.call(e,o,n):e.parent&&"function"==typeof e.parent[e.__onDrawByParent]?e.parent[e.__onDrawByParent].call(e.parent,e,o,n):void 0}function callAfterRender(e,o){if(directive.callAppComponentAfterRender(e,o),directive.callComponentAfterRender(e,o),"function"==typeof e.onAfterRender)return e.onAfterRender.call(e,o)}function callBeforeUnmount(e){if(directive.callAppComponentBeforeUnmount(e),directive.callComponentBeforeUnmount(e),"function"==typeof e.onBeforeUnmount)return e.onBeforeUnmount.call(e)}function callUnmount(e){directive.callAppComponentUnmount(e),directive.callComponentUnmount(e),"function"==typeof e.onUnmount&&e.onUnmount.call(e),e.app.emit("componentUnmount",e)}function callBeforeDestroy(e){if(directive.callAppComponentBeforeDestroy(e),directive.callComponentBeforeDestroy(e),"function"==typeof e.onBeforeDestroy)return e.onBeforeDestroy.call(e)}function callDestroy(e){directive.callAppComponentDestroy(e),directive.callComponentDestroy(e),e.app.emit("componentDestroy",e);const o=document.getElementById(e.uId+"--style"),n=document.getElementById(e.uId+"--style-reset");o&&o.parentNode.removeChild(o),n&&n.parentNode.removeChild(n),e._unmountedPlaceholder&&e._unmountedPlaceholder.parentNode&&e._unmountedPlaceholder.parentNode.removeChild(e._unmountedPlaceholder),"function"==typeof e.onDestroy&&(e.onDestroy.call(e),e=null)}function callLoadProps(e){directive.callAppComponentLoadProps(e),directive.callComponentLoadProps(e),"function"==typeof e.onLoadProps&&e.onLoadProps.call(e),e.app.emit("componentLoadProps",e)}export{callBeforeCreate};export{callCreate};export{callConfigCreate};export{callBeforeMount};export{callMount};export{callMountAsync};export{callBeforeUpdate};export{callUpdate};export{callDrawByParent};export{callAfterRender};export{callBeforeUnmount};export{callUnmount};export{callBeforeDestroy};export{callDestroy};export{callLoadProps};export default{callBeforeCreate:callBeforeCreate,callCreate:callCreate,callConfigCreate:callConfigCreate,callBeforeMount:callBeforeMount,callMount:callMount,callMountAsync:callMountAsync,callBeforeUpdate:callBeforeUpdate,callUpdate:callUpdate,callDrawByParent:callDrawByParent,callAfterRender:callAfterRender,callBeforeUnmount:callBeforeUnmount,callUnmount:callUnmount,callBeforeDestroy:callBeforeDestroy,callDestroy:callDestroy,callLoadProps:callLoadProps};
+import delay from "../utils/delay.js";
+import directive from "../directives/index.js";
+function callBeforeCreate(context) {
+    directive.callAppComponentBeforeCreate(context);
+    directive.callComponentBeforeCreate(context);
+    if (typeof context.onBeforeCreate === 'function') {
+        return context.onBeforeCreate.call(context);
+    }
+}
+function callCreate(context) {
+    directive.callAppComponentCreate(context);
+    directive.callComponentCreate(context);
+    if (typeof context.onCreate === 'function') {
+        context.onCreate.call(context);
+    }
+    context.app.emit('componentCreate', context);
+}
+function callConfigCreate(context) {
+    directive.callAppComponentConfigCreate(context);
+    if (typeof context.onConfigCreate === 'function') {
+        context.onConfigCreate.call(context);
+    }
+    if (context.parent && typeof context.parent[context.__onConfigCreate] === 'function') {
+        context.parent[context.__onConfigCreate].call(context.parent, context);
+    }
+    context.app.emit('componentConfigCreate', context);
+}
+function callBeforeMount(context) {
+    directive.callAppComponentBeforeMount(context);
+    directive.callComponentBeforeMount(context);
+    if (typeof context.onBeforeMount === 'function') {
+        return context.onBeforeMount.call(context);
+    }
+}
+function callMount(context) {
+    directive.callAppComponentMount(context);
+    directive.callComponentMount(context);
+    if (typeof context.onMount === 'function') {
+        context.onMount.call(context);
+    }
+    context.app.emit('componentMount', context);
+}
+function callMountAsync(context) {
+    delay(() => {
+        directive.callAppComponentMountAsync(context);
+        directive.callComponentMountAsync(context);
+    });
+    if (typeof context.onMountAsync === 'function') {
+        delay(() => context.onMountAsync.call(context));
+    }
+    context.app.emit('componentMountAsync', context);
+}
+function callBeforeUpdate(context, changes) {
+    directive.callAppComponentBeforeUpdate(context, changes);
+    directive.callComponentBeforeUpdate(context, changes);
+    if (typeof context.onBeforeUpdate === 'function') {
+        return context.onBeforeUpdate.call(context, changes);
+    }
+}
+function callUpdate(context, changes) {
+    directive.callAppComponentUpdate(context, changes);
+    directive.callComponentUpdate(context, changes);
+    if (typeof context.onUpdate === 'function') {
+        context.onUpdate.call(context, changes);
+    }
+    context.app.emit('componentUpdate', context, changes);
+}
+function callDrawByParent(context, newNode, oldNode) {
+    if (!context)
+        return;
+    directive.callAppComponentDrawByParent(context, newNode, oldNode);
+    if (typeof context.onDrawByParent === 'function') {
+        return context.onDrawByParent.call(context, newNode, oldNode);
+    }
+    if (context.parent && typeof context.parent[context.__onDrawByParent] === 'function') {
+        return context.parent[context.__onDrawByParent].call(context.parent, context, newNode, oldNode);
+    }
+    //context.app.emit('componentDrawByParent', context, changes);
+}
+function callAfterRender(context, changes) {
+    directive.callAppComponentAfterRender(context, changes);
+    directive.callComponentAfterRender(context, changes);
+    if (typeof context.onAfterRender === 'function') {
+        return context.onAfterRender.call(context, changes);
+    }
+}
+function callBeforeUnmount(context) {
+    directive.callAppComponentBeforeUnmount(context);
+    directive.callComponentBeforeUnmount(context);
+    if (typeof context.onBeforeUnmount === 'function') {
+        return context.onBeforeUnmount.call(context);
+    }
+}
+function callUnmount(context) {
+    directive.callAppComponentUnmount(context);
+    directive.callComponentUnmount(context);
+    if (typeof context.onUnmount === 'function') {
+        context.onUnmount.call(context);
+    }
+    context.app.emit('componentUnmount', context);
+}
+function callBeforeDestroy(context) {
+    directive.callAppComponentBeforeDestroy(context);
+    directive.callComponentBeforeDestroy(context);
+    if (typeof context.onBeforeDestroy === 'function') {
+        return context.onBeforeDestroy.call(context);
+    }
+}
+function callDestroy(context) {
+    directive.callAppComponentDestroy(context);
+    directive.callComponentDestroy(context);
+    context.app.emit('componentDestroy', context);
+    const style = document.getElementById(context.uId + '--style');
+    const styleReset = document.getElementById(context.uId + '--style-reset');
+    if (style) {
+        style.parentNode.removeChild(style);
+    }
+    if (styleReset) {
+        styleReset.parentNode.removeChild(styleReset);
+    }
+    if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
+        context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
+    if (typeof context.onDestroy === 'function') {
+        context.onDestroy.call(context);
+        context = null;
+    }
+}
+function callLoadProps(context) {
+    directive.callAppComponentLoadProps(context);
+    directive.callComponentLoadProps(context);
+    if (typeof context.onLoadProps === 'function') {
+        context.onLoadProps.call(context);
+    }
+    context.app.emit('componentLoadProps', context);
+}
+export { callBeforeCreate };
+export { callCreate };
+export { callConfigCreate };
+export { callBeforeMount };
+export { callMount };
+export { callMountAsync };
+export { callBeforeUpdate };
+export { callUpdate };
+export { callDrawByParent };
+export { callAfterRender };
+export { callBeforeUnmount };
+export { callUnmount };
+export { callBeforeDestroy };
+export { callDestroy };
+export { callLoadProps };
+export default {
+    callBeforeCreate,
+    callCreate,
+    callConfigCreate,
+    callBeforeMount,
+    callMount,
+    callMountAsync,
+    callBeforeUpdate,
+    callUpdate,
+    callDrawByParent,
+    callAfterRender,
+    callBeforeUnmount,
+    callUnmount,
+    callBeforeDestroy,
+    callDestroy,
+    callLoadProps
+};

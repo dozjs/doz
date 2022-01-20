@@ -1,1 +1,6 @@
-import Component from"../Component.js";import mixin from"../../utils/mixin.js";function globalMixin(o){mixin(Component.prototype,o)}export default globalMixin;
+import Component from "../Component.js";
+import mixin from "../../utils/mixin.js";
+function globalMixin(obj) {
+    mixin(Component.prototype, obj);
+}
+export default globalMixin;

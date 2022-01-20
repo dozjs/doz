@@ -1,1 +1,82 @@
-export default function(o,r){function p(o,r){let p=o._propsPropagationMainParent;r?r.forEach((r=>{"update"!==r.type||p._propsPropagationIsArray&&-1===p.propsPropagation.indexOf(r.currentPath)||(o.props[r.currentPath]=r.newValue)})):Object.keys(p.props).forEach((r=>{p._propsPropagationIsArray&&-1===p.propsPropagation.indexOf(r)||(o.props[r]=p.props[r])}))}r.on("componentPropsInit",(o=>{var r;o.propsPropagation&&Object.defineProperties(o,{_propsPropagationIsArray:{value:Array.isArray(o.propsPropagation)},_propsPropagationIsMainParent:{value:!0},_propsPropagationMainParent:{value:o},_propsPropagationChildren:{value:[]}}),o.parent&&o.parent.propsPropagation&&(o.propsPropagation=o.parent.propsPropagation,o._propsPropagationMainParent=o.parent._propsPropagationMainParent,o.excludeFromPropsPropagation?Object.defineProperty(o,"excludeFromPropsPropagation",{value:!0}):((r=o)._propsPropagationMainParent._propsPropagationChildren.push(r),p(o)))})),r.on("componentUpdate",((o,r)=>{o._propsPropagationIsMainParent&&function(o,r){o._propsPropagationChildren.forEach((o=>{p(o,r)}))}(o,r)})),r.on("componentDestroy",(o=>{o._propsPropagationMainParent&&function(o){let r=o._propsPropagationMainParent._propsPropagationChildren;for(let p=r.length-1;p>=0;p--)r[p]===o&&r.splice(p,1)}(o)}))}
+export default (function (Doz, app) {
+    function propagate(child, changes) {
+        let mainParent = child._propsPropagationMainParent;
+        if (changes) {
+            //console.log(changes)
+            // when update use this
+            changes.forEach(change => {
+                if (change.type !== 'update' ||
+                    (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1))
+                    return;
+                child.props[change.currentPath] = change.newValue;
+            });
+        }
+        else {
+            //console.log('initial')
+            // when initialize use this
+            Object.keys(mainParent.props).forEach(propParent => {
+                if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1)
+                    return;
+                child.props[propParent] = mainParent.props[propParent];
+            });
+        }
+    }
+    function propagateToAll(mainParent, changes) {
+        //console.log(mainParent._propsPropagationChildren)
+        mainParent._propsPropagationChildren.forEach(child => {
+            propagate(child, changes);
+        });
+    }
+    function addToPropagation(child) {
+        child._propsPropagationMainParent._propsPropagationChildren.push(child);
+    }
+    function removeFromPropagation(child) {
+        let children = child._propsPropagationMainParent._propsPropagationChildren;
+        for (let i = children.length - 1; i >= 0; i--) {
+            if (children[i] === child) {
+                children.splice(i, 1);
+            }
+        }
+    }
+    app.on('componentPropsInit', component => {
+        // for MainParent only
+        if (component.propsPropagation) {
+            Object.defineProperties(component, {
+                _propsPropagationIsArray: {
+                    value: Array.isArray(component.propsPropagation)
+                },
+                _propsPropagationIsMainParent: {
+                    value: true
+                },
+                _propsPropagationMainParent: {
+                    value: component
+                },
+                _propsPropagationChildren: {
+                    value: []
+                }
+            });
+        }
+        if (component.parent && component.parent.propsPropagation) {
+            component.propsPropagation = component.parent.propsPropagation;
+            component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
+            if (component.excludeFromPropsPropagation) {
+                Object.defineProperty(component, 'excludeFromPropsPropagation', { value: true });
+            }
+            else {
+                addToPropagation(component);
+                propagate(component);
+            }
+        }
+    });
+    app.on('componentUpdate', (component, changes) => {
+        if (component._propsPropagationIsMainParent) {
+            propagateToAll(component, changes);
+        }
+    });
+    app.on('componentDestroy', component => {
+        // belongs to a context
+        if (component._propsPropagationMainParent) {
+            removeFromPropagation(component);
+        }
+    });
+});

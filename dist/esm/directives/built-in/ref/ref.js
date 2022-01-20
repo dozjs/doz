@@ -1,1 +1,16 @@
-import index from"../../index.js";const{directive:directive}=index;directive("ref",{onAppComponentCreate(e){Object.defineProperties(e,{ref:{value:{},writable:!0,enumerable:!0}})},onComponentDOMElementCreate(e,r,i){e.ref[i]=r}});
+import index from "../../index.js";
+const { directive } = index;
+directive('ref', {
+    onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            ref: {
+                value: {},
+                writable: true,
+                enumerable: true
+            }
+        });
+    },
+    onComponentDOMElementCreate(instance, $target, directiveValue) {
+        instance.ref[directiveValue] = $target;
+    }
+});

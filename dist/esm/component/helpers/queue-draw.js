@@ -1,1 +1,19 @@
-function add(p){"function"==typeof p.onAppDraw&&(p.onAppDraw._instance=p,p.app._onAppDrawCB.push(p.onAppDraw))}function emit(p,n,a){p.app._onAppDrawCB.forEach((t=>{"function"==typeof t&&t._instance&&t.call(t._instance,n,a,p)}))}export{add};export{emit};export default{add:add,emit:emit};
+function add(instance) {
+    if (typeof instance.onAppDraw === 'function') {
+        instance.onAppDraw._instance = instance;
+        instance.app._onAppDrawCB.push(instance.onAppDraw);
+    }
+}
+function emit(instance, next, prev) {
+    instance.app._onAppDrawCB.forEach(cb => {
+        if (typeof cb === 'function' && cb._instance) {
+            cb.call(cb._instance, next, prev, instance);
+        }
+    });
+}
+export { add };
+export { emit };
+export default {
+    add,
+    emit
+};

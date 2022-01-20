@@ -1,1 +1,14 @@
-function detectInheritance(t,e){return!!t&&(t.constructor===e||detectInheritance(t.__proto__,e))}export default detectInheritance;
+function detectInheritance(proto, _class) {
+    //console.log('controllo', proto.constructor.name);
+    if (!proto) {
+        return false;
+    }
+    if (proto.constructor !== _class) {
+        return detectInheritance(proto.__proto__, _class);
+    }
+    else {
+        //console.log('ok trovato', proto.constructor.name);
+        return true;
+    }
+}
+export default detectInheritance;

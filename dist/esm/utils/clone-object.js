@@ -1,1 +1,4 @@
-function cloneObject(e){return JSON.parse(JSON.stringify(e))}export default cloneObject;
+function cloneObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+export default cloneObject;

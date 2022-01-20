@@ -1,1 +1,73 @@
-function animateHelper(t,n,i,a){if("function"==typeof i?(a=i,i={}):i||(i={}),"hide"===i.mode&&"none"===t.style.display)return;t._dozAttach.__animationIsRunning&&(t.classList.remove(t._dozAttach.__lastAnimationName),t._dozAttach.__animationIsRunning=!1,t._dozAttach.__lockedForAnimation=!1,t.removeEventListener("animationend",t._dozAttach.__handleAnimationEnd)),t._dozAttach.__animationIsRunning=!0;let o=window.getComputedStyle(t);function e(){t.classList.remove(i.classLib),t.classList.remove(n),t._dozAttach.__animationIsRunning=!1,t._dozAttach.__lockedForAnimation=!1,t.style.animationDelay="",t.style.webkitAnimationDelay="",t.style.mozAnimationDelay="",t.style.animationDuration="",t.style.webkitAnimationDuration="",t.style.mozAnimationDuration="",t.style.animationIterationCount="",t.style.webkitAnimationIterationCount="",t.style.mozAnimationIterationCount="",t.removeEventListener("animationend",e),"function"==typeof a&&a(),"function"==typeof i.cb&&i.cb()}i.classLib=i.classLib||"animated",t.classList.add(i.classLib),t.classList.add(n),t._dozAttach.__lastAnimationName=n,t._dozAttach.__animationOriginDisplay=o.display,"inline"===t._dozAttach.__animationOriginDisplay&&(t.style.display="inline-block"),i.delay&&(t.style.animationDelay=i.delay,t.style.webkitAnimationDelay=i.delay,t.style.mozAnimationDelay=i.delay),i.duration&&(t.style.animationDuration=i.duration,t.style.webkitAnimationDuration=i.duration,t.style.mozAnimationDuration=i.duration),i.iterationCount&&(t.style.animationIterationCount=i.iterationCount,t.style.webkitAnimationIterationCount=i.iterationCount,t.style.mozAnimationIterationCount=i.iterationCount),t.addEventListener("animationend",e),t._dozAttach.__handleAnimationEnd=e,t._dozAttach.__animationReset=()=>e()}export default animateHelper;
+function animateHelper($target, animationName, opts, callback) {
+    if (typeof opts === 'function') {
+        callback = opts;
+        opts = {};
+    }
+    else if (!opts) {
+        opts = {};
+    }
+    if (opts.mode === 'hide' && $target.style.display === 'none') {
+        //console.log('already hidden');
+        return;
+    }
+    if ($target._dozAttach.__animationIsRunning) {
+        $target.classList.remove($target._dozAttach.__lastAnimationName);
+        $target._dozAttach.__animationIsRunning = false;
+        $target._dozAttach.__lockedForAnimation = false;
+        $target.removeEventListener('animationend', $target._dozAttach.__handleAnimationEnd);
+    }
+    $target._dozAttach.__animationIsRunning = true;
+    let computedStyle = window.getComputedStyle($target);
+    opts.classLib = opts.classLib || 'animated'; //Default animate.css
+    // Now supports IE11
+    $target.classList.add(opts.classLib);
+    $target.classList.add(animationName);
+    $target._dozAttach.__lastAnimationName = animationName;
+    $target._dozAttach.__animationOriginDisplay = computedStyle.display;
+    if ($target._dozAttach.__animationOriginDisplay === 'inline') {
+        $target.style.display = 'inline-block';
+    }
+    if (opts.delay) {
+        $target.style.animationDelay = opts.delay;
+        $target.style.webkitAnimationDelay = opts.delay;
+        $target.style.mozAnimationDelay = opts.delay;
+    }
+    if (opts.duration) {
+        $target.style.animationDuration = opts.duration;
+        $target.style.webkitAnimationDuration = opts.duration;
+        $target.style.mozAnimationDuration = opts.duration;
+    }
+    if (opts.iterationCount) {
+        $target.style.animationIterationCount = opts.iterationCount;
+        $target.style.webkitAnimationIterationCount = opts.iterationCount;
+        $target.style.mozAnimationIterationCount = opts.iterationCount;
+    }
+    function handleAnimationEnd() {
+        //console.log('call animation end')
+        $target.classList.remove(opts.classLib);
+        $target.classList.remove(animationName);
+        $target._dozAttach.__animationIsRunning = false;
+        $target._dozAttach.__lockedForAnimation = false;
+        //$target.style.display = $target._dozAttach.__animationOriginDisplay;
+        $target.style.animationDelay = '';
+        $target.style.webkitAnimationDelay = '';
+        $target.style.mozAnimationDelay = '';
+        $target.style.animationDuration = '';
+        $target.style.webkitAnimationDuration = '';
+        $target.style.mozAnimationDuration = '';
+        $target.style.animationIterationCount = '';
+        $target.style.webkitAnimationIterationCount = '';
+        $target.style.mozAnimationIterationCount = '';
+        $target.removeEventListener('animationend', handleAnimationEnd);
+        if (typeof callback === 'function')
+            callback();
+        if (typeof opts.cb === 'function')
+            opts.cb();
+    }
+    //console.log('set animation end to', $target);
+    //console.log('body contains', document.body.contains($target));
+    $target.addEventListener('animationend', handleAnimationEnd);
+    $target._dozAttach.__handleAnimationEnd = handleAnimationEnd;
+    $target._dozAttach.__animationReset = () => handleAnimationEnd();
+}
+export default animateHelper;

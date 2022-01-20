@@ -1,1 +1,98 @@
-import Doz from"./Doz.js";import collection from"./collection.js";import{use}from"./plugin/index.js";import directives from"./directives/index.js";import component from"./component/index.js";import Component from"./component/Component.js";import mixin from"./component/helpers/global-mixin.js";import h from"./vdom/h.js";import appCreate from"./app-create.js";import{compile}from"./vdom/parser.js";import{update}from"./vdom/element.js";import tag from"./decorators/tag.js";import{createDozWebComponent,defineWebComponent,defineWebComponentFromGlobal}from"./webComponent.js";import"./directives/built-in/bootstrap.js";const{directive:directive}=directives;Object.defineProperties(Doz,{collection:{value:collection,enumerable:!0},compile:{value:compile,enumerable:!0},Component:{value:Component,enumerable:!0},component:{value:component,enumerable:!0},define:{value:component,enumerable:!0},h:{value:h,enumerable:!0},update:{value:update,enumerable:!0},mixin:{value:mixin,enumerable:!0},use:{value:use,enumerable:!0},directive:{value:directive,enumerable:!0},version:{value:"[AIV]{version}[/AIV]",enumerable:!0},tag:{value:tag,enumerable:!0},createDozWebComponent:{value:createDozWebComponent,enumerable:!0},defineWebComponent:{value:defineWebComponent,enumerable:!0},defineWebComponentFromGlobal:{value:defineWebComponentFromGlobal,enumerable:!0},appCreate:{value:appCreate,enumerable:!0}});export const version=Doz.version;export default Doz;export{appCreate};export{collection};export{compile};export{Component};export{component};export{component as define};export{h};export{update};export{mixin};export{use};export{directive};export{tag};export{createDozWebComponent};export{defineWebComponent};export{defineWebComponentFromGlobal};
+import Doz from "./Doz.js";
+import collection from "./collection.js";
+import { use } from "./plugin/index.js";
+import directives from "./directives/index.js";
+import component from "./component/index.js";
+import Component from "./component/Component.js";
+import mixin from "./component/helpers/global-mixin.js";
+import h from "./vdom/h.js";
+import appCreate from "./app-create.js";
+import { compile } from "./vdom/parser.js";
+import { update } from "./vdom/element.js";
+import tag from "./decorators/tag.js";
+import { createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal } from "./webComponent.js";
+import "./directives/built-in/bootstrap.js";
+const { directive } = directives;
+Object.defineProperties(Doz, {
+    collection: {
+        value: collection,
+        enumerable: true
+    },
+    compile: {
+        value: compile,
+        enumerable: true
+    },
+    Component: {
+        value: Component,
+        enumerable: true
+    },
+    component: {
+        value: component,
+        enumerable: true
+    },
+    define: {
+        value: component,
+        enumerable: true
+    },
+    h: {
+        value: h,
+        enumerable: true
+    },
+    update: {
+        value: update,
+        enumerable: true
+    },
+    mixin: {
+        value: mixin,
+        enumerable: true
+    },
+    use: {
+        value: use,
+        enumerable: true
+    },
+    directive: {
+        value: directive,
+        enumerable: true
+    },
+    version: {
+        value: '[AIV]{version}[/AIV]',
+        enumerable: true
+    },
+    tag: {
+        value: tag,
+        enumerable: true
+    },
+    createDozWebComponent: {
+        value: createDozWebComponent,
+        enumerable: true
+    },
+    defineWebComponent: {
+        value: defineWebComponent,
+        enumerable: true
+    },
+    defineWebComponentFromGlobal: {
+        value: defineWebComponentFromGlobal,
+        enumerable: true
+    },
+    appCreate: {
+        value: appCreate,
+        enumerable: true
+    }
+});
+export const version = Doz.version;
+export default Doz;
+export { appCreate };
+export { collection };
+export { compile };
+export { Component };
+export { component };
+export { component as define };
+export { h };
+export { update };
+export { mixin };
+export { use };
+export { directive };
+export { tag };
+export { createDozWebComponent };
+export { defineWebComponent };
+export { defineWebComponentFromGlobal };

@@ -1,1 +1,90 @@
-import index from"../../index.js";import{extractStyleDisplayFromDozProps}from"../../helpers.js";import queue from"../../../utils/queue.js";import delay from"../../../utils/delay.js";const{directive:directive}=index;function show(t,i){}function hide(t,i){}directive("show",{onAppComponentCreate(t){},setVisible(t,i){const o=t._dozAttach.__animationDirectiveValue;t._dozAttach.__showOriginDisplay=extractStyleDisplayFromDozProps(t)||"";let e=!1;void 0===t._dozAttach.__showInitialValue&&(t._dozAttach.__showInitialValue=i,e=!i),t._dozAttach.__prevValueOfShow!==i&&(t._dozAttach.__prevValueOfShow=i,o&&!e?(t._dozAttach.__animationsList||(t._dozAttach.__animationsList=[]),t._dozAttach.__animationUsedByShowDirective=!0,t._dozAttach.__animationsList.push((o=>{i?(t.style.display=t._dozAttach.__showOriginDisplay,t._dozAttach.__animationShow((()=>{t.style.display=t._dozAttach.__showOriginDisplay,t._dozAttach.__animationUsedByShowDirective=!1,o()}))):t._dozAttach.__animationHide((()=>{t.style.display="none",t._dozAttach.__animationUsedByShowDirective=!1,o()}))})),o.queue?t._dozAttach.__animationIsRunning||queue(t._dozAttach.__animationsList.shift(),t._dozAttach.__animationsList):new Promise(t._dozAttach.__animationsList.shift()).then()):t.style.display=i?t._dozAttach.__showOriginDisplay:"none")},onComponentDOMElementCreate(t,i,o){this.setVisible(i,o)},onComponentDOMElementUpdate(t,i,o){this.setVisible(i,o)}});
+import index from "../../index.js";
+import { extractStyleDisplayFromDozProps } from "../../helpers.js";
+import queue from "../../../utils/queue.js";
+import delay from "../../../utils/delay.js";
+const { directive } = index;
+function show($target, opt) {
+}
+function hide($target, opt) {
+}
+directive('show', {
+    onAppComponentCreate(instance) {
+        /*Object.defineProperties(instance, {
+            show: {
+                value: show,
+                writable: true,
+                enumerable: true
+            },
+            hide: {
+                value: hide,
+                writable: true,
+                enumerable: true
+            }
+        });*/
+    },
+    setVisible($target, value) {
+        const thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
+        $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+        let lockAnimation = false;
+        if ($target._dozAttach.__showInitialValue === undefined) {
+            $target._dozAttach.__showInitialValue = value;
+            lockAnimation = !value;
+        }
+        //$target.__animationWasUsed =
+        //console.dir($target);
+        if ($target._dozAttach.__prevValueOfShow === value)
+            return;
+        $target._dozAttach.__prevValueOfShow = value;
+        //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
+        if (thereIsAnimateDirective && !lockAnimation) {
+            //console.log($target._dozAttach.__animationIsRunning)
+            if (!$target._dozAttach.__animationsList)
+                $target._dozAttach.__animationsList = [];
+            $target._dozAttach.__animationUsedByShowDirective = true;
+            $target._dozAttach.__animationsList.push((resolve) => {
+                //console.log('value', value)
+                if (value) {
+                    $target.style.display = $target._dozAttach.__showOriginDisplay;
+                    $target._dozAttach.__animationShow(() => {
+                        $target.style.display = $target._dozAttach.__showOriginDisplay;
+                        //$target._dozAttach.__prevValueOfShow = value;
+                        $target._dozAttach.__animationUsedByShowDirective = false;
+                        resolve();
+                    });
+                }
+                else {
+                    $target._dozAttach.__animationHide(() => {
+                        $target.style.display = 'none';
+                        //$target._dozAttach.__prevValueOfShow = value;
+                        $target._dozAttach.__animationUsedByShowDirective = false;
+                        resolve();
+                    });
+                }
+            });
+            //console.log($target._dozAttach.__animationsList)
+            if (thereIsAnimateDirective.queue) {
+                if (!$target._dozAttach.__animationIsRunning) {
+                    // please don't use it
+                    queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
+                }
+            }
+            else {
+                new Promise($target._dozAttach.__animationsList.shift()).then();
+            }
+        }
+        else {
+            //$target._dozAttach.__prevValueOfShow = value;
+            //if (thereIsAnimateDirective)
+            //$target._dozAttach.__animationWasUsedByShowDirective = true;/**/
+            //delay(() => {
+            $target.style.display = !value /*=== false*/ ? 'none' : $target._dozAttach.__showOriginDisplay;
+            //});
+        }
+    },
+    onComponentDOMElementCreate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
+    },
+    onComponentDOMElementUpdate(instance, $target, directiveValue) {
+        this.setVisible($target, directiveValue);
+    },
+});

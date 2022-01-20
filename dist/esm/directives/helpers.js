@@ -1,1 +1,55 @@
-import{REGEX,PROPS_ATTRIBUTES}from"../constants.js";function extractDirectivesFromProps(e){let t;return t=Object.keys(e.props).length?e.props:e._rawProps,Object.keys(t).forEach((r=>{if(isDirective(r)){let i=r.replace(REGEX.REPLACE_D_DIRECTIVE,"");e._directiveProps[i]=t[r]}})),e._directiveProps}function isDirective(e){return"d"===e[0]&&("-"===e[1]||":"===e[1])}function extractStyleDisplayFromDozProps(e){if(!e._dozAttach[PROPS_ATTRIBUTES]||!e._dozAttach[PROPS_ATTRIBUTES].style)return null;let t=e._dozAttach[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);return t?t[1]:null}function extractDirectiveNameAndKeyValues(e){let t=e=e.replace(REGEX.REPLACE_D_DIRECTIVE,""),r=[];return-1!==t.indexOf("-")&&(r=t.split("-"),t=r[0],r.shift()),[t,r]}export{isDirective};export{extractDirectivesFromProps};export{extractStyleDisplayFromDozProps};export{extractDirectiveNameAndKeyValues};export default{isDirective:isDirective,extractDirectivesFromProps:extractDirectivesFromProps,extractStyleDisplayFromDozProps:extractStyleDisplayFromDozProps,extractDirectiveNameAndKeyValues:extractDirectiveNameAndKeyValues};
+import { REGEX, PROPS_ATTRIBUTES } from "../constants.js";
+function extractDirectivesFromProps(cmp) {
+    //let canBeDeleteProps = true;
+    let props;
+    if (!Object.keys(cmp.props).length) {
+        props = cmp._rawProps;
+        //canBeDeleteProps = false;
+    }
+    else {
+        props = cmp.props;
+    }
+    Object.keys(props).forEach(key => {
+        if (isDirective(key)) {
+            let keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+            cmp._directiveProps[keyWithoutD] = props[key];
+            /*if (canBeDeleteProps)
+                delete props[key];*/
+        }
+    });
+    return cmp._directiveProps;
+}
+function isDirective(aName) {
+    //return REGEX.IS_DIRECTIVE.test(name);
+    return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
+}
+function extractStyleDisplayFromDozProps($target) {
+    if (!$target._dozAttach[PROPS_ATTRIBUTES] || !$target._dozAttach[PROPS_ATTRIBUTES].style)
+        return null;
+    let match = $target._dozAttach[PROPS_ATTRIBUTES].style.match(REGEX.EXTRACT_STYLE_DISPLAY_PROPERTY);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+function extractDirectiveNameAndKeyValues(attributeName) {
+    attributeName = attributeName.replace(REGEX.REPLACE_D_DIRECTIVE, '');
+    let directiveName = attributeName;
+    let keyArgumentsValues = [];
+    if (directiveName.indexOf('-') !== -1) {
+        keyArgumentsValues = directiveName.split('-');
+        directiveName = keyArgumentsValues[0];
+        keyArgumentsValues.shift();
+    }
+    return [directiveName, keyArgumentsValues];
+}
+export { isDirective };
+export { extractDirectivesFromProps };
+export { extractStyleDisplayFromDozProps };
+export { extractDirectiveNameAndKeyValues };
+export default {
+    isDirective,
+    extractDirectivesFromProps,
+    extractStyleDisplayFromDozProps,
+    extractDirectiveNameAndKeyValues
+};

@@ -1,1 +1,5 @@
-export default function(t){return"string"==typeof t&&("o"===t[0]&&"n"===t[1])}
+export default (function isListener(str) {
+    if (typeof str !== 'string')
+        return false;
+    return str[0] === 'o' && str[1] === 'n';
+});

@@ -1,1 +1,12 @@
-export default function(e){const t=parseFloat(e);return!isNaN(t)&&isFinite(e)?0===e.toLowerCase().indexOf("0x")?parseInt(e,16):t:e}
+export default (function toNumber(obj) {
+    const num = parseFloat(obj);
+    if (!isNaN(num)) {
+        if (isFinite(obj)) {
+            if (obj.toLowerCase().indexOf('0x') === 0) {
+                return parseInt(obj, 16);
+            }
+            return num;
+        }
+    }
+    return obj;
+});

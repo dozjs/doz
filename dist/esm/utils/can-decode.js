@@ -1,1 +1,7 @@
-import html from"./html.js";function canDecode(e){return/&\w+;/.test(e)?html.decode(e):e}export default canDecode;
+import html from "./html.js";
+function canDecode(str) {
+    return /&\w+;/.test(str)
+        ? html.decode(str)
+        : str;
+}
+export default canDecode;

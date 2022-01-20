@@ -1,1 +1,125 @@
-import index from"../../index.js";import delay from"../../../utils/delay.js";const{directive:directive}=index;directive("bind",{onAppComponentCreate(e){Object.defineProperties(e,{_boundElements:{value:{},writable:!0}})},onAppComponentUpdate(e,t){Object.keys(e._boundElements).length&&this.updateBoundElementsByChanges(e,t)},onAppComponentLoadProps(e){this.updateBoundElementsByPropsIteration(e)},onComponentDOMElementCreate(e,t,n,o){this.canBind(t)&&this.setBind(e,t,n)},canBind:e=>-1!==["INPUT","TEXTAREA","SELECT"].indexOf(e.nodeName),setBind(e,t,n){if(void 0===e.props[n])return;["compositionstart","compositionend","input","change"].forEach((function(o){t.addEventListener(o,(function(t){let o;if("checkbox"===this.type)if(this.defaultValue){o=[...e.appRoot.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`)].map((e=>e.value)),e.props[n]=o}else e.props[n]=this.checked;else o=this.value,this.multiple&&(o=[...this.options].filter((e=>e.selected)).map((e=>e.value))),e.props[n]=o}))})),void 0!==e._boundElements[n]?e._boundElements[n].push(t):e._boundElements[n]=[t],delay((()=>{this.updateBoundElement(t,e.props[n],e)}))},updateBoundElementsByChanges(e,t){t.forEach((t=>{let n=t.newValue,o=t.property;this.updateBoundElements(e,n,o)}))},updateBoundElementsByPropsIteration(e){let t=this;!function n(o){let s=Object.keys(o);for(let i=0,l=s.length;i<l;i++){let l=s[i];o[l]instanceof Object&&null!==o[l]?n(o[l]):t.updateBoundElements(e,o[l],l)}}(e._rawProps)},updateBoundElements(e,t,n){Object.prototype.hasOwnProperty.call(e._boundElements,n)&&e._boundElements[n].forEach((n=>{this.updateBoundElement(n,t,e)}))},updateBoundElement(e,t,n){if("checkbox"===e.type)if(e.defaultValue){if(Array.isArray(t)){[...n.appRoot.querySelectorAll(`input[name=${e.name}][type=checkbox]`)].forEach((e=>e.checked=t.includes(e.value)))}}else e.checked=t;else"radio"===e.type?e.checked=e.value===t:"select-multiple"===e.type&&Array.isArray(t)?[...e.options].forEach((e=>e.selected=t.includes(e.value))):e.value=t}});
+import index from "../../index.js";
+import delay from "../../../utils/delay.js";
+const { directive } = index;
+directive('bind', {
+    // Start directive methods
+    onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            _boundElements: {
+                value: {},
+                writable: true
+            }
+        });
+    },
+    onAppComponentUpdate(instance, changes) {
+        if (!Object.keys(instance._boundElements).length)
+            return;
+        //delay(() => {
+        this.updateBoundElementsByChanges(instance, changes);
+        //});
+    },
+    onAppComponentLoadProps(instance) {
+        //delay(() => {
+        this.updateBoundElementsByPropsIteration(instance);
+        //});
+    },
+    onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
+        if (!this.canBind($target))
+            return;
+        this.setBind(instance, $target, directiveValue);
+    },
+    // End directive methods
+    // Start custom methods
+    canBind($target) {
+        return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
+    },
+    setBind(instance, $target, value) {
+        if (instance.props[value] === undefined)
+            return;
+        // Add UI events
+        let events = ['compositionstart', 'compositionend', 'input', 'change'];
+        events.forEach(function (event) {
+            $target.addEventListener(event, function (e) {
+                let _value;
+                if (this.type === 'checkbox') {
+                    if (!this.defaultValue)
+                        instance.props[value] = this.checked;
+                    else {
+                        const inputs = instance.appRoot.querySelectorAll(`input[name=${this.name}][type=checkbox]:checked`);
+                        _value = [...inputs].map(input => input.value);
+                        //instance.props[value] = castStringTo(_value);
+                        instance.props[value] = _value;
+                    }
+                }
+                else {
+                    _value = this.value;
+                    if (this.multiple) {
+                        _value = [...this.options].filter(option => option.selected).map(option => option.value);
+                    }
+                    //instance.props[value] = castStringTo(_value);
+                    instance.props[value] = _value;
+                }
+            });
+        });
+        // Map $target element with prop name
+        if (instance._boundElements[value] !== undefined) {
+            instance._boundElements[value].push($target);
+        }
+        else {
+            instance._boundElements[value] = [$target];
+        }
+        // Set first value
+        // Why this delay? because I need to waiting options tag
+        delay(() => {
+            this.updateBoundElement($target, instance.props[value], instance);
+        });
+    },
+    updateBoundElementsByChanges(instance, changes) {
+        changes.forEach(item => {
+            let value = item.newValue;
+            let property = item.property;
+            this.updateBoundElements(instance, value, property);
+        });
+    },
+    updateBoundElementsByPropsIteration(instance) {
+        let _this = this;
+        (function iterate(props) {
+            let keys = Object.keys(props);
+            for (let i = 0, l = keys.length; i < l; i++) {
+                let property = keys[i];
+                if (props[property] instanceof Object && props[property] !== null) {
+                    iterate(props[property]);
+                }
+                else {
+                    _this.updateBoundElements(instance, props[property], property);
+                }
+            }
+        })(instance._rawProps);
+    },
+    updateBoundElements(instance, value, property) {
+        if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
+            instance._boundElements[property].forEach($target => {
+                this.updateBoundElement($target, value, instance);
+            });
+        }
+    },
+    updateBoundElement($target, value, instance) {
+        if ($target.type === 'checkbox') {
+            if (!$target.defaultValue)
+                $target.checked = value;
+            else if (Array.isArray(value)) {
+                const inputs = instance.appRoot.querySelectorAll(`input[name=${$target.name}][type=checkbox]`);
+                [...inputs].forEach(input => input.checked = value.includes(input.value));
+            }
+        }
+        else if ($target.type === 'radio') {
+            $target.checked = $target.value === value;
+        }
+        else if ($target.type === 'select-multiple' && Array.isArray(value)) {
+            [...$target.options].forEach(option => option.selected = value.includes(option.value));
+        }
+        else {
+            $target.value = value;
+        }
+    }
+});

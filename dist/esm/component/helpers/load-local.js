@@ -1,1 +1,21 @@
-function loadLocal(o){Array.isArray(o.components)?(o.components.forEach((e=>{"object"==typeof e&&"string"==typeof e.tag&&"object"==typeof e.cfg&&(o._components[e.tag]=e)})),delete o.components):"object"==typeof o.components&&(Object.keys(o.components).forEach((e=>{o._components[e]={tag:e,cfg:o.components[e]}})),delete o.components)}export default loadLocal;
+function loadLocal(instance) {
+    // Add local components
+    if (Array.isArray(instance.components)) {
+        instance.components.forEach(cmp => {
+            if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
+                instance._components[cmp.tag] = cmp;
+            }
+        });
+        delete instance.components;
+    }
+    else if (typeof instance.components === 'object') {
+        Object.keys(instance.components).forEach(objName => {
+            instance._components[objName] = {
+                tag: objName,
+                cfg: instance.components[objName]
+            };
+        });
+        delete instance.components;
+    }
+}
+export default loadLocal;

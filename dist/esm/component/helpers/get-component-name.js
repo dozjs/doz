@@ -1,1 +1,4 @@
-function getComponentName(e){return e._dozAttach.originalTagName||e.nodeName.toLowerCase()}export default getComponentName;
+function getComponentName($child) {
+    return $child._dozAttach.originalTagName || $child.nodeName.toLowerCase();
+}
+export default getComponentName;

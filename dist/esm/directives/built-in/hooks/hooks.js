@@ -1,1 +1,132 @@
-import index from"../../index.js";const{directive:directive}=index;directive(":onbeforecreate",{onComponentBeforeCreate:(n,e)=>"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]?n.parent[e].call(n.parent,n):void 0}),directive(":oncreate",{onComponentCreate(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}}),directive(":onbeforemount",{onComponentBeforeMount:(n,e)=>"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]?n.parent[e].call(n.parent,n):void 0}),directive(":onmount",{onComponentMount(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}}),directive(":onmountasync",{onComponentMountAsync(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}}),directive(":onafterrender",{onComponentAfterRender:(n,e,t)=>"function"==typeof t?t(n,e):n.parent&&"function"==typeof n.parent[t]?n.parent[t].call(n.parent,n,e):void 0}),directive(":onbeforeupdate",{onComponentBeforeUpdate:(n,e,t)=>"function"==typeof t?t(n,e):n.parent&&"function"==typeof n.parent[t]?n.parent[t].call(n.parent,n,e):void 0}),directive(":onupdate",{onComponentUpdate(n,e,t){"function"==typeof t?t(n,e):n.parent&&"function"==typeof n.parent[t]&&n.parent[t].call(n.parent,n,e)}}),directive(":onbeforeunmount",{onComponentBeforeUnmount:(n,e)=>"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]?n.parent[e].call(n.parent,n):void 0}),directive(":onunmount",{onComponentUnmount(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}}),directive(":onbeforedestroy",{onComponentBeforeDestroy:(n,e)=>"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]?n.parent[e].call(n.parent,n):void 0}),directive(":ondestroy",{onComponentDestroy(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}}),directive(":onloadprops",{onComponentLoadProps(n,e){"function"==typeof e?e(n):n.parent&&"function"==typeof n.parent[e]&&n.parent[e].call(n.parent,n)}});
+import index from "../../index.js";
+const { directive } = index;
+directive(':onbeforecreate', {
+    onComponentBeforeCreate(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':oncreate', {
+    onComponentCreate(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onbeforemount', {
+    onComponentBeforeMount(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onmount', {
+    onComponentMount(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onmountasync', {
+    onComponentMountAsync(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onafterrender', {
+    onComponentAfterRender(instance, changes, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance, changes);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+directive(':onbeforeupdate', {
+    onComponentBeforeUpdate(instance, changes, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance, changes);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+directive(':onupdate', {
+    onComponentUpdate(instance, changes, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance, changes);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance, changes);
+        }
+    }
+});
+directive(':onbeforeunmount', {
+    onComponentBeforeUnmount(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onunmount', {
+    onComponentUnmount(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onbeforedestroy', {
+    onComponentBeforeDestroy(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            return directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            return instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':ondestroy', {
+    onComponentDestroy(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});
+directive(':onloadprops', {
+    onComponentLoadProps(instance, directiveValue) {
+        if (typeof directiveValue === 'function') {
+            directiveValue(instance);
+        }
+        else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+            instance.parent[directiveValue].call(instance.parent, instance);
+        }
+    }
+});

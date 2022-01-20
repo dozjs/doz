@@ -1,1 +1,12 @@
-function removeAllAttributes(t,e=[]){let r;if(t.attributes)for(let i=t.attributes.length-1;i>=0;i--)r=t.attributes[i].name,e.includes(r)||"data"===r.split("-")[0]||t.removeAttribute(r)}export default removeAllAttributes;
+function removeAllAttributes(el, exclude = []) {
+    let attributeName;
+    if (el.attributes)
+        for (let i = el.attributes.length - 1; i >= 0; i--) {
+            attributeName = el.attributes[i].name;
+            // exclude anyway data attributes
+            if (exclude.includes(attributeName) || attributeName.split('-')[0] === 'data')
+                continue;
+            el.removeAttribute(attributeName);
+        }
+}
+export default removeAllAttributes;

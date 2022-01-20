@@ -1,1 +1,22 @@
-function mixin(e,r=[]){if("object"!=typeof e||null==e)throw new TypeError("expected an object");Array.isArray(r)||(r=[r]);for(let t=r.length-1;t>=0;--t){let o=Object.keys(r[t]);for(let n=o.length-1;n>=0;--n){let i=o[n];void 0===e[i]?e[i]=r[t][i]:console.warn("Doz",`mixin failed for already defined property: ${i}`)}}return e}export default mixin;
+function mixin(target, sources = []) {
+    if (typeof target !== 'object' || target == null) {
+        throw new TypeError('expected an object');
+    }
+    if (!Array.isArray(sources)) {
+        sources = [sources];
+    }
+    for (let j = sources.length - 1; j >= 0; --j) {
+        let keys = Object.keys(sources[j]);
+        for (let i = keys.length - 1; i >= 0; --i) {
+            let index = keys[i];
+            if (typeof target[index] === 'undefined') {
+                target[index] = sources[j][index];
+            }
+            else {
+                console.warn('Doz', `mixin failed for already defined property: ${index}`);
+            }
+        }
+    }
+    return target;
+}
+export default mixin;

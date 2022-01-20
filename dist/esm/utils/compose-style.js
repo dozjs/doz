@@ -1,1 +1,16 @@
-import toInlineStyle from"./to-inline-style.js";function composeStyle(e,t){let l="";return Object.keys(e).forEach((o=>{if(/^@media/.test(o))l+=`${o} {${composeStyle(e[o],t)}}`;else{let n=toInlineStyle(e[o],!1);o=`${t} ${o.replace(/(,)/g,`$1${t} `)}`,l+=`${o}{${n}} `}})),l}export default composeStyle;
+import toInlineStyle from "./to-inline-style.js";
+function composeStyle(style, tag) {
+    let out = '';
+    Object.keys(style).forEach(key => {
+        if (/^@media/.test(key)) {
+            out += `${key} {${composeStyle(style[key], tag)}}`;
+        }
+        else {
+            let properties = toInlineStyle(style[key], false);
+            key = `${tag} ${key.replace(/(,)/g, `$1${tag} `)}`;
+            out += `${key}{${properties}} `;
+        }
+    });
+    return out;
+}
+export default composeStyle;

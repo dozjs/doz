@@ -1,1 +1,12 @@
-import composeStyleInner from"../../utils/compose-style-inner.js";import createStyle from"../../utils/create-style.js";function scopedInner(e,t,r,n,o){if("string"==typeof e)return e=composeStyleInner(e,r,o),createStyle(e,t,r,n,o)}export{scopedInner};export default{scopedInner:scopedInner};
+import composeStyleInner from "../../utils/compose-style-inner.js";
+import createStyle from "../../utils/create-style.js";
+function scopedInner(cssContent, uId, tag, scoped, cmp) {
+    if (typeof cssContent !== 'string')
+        return;
+    cssContent = composeStyleInner(cssContent, tag, cmp);
+    return createStyle(cssContent, uId, tag, scoped, cmp);
+}
+export { scopedInner };
+export default {
+    scopedInner
+};

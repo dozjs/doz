@@ -1,1 +1,8 @@
-export default function(r){try{return JSON.parse(r)}catch(t){return r}}
+export default (function toJSON(obj) {
+    try {
+        return JSON.parse(obj);
+    }
+    catch (e) {
+        return obj;
+    }
+});

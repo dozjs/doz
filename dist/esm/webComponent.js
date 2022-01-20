@@ -1,3 +1,113 @@
-import Doz from"./Doz.js";import appCreate from"./app-create.js";import data from"./data.js";import dashToCamel from"./utils/dash-to-camel.js";import createStyleSoftEntrance from"./utils/create-style-soft-entrance.js";function createDozWebComponent(e,t,o=[],n="dwc",a,p=[],s=[]){data.webComponents.tags[e]=data.webComponents.tags[e]||{},n&&(n+="-"),customElements.define(n+e,class extends HTMLElement{static get observedAttributes(){return o}constructor(){super()}connectedCallback(){let n={},i=null,r="",d=this.hasAttribute("data-no-shadow"),m=d?this:this.attachShadow({mode:"open"}),l=this;for(let e,t=0,a=this.attributes,p=a.length;t<p;t++)e=a[t],"data-id"!==e.nodeName?o.includes(e.nodeName)&&(n[dashToCamel(e.nodeName)]=e.nodeValue):i=e.nodeValue;let b=function(){let t=this.app.byAppCreate?this:this.children[0];p.forEach((e=>{t[e]&&(l[e]=t[e].bind(t))})),l.removeAttribute("data-soft-entrance"),t.props=Object.assign({},t.props,n);let o=Object.keys(data.webComponents.tags[e]).length++;if(data.webComponents.tags[e][i||o]=t,null!==i){if(data.webComponents.ids[i])return console.warn(i+": id already exists for DozWebComponent");data.webComponents.ids[i]=t}},c=function(e,...t){if(s.indexOf(e)>-1){let o=new CustomEvent(e,{detail:t});l.dispatchEvent(o)}};r=this.innerHTML.trim(),this.innerHTML="";let C=t||a||e;t&&"object"!=typeof t?(t.__postListeners={onAppReady:b},this.dozApp=appCreate(m,t,{isWebComponent:!0,useShadowRoot:!d,innerHTML:r,onAppEmit:c})):this.dozApp=new Doz({root:m,isWebComponent:!0,useShadowRoot:!d,template:e=>e`
-                            <${C}>${r}</${C}>
-                        `,onAppReady:b,onAppEmit:c})}attributeChangedCallback(e,t,o){if(!this.dozApp)return;(this.dozApp.byAppCreate?this.dozApp.mainComponent:this.dozApp.mainComponent.children[0]).props[dashToCamel(e)]=o}})}function defineWebComponent(e,t,o=[],n=[],a=[]){createDozWebComponent(e,t,o,"",null,n,a)}function defineWebComponentFromGlobal(e,t,o=[],n=[],a=[]){createDozWebComponent(e,null,o,"",t,n,a)}createStyleSoftEntrance();export{defineWebComponent};export{defineWebComponentFromGlobal};export{createDozWebComponent};export default{defineWebComponent:defineWebComponent,defineWebComponentFromGlobal:defineWebComponentFromGlobal,createDozWebComponent:createDozWebComponent};
+import Doz from "./Doz.js";
+import appCreate from "./app-create.js";
+import data from "./data.js";
+import dashToCamel from "./utils/dash-to-camel.js";
+import createStyleSoftEntrance from "./utils/create-style-soft-entrance.js";
+createStyleSoftEntrance();
+function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = [], exposedListeners = []) {
+    data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};
+    if (prefix) {
+        prefix += '-';
+    }
+    customElements.define(prefix + tag, class extends HTMLElement {
+        static get observedAttributes() {
+            return observedAttributes;
+        }
+        constructor() {
+            super();
+        }
+        connectedCallback() {
+            let initialProps = {};
+            let id = null;
+            let contentHTML = '';
+            let hasDataNoShadow = this.hasAttribute('data-no-shadow');
+            let root = !hasDataNoShadow ? this.attachShadow({ mode: 'open' }) : this;
+            let thisElement = this;
+            for (let att, i = 0, atts = this.attributes, n = atts.length; i < n; i++) {
+                att = atts[i];
+                if (att.nodeName === 'data-id') {
+                    id = att.nodeValue;
+                    continue;
+                }
+                if (observedAttributes.includes(att.nodeName)) {
+                    initialProps[dashToCamel(att.nodeName)] = att.nodeValue;
+                }
+            }
+            let onAppReady = function () {
+                let firstChild = this.app.byAppCreate ? this : this.children[0];
+                exposedMethods.forEach(method => {
+                    if (firstChild[method]) {
+                        thisElement[method] = firstChild[method].bind(firstChild);
+                    }
+                });
+                thisElement.removeAttribute('data-soft-entrance');
+                firstChild.props = Object.assign({}, firstChild.props, initialProps);
+                let countCmp = Object.keys(data.webComponents.tags[tag]).length++;
+                data.webComponents.tags[tag][id || countCmp] = firstChild;
+                if (id !== null) {
+                    if (data.webComponents.ids[id])
+                        return console.warn(id + ': id already exists for DozWebComponent');
+                    data.webComponents.ids[id] = firstChild;
+                }
+            };
+            let onAppEmit = function (event, ...args) {
+                if (exposedListeners.indexOf(event) > -1) {
+                    let eventInstance = new CustomEvent(event, {
+                        detail: args
+                    });
+                    thisElement.dispatchEvent(eventInstance);
+                }
+            };
+            contentHTML = this.innerHTML.trim();
+            this.innerHTML = '';
+            let tagCmp = cmp || globalTag || tag;
+            //console.log(contentHTML)
+            if (cmp && typeof cmp !== "object") {
+                cmp.__postListeners = {
+                    onAppReady
+                };
+                this.dozApp = appCreate(root, cmp, {
+                    isWebComponent: true,
+                    useShadowRoot: !hasDataNoShadow,
+                    innerHTML: contentHTML,
+                    onAppEmit
+                });
+            }
+            else {
+                this.dozApp = new Doz({
+                    root,
+                    isWebComponent: true,
+                    useShadowRoot: !hasDataNoShadow,
+                    //language=HTML
+                    template(h) {
+                        return h `
+                            <${tagCmp}>${contentHTML}</${tagCmp}>
+                        `;
+                    },
+                    onAppReady,
+                    onAppEmit
+                });
+            }
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (!this.dozApp)
+                return;
+            let firstChild = this.dozApp.byAppCreate ? this.dozApp.mainComponent : this.dozApp.mainComponent.children[0];
+            firstChild.props[dashToCamel(name)] = newValue;
+        }
+    });
+}
+function defineWebComponent(tag, cmp, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, cmp, observedAttributes, '', null, exposedMethods, exposedListeners);
+}
+function defineWebComponentFromGlobal(tag, globalTag, observedAttributes = [], exposedMethods = [], exposedListeners = []) {
+    createDozWebComponent(tag, null, observedAttributes, '', globalTag, exposedMethods, exposedListeners);
+}
+export { defineWebComponent };
+export { defineWebComponentFromGlobal };
+export { createDozWebComponent };
+export default {
+    defineWebComponent,
+    defineWebComponentFromGlobal,
+    createDozWebComponent
+};

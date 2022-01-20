@@ -1,1 +1,5 @@
-export default function(t){return function(n){n.tag=t}}
+export default (function tag(name) {
+    return function (target) {
+        target.tag = name;
+    };
+});

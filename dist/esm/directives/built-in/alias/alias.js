@@ -1,1 +1,44 @@
-import index from"../../index.js";const{directive:directive}=index;directive(":alias",{createAlias(e,i){"string"==typeof i&&(e.alias=i)},onAppInit(e){Object.defineProperties(e,{getComponent:{value:function(e){return this._tree?this._tree.children[e]:void 0},enumerable:!0}})},onAppComponentCreate(e){Object.defineProperties(e,{getComponent:{value:function(e){return this.children?this.children[e]:void 0},enumerable:!0}})},onComponentCreate(e,i){this.createAlias(e,i)},onAppComponentSetConfig(e,i){"string"==typeof i.alias&&this.createAlias(e,i.alias)},onAppComponentAssignIndex:(e,i)=>e.alias?e.alias:i});
+import index from "../../index.js";
+const { directive } = index;
+directive(':alias', {
+    createAlias(instance, alias) {
+        if (typeof alias === 'string') {
+            instance.alias = alias;
+        }
+    },
+    onAppInit(app) {
+        Object.defineProperties(app, {
+            getComponent: {
+                value: function (alias) {
+                    return this._tree
+                        ? this._tree.children[alias]
+                        : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onAppComponentCreate(instance) {
+        Object.defineProperties(instance, {
+            getComponent: {
+                value: function (alias) {
+                    return this.children
+                        ? this.children[alias]
+                        : undefined;
+                },
+                enumerable: true
+            }
+        });
+    },
+    onComponentCreate(instance, directiveValue) {
+        this.createAlias(instance, directiveValue);
+    },
+    onAppComponentSetConfig(instance, obj) {
+        if (typeof obj.alias === 'string') {
+            this.createAlias(instance, obj.alias);
+        }
+    },
+    onAppComponentAssignIndex(instance, n) {
+        return instance.alias ? instance.alias : n;
+    }
+});
