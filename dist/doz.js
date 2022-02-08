@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.13.9  
+// [DOZ]  Build version: 3.13.10  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1308,7 +1308,8 @@ var observer = __webpack_require__(33);
 
 var hooks = __webpack_require__(6);
 
-var update = __webpack_require__(37).updateElement;
+var _require2 = __webpack_require__(37),
+    updateElement = _require2.updateElement;
 
 var drawDynamic = __webpack_require__(45);
 
@@ -1330,8 +1331,8 @@ var loadLocal = __webpack_require__(52);
 
 var localMixin = __webpack_require__(53);
 
-var _require2 = __webpack_require__(7),
-    compile = _require2.compile;
+var _require3 = __webpack_require__(7),
+    compile = _require3.compile;
 
 var propsInit = __webpack_require__(23);
 
@@ -1512,7 +1513,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       queueDraw.emit(this, next, this._prev); //console.log(next)
       //console.log(this._prev)
 
-      var rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
+      var rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial); //Remove attributes from component tag
       //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
 
       if (!this._mainComponentByAppCreate) removeAllAttributes(this._cfgRoot, this.exposeAttributes); //console.log(this._rootElement)
@@ -4038,7 +4039,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.13.9',
+    value: '3.13.10',
     enumerable: true
   },
   tag: {
