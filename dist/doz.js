@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.13.8  
+// [DOZ]  Build version: 3.13.9  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -248,7 +248,13 @@ module.exports = {
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = window.requestAnimationFrame || window.setTimeout;
+var d = window.setTimeout.bind(window);
+
+if (window.requestAnimationFrame) {
+  d = window.requestAnimationFrame.bind(window);
+}
+
+module.exports = d;
 
 /***/ }),
 /* 4 */
@@ -4032,7 +4038,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.13.8',
+    value: '3.13.9',
     enumerable: true
   },
   tag: {
