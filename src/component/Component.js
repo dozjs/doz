@@ -1,7 +1,7 @@
 const {REGEX} = require('../constants');
 const observer = require('./observer');
 const hooks = require('./hooks');
-const update = require('../vdom').updateElement;
+const {updateElement} = require('../vdom');
 const drawDynamic = require('./helpers/draw-dynamic');
 const proxy = require('../proxy');
 const toInlineStyle = require('../utils/to-inline-style');
@@ -180,7 +180,7 @@ class Component extends DOMManipulation {
         queueDraw.emit(this, next, this._prev);
         //console.log(next)
         //console.log(this._prev)
-        const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+        const rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial);
 
         //Remove attributes from component tag
         //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);

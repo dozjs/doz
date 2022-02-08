@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.13.10] - 2022-02-08
+- **Improvement** optimize esm;
+
 ## [3.13.9] - 2022-02-08
 - **Fixed** "Uncaught TypeError: Illegal invocation" in Chrome;
 

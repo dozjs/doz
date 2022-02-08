@@ -21,7 +21,6 @@ import toLiteralString from "../utils/to-literal-string.js";
 import delay from "../utils/delay.js";
 import makeSureAttach from "./make-sure-attach.js";
 import data from "../data.js";
-const update = { updateElement }.updateElement;
 //const mapCompiled = require('../vdom/map-compiled');
 class Component extends DOMManipulation {
     constructor(opt) {
@@ -147,7 +146,7 @@ class Component extends DOMManipulation {
         queueDraw.emit(this, next, this._prev);
         //console.log(next)
         //console.log(this._prev)
-        const rootElement = update(this._cfgRoot, next, this._prev, 0, this, initial);
+        const rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial);
         //Remove attributes from component tag
         //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
         if (!this._mainComponentByAppCreate)
