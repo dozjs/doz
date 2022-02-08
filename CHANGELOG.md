@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.13.9] - 2022-02-08
+- **Fixed** "Uncaught TypeError: Illegal invocation" in Chrome;
+
 ## [3.13.8] - 2022-01-20
 - **Fixed** possible undefined `this` object in `h` method;
 
