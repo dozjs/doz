@@ -115,6 +115,16 @@ class Doz {
                 writable: true,
                 enumerable: true
             },
+            setAllAttributes: {
+                value: this.cfg.setAllAttributes,
+                writable: true,
+                enumerable: true
+            },
+            onVdomUpdateElement: {
+                value: this.cfg.onVdomUpdateElement,
+                writable: true,
+                enumerable: true
+            },
             cacheStores: {
                 value: {
                     kCache: new Map(),

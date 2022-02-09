@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.14.1] - 2022-02-09
+- **Fixed** esm version;
+
 ## [3.14.0] - 2022-02-09
 - **Added** app boolean option `setAllAttributes`
 - **Added** app callback option `onVdomUpdateElement`
