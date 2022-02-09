@@ -61,7 +61,8 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
             || name.startsWith('aria-')
             || name === 'role'
             || name === 'for'
-            || isSVG) {
+            || isSVG
+            || (cmp && cmp.app && cmp.app.setAllAttributes)) {
             $target.setAttribute(name, value);
         }
     }

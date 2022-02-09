@@ -108,6 +108,16 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     // only if the component is DZ-MOUNT because the slots do not work
     if (!$parent || (newNode === oldNode && cmp.tag !== TAG.MOUNT)) return;
 
+    if (cmp && cmp.app && cmp.app.onVdomUpdateElement) {
+        let resultVdomUpdateElement = cmp.app.onVdomUpdateElement($parent, newNode, oldNode, cmp, initial, cmpParent)
+        if (resultVdomUpdateElement) {
+            $parent = resultVdomUpdateElement.$parent || $parent;
+            newNode = resultVdomUpdateElement.newNode || newNode;
+            oldNode = resultVdomUpdateElement.oldNode || oldNode;
+            cmp = resultVdomUpdateElement.cmp || cmp;
+        }
+    }
+
     if (newNode && newNode.cmp)
         cmp = newNode.cmp;
 
