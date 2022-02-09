@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.13.10  
+// [DOZ]  Build version: 3.14.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1057,6 +1057,16 @@ var Doz = /*#__PURE__*/function () {
       },
       shared: {
         value: this.cfg.shared,
+        writable: true,
+        enumerable: true
+      },
+      setAllAttributes: {
+        value: this.cfg.setAllAttributes,
+        writable: true,
+        enumerable: true
+      },
+      onVdomUpdateElement: {
+        value: this.cfg.onVdomUpdateElement,
         writable: true,
         enumerable: true
       },
@@ -3096,6 +3106,18 @@ function update($parent, newNode, oldNode) {
   // For the moment I exclude the check on the comparison between newNode and oldNode
   // only if the component is DZ-MOUNT because the slots do not work
   if (!$parent || newNode === oldNode && cmp.tag !== TAG.MOUNT) return;
+
+  if (cmp && cmp.app && cmp.app.onVdomUpdateElement) {
+    var resultVdomUpdateElement = cmp.app.onVdomUpdateElement($parent, newNode, oldNode, cmp, initial, cmpParent);
+
+    if (resultVdomUpdateElement) {
+      $parent = resultVdomUpdateElement.$parent || $parent;
+      newNode = resultVdomUpdateElement.newNode || newNode;
+      oldNode = resultVdomUpdateElement.oldNode || oldNode;
+      cmp = resultVdomUpdateElement.cmp || cmp;
+    }
+  }
+
   if (newNode && newNode.cmp) cmp = newNode.cmp; // Update style
 
   if (newNode && oldNode && newNode.style !== oldNode.style) {
@@ -4039,7 +4061,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.13.10',
+    value: '3.14.0',
     enumerable: true
   },
   tag: {
@@ -5125,7 +5147,7 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
       }
 
       $target[name] = value;
-    } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || isSVG) {
+    } else if (name.startsWith('data-') || name.startsWith('aria-') || name === 'role' || name === 'for' || isSVG || cmp && cmp.app && cmp.app.setAllAttributes) {
       $target.setAttribute(name, value);
     }
   }
