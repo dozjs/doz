@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.14.1  
+// [DOZ]  Build version: 3.15.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -521,6 +521,17 @@ function callLoadProps(context) {
   context.app.emit('componentLoadProps', context);
 }
 
+function callWaitMount(context) {
+  directive.callAppComponentWaitMount(context);
+  directive.callComponentWaitMount(context);
+
+  if (typeof context.onWaitMount === 'function') {
+    context.onWaitMount.call(context);
+  }
+
+  context.app.emit('componentWaitMount', context);
+}
+
 module.exports = {
   callBeforeCreate: callBeforeCreate,
   callCreate: callCreate,
@@ -536,7 +547,8 @@ module.exports = {
   callUnmount: callUnmount,
   callBeforeDestroy: callBeforeDestroy,
   callDestroy: callDestroy,
-  callLoadProps: callLoadProps
+  callLoadProps: callLoadProps,
+  callWaitMount: callWaitMount
 };
 
 /***/ }),
@@ -1916,6 +1928,34 @@ function createInstance() {
 
       if (cmp) {
         var _ret = function () {
+          var _runMount = function _runMount() {
+            newElement._isRendered = true;
+            newElement.render(true);
+
+            if (!componentInstance) {
+              componentInstance = newElement;
+            }
+
+            newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
+            newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
+
+            if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
+              var slotPlaceholder = document.createComment('slot');
+              newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
+            } // This is an hack for call render a second time so the
+            // event onAppDraw and onDrawByParent are fired after
+            // that the component is mounted.
+            // This hack makes also the component that has keys
+            // Really this hack is very important :D :D
+
+
+            delay(function () {
+              newElement.render(false, [], true);
+            });
+            hooks.callMount(newElement);
+            hooks.callMountAsync(newElement);
+          };
+
           //console.log(cmpName)
           if (parent.cmp) {
             var rawChild = $child.outerHTML;
@@ -1994,32 +2034,13 @@ function createInstance() {
           propsInit(newElement);
           newElement.app.emit('componentPropsInit', newElement);
 
-          if (hooks.callBeforeMount(newElement) !== false) {
-            newElement._isRendered = true;
-            newElement.render(true);
-
-            if (!componentInstance) {
-              componentInstance = newElement;
-            }
-
-            newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
-            newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
-
-            if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
-              var slotPlaceholder = document.createComment('slot');
-              newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
-            } // This is an hack for call render a second time so the
-            // event onAppDraw and onDrawByParent are fired after
-            // that the component is mounted.
-            // This hack makes also the component that has keys
-            // Really this hack is very important :D :D
-
-
-            delay(function () {
-              newElement.render(false, [], true);
-            });
-            hooks.callMount(newElement);
-            hooks.callMountAsync(newElement);
+          if (newElement.waitMount) {
+            newElement.runMount = _runMount;
+            hooks.callWaitMount(newElement);
+          } else if (hooks.callBeforeMount(newElement) !== false) {
+            _runMount();
+          } else {
+            newElement.runMount = _runMount;
           }
 
           parentElement = newElement; //console.log(parent)
@@ -4061,7 +4082,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.14.1',
+    value: '3.15.0',
     enumerable: true
   },
   tag: {
@@ -4478,6 +4499,18 @@ function callAppComponentRenderOverwrite() {
 
   callMethod.apply(null, resArgs);
 }
+
+function callAppComponentWaitMount() {
+  var resArgs = ['onAppComponentWaitMount'];
+
+  for (var _len27 = arguments.length, args = new Array(_len27), _key27 = 0; _key27 < _len27; _key27++) {
+    args[_key27] = arguments[_key27];
+  }
+
+  Array.prototype.push.apply(resArgs, args); //args = ['onAppComponentWaitMount', ...args];
+
+  callMethod.apply(null, resArgs);
+}
 /*function callAppDOMAttributeSet(...args) {
     args = ['onAppDOMAttributeSet', ...args];
     callMethod.apply(null, args);
@@ -4509,7 +4542,8 @@ module.exports = {
   callAppDOMElementCreate: callAppDOMElementCreate,
   callAppDynamicInstanceCreate: callAppDynamicInstanceCreate,
   callAppComponentPropsAssignName: callAppComponentPropsAssignName,
-  callAppComponentRenderOverwrite: callAppComponentRenderOverwrite
+  callAppComponentRenderOverwrite: callAppComponentRenderOverwrite,
+  callAppComponentWaitMount: callAppComponentWaitMount
 };
 
 /***/ }),
@@ -4752,6 +4786,18 @@ function callComponentLoadProps() {
   callMethod.apply(null, resArgs);
 }
 
+function callComponentWaitMount() {
+  var resArgs = ['onComponentWaitMount'];
+
+  for (var _len15 = arguments.length, args = new Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+    args[_key15] = arguments[_key15];
+  }
+
+  Array.prototype.push.apply(resArgs, args); //args = ['onComponentWaitMount', ...args];
+
+  callMethod.apply(null, resArgs);
+}
+
 function callComponentDOMElementCreate(instance, $target, initial) {
   var method = 'onComponentDOMElementCreate';
   if (!$target._dozAttach[PROPS_ATTRIBUTES]) return;
@@ -4851,7 +4897,8 @@ module.exports = {
   callComponentLoadProps: callComponentLoadProps,
   callComponentDOMElementCreate: callComponentDOMElementCreate,
   callComponentDOMElementUpdate: callComponentDOMElementUpdate,
-  callComponentVNodeTick: callComponentVNodeTick
+  callComponentVNodeTick: callComponentVNodeTick,
+  callComponentWaitMount: callComponentWaitMount
 };
 
 /***/ }),
@@ -6148,6 +6195,11 @@ var Base = /*#__PURE__*/_createClass(function Base() {
     },
     lockRemoveInstanceByCallback: {
       value: null,
+      enumerable: true,
+      writable: true
+    },
+    waitMount: {
+      value: false,
       enumerable: true,
       writable: true
     }
