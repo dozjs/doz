@@ -209,4 +209,10 @@ export class Component {
      * @param {object} obj
      */
     setPropsAsync(obj: object): void
+
+    /**
+     * This method allows you to mount the component after that onWaitMount is called, this method is available only id waitMount is set to true.
+     * @param {object} obj
+     */
+    runMount(obj: object): void
 }

@@ -132,6 +132,13 @@ function callComponentLoadProps(...args) {
     callMethod.apply(null, resArgs)
 }
 
+function callComponentWaitMount(...args) {
+    let resArgs = ['onComponentWaitMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentWaitMount', ...args];
+    callMethod.apply(null, resArgs)
+}
+
 function callComponentDOMElementCreate(instance, $target, initial) {
     let method = 'onComponentDOMElementCreate';
     if(!$target._dozAttach[PROPS_ATTRIBUTES]) return;
@@ -209,5 +216,6 @@ module.exports = {
     callComponentLoadProps,
     callComponentDOMElementCreate,
     callComponentDOMElementUpdate,
-    callComponentVNodeTick
+    callComponentVNodeTick,
+    callComponentWaitMount
 };

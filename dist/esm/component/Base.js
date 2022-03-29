@@ -186,6 +186,11 @@ class Base {
                 value: null,
                 enumerable: true,
                 writable: true
+            },
+            waitMount: {
+                value: false,
+                enumerable: true,
+                writable: true
             }
         });
     }

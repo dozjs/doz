@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.15.0] - 2022-03-29
+- **Added** deferred mount;
+
 ## [3.14.1] - 2022-02-09
 - **Fixed** esm version;
 

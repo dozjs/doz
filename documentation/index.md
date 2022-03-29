@@ -32,6 +32,7 @@ Below some basic concepts:
     - [Drawing Hooks](#drawing-hooks)
     - [Local component](#local-component)
     - [Mount](#mount)
+    - [Deferred Mount](#deferred-mount)
     - [Empty attributes in HTML element](#empty-attributes-in-html-element)
     - [Directives](#directives)
         - [HTML element](#html-element)
@@ -1135,6 +1136,27 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/uLb9nw2d/)
+
+---
+
+### Deferred Mount
+If you need to mount your component deferred.
+
+```javascript
+Doz.component('hello-world', {
+	waitMount: true,
+    template(h) {
+        return h`
+            <h2>Hello World</h2>
+        `
+    },
+	async onWaitMount() {
+		await foo();
+		this.runMount()
+	}
+});
+
+```
 
 ---
 

@@ -79,4 +79,9 @@ export default interface ConfigComponent {
      * This object allow to sharing things between components.
      */
     shared?: object;
+
+    /**
+     * If true, the component will be mounted after the call of runMount(). Default: false.
+     */
+    waitMount?: object;
 }

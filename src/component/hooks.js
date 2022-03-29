@@ -155,6 +155,15 @@ function callLoadProps(context) {
     context.app.emit('componentLoadProps', context);
 }
 
+function callWaitMount(context) {
+    directive.callAppComponentWaitMount(context);
+    directive.callComponentWaitMount(context);
+    if (typeof context.onWaitMount === 'function') {
+        context.onWaitMount.call(context);
+    }
+    context.app.emit('componentWaitMount', context);
+}
+
 module.exports = {
     callBeforeCreate,
     callCreate,
@@ -170,5 +179,6 @@ module.exports = {
     callUnmount,
     callBeforeDestroy,
     callDestroy,
-    callLoadProps
+    callLoadProps,
+    callWaitMount
 };

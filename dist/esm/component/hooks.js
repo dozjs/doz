@@ -133,6 +133,14 @@ function callLoadProps(context) {
     }
     context.app.emit('componentLoadProps', context);
 }
+function callWaitMount(context) {
+    directive.callAppComponentWaitMount(context);
+    directive.callComponentWaitMount(context);
+    if (typeof context.onWaitMount === 'function') {
+        context.onWaitMount.call(context);
+    }
+    context.app.emit('componentWaitMount', context);
+}
 export { callBeforeCreate };
 export { callCreate };
 export { callConfigCreate };
@@ -148,6 +156,7 @@ export { callUnmount };
 export { callBeforeDestroy };
 export { callDestroy };
 export { callLoadProps };
+export { callWaitMount };
 export default {
     callBeforeCreate,
     callCreate,
@@ -163,5 +172,6 @@ export default {
     callUnmount,
     callBeforeDestroy,
     callDestroy,
-    callLoadProps
+    callLoadProps,
+    callWaitMount
 };

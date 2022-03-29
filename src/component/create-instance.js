@@ -134,35 +134,38 @@ function createInstance(cfg = {}) {
 
                 newElement.app.emit('componentPropsInit', newElement);
 
-                if (hooks.callBeforeMount(newElement) !== false) {
-
+                function _runMount() {
                     newElement._isRendered = true;
                     newElement.render(true);
-
                     if (!componentInstance) {
                         componentInstance = newElement;
                     }
-
                     newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
                     newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
-
                     // Replace first element child if defaultSlot exists with a slot comment
                     if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
                         let slotPlaceholder = document.createComment('slot');
                         newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
-
                     // This is an hack for call render a second time so the
                     // event onAppDraw and onDrawByParent are fired after
                     // that the component is mounted.
                     // This hack makes also the component that has keys
                     // Really this hack is very important :D :D
                     delay(() => {
-                        newElement.render(false, [], true)
+                        newElement.render(false, [], true);
                     });
-
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
+                }
+
+                if (newElement.waitMount) {
+                    newElement.runMount = _runMount;
+                    hooks.callWaitMount(newElement);
+                } else if (hooks.callBeforeMount(newElement) !== false) {
+                    _runMount()
+                } else {
+                    newElement.runMount = _runMount
                 }
 
                 parentElement = newElement;

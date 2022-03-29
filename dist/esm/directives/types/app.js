@@ -178,6 +178,12 @@ function callAppComponentRenderOverwrite(...args) {
     //args = ['onAppComponentRenderOverwrite', ...args];
     callMethod.apply(null, resArgs);
 }
+function callAppComponentWaitMount(...args) {
+    let resArgs = ['onAppComponentWaitMount'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentWaitMount', ...args];
+    callMethod.apply(null, resArgs);
+}
 export { callAppInit };
 export { callAppComponentCreate };
 export { callAppComponentLoadProps };
@@ -203,6 +209,7 @@ export { callAppDOMElementCreate };
 export { callAppDynamicInstanceCreate };
 export { callAppComponentPropsAssignName };
 export { callAppComponentRenderOverwrite };
+export { callAppComponentWaitMount };
 export default {
     callAppInit,
     callAppComponentCreate,
@@ -228,5 +235,6 @@ export default {
     callAppDOMElementCreate,
     callAppDynamicInstanceCreate,
     callAppComponentPropsAssignName,
-    callAppComponentRenderOverwrite
+    callAppComponentRenderOverwrite,
+    callAppComponentWaitMount
 };

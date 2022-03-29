@@ -108,7 +108,7 @@ function createInstance(cfg = {}) {
                 }
                 propsInit(newElement);
                 newElement.app.emit('componentPropsInit', newElement);
-                if (hooks.callBeforeMount(newElement) !== false) {
+                function _runMount() {
                     newElement._isRendered = true;
                     newElement.render(true);
                     if (!componentInstance) {
@@ -131,6 +131,16 @@ function createInstance(cfg = {}) {
                     });
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
+                }
+                if (newElement.waitMount) {
+                    newElement.runMount = _runMount;
+                    hooks.callWaitMount(newElement);
+                }
+                else if (hooks.callBeforeMount(newElement) !== false) {
+                    _runMount();
+                }
+                else {
+                    newElement.runMount = _runMount;
                 }
                 parentElement = newElement;
                 //console.log(parent)

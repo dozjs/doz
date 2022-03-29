@@ -466,6 +466,12 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Type**: `function`
 - **Description**: This method is called after that component instance is unmounted.
 
+### onWaitMount
+
+- **Since**: 3.15.0
+- **Type**: `function`
+- **Description**: This method is called if waitMount property is true.
+
 ### onUpdate ( [changes](#example-of-changes-object) )
 
 - **Since**: 0.0.19
