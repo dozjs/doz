@@ -117,6 +117,14 @@ function callComponentWaitMount(...args) {
     //args = ['onComponentWaitMount', ...args];
     callMethod.apply(null, resArgs);
 }
+/*
+function callComponentsMounted(...args) {
+    let resArgs = ['onComponentsMounted'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentsMounted', ...args];
+    callMethod.apply(null, resArgs)
+}
+*/
 function callComponentDOMElementCreate(instance, $target, initial) {
     let method = 'onComponentDOMElementCreate';
     if (!$target._dozAttach[PROPS_ATTRIBUTES])

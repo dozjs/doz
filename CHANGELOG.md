@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.16.0] - 2022-03-30
+- **Added** support to server side props;
+- **Improvement** `appReady` event, now supports `waitMount`;
+
 ## [3.15.0] - 2022-03-29
 - **Added** deferred mount;
 
