@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.15.0  
+// [DOZ]  Build version: 3.16.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -531,6 +531,17 @@ function callWaitMount(context) {
 
   context.app.emit('componentWaitMount', context);
 }
+/*
+function callComponentsMounted(context) {
+    directive.callAppComponentsMounted(context);
+    directive.callComponentsMounted(context);
+    if (typeof context.onComponentsMounted === 'function') {
+        context.onComponentsMounted.call(context);
+    }
+    context.app.emit('componentsMounted', context);
+}
+*/
+
 
 module.exports = {
   callBeforeCreate: callBeforeCreate,
@@ -548,7 +559,8 @@ module.exports = {
   callBeforeDestroy: callBeforeDestroy,
   callDestroy: callDestroy,
   callLoadProps: callLoadProps,
-  callWaitMount: callWaitMount
+  callWaitMount: callWaitMount //callComponentsMounted
+
 };
 
 /***/ }),
@@ -1011,6 +1023,10 @@ var Doz = /*#__PURE__*/function () {
         value: [],
         writable: true
       },
+      _onAppComponentsMounted: {
+        value: new Map(),
+        writable: true
+      },
       _callAppReady: {
         value: function value() {
           var _defined = function _defined(cb) {
@@ -1206,13 +1222,25 @@ var Doz = /*#__PURE__*/function () {
 
 
     if (!this.cfg.mainComponent && this.cfg.autoDraw) this.draw();
-
-    this._callAppReady();
-
-    this.emit('ready', this);
+    this.canAppReady();
   }
 
   _createClass(Doz, [{
+    key: "canAppReady",
+    value: function canAppReady() {
+      var _this2 = this;
+
+      if (this._onAppComponentsMounted.size) {
+        setTimeout(function () {
+          _this2.canAppReady();
+        });
+      } else {
+        this._callAppReady();
+
+        this.emit('ready', this);
+      }
+    }
+  }, {
     key: "draw",
     value: function draw() {
       if (!this.cfg.autoDraw) this.cfg.root.innerHTML = '';
@@ -1246,7 +1274,7 @@ var Doz = /*#__PURE__*/function () {
   }, {
     key: "emit",
     value: function emit(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
@@ -1254,7 +1282,7 @@ var Doz = /*#__PURE__*/function () {
 
       if (this._onAppCB[event]) {
         var _defined11 = function _defined11(func) {
-          func.apply(_this2, args);
+          func.apply(_this3, args);
         };
 
         var _defined12 = this._onAppCB[event];
@@ -1953,7 +1981,13 @@ function createInstance() {
               newElement.render(false, [], true);
             });
             hooks.callMount(newElement);
-            hooks.callMountAsync(newElement);
+            hooks.callMountAsync(newElement); //if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
+
+            if (newElement.waitMount) {
+              //cfg.app._onAppComponentsMounted.set(newElement, true);
+              cfg.app._onAppComponentsMounted["delete"](newElement);
+            }
           };
 
           //console.log(cmpName)
@@ -2035,6 +2069,9 @@ function createInstance() {
           newElement.app.emit('componentPropsInit', newElement);
 
           if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted)
+            cfg.app._onAppComponentsMounted.set(newElement, false);
+
             newElement.runMount = _runMount;
             hooks.callWaitMount(newElement);
           } else if (hooks.callBeforeMount(newElement) !== false) {
@@ -2112,8 +2149,7 @@ function createInstance() {
       for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
         _defined(_defined2[_i2], _i2, _defined2);
       }
-    } //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
-
+    }
 
     walk(newElement.getHTMLElement(), {
       cmp: newElement
@@ -3947,6 +3983,7 @@ var _require = __webpack_require__(2),
 
 
 use(__webpack_require__(58));
+use(__webpack_require__(59));
 
 function use(plugin) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -4014,11 +4051,11 @@ var _require = __webpack_require__(25),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(59);
+var component = __webpack_require__(60);
 
 var Component = __webpack_require__(11);
 
-var mixin = __webpack_require__(60);
+var mixin = __webpack_require__(61);
 
 var h = __webpack_require__(21);
 
@@ -4031,14 +4068,14 @@ var _require3 = __webpack_require__(7),
 var _require4 = __webpack_require__(17),
     update = _require4.update;
 
-var tag = __webpack_require__(61);
+var tag = __webpack_require__(62);
 
-var _require5 = __webpack_require__(62),
+var _require5 = __webpack_require__(63),
     createDozWebComponent = _require5.createDozWebComponent,
     defineWebComponent = _require5.defineWebComponent,
     defineWebComponentFromGlobal = _require5.defineWebComponentFromGlobal;
 
-__webpack_require__(64);
+__webpack_require__(65);
 
 Object.defineProperties(Doz, {
   collection: {
@@ -4082,7 +4119,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.15.0',
+    value: '3.16.0',
     enumerable: true
   },
   tag: {
@@ -4511,6 +4548,15 @@ function callAppComponentWaitMount() {
 
   callMethod.apply(null, resArgs);
 }
+/*
+function callAppComponentsMounted(...args) {
+    let resArgs = ['onAppComponentsMounted'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onAppComponentsMounted', ...args];
+    callMethod.apply(null, resArgs);
+}
+*/
+
 /*function callAppDOMAttributeSet(...args) {
     args = ['onAppDOMAttributeSet', ...args];
     callMethod.apply(null, args);
@@ -4543,7 +4589,8 @@ module.exports = {
   callAppDynamicInstanceCreate: callAppDynamicInstanceCreate,
   callAppComponentPropsAssignName: callAppComponentPropsAssignName,
   callAppComponentRenderOverwrite: callAppComponentRenderOverwrite,
-  callAppComponentWaitMount: callAppComponentWaitMount
+  callAppComponentWaitMount: callAppComponentWaitMount //callAppComponentsMounted
+
 };
 
 /***/ }),
@@ -4797,6 +4844,15 @@ function callComponentWaitMount() {
 
   callMethod.apply(null, resArgs);
 }
+/*
+function callComponentsMounted(...args) {
+    let resArgs = ['onComponentsMounted'];
+    Array.prototype.push.apply(resArgs, args);
+    //args = ['onComponentsMounted', ...args];
+    callMethod.apply(null, resArgs)
+}
+*/
+
 
 function callComponentDOMElementCreate(instance, $target, initial) {
   var method = 'onComponentDOMElementCreate';
@@ -4898,7 +4954,8 @@ module.exports = {
   callComponentDOMElementCreate: callComponentDOMElementCreate,
   callComponentDOMElementUpdate: callComponentDOMElementUpdate,
   callComponentVNodeTick: callComponentVNodeTick,
-  callComponentWaitMount: callComponentWaitMount
+  callComponentWaitMount: callComponentWaitMount //callComponentsMounted
+
 };
 
 /***/ }),
@@ -6338,6 +6395,22 @@ module.exports = function (Doz, app) {
 
 /***/ }),
 /* 59 */
+/***/ (function(module, exports) {
+
+var globalStoreObjectName = 'DOZ_STORES';
+
+module.exports = function (Doz, app) {
+  app.on('componentPropsInit', function (component) {
+    var dozStores = window[globalStoreObjectName];
+
+    if (dozStores && component.store && dozStores[component.store]) {
+      component.props = dozStores[component.store];
+    }
+  });
+};
+
+/***/ }),
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(2),
@@ -6367,7 +6440,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(11);
@@ -6381,7 +6454,7 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports) {
 
 module.exports = function tag(name) {
@@ -6391,7 +6464,7 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _templateObject;
@@ -6434,7 +6507,7 @@ var data = __webpack_require__(10);
 
 var dashToCamel = __webpack_require__(8);
 
-__webpack_require__(63)();
+__webpack_require__(64)();
 
 function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
@@ -6588,7 +6661,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports) {
 
 function createStyleSoftEntrance() {
@@ -6603,10 +6676,8 @@ function createStyleSoftEntrance() {
 module.exports = createStyleSoftEntrance;
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(65);
 
 __webpack_require__(66);
 
@@ -6624,10 +6695,12 @@ __webpack_require__(72);
 
 __webpack_require__(73);
 
-__webpack_require__(75);
+__webpack_require__(74);
+
+__webpack_require__(76);
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6699,7 +6772,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6763,7 +6836,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6809,7 +6882,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6849,7 +6922,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6974,7 +7047,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6996,7 +7069,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7026,7 +7099,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -7235,7 +7308,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7244,7 +7317,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(5),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(74);
+var queue = __webpack_require__(75);
 
 var delay = __webpack_require__(3);
 
@@ -7349,7 +7422,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports) {
 
 function queue(p, arrayOfP) {
@@ -7362,7 +7435,7 @@ function queue(p, arrayOfP) {
 module.exports = queue;
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -7384,9 +7457,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(76);
+var wait = __webpack_require__(77);
 
-var animateHelper = __webpack_require__(77);
+var animateHelper = __webpack_require__(78);
 
 directive('animate', {
   onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -7602,7 +7675,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports) {
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
@@ -7646,7 +7719,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports) {
 
 function animateHelper($target, animationName, opts, callback) {
