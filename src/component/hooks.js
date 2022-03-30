@@ -163,7 +163,16 @@ function callWaitMount(context) {
     }
     context.app.emit('componentWaitMount', context);
 }
-
+/*
+function callComponentsMounted(context) {
+    directive.callAppComponentsMounted(context);
+    directive.callComponentsMounted(context);
+    if (typeof context.onComponentsMounted === 'function') {
+        context.onComponentsMounted.call(context);
+    }
+    context.app.emit('componentsMounted', context);
+}
+*/
 module.exports = {
     callBeforeCreate,
     callCreate,
@@ -180,5 +189,6 @@ module.exports = {
     callBeforeDestroy,
     callDestroy,
     callLoadProps,
-    callWaitMount
+    callWaitMount,
+    //callComponentsMounted
 };

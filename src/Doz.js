@@ -71,6 +71,10 @@ class Doz {
                 value: [],
                 writable: true
             },
+            _onAppComponentsMounted: {
+                value: new Map(),
+                writable: true
+            },
             _callAppReady: {
                 value: function () {
                     this._onAppReadyCB.forEach(cb => {
@@ -247,8 +251,18 @@ class Doz {
         if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
 
-        this._callAppReady();
-        this.emit('ready', this);
+        this.canAppReady();
+    }
+
+    canAppReady() {
+        if (this._onAppComponentsMounted.size) {
+            setTimeout(() => {
+                this.canAppReady();
+            })
+        } else {
+            this._callAppReady();
+            this.emit('ready', this);
+        }
     }
 
     draw() {

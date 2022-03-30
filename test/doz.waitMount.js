@@ -14,11 +14,20 @@ describe('Doz.waitMount', function () {
 
             document.body.innerHTML = `<div id="app"></div>`;
 
+            Doz.component('other-tag', {
+                template(h) {
+                    return h`
+                        <div>yeah</div>
+                    `
+                }
+            })
+
             Doz.component('salutation-card', {
                 waitMount: true,
                 template(h) {
                     return h`
                         <div>Hello</div>
+                        <other-tag></other-tag>
                     `
                 },
                 onWaitMount() {
@@ -30,14 +39,24 @@ describe('Doz.waitMount', function () {
                 },
                 onMount() {
                     console.log('onMount')
-                    done();
                 }
             });
             new Doz({
                 root: '#app',
-                template: `
-                    <salutation-card />
-                `
+                template(h) {
+                    return h`
+                        <salutation-card />
+                    `
+                },
+                onAppReady() {
+                    //console.log(this.app._onAppComponentsMounted.size)
+                    /*setInterval(() => {
+                        this.app._onAppComponentsMounted.forEach(item => console.log(item))
+                    },50)*/
+
+                    //console.log('onComponentsMounted')
+                    done();
+                }
             });
         });
     });

@@ -157,9 +157,18 @@ function createInstance(cfg = {}) {
                     });
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
+                    //if (newElement.waitMount) {
+                    //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
+
+                    if (newElement.waitMount) {
+                        //cfg.app._onAppComponentsMounted.set(newElement, true);
+                        cfg.app._onAppComponentsMounted.delete(newElement);
+                    }
                 }
 
                 if (newElement.waitMount) {
+                    //console.log(cfg.app._onAppComponentsMounted)
+                    cfg.app._onAppComponentsMounted.set(newElement, false);
                     newElement.runMount = _runMount;
                     hooks.callWaitMount(newElement);
                 } else if (hooks.callBeforeMount(newElement) !== false) {
@@ -229,7 +238,6 @@ function createInstance(cfg = {}) {
 
         }
 
-        //console.log('mmmmmmmmmmmmmmmmmmmm', {cmp: newElement})
         walk(newElement.getHTMLElement(), {cmp: newElement})
         trash.forEach($child => $child.remove());
 
