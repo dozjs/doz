@@ -9,3 +9,4 @@ require('./is/is');
 require('./bind/bind');
 require('./show/show');
 require('./animate/animate');
+require('./lazy/lazy');

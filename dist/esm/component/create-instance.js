@@ -103,12 +103,15 @@ function createInstance(cfg = {}) {
                     continue;
                 }
                 newElement.rawChildrenObject = $child._dozAttach.elementChildren;
+                newElement.$domEl = $child;
                 if (typeof newElement.module === 'object') {
                     hmr(newElement, newElement.module);
                 }
                 propsInit(newElement);
                 newElement.app.emit('componentPropsInit', newElement);
                 function _runMount() {
+                    if (newElement._isRendered)
+                        return;
                     newElement._isRendered = true;
                     newElement.render(true);
                     if (!componentInstance) {
@@ -135,12 +138,14 @@ function createInstance(cfg = {}) {
                     //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
                     if (newElement.waitMount) {
                         //cfg.app._onAppComponentsMounted.set(newElement, true);
-                        cfg.app._onAppComponentsMounted.delete(newElement);
+                        if (!newElement.appReadyExcluded)
+                            cfg.app._onAppComponentsMounted.delete(newElement);
                     }
                 }
                 if (newElement.waitMount) {
                     //console.log(cfg.app._onAppComponentsMounted)
-                    cfg.app._onAppComponentsMounted.set(newElement, false);
+                    if (!newElement.appReadyExcluded)
+                        cfg.app._onAppComponentsMounted.set(newElement, false);
                     newElement.runMount = _runMount;
                     hooks.callWaitMount(newElement);
                 }

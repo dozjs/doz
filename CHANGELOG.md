@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.17.0] - 2022-04-01
+- **Added** `d:lazy` component directive;
+
 ## [3.16.0] - 2022-03-30
 - **Added** support to server side props;
 - **Improvement** `appReady` event, now supports `waitMount`;

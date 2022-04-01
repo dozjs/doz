@@ -47,7 +47,8 @@ Below some basic concepts:
             - [d:store](#dstore)
             - [d:on](#don)
             - [Hooks directives](#hooks-directives)
-        - [Custom directives](#custom-directives)
+            - [d:lazy](#dlazy)
+            - [Custom directives](#custom-directives)
 - [Web Component: Doz Component as Web Component](#web-component-doz-component-as-web-component)           
 - [Sharing things](#sharing-things)
 - [Conditional statements](#conditional-statements)
@@ -1582,6 +1583,23 @@ new Doz({
 ```
 
 [FIDDLE](https://jsfiddle.net/tkzv5obd/)
+
+---
+
+##### d:lazy
+With this directive the component will only be rendered if necessary. 
+Necessary means that the component fits within the visible portion of the screen..
+
+```
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <salutation-card d-lazy></salutation-card>
+        `
+    }
+});
+```
 
 ---
 

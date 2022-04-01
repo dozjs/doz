@@ -8,3 +8,4 @@ import "./is/is.js";
 import "./bind/bind.js";
 import "./show/show.js";
 import "./animate/animate.js";
+import "./lazy/lazy.js";
