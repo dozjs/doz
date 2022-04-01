@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.16.0  
+// [DOZ]  Build version: 3.17.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1957,6 +1957,7 @@ function createInstance() {
       if (cmp) {
         var _ret = function () {
           var _runMount = function _runMount() {
+            if (newElement._isRendered) return;
             newElement._isRendered = true;
             newElement.render(true);
 
@@ -1986,7 +1987,7 @@ function createInstance() {
 
             if (newElement.waitMount) {
               //cfg.app._onAppComponentsMounted.set(newElement, true);
-              cfg.app._onAppComponentsMounted["delete"](newElement);
+              if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
             }
           };
 
@@ -2060,6 +2061,7 @@ function createInstance() {
           }
 
           newElement.rawChildrenObject = $child._dozAttach.elementChildren;
+          newElement.$domEl = $child;
 
           if (_typeof(newElement.module) === 'object') {
             hmr(newElement, newElement.module);
@@ -2070,8 +2072,7 @@ function createInstance() {
 
           if (newElement.waitMount) {
             //console.log(cfg.app._onAppComponentsMounted)
-            cfg.app._onAppComponentsMounted.set(newElement, false);
-
+            if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted.set(newElement, false);
             newElement.runMount = _runMount;
             hooks.callWaitMount(newElement);
           } else if (hooks.callBeforeMount(newElement) !== false) {
@@ -4119,7 +4120,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.16.0',
+    value: '3.17.0',
     enumerable: true
   },
   tag: {
@@ -6699,6 +6700,8 @@ __webpack_require__(74);
 
 __webpack_require__(76);
 
+__webpack_require__(79);
+
 /***/ }),
 /* 66 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -7806,6 +7809,48 @@ function animateHelper($target, animationName, opts, callback) {
 }
 
 module.exports = animateHelper;
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(0),
+    directive = _require.directive;
+
+function isInViewport(element) {
+  var rect = element.getBoundingClientRect();
+  return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+}
+
+directive('lazy', {
+  onAppInit: function onAppInit(app) {
+    Object.defineProperties(app, {
+      lazyComponentsList: {
+        value: new Set(),
+        enumerable: false
+      }
+    });
+    window.addEventListener('scroll', function () {
+      var _defined = function _defined(component) {
+        if (isInViewport(component.$domEl)) {
+          component.runMount();
+          app.lazyComponentsList["delete"](component);
+        }
+      };
+
+      var _defined2 = app.lazyComponentsList;
+
+      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+      }
+    });
+  },
+  onComponentCreate: function onComponentCreate(instance) {
+    instance.waitMount = true;
+    instance.appReadyExcluded = true;
+    instance.app.lazyComponentsList.add(instance);
+  }
+});
 
 /***/ })
 /******/ ]);
