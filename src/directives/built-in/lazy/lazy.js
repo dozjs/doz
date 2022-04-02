@@ -20,10 +20,7 @@ directive('lazy', {
         });
         window.addEventListener('scroll', () => {
             app.lazyComponentsList.forEach(component => {
-                if(isInViewport(component.$domEl)) {
-                    component.runMount();
-                    app.lazyComponentsList.delete(component);
-                }
+                this.canRunMount(app, component);
             })
         })
     },
@@ -31,5 +28,14 @@ directive('lazy', {
         instance.waitMount = true;
         instance.appReadyExcluded = true;
         instance.app.lazyComponentsList.add(instance);
+    },
+    onComponentWaitMount(instance) {
+        this.canRunMount(instance.app, instance)
+    },
+    canRunMount(app, component) {
+        if (isInViewport(component.$domEl)) {
+            component.runMount();
+            app.lazyComponentsList.delete(component);
+        }
     }
 });

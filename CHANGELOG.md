@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.17.1] - 2022-04-02
+- **Fixed** `d:lazy` initial check;
+
 ## [3.17.0] - 2022-04-01
 - **Added** `d:lazy` component directive;
 
