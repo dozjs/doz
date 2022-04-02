@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.0  
+// [DOZ]  Build version: 3.17.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4120,7 +4120,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.0',
+    value: '3.17.1',
     enumerable: true
   },
   tag: {
@@ -7824,6 +7824,8 @@ function isInViewport(element) {
 
 directive('lazy', {
   onAppInit: function onAppInit(app) {
+    var _this = this;
+
     Object.defineProperties(app, {
       lazyComponentsList: {
         value: new Set(),
@@ -7832,10 +7834,7 @@ directive('lazy', {
     });
     window.addEventListener('scroll', function () {
       var _defined = function _defined(component) {
-        if (isInViewport(component.$domEl)) {
-          component.runMount();
-          app.lazyComponentsList["delete"](component);
-        }
+        _this.canRunMount(app, component);
       };
 
       var _defined2 = app.lazyComponentsList;
@@ -7849,6 +7848,15 @@ directive('lazy', {
     instance.waitMount = true;
     instance.appReadyExcluded = true;
     instance.app.lazyComponentsList.add(instance);
+  },
+  onComponentWaitMount: function onComponentWaitMount(instance) {
+    this.canRunMount(instance.app, instance);
+  },
+  canRunMount: function canRunMount(app, component) {
+    if (isInViewport(component.$domEl)) {
+      component.runMount();
+      app.lazyComponentsList["delete"](component);
+    }
   }
 });
 
