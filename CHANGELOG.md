@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [3.17.3] - 2022-04-08
+## [3.17.4] - 2022-04-08
 - **Improvement** expose createInstance;
 
 ## [3.17.2] - 2022-04-08

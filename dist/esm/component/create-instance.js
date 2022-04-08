@@ -189,7 +189,7 @@ function createInstance(cfg = {}) {
             cmp: cfg.component,
             root: cfg.root,
             app: cfg.app,
-            props: {},
+            props: cfg.props || {},
             componentDirectives: {},
             parentCmp: null,
         });
