@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.17.5] - 2022-04-08
+- **Fixed** wrong string using same component with props set to empty string;
+
 ## [3.17.4] - 2022-04-08
 - **Improvement** expose createInstance;
 
