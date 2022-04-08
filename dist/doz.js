@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.1  
+// [DOZ]  Build version: 3.17.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1171,6 +1171,7 @@ var Doz = /*#__PURE__*/function () {
       }
     }
 
+    plugin.load(this);
     directive.callAppInit(this);
 
     if (this.cfg.mainComponent) {
@@ -1202,9 +1203,8 @@ var Doz = /*#__PURE__*/function () {
       for (var _i8 = 0; _i8 <= _defined8.length - 1; _i8++) {
         _defined7(_defined8[_i8], _i8, _defined8);
       }
-    }
+    } //Apply listeners
 
-    plugin.load(this); //Apply listeners
 
     if (this.cfg.listeners) {
       var _defined9 = function _defined9(event) {
@@ -1217,9 +1217,7 @@ var Doz = /*#__PURE__*/function () {
       for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
         _defined9(_defined10[_i10], _i10, _defined10);
       }
-    } //console.log('-----');
-    //directive.callAppInit(this);
-
+    }
 
     if (!this.cfg.mainComponent && this.cfg.autoDraw) this.draw();
     this.canAppReady();
@@ -4120,7 +4118,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.1',
+    value: '3.17.2',
     enumerable: true
   },
   tag: {
