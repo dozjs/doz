@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.2  
+// [DOZ]  Build version: 3.17.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -152,7 +152,7 @@ module.exports = {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-var data = __webpack_require__(10);
+var data = __webpack_require__(11);
 /**
  * Register a component to global
  * @param cmp
@@ -937,7 +937,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var bind = __webpack_require__(29);
 
-var createInstance = __webpack_require__(12);
+var createInstance = __webpack_require__(10);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG,
@@ -1310,6 +1310,336 @@ module.exports = Doz;
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var html = __webpack_require__(13); //const transformChildStyle = require('./helpers/transform-child-style');
+
+
+var _require = __webpack_require__(1),
+    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
+    COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
+    ALREADY_WALKED = _require.ALREADY_WALKED,
+    REGEX = _require.REGEX;
+
+var collection = __webpack_require__(2);
+
+var hooks = __webpack_require__(6);
+
+var _require2 = __webpack_require__(7),
+    serializeProps = _require2.serializeProps;
+
+var hmr = __webpack_require__(32);
+
+var Component = __webpack_require__(12);
+
+var propsInit = __webpack_require__(23);
+
+var delay = __webpack_require__(3);
+
+var directive = __webpack_require__(0);
+
+var getComponentName = __webpack_require__(57);
+
+var makeSureAttach = __webpack_require__(4);
+
+function createInstance() {
+  var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (!cfg.root) return;
+
+  if (!(cfg.mountMainComponent || cfg.componentObject)) {
+    if (cfg.template instanceof HTMLElement) {
+      if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
+    } else if (typeof cfg.template === 'string') {
+      cfg.template = html.create(cfg.template);
+      cfg.root.appendChild(cfg.template);
+    }
+  }
+
+  var componentInstance = null;
+  var cmpName;
+  var trash = [];
+
+  function walk($child) {
+    var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    while ($child) {
+      makeSureAttach($child); // Non bella ma funziona
+
+      if (!$child._dozAttach[ALREADY_WALKED]) {
+        $child._dozAttach[ALREADY_WALKED] = true;
+      } else {
+        $child = $child.nextElementSibling;
+        continue;
+      }
+
+      directive.callAppWalkDOM(parent, $child);
+      cmpName = getComponentName($child);
+      directive.callAppComponentAssignName(parent, $child, function (name) {
+        cmpName = name;
+      });
+      var localComponents = {};
+
+      if (parent.cmp && parent.cmp._components) {
+        localComponents = parent.cmp._components;
+      }
+
+      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
+      var parentElement = void 0;
+
+      if (cmp) {
+        var _ret = function () {
+          var _runMount = function _runMount() {
+            if (newElement._isRendered) return;
+            newElement._isRendered = true;
+            newElement.render(true);
+
+            if (!componentInstance) {
+              componentInstance = newElement;
+            }
+
+            newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
+            newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
+
+            if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
+              var slotPlaceholder = document.createComment('slot');
+              newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
+            } // This is an hack for call render a second time so the
+            // event onAppDraw and onDrawByParent are fired after
+            // that the component is mounted.
+            // This hack makes also the component that has keys
+            // Really this hack is very important :D :D
+
+
+            delay(function () {
+              newElement.render(false, [], true);
+            });
+            hooks.callMount(newElement);
+            hooks.callMountAsync(newElement); //if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
+
+            if (newElement.waitMount) {
+              //cfg.app._onAppComponentsMounted.set(newElement, true);
+              if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
+            }
+          };
+
+          //console.log(cmpName)
+          if (parent.cmp) {
+            var rawChild = $child.outerHTML;
+            parent.cmp.rawChildren.push(rawChild);
+          } // For node created by mount method
+
+
+          if (parent.cmp && parent.cmp.mounted) {
+            $child = $child.nextElementSibling;
+            return "continue";
+          }
+
+          if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+            trash.push($child);
+            $child = $child.nextElementSibling;
+            return "continue";
+          }
+
+          var props = serializeProps($child);
+          var componentDirectives = {};
+          var newElement = void 0;
+
+          if (typeof cmp.cfg === 'function') {
+            // This implements single function component
+            if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+              var func = cmp.cfg;
+
+              cmp.cfg = /*#__PURE__*/function (_Component) {
+                _inherits(_class, _Component);
+
+                var _super = _createSuper(_class);
+
+                function _class() {
+                  _classCallCheck(this, _class);
+
+                  return _super.apply(this, arguments);
+                }
+
+                return _createClass(_class);
+              }(Component);
+
+              cmp.cfg.prototype.template = func;
+            }
+
+            newElement = new cmp.cfg({
+              tag: cmp.tag || cmpName,
+              root: $child,
+              app: cfg.app,
+              props: props,
+              componentDirectives: componentDirectives,
+              parentCmp: parent.cmp || cfg.parent
+            });
+          } else {
+            newElement = new Component({
+              tag: cmp.tag || cmpName,
+              cmp: cmp,
+              root: $child,
+              app: cfg.app,
+              props: props,
+              componentDirectives: componentDirectives,
+              parentCmp: parent.cmp || cfg.parent
+            });
+          }
+
+          if (!newElement) {
+            $child = $child.nextElementSibling;
+            return "continue";
+          }
+
+          newElement.rawChildrenObject = $child._dozAttach.elementChildren;
+          newElement.$domEl = $child;
+
+          if (_typeof(newElement.module) === 'object') {
+            hmr(newElement, newElement.module);
+          }
+
+          propsInit(newElement);
+          newElement.app.emit('componentPropsInit', newElement);
+
+          if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted)
+            if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted.set(newElement, false);
+            newElement.runMount = _runMount;
+            hooks.callWaitMount(newElement);
+          } else if (hooks.callBeforeMount(newElement) !== false) {
+            _runMount();
+          } else {
+            newElement.runMount = _runMount;
+          }
+
+          parentElement = newElement; //console.log(parent)
+
+          if (parent.cmp) {
+            var n = Object.keys(parent.cmp.children).length++;
+            directive.callAppComponentAssignIndex(newElement, n, function (index) {
+              parent.cmp.children[index] = newElement;
+            });
+
+            if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+              parent.cmp.childrenByTag[newElement.tag] = [newElement];
+            } else {
+              parent.cmp.childrenByTag[newElement.tag].push(newElement);
+            }
+          }
+
+          cfg.autoCmp = null;
+        }();
+
+        if (_ret === "continue") continue;
+      }
+
+      if ($child.hasChildNodes()) {
+        if (parentElement) {
+          walk($child.firstElementChild, {
+            cmp: parentElement
+          });
+        } else {
+          walk($child.firstElementChild, {
+            cmp: parent.cmp
+          });
+        }
+      }
+
+      $child = $child.nextElementSibling;
+    }
+  }
+
+  if (cfg.mountMainComponent || cfg.componentObject) {
+    // Monto il componente principale
+    var newElement = new cfg.component({
+      //tag: 'bbb-bbb',//cmp.tag || cmpName,
+      cmp: cfg.component,
+      root: cfg.root,
+      app: cfg.app,
+      props: {},
+      componentDirectives: {},
+      parentCmp: null //parent.cmp || cfg.parent
+
+    });
+    propsInit(newElement);
+    newElement.app.emit('componentPropsInit', newElement);
+    newElement._isRendered = true;
+    newElement._mainComponentByAppCreate = !!cfg.mountMainComponent;
+    newElement.render(true);
+
+    if (cfg.innerHTML) {
+      //console.log(cfg.innerHTML)
+      var innerHTMLEl = html.create(cfg.innerHTML, 'div'); //console.log(innerHTMLEl)
+      //let newElementHTMLElement = newElement.getHTMLElement();
+
+      var _defined = function _defined(child) {
+        newElement.getHTMLElement().appendChild(child);
+      };
+
+      var _defined2 = innerHTMLEl.childNodes;
+
+      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+        _defined(_defined2[_i2], _i2, _defined2);
+      }
+    }
+
+    walk(newElement.getHTMLElement(), {
+      cmp: newElement
+    });
+
+    var _defined3 = function _defined3($child) {
+      return $child.remove();
+    };
+
+    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
+      _defined3(trash[_i4], _i4, trash);
+    }
+
+    hooks.callMount(newElement);
+    hooks.callMountAsync(newElement);
+    return newElement;
+  } else {
+    walk(cfg.template);
+
+    var _defined4 = function _defined4($child) {
+      return $child.remove();
+    };
+
+    for (var _i6 = 0; _i6 <= trash.length - 1; _i6++) {
+      _defined4(trash[_i6], _i6, trash);
+    }
+
+    return componentInstance;
+  }
+}
+
+module.exports = createInstance;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1324,7 +1654,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -1396,7 +1726,7 @@ var delay = __webpack_require__(3);
 
 var makeSureAttach = __webpack_require__(4);
 
-var data = __webpack_require__(10); //const mapCompiled = require('../vdom/map-compiled');
+var data = __webpack_require__(11); //const mapCompiled = require('../vdom/map-compiled');
 
 
 var Component = /*#__PURE__*/function (_DOMManipulation) {
@@ -1851,336 +2181,6 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
 module.exports = Component;
 module.exports._Component = Component;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var html = __webpack_require__(13); //const transformChildStyle = require('./helpers/transform-child-style');
-
-
-var _require = __webpack_require__(1),
-    COMPONENT_ROOT_INSTANCE = _require.COMPONENT_ROOT_INSTANCE,
-    COMPONENT_INSTANCE = _require.COMPONENT_INSTANCE,
-    ALREADY_WALKED = _require.ALREADY_WALKED,
-    REGEX = _require.REGEX;
-
-var collection = __webpack_require__(2);
-
-var hooks = __webpack_require__(6);
-
-var _require2 = __webpack_require__(7),
-    serializeProps = _require2.serializeProps;
-
-var hmr = __webpack_require__(32);
-
-var Component = __webpack_require__(11);
-
-var propsInit = __webpack_require__(23);
-
-var delay = __webpack_require__(3);
-
-var directive = __webpack_require__(0);
-
-var getComponentName = __webpack_require__(57);
-
-var makeSureAttach = __webpack_require__(4);
-
-function createInstance() {
-  var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!cfg.root) return;
-
-  if (!cfg.mountMainComponent) {
-    if (cfg.template instanceof HTMLElement) {
-      if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
-    } else if (typeof cfg.template === 'string') {
-      cfg.template = html.create(cfg.template);
-      cfg.root.appendChild(cfg.template);
-    }
-  }
-
-  var componentInstance = null;
-  var cmpName;
-  var trash = [];
-
-  function walk($child) {
-    var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    while ($child) {
-      makeSureAttach($child); // Non bella ma funziona
-
-      if (!$child._dozAttach[ALREADY_WALKED]) {
-        $child._dozAttach[ALREADY_WALKED] = true;
-      } else {
-        $child = $child.nextElementSibling;
-        continue;
-      }
-
-      directive.callAppWalkDOM(parent, $child);
-      cmpName = getComponentName($child);
-      directive.callAppComponentAssignName(parent, $child, function (name) {
-        cmpName = name;
-      });
-      var localComponents = {};
-
-      if (parent.cmp && parent.cmp._components) {
-        localComponents = parent.cmp._components;
-      }
-
-      var cmp = cfg.autoCmp || localComponents[cmpName] || cfg.app._components[cmpName] || collection.getComponent(cmpName);
-      var parentElement = void 0;
-
-      if (cmp) {
-        var _ret = function () {
-          var _runMount = function _runMount() {
-            if (newElement._isRendered) return;
-            newElement._isRendered = true;
-            newElement.render(true);
-
-            if (!componentInstance) {
-              componentInstance = newElement;
-            }
-
-            newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
-            newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
-
-            if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
-              var slotPlaceholder = document.createComment('slot');
-              newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
-            } // This is an hack for call render a second time so the
-            // event onAppDraw and onDrawByParent are fired after
-            // that the component is mounted.
-            // This hack makes also the component that has keys
-            // Really this hack is very important :D :D
-
-
-            delay(function () {
-              newElement.render(false, [], true);
-            });
-            hooks.callMount(newElement);
-            hooks.callMountAsync(newElement); //if (newElement.waitMount) {
-            //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
-
-            if (newElement.waitMount) {
-              //cfg.app._onAppComponentsMounted.set(newElement, true);
-              if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
-            }
-          };
-
-          //console.log(cmpName)
-          if (parent.cmp) {
-            var rawChild = $child.outerHTML;
-            parent.cmp.rawChildren.push(rawChild);
-          } // For node created by mount method
-
-
-          if (parent.cmp && parent.cmp.mounted) {
-            $child = $child.nextElementSibling;
-            return "continue";
-          }
-
-          if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-            trash.push($child);
-            $child = $child.nextElementSibling;
-            return "continue";
-          }
-
-          var props = serializeProps($child);
-          var componentDirectives = {};
-          var newElement = void 0;
-
-          if (typeof cmp.cfg === 'function') {
-            // This implements single function component
-            if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
-              var func = cmp.cfg;
-
-              cmp.cfg = /*#__PURE__*/function (_Component) {
-                _inherits(_class, _Component);
-
-                var _super = _createSuper(_class);
-
-                function _class() {
-                  _classCallCheck(this, _class);
-
-                  return _super.apply(this, arguments);
-                }
-
-                return _createClass(_class);
-              }(Component);
-
-              cmp.cfg.prototype.template = func;
-            }
-
-            newElement = new cmp.cfg({
-              tag: cmp.tag || cmpName,
-              root: $child,
-              app: cfg.app,
-              props: props,
-              componentDirectives: componentDirectives,
-              parentCmp: parent.cmp || cfg.parent
-            });
-          } else {
-            newElement = new Component({
-              tag: cmp.tag || cmpName,
-              cmp: cmp,
-              root: $child,
-              app: cfg.app,
-              props: props,
-              componentDirectives: componentDirectives,
-              parentCmp: parent.cmp || cfg.parent
-            });
-          }
-
-          if (!newElement) {
-            $child = $child.nextElementSibling;
-            return "continue";
-          }
-
-          newElement.rawChildrenObject = $child._dozAttach.elementChildren;
-          newElement.$domEl = $child;
-
-          if (_typeof(newElement.module) === 'object') {
-            hmr(newElement, newElement.module);
-          }
-
-          propsInit(newElement);
-          newElement.app.emit('componentPropsInit', newElement);
-
-          if (newElement.waitMount) {
-            //console.log(cfg.app._onAppComponentsMounted)
-            if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted.set(newElement, false);
-            newElement.runMount = _runMount;
-            hooks.callWaitMount(newElement);
-          } else if (hooks.callBeforeMount(newElement) !== false) {
-            _runMount();
-          } else {
-            newElement.runMount = _runMount;
-          }
-
-          parentElement = newElement; //console.log(parent)
-
-          if (parent.cmp) {
-            var n = Object.keys(parent.cmp.children).length++;
-            directive.callAppComponentAssignIndex(newElement, n, function (index) {
-              parent.cmp.children[index] = newElement;
-            });
-
-            if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-              parent.cmp.childrenByTag[newElement.tag] = [newElement];
-            } else {
-              parent.cmp.childrenByTag[newElement.tag].push(newElement);
-            }
-          }
-
-          cfg.autoCmp = null;
-        }();
-
-        if (_ret === "continue") continue;
-      }
-
-      if ($child.hasChildNodes()) {
-        if (parentElement) {
-          walk($child.firstElementChild, {
-            cmp: parentElement
-          });
-        } else {
-          walk($child.firstElementChild, {
-            cmp: parent.cmp
-          });
-        }
-      }
-
-      $child = $child.nextElementSibling;
-    }
-  }
-
-  if (cfg.mountMainComponent) {
-    // Monto il componente principale
-    var newElement = new cfg.component({
-      //tag: 'bbb-bbb',//cmp.tag || cmpName,
-      cmp: cfg.component,
-      root: cfg.root,
-      app: cfg.app,
-      props: {},
-      componentDirectives: {},
-      parentCmp: null //parent.cmp || cfg.parent
-
-    });
-    propsInit(newElement);
-    newElement.app.emit('componentPropsInit', newElement);
-    newElement._isRendered = true;
-    newElement._mainComponentByAppCreate = true;
-    newElement.render(true);
-
-    if (cfg.innerHTML) {
-      //console.log(cfg.innerHTML)
-      var innerHTMLEl = html.create(cfg.innerHTML, 'div'); //console.log(innerHTMLEl)
-      //let newElementHTMLElement = newElement.getHTMLElement();
-
-      var _defined = function _defined(child) {
-        newElement.getHTMLElement().appendChild(child);
-      };
-
-      var _defined2 = innerHTMLEl.childNodes;
-
-      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-      }
-    }
-
-    walk(newElement.getHTMLElement(), {
-      cmp: newElement
-    });
-
-    var _defined3 = function _defined3($child) {
-      return $child.remove();
-    };
-
-    for (var _i4 = 0; _i4 <= trash.length - 1; _i4++) {
-      _defined3(trash[_i4], _i4, trash);
-    }
-
-    hooks.callMount(newElement);
-    hooks.callMountAsync(newElement);
-    return newElement;
-  } else {
-    walk(cfg.template);
-
-    var _defined4 = function _defined4($child) {
-      return $child.remove();
-    };
-
-    for (var _i6 = 0; _i6 <= trash.length - 1; _i6++) {
-      _defined4(trash[_i6], _i6, trash);
-    }
-
-    return componentInstance;
-  }
-}
-
-module.exports = createInstance;
 
 /***/ }),
 /* 13 */
@@ -4052,7 +4052,7 @@ var _require2 = __webpack_require__(0),
 
 var component = __webpack_require__(60);
 
-var Component = __webpack_require__(11);
+var Component = __webpack_require__(12);
 
 var mixin = __webpack_require__(61);
 
@@ -4068,6 +4068,8 @@ var _require4 = __webpack_require__(17),
     update = _require4.update;
 
 var tag = __webpack_require__(62);
+
+var createInstance = __webpack_require__(10);
 
 var _require5 = __webpack_require__(63),
     createDozWebComponent = _require5.createDozWebComponent,
@@ -4118,7 +4120,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.2',
+    value: '3.17.3',
     enumerable: true
   },
   tag: {
@@ -4140,6 +4142,10 @@ Object.defineProperties(Doz, {
   appCreate: {
     value: appCreate,
     enumerable: true
+  },
+  createInstance: {
+    value: createInstance,
+    enumerable: true
   }
 });
 module.exports = Doz;
@@ -4159,6 +4165,7 @@ module.exports.tag = tag;
 module.exports.createDozWebComponent = createDozWebComponent;
 module.exports.defineWebComponent = defineWebComponent;
 module.exports.defineWebComponentFromGlobal = defineWebComponentFromGlobal;
+module.exports.createInstance = createInstance;
 
 /***/ }),
 /* 29 */
@@ -5594,7 +5601,7 @@ function drawDynamic(instance) {
     var item = instance._processing[index];
     var root = item.node.parentNode; //console.log('create dynamic', item.node, item.node.__dozProps)
 
-    var dynamicInstance = __webpack_require__(12)({
+    var dynamicInstance = __webpack_require__(10)({
       root: root,
       template: item.node,
       //template: item.node.outerHTML,
@@ -6442,7 +6449,7 @@ module.exports = component;
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Component = __webpack_require__(11);
+var Component = __webpack_require__(12);
 
 var mixin = __webpack_require__(22);
 
@@ -6502,7 +6509,7 @@ var Doz = __webpack_require__(9);
 
 var appCreate = __webpack_require__(26);
 
-var data = __webpack_require__(10);
+var data = __webpack_require__(11);
 
 var dashToCamel = __webpack_require__(8);
 
