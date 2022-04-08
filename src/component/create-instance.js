@@ -16,7 +16,7 @@ function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
 
-    if (!cfg.mountMainComponent) {
+    if (!(cfg.mountMainComponent || cfg.componentObject)) {
         if (cfg.template instanceof HTMLElement) {
             if (!cfg.template.parentNode)
                 cfg.root.appendChild(cfg.template);
@@ -214,7 +214,7 @@ function createInstance(cfg = {}) {
         }
     }
 
-    if (cfg.mountMainComponent) {
+    if (cfg.mountMainComponent || cfg.componentObject) {
         // Monto il componente principale
         let newElement = new cfg.component({
             //tag: 'bbb-bbb',//cmp.tag || cmpName,
@@ -230,7 +230,7 @@ function createInstance(cfg = {}) {
         newElement.app.emit('componentPropsInit', newElement);
 
         newElement._isRendered = true;
-        newElement._mainComponentByAppCreate = true;
+        newElement._mainComponentByAppCreate = !!cfg.mountMainComponent;
         newElement.render(true);
 
         if (cfg.innerHTML) {

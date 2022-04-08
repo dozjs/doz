@@ -10,6 +10,7 @@ import appCreate from "./app-create.js";
 import { compile } from "./vdom/parser.js";
 import { update } from "./vdom/element.js";
 import tag from "./decorators/tag.js";
+import createInstance from "./component/create-instance.js";
 import { createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal } from "./webComponent.js";
 import "./directives/built-in/bootstrap.js";
 const { directive } = directives;
@@ -77,6 +78,10 @@ Object.defineProperties(Doz, {
     appCreate: {
         value: appCreate,
         enumerable: true
+    },
+    createInstance: {
+        value: createInstance,
+        enumerable: true
     }
 });
 export const version = Doz.version;
@@ -96,3 +101,4 @@ export { tag };
 export { createDozWebComponent };
 export { defineWebComponent };
 export { defineWebComponentFromGlobal };
+export { createInstance };

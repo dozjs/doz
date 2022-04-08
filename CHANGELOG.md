@@ -1,9 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.17.3] - 2022-04-08
+- **Improvement** expose createInstance;
+
 ## [3.17.2] - 2022-04-08
 - **Fixed** plugins were loaded after app creation;
-- 
+
 ## [3.17.1] - 2022-04-02
 - **Fixed** `d:lazy` initial check;
 
