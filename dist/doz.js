@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.3  
+// [DOZ]  Build version: 3.17.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1579,7 +1579,7 @@ function createInstance() {
       cmp: cfg.component,
       root: cfg.root,
       app: cfg.app,
-      props: {},
+      props: cfg.props || {},
       componentDirectives: {},
       parentCmp: null //parent.cmp || cfg.parent
 
@@ -4120,7 +4120,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.3',
+    value: '3.17.4',
     enumerable: true
   },
   tag: {
