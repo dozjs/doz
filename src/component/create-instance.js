@@ -108,15 +108,51 @@ function createInstance(cfg = {}) {
                         parentCmp: parent.cmp || cfg.parent
                     });
                 } else {
-                    newElement = new Component({
-                        tag: cmp.tag || cmpName,
-                        cmp,
-                        root: $child,
-                        app: cfg.app,
-                        props,
-                        componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
-                    });
+
+                    if (cmp.cfg.then) {
+
+                        (($child) => {
+                            cmp.cfg
+                                .then(componentFromPromise => {
+                                    createInstance({
+                                        root: $child,
+                                        component: componentFromPromise,
+                                        app: this,
+                                        parent: parent.cmp
+                                        //innerHTML: this.cfg.innerHTML
+                                    })
+                                    /*
+                                    newElement = new componentFromPromise({
+                                        tag: cmp.tag || cmpName,
+                                        root: $child,
+                                        app: cfg.app,
+                                        props,
+                                        componentDirectives,
+                                        parentCmp: parent.cmp || cfg.parent
+                                    });
+                                    console.log(parent)
+                                    propsInit(newElement);
+                                    newElement.app.emit('componentPropsInit', newElement);
+                                    _runMount(newElement)
+                                    walk(newElement.getHTMLElement(), {cmp: newElement});*/
+                                })
+                                .catch(e => {
+                                    console.error(e)
+                                })
+
+
+                        })($child)
+                    } else {
+                        newElement = new Component({
+                            tag: cmp.tag || cmpName,
+                            cmp,
+                            root: $child,
+                            app: cfg.app,
+                            props,
+                            componentDirectives,
+                            parentCmp: parent.cmp || cfg.parent
+                        });
+                    }
                 }
 
                 if (!newElement) {
@@ -136,7 +172,8 @@ function createInstance(cfg = {}) {
 
                 newElement.app.emit('componentPropsInit', newElement);
 
-                function _runMount() {
+                function _runMount(_newElement = null) {
+                    newElement = _newElement || newElement;
                     if (newElement._isRendered) return;
 
                     newElement._isRendered = true;
@@ -184,7 +221,7 @@ function createInstance(cfg = {}) {
                 }
 
                 parentElement = newElement;
-                //console.log(parent)
+
                 if (parent.cmp) {
                     let n = Object.keys(parent.cmp.children).length++;
                     directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -196,9 +233,7 @@ function createInstance(cfg = {}) {
                     } else {
                         parent.cmp.childrenByTag[newElement.tag].push(newElement);
                     }
-
                 }
-
                 cfg.autoCmp = null;
             }
 
@@ -234,14 +269,10 @@ function createInstance(cfg = {}) {
         newElement.render(true);
 
         if (cfg.innerHTML) {
-            //console.log(cfg.innerHTML)
             let innerHTMLEl = html.create(cfg.innerHTML, 'div');
-            //console.log(innerHTMLEl)
-            //let newElementHTMLElement = newElement.getHTMLElement();
             innerHTMLEl.childNodes.forEach(child => {
                 newElement.getHTMLElement().appendChild(child);
             })
-
         }
 
         walk(newElement.getHTMLElement(), {cmp: newElement})
