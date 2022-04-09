@@ -28,7 +28,7 @@
             class MyHelloWorld extends Doz.Component {
                 template(h) {
                     return h`
-                        <div>Hello World</div>
+                        <div>Hello World ${this.props.name}</div>
                     `
                 }
             }
@@ -55,6 +55,7 @@
             return h`
                 <div style="color: ${this.props.color}">
                     ${this.props.title}: ${this.props.time}
+                    <${MyPromise} name="${this.props.time}"/>
                 </div>
             `
         }
@@ -75,7 +76,6 @@
         template(h) {
             return h`
                 <${MyClock} title="it's"/>
-                <${MyPromise}/>
             `
         }
     });

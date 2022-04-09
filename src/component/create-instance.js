@@ -16,7 +16,7 @@ function createInstance(cfg = {}) {
 
     if (!cfg.root) return;
 
-    if (!(cfg.mountMainComponent || cfg.componentObject)) {
+    if (!(cfg.mountMainComponent)) {
         if (cfg.template instanceof HTMLElement) {
             if (!cfg.template.parentNode)
                 cfg.root.appendChild(cfg.template);
@@ -29,6 +29,21 @@ function createInstance(cfg = {}) {
     let componentInstance = null;
     let cmpName;
     const trash = [];
+
+    function appendChildrenToParent(parent, newElement) {
+        if (parent.cmp) {
+            let n = Object.keys(parent.cmp.children).length++;
+            directive.callAppComponentAssignIndex(newElement, n, (index) => {
+                parent.cmp.children[index] = newElement;
+            });
+
+            if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+                parent.cmp.childrenByTag[newElement.tag] = [newElement];
+            } else {
+                parent.cmp.childrenByTag[newElement.tag].push(newElement);
+            }
+        }
+    }
 
     function walk($child, parent = {}) {
         while ($child) {
@@ -114,14 +129,13 @@ function createInstance(cfg = {}) {
                         (($child) => {
                             cmp.cfg
                                 .then(componentFromPromise => {
-                                    createInstance({
-                                        root: $child,
-                                        component: componentFromPromise,
-                                        app: this,
-                                        parent: parent.cmp
-                                        //innerHTML: this.cfg.innerHTML
-                                    })
-                                    /*
+
+                                    if (componentFromPromise.tag) {
+                                        let newRootElement = document.createElement(componentFromPromise.tag);
+                                        $child.replaceWith(newRootElement);
+                                        $child = newRootElement;
+                                    }
+
                                     newElement = new componentFromPromise({
                                         tag: cmp.tag || cmpName,
                                         root: $child,
@@ -130,11 +144,11 @@ function createInstance(cfg = {}) {
                                         componentDirectives,
                                         parentCmp: parent.cmp || cfg.parent
                                     });
-                                    console.log(parent)
                                     propsInit(newElement);
                                     newElement.app.emit('componentPropsInit', newElement);
                                     _runMount(newElement)
-                                    walk(newElement.getHTMLElement(), {cmp: newElement});*/
+                                    walk(newElement.getHTMLElement(), {cmp: newElement});
+                                    appendChildrenToParent(parent, newElement);
                                 })
                                 .catch(e => {
                                     console.error(e)
@@ -222,18 +236,7 @@ function createInstance(cfg = {}) {
 
                 parentElement = newElement;
 
-                if (parent.cmp) {
-                    let n = Object.keys(parent.cmp.children).length++;
-                    directive.callAppComponentAssignIndex(newElement, n, (index) => {
-                        parent.cmp.children[index] = newElement;
-                    });
-
-                    if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-                        parent.cmp.childrenByTag[newElement.tag] = [newElement];
-                    } else {
-                        parent.cmp.childrenByTag[newElement.tag].push(newElement);
-                    }
-                }
+                appendChildrenToParent(parent, newElement);
                 cfg.autoCmp = null;
             }
 
@@ -249,7 +252,7 @@ function createInstance(cfg = {}) {
         }
     }
 
-    if (cfg.mountMainComponent || cfg.componentObject) {
+    if (cfg.mountMainComponent) {
         // Monto il componente principale
         let newElement = new cfg.component({
             //tag: 'bbb-bbb',//cmp.tag || cmpName,
@@ -265,7 +268,7 @@ function createInstance(cfg = {}) {
         newElement.app.emit('componentPropsInit', newElement);
 
         newElement._isRendered = true;
-        newElement._mainComponentByAppCreate = !!cfg.mountMainComponent;
+        newElement._mainComponentByAppCreate = true;
         newElement.render(true);
 
         if (cfg.innerHTML) {
