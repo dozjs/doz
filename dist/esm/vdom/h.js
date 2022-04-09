@@ -98,8 +98,12 @@ function fillCompiled(obj, values, parent, _this) {
                 if (value[0] && value[0].key !== undefined)
                     parent.hasKeys = true;
             }
-            else
+            else {
+                // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
+                if (value === '')
+                    value = ' ';
                 obj[keys[i]] = value;
+            }
         }
     }
 }

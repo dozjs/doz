@@ -78,6 +78,12 @@ export function appCreate(root: string, component: object, options?: object): ob
 export function tag(name: string): void
 
 /**
+ * Create component instance.
+ * @param {object} cfg
+ */
+export function createInstance(cfg: object): void
+
+/**
  * Collection
  */
 export interface collection {

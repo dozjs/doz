@@ -11,6 +11,7 @@ const {compile} = require('./vdom/parser');
 //const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
+const createInstance = require('./component/create-instance')
 const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
 require('./directives/built-in/bootstrap');
 
@@ -78,6 +79,10 @@ Object.defineProperties(Doz, {
     appCreate : {
         value: appCreate,
         enumerable: true
+    },
+    createInstance : {
+        value: createInstance,
+        enumerable: true
     }
 });
 
@@ -98,3 +103,4 @@ module.exports.tag = tag;
 module.exports.createDozWebComponent = createDozWebComponent;
 module.exports.defineWebComponent = defineWebComponent;
 module.exports.defineWebComponentFromGlobal = defineWebComponentFromGlobal;
+module.exports.createInstance = createInstance;

@@ -184,6 +184,7 @@ class Doz {
                 };
             });
         }
+        plugin.load(this);
         directive.callAppInit(this);
         if (this.cfg.mainComponent) {
             this._tree = createInstance({
@@ -213,7 +214,6 @@ class Doz {
                     this._components[TAG.APP].cfg[p] = cfg[p];
             });
         }
-        plugin.load(this);
         //Apply listeners
         if (this.cfg.listeners) {
             Object.keys(this.cfg.listeners).forEach(event => {
@@ -221,8 +221,6 @@ class Doz {
                 this.on(event, this.cfg.listeners[event]);
             });
         }
-        //console.log('-----');
-        //directive.callAppInit(this);
         if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
         this.canAppReady();

@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.1  
+// [DOZ]  Build version: 3.17.5  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1171,6 +1171,7 @@ var Doz = /*#__PURE__*/function () {
       }
     }
 
+    plugin.load(this);
     directive.callAppInit(this);
 
     if (this.cfg.mainComponent) {
@@ -1202,9 +1203,8 @@ var Doz = /*#__PURE__*/function () {
       for (var _i8 = 0; _i8 <= _defined8.length - 1; _i8++) {
         _defined7(_defined8[_i8], _i8, _defined8);
       }
-    }
+    } //Apply listeners
 
-    plugin.load(this); //Apply listeners
 
     if (this.cfg.listeners) {
       var _defined9 = function _defined9(event) {
@@ -1217,9 +1217,7 @@ var Doz = /*#__PURE__*/function () {
       for (var _i10 = 0; _i10 <= _defined10.length - 1; _i10++) {
         _defined9(_defined10[_i10], _i10, _defined10);
       }
-    } //console.log('-----');
-    //directive.callAppInit(this);
-
+    }
 
     if (!this.cfg.mainComponent && this.cfg.autoDraw) this.draw();
     this.canAppReady();
@@ -1370,7 +1368,7 @@ function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (!cfg.root) return;
 
-  if (!cfg.mountMainComponent) {
+  if (!(cfg.mountMainComponent || cfg.componentObject)) {
     if (cfg.template instanceof HTMLElement) {
       if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
     } else if (typeof cfg.template === 'string') {
@@ -1384,18 +1382,16 @@ function createInstance() {
   var trash = [];
 
   function walk($child) {
-    var _this = this;
-
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var _loop = function _loop() {
+    while ($child) {
       makeSureAttach($child); // Non bella ma funziona
 
       if (!$child._dozAttach[ALREADY_WALKED]) {
         $child._dozAttach[ALREADY_WALKED] = true;
       } else {
         $child = $child.nextElementSibling;
-        return "continue";
+        continue;
       }
 
       directive.callAppWalkDOM(parent, $child);
@@ -1413,125 +1409,94 @@ function createInstance() {
       var parentElement = void 0;
 
       if (cmp) {
-        var _runMount = function _runMount() {
-          var _newElement = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var _ret = function () {
+          var _runMount = function _runMount() {
+            if (newElement._isRendered) return;
+            newElement._isRendered = true;
+            newElement.render(true);
 
-          newElement = _newElement || newElement;
-          if (newElement._isRendered) return;
-          newElement._isRendered = true;
-          newElement.render(true);
+            if (!componentInstance) {
+              componentInstance = newElement;
+            }
 
-          if (!componentInstance) {
-            componentInstance = newElement;
+            newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
+            newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
+
+            if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
+              var slotPlaceholder = document.createComment('slot');
+              newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
+            } // This is an hack for call render a second time so the
+            // event onAppDraw and onDrawByParent are fired after
+            // that the component is mounted.
+            // This hack makes also the component that has keys
+            // Really this hack is very important :D :D
+
+
+            delay(function () {
+              newElement.render(false, [], true);
+            });
+            hooks.callMount(newElement);
+            hooks.callMountAsync(newElement); //if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
+
+            if (newElement.waitMount) {
+              //cfg.app._onAppComponentsMounted.set(newElement, true);
+              if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
+            }
+          };
+
+          //console.log(cmpName)
+          if (parent.cmp) {
+            var rawChild = $child.outerHTML;
+            parent.cmp.rawChildren.push(rawChild);
+          } // For node created by mount method
+
+
+          if (parent.cmp && parent.cmp.mounted) {
+            $child = $child.nextElementSibling;
+            return "continue";
           }
 
-          newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
-          newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement; // Replace first element child if defaultSlot exists with a slot comment
-
-          if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
-            var slotPlaceholder = document.createComment('slot');
-            newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
-          } // This is an hack for call render a second time so the
-          // event onAppDraw and onDrawByParent are fired after
-          // that the component is mounted.
-          // This hack makes also the component that has keys
-          // Really this hack is very important :D :D
-
-
-          delay(function () {
-            newElement.render(false, [], true);
-          });
-          hooks.callMount(newElement);
-          hooks.callMountAsync(newElement); //if (newElement.waitMount) {
-          //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
-
-          if (newElement.waitMount) {
-            //cfg.app._onAppComponentsMounted.set(newElement, true);
-            if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
-          }
-        };
-
-        //console.log(cmpName)
-        if (parent.cmp) {
-          var rawChild = $child.outerHTML;
-          parent.cmp.rawChildren.push(rawChild);
-        } // For node created by mount method
-
-
-        if (parent.cmp && parent.cmp.mounted) {
-          $child = $child.nextElementSibling;
-          return "continue";
-        }
-
-        if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-          trash.push($child);
-          $child = $child.nextElementSibling;
-          return "continue";
-        }
-
-        var props = serializeProps($child);
-        var componentDirectives = {};
-        var newElement;
-
-        if (typeof cmp.cfg === 'function') {
-          // This implements single function component
-          if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
-            var func = cmp.cfg;
-
-            cmp.cfg = /*#__PURE__*/function (_Component) {
-              _inherits(_class, _Component);
-
-              var _super = _createSuper(_class);
-
-              function _class() {
-                _classCallCheck(this, _class);
-
-                return _super.apply(this, arguments);
-              }
-
-              return _createClass(_class);
-            }(Component);
-
-            cmp.cfg.prototype.template = func;
+          if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+            trash.push($child);
+            $child = $child.nextElementSibling;
+            return "continue";
           }
 
-          newElement = new cmp.cfg({
-            tag: cmp.tag || cmpName,
-            root: $child,
-            app: cfg.app,
-            props: props,
-            componentDirectives: componentDirectives,
-            parentCmp: parent.cmp || cfg.parent
-          });
-        } else {
-          if (cmp.cfg.then) {
-            (function ($child) {
-              cmp.cfg.then(function (componentFromPromise) {
-                createInstance({
-                  root: $child,
-                  component: componentFromPromise,
-                  app: _this,
-                  parent: parent.cmp //innerHTML: this.cfg.innerHTML
+          var props = serializeProps($child);
+          var componentDirectives = {};
+          var newElement = void 0;
 
-                });
-                /*
-                newElement = new componentFromPromise({
-                    tag: cmp.tag || cmpName,
-                    root: $child,
-                    app: cfg.app,
-                    props,
-                    componentDirectives,
-                    parentCmp: parent.cmp || cfg.parent
-                });
-                console.log(parent)
-                propsInit(newElement);
-                newElement.app.emit('componentPropsInit', newElement);
-                _runMount(newElement)
-                walk(newElement.getHTMLElement(), {cmp: newElement});*/
-              })["catch"](function (e) {
-                console.error(e);
-              });
-            })($child);
+          if (typeof cmp.cfg === 'function') {
+            // This implements single function component
+            if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+              var func = cmp.cfg;
+
+              cmp.cfg = /*#__PURE__*/function (_Component) {
+                _inherits(_class, _Component);
+
+                var _super = _createSuper(_class);
+
+                function _class() {
+                  _classCallCheck(this, _class);
+
+                  return _super.apply(this, arguments);
+                }
+
+                return _createClass(_class);
+              }(Component);
+
+              cmp.cfg.prototype.template = func;
+            }
+
+            newElement = new cmp.cfg({
+              tag: cmp.tag || cmpName,
+              root: $child,
+              app: cfg.app,
+              props: props,
+              componentDirectives: componentDirectives,
+              parentCmp: parent.cmp || cfg.parent
+            });
           } else {
             newElement = new Component({
               tag: cmp.tag || cmpName,
@@ -1543,50 +1508,52 @@ function createInstance() {
               parentCmp: parent.cmp || cfg.parent
             });
           }
-        }
 
-        if (!newElement) {
-          $child = $child.nextElementSibling;
-          return "continue";
-        }
-
-        newElement.rawChildrenObject = $child._dozAttach.elementChildren;
-        newElement.$domEl = $child;
-
-        if (_typeof(newElement.module) === 'object') {
-          hmr(newElement, newElement.module);
-        }
-
-        propsInit(newElement);
-        newElement.app.emit('componentPropsInit', newElement);
-
-        if (newElement.waitMount) {
-          //console.log(cfg.app._onAppComponentsMounted)
-          if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted.set(newElement, false);
-          newElement.runMount = _runMount;
-          hooks.callWaitMount(newElement);
-        } else if (hooks.callBeforeMount(newElement) !== false) {
-          _runMount();
-        } else {
-          newElement.runMount = _runMount;
-        }
-
-        parentElement = newElement;
-
-        if (parent.cmp) {
-          var n = Object.keys(parent.cmp.children).length++;
-          directive.callAppComponentAssignIndex(newElement, n, function (index) {
-            parent.cmp.children[index] = newElement;
-          });
-
-          if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-            parent.cmp.childrenByTag[newElement.tag] = [newElement];
-          } else {
-            parent.cmp.childrenByTag[newElement.tag].push(newElement);
+          if (!newElement) {
+            $child = $child.nextElementSibling;
+            return "continue";
           }
-        }
 
-        cfg.autoCmp = null;
+          newElement.rawChildrenObject = $child._dozAttach.elementChildren;
+          newElement.$domEl = $child;
+
+          if (_typeof(newElement.module) === 'object') {
+            hmr(newElement, newElement.module);
+          }
+
+          propsInit(newElement);
+          newElement.app.emit('componentPropsInit', newElement);
+
+          if (newElement.waitMount) {
+            //console.log(cfg.app._onAppComponentsMounted)
+            if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted.set(newElement, false);
+            newElement.runMount = _runMount;
+            hooks.callWaitMount(newElement);
+          } else if (hooks.callBeforeMount(newElement) !== false) {
+            _runMount();
+          } else {
+            newElement.runMount = _runMount;
+          }
+
+          parentElement = newElement; //console.log(parent)
+
+          if (parent.cmp) {
+            var n = Object.keys(parent.cmp.children).length++;
+            directive.callAppComponentAssignIndex(newElement, n, function (index) {
+              parent.cmp.children[index] = newElement;
+            });
+
+            if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+              parent.cmp.childrenByTag[newElement.tag] = [newElement];
+            } else {
+              parent.cmp.childrenByTag[newElement.tag].push(newElement);
+            }
+          }
+
+          cfg.autoCmp = null;
+        }();
+
+        if (_ret === "continue") continue;
       }
 
       if ($child.hasChildNodes()) {
@@ -1602,23 +1569,17 @@ function createInstance() {
       }
 
       $child = $child.nextElementSibling;
-    };
-
-    while ($child) {
-      var _ret = _loop();
-
-      if (_ret === "continue") continue;
     }
   }
 
-  if (cfg.mountMainComponent) {
+  if (cfg.mountMainComponent || cfg.componentObject) {
     // Monto il componente principale
     var newElement = new cfg.component({
       //tag: 'bbb-bbb',//cmp.tag || cmpName,
       cmp: cfg.component,
       root: cfg.root,
       app: cfg.app,
-      props: {},
+      props: cfg.props || {},
       componentDirectives: {},
       parentCmp: null //parent.cmp || cfg.parent
 
@@ -1626,11 +1587,13 @@ function createInstance() {
     propsInit(newElement);
     newElement.app.emit('componentPropsInit', newElement);
     newElement._isRendered = true;
-    newElement._mainComponentByAppCreate = true;
+    newElement._mainComponentByAppCreate = !!cfg.mountMainComponent;
     newElement.render(true);
 
     if (cfg.innerHTML) {
-      var innerHTMLEl = html.create(cfg.innerHTML, 'div');
+      //console.log(cfg.innerHTML)
+      var innerHTMLEl = html.create(cfg.innerHTML, 'div'); //console.log(innerHTMLEl)
+      //let newElementHTMLElement = newElement.getHTMLElement();
 
       var _defined = function _defined(child) {
         newElement.getHTMLElement().appendChild(child);
@@ -3934,7 +3897,11 @@ function fillCompiled(obj, values, parent, _this) {
       if (Array.isArray(value) && keys[i] === '0') {
         parent.children = value;
         if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
-      } else obj[keys[i]] = value;
+      } else {
+        // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
+        if (value === '') value = ' ';
+        obj[keys[i]] = value;
+      }
     }
   }
 }
@@ -4087,11 +4054,11 @@ var _require = __webpack_require__(25),
 var _require2 = __webpack_require__(0),
     directive = _require2.directive;
 
-var component = __webpack_require__(61);
+var component = __webpack_require__(60);
 
 var Component = __webpack_require__(12);
 
-var mixin = __webpack_require__(62);
+var mixin = __webpack_require__(61);
 
 var h = __webpack_require__(21);
 
@@ -4104,14 +4071,16 @@ var _require3 = __webpack_require__(7),
 var _require4 = __webpack_require__(17),
     update = _require4.update;
 
-var tag = __webpack_require__(63);
+var tag = __webpack_require__(62);
 
-var _require5 = __webpack_require__(64),
+var createInstance = __webpack_require__(10);
+
+var _require5 = __webpack_require__(63),
     createDozWebComponent = _require5.createDozWebComponent,
     defineWebComponent = _require5.defineWebComponent,
     defineWebComponentFromGlobal = _require5.defineWebComponentFromGlobal;
 
-__webpack_require__(66);
+__webpack_require__(65);
 
 Object.defineProperties(Doz, {
   collection: {
@@ -4155,7 +4124,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.1',
+    value: '3.17.5',
     enumerable: true
   },
   tag: {
@@ -4177,6 +4146,10 @@ Object.defineProperties(Doz, {
   appCreate: {
     value: appCreate,
     enumerable: true
+  },
+  createInstance: {
+    value: createInstance,
+    enumerable: true
   }
 });
 module.exports = Doz;
@@ -4196,6 +4169,7 @@ module.exports.tag = tag;
 module.exports.createDozWebComponent = createDozWebComponent;
 module.exports.defineWebComponent = defineWebComponent;
 module.exports.defineWebComponentFromGlobal = defineWebComponentFromGlobal;
+module.exports.createInstance = createInstance;
 
 /***/ }),
 /* 29 */
@@ -6446,8 +6420,7 @@ module.exports = function (Doz, app) {
 };
 
 /***/ }),
-/* 60 */,
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(2),
@@ -6477,7 +6450,7 @@ function component(tag) {
 module.exports = component;
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(12);
@@ -6491,7 +6464,7 @@ function globalMixin(obj) {
 module.exports = globalMixin;
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ (function(module, exports) {
 
 module.exports = function tag(name) {
@@ -6501,7 +6474,7 @@ module.exports = function tag(name) {
 };
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _templateObject;
@@ -6544,7 +6517,7 @@ var data = __webpack_require__(11);
 
 var dashToCamel = __webpack_require__(8);
 
-__webpack_require__(65)();
+__webpack_require__(64)();
 
 function createDozWebComponent(tag, cmp) {
   var observedAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
@@ -6698,7 +6671,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ (function(module, exports) {
 
 function createStyleSoftEntrance() {
@@ -6713,8 +6686,10 @@ function createStyleSoftEntrance() {
 module.exports = createStyleSoftEntrance;
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(66);
 
 __webpack_require__(67);
 
@@ -6732,14 +6707,12 @@ __webpack_require__(73);
 
 __webpack_require__(74);
 
-__webpack_require__(75);
+__webpack_require__(76);
 
-__webpack_require__(77);
-
-__webpack_require__(80);
+__webpack_require__(79);
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6811,7 +6784,7 @@ directive(':store', {
 });
 
 /***/ }),
-/* 68 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6875,7 +6848,7 @@ directive(':id', {
 });
 
 /***/ }),
-/* 69 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6921,7 +6894,7 @@ directive(':alias', {
 });
 
 /***/ }),
-/* 70 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -6961,7 +6934,7 @@ directive(':on-$event', {
 });
 
 /***/ }),
-/* 71 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7086,7 +7059,7 @@ directive(':onloadprops', {
 });
 
 /***/ }),
-/* 72 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7108,7 +7081,7 @@ directive('ref', {
 });
 
 /***/ }),
-/* 73 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7138,7 +7111,7 @@ directive('is', {
 });
 
 /***/ }),
-/* 74 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -7347,7 +7320,7 @@ directive('bind', {
 });
 
 /***/ }),
-/* 75 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -7356,7 +7329,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(5),
     extractStyleDisplayFromDozProps = _require2.extractStyleDisplayFromDozProps;
 
-var queue = __webpack_require__(76);
+var queue = __webpack_require__(75);
 
 var delay = __webpack_require__(3);
 
@@ -7461,7 +7434,7 @@ directive('show', {
 });
 
 /***/ }),
-/* 76 */
+/* 75 */
 /***/ (function(module, exports) {
 
 function queue(p, arrayOfP) {
@@ -7474,7 +7447,7 @@ function queue(p, arrayOfP) {
 module.exports = queue;
 
 /***/ }),
-/* 77 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -7496,9 +7469,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-var wait = __webpack_require__(78);
+var wait = __webpack_require__(77);
 
-var animateHelper = __webpack_require__(79);
+var animateHelper = __webpack_require__(78);
 
 directive('animate', {
   onAppComponentCreate: function onAppComponentCreate(instance) {
@@ -7714,7 +7687,7 @@ directive('animate', {
 });
 
 /***/ }),
-/* 78 */
+/* 77 */
 /***/ (function(module, exports) {
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
@@ -7758,7 +7731,7 @@ function wait(what, callback) {
 module.exports = wait;
 
 /***/ }),
-/* 79 */
+/* 78 */
 /***/ (function(module, exports) {
 
 function animateHelper($target, animationName, opts, callback) {
@@ -7847,7 +7820,7 @@ function animateHelper($target, animationName, opts, callback) {
 module.exports = animateHelper;
 
 /***/ }),
-/* 80 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
