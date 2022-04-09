@@ -11,7 +11,6 @@ Below some basic concepts:
 - [Installation](#installation)
     - [Import library](#import-library)
 - [Make an app](#make-an-app)
-- [Component definition](#component-definition)
     - [Props](#props)
     - [Props propagation](#props-propagation)
     - [Props listener](#props-listener)
@@ -89,48 +88,21 @@ An app is a main component that embed other components.
 
 ```javascript
 
-import Doz from 'doz'
+import {appCreate, Component, tag} from 'doz'
 
-new Doz({
-    root: '#app',
+@tag('hello-world')
+class HelloWorld extends Component {
     template(h) {
         return h`
-            <h1>Welcome to my app:</h1>
             <h2>Hello World</h2>
         `
     }
-});
+}
+
+appCreate('#app', HelloWorld);
 ```
 
-[LIVE](https://codepen.io/pen/KKKzQJK)
-
----
-
-## Component definition
-The method `define` or the alias `component` defines an component globally that can be added to any other component of the project.
 The tag name must be according to the [W3C specs](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
-
-```javascript
-Doz.define('hello-world', class extends Doz.Component {
-    template(h) {
-        return h`
-            <h2>Hello World</h2>
-        `
-    }
-});
-
-new Doz({
-    root: '#app',
-    template(h) {
-        return h`
-            <h1>Welcome to my app:</h1>
-            <hello-world></hello-world>
-        `
-    }
-});
-```
-
-[LIVE](https://codepen.io/pen/vYYGdPj/)
 
 ---
 
@@ -139,7 +111,10 @@ All props are stored into `props` (your component data) property of the componen
 Doz uses [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to build the component UI then the props are injected inside the string.
 
 ```javascript
-class MyClock extends Doz.Component {
+import {appCreate, Component, tag} from 'doz'
+
+@tag('my-clock')
+class MyClock extends Component {
     constructor(o) {
         super(o);
         this.props = {
@@ -156,18 +131,18 @@ class MyClock extends Doz.Component {
     }
 }
 
-new Doz({
-    root: '#app',
+@tag('my-app')
+class MyApp extends Component {
     template(h) {
         return h`
-            <h1>Welcome to my app:</h1>
             <${MyClock} title="it's"/>
         `
     }
-});
-```
+}
 
-[LIVE](https://codepen.io/pen/eYYZVwz)
+appCreate('#app', MyApp)
+
+```
 
 ---
 
@@ -178,7 +153,7 @@ new Doz({
 This API called propsPropagation allows you to propagate your props to child components.
 
 ```javascript
-class MyChild1 extends Doz.Component {
+class MyChild1 extends Component {
     template(h) {
         //language=HTML
         return h`
@@ -191,7 +166,7 @@ class MyChild1 extends Doz.Component {
     }
 }
 
-class MyChild2 extends Doz.Component {
+class MyChild2 extends Component {
     constructor(o) {
         super(o);
         this.props = {
@@ -213,7 +188,7 @@ class MyChild2 extends Doz.Component {
     }
 }
 
-class MyChild3 extends Doz.Component {
+class MyChild3 extends Component {
     template(h) {
         return h`
             <div>
@@ -225,7 +200,7 @@ class MyChild3 extends Doz.Component {
     }
 }
 
-class MyParent extends Doz.Component{
+class MyParent extends Component{
 
     constructor(obj) {
         super(obj);
@@ -254,14 +229,8 @@ class MyParent extends Doz.Component{
     }
 }
 
-new Doz({
-    root: document.getElementById('app'),
-    template(h) {
-        return h`
-                <${MyParent}/>
-            `
-    }
-});
+appCreate('#app', MyParent)
+
 ```
 
 ---
