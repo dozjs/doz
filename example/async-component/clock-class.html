@@ -39,6 +39,18 @@
         }, 1000)
     })
 
+    const MyLoading = class extends Doz.Component {
+        template(h) {
+            return h`<div>Loading...</div>`
+        }
+    }
+
+    const MyError = class extends Doz.Component {
+        template(h) {
+            return h`<div>Error message: ${this.props.message}</div>`
+        }
+    }
+
     const MyClock = class extends Doz.Component {
 
         constructor(o) {
@@ -53,7 +65,7 @@
 
         template(h){
             return h`
-                <div style="color: ${this.props.color}">
+                <div style="color: ${this.props.color}" d-async-loading="${MyLoading}" d-async-error="${MyError}">
                     ${this.props.title}: ${this.props.time}
                     <${MyPromise} name="${this.props.time}"/>
                 </div>

@@ -1516,8 +1516,16 @@ function createInstance() {
           });
         } else {
           if (cmp.cfg.then) {
+            console.log($child.parentElement);
+
             (function ($child) {
               cmp.cfg.then(function (componentFromPromise) {
+                //gestisco eventuale ES6 import
+                if (_typeof(componentFromPromise) === 'object') {
+                  var oKeys = Object.keys(componentFromPromise);
+                  componentFromPromise = componentFromPromise[oKeys[oKeys.length - 1]];
+                }
+
                 if (componentFromPromise.tag) {
                   var newRootElement = document.createElement(componentFromPromise.tag);
                   $child.replaceWith(newRootElement);

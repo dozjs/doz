@@ -125,10 +125,16 @@ function createInstance(cfg = {}) {
                 } else {
 
                     if (cmp.cfg.then) {
-
+                        console.log($child.parentElement);
                         (($child) => {
                             cmp.cfg
                                 .then(componentFromPromise => {
+
+                                    //gestisco eventuale ES6 import
+                                    if (typeof componentFromPromise === 'object') {
+                                        let oKeys = Object.keys(componentFromPromise);
+                                        componentFromPromise = componentFromPromise[oKeys[oKeys.length - 1]];
+                                    }
 
                                     if (componentFromPromise.tag) {
                                         let newRootElement = document.createElement(componentFromPromise.tag);
@@ -144,6 +150,7 @@ function createInstance(cfg = {}) {
                                         componentDirectives,
                                         parentCmp: parent.cmp || cfg.parent
                                     });
+
                                     propsInit(newElement);
                                     newElement.app.emit('componentPropsInit', newElement);
                                     _runMount(newElement)
