@@ -125,7 +125,14 @@ function createInstance(cfg = {}) {
                 } else {
 
                     if (cmp.cfg.then) {
-                        console.log($child.parentElement);
+
+                        if ($child.parentElement
+                            && $child.parentElement._dozAttach
+                            && $child.parentElement._dozAttach.props
+                            && $child.parentElement._dozAttach.props['d-async-loading']
+                        ) {
+                            console.log($child.parentElement._dozAttach);
+                        }
                         (($child) => {
                             cmp.cfg
                                 .then(componentFromPromise => {
