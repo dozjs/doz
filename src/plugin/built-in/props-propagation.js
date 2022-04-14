@@ -42,6 +42,12 @@ module.exports = function(Doz, app) {
         }
     }
 
+    app.on('componentSetProps', component => {
+        if (component.propsPropagation) {
+            propagateToAll(component);
+        }
+    })
+
     app.on('componentPropsInit', component => {
         // for MainParent only
         if (component.propsPropagation) {

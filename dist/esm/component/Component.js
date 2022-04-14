@@ -61,6 +61,7 @@ class Component extends DOMManipulation {
         this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
         observer.create(this);
         directive.callAppComponentSetProps(this);
+        this.app.emit('componentSetProps', this);
     }
     get props() {
         return this._props;
