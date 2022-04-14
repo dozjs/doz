@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.5  
+// [DOZ]  Build version: 3.17.6  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1830,6 +1830,7 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
       this._rawProps = Object.assign({}, props, this._opt ? this._opt.props : {});
       observer.create(this);
       directive.callAppComponentSetProps(this);
+      this.app.emit('componentSetProps', this);
     }
   }, {
     key: "loadProps",
@@ -4171,7 +4172,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.5',
+    value: '3.17.6',
     enumerable: true
   },
   tag: {
@@ -6404,6 +6405,11 @@ module.exports = function (Doz, app) {
     }
   }
 
+  app.on('componentSetProps', function (component) {
+    if (component.propsPropagation) {
+      propagateToAll(component);
+    }
+  });
   app.on('componentPropsInit', function (component) {
     // for MainParent only
     if (component.propsPropagation) {
