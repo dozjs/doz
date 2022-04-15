@@ -5,8 +5,9 @@ export default (function (Doz, app) {
             //console.log(changes)
             // when update use this
             changes.forEach(change => {
-                if (change.type !== 'update' ||
-                    (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1))
+                if (
+                //change.type !== 'update' ||
+                (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1))
                     return;
                 child.props[change.currentPath] = change.newValue;
             });
@@ -64,7 +65,7 @@ export default (function (Doz, app) {
         if (component.parent && component.parent.propsPropagation) {
             component.propsPropagation = component.parent.propsPropagation;
             component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
-            if (component.excludeFromPropsPropagation) {
+            if (component.excludeFromPropsPropagation || component.props['d:no-propagation'] !== undefined) {
                 Object.defineProperty(component, 'excludeFromPropsPropagation', { value: true });
             }
             else {
