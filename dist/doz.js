@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.17.6  
+// [DOZ]  Build version: 3.18.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4172,7 +4172,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.17.6',
+    value: '3.18.0',
     enumerable: true
   },
   tag: {
@@ -6353,7 +6353,8 @@ module.exports = function (Doz, app) {
 
     if (changes) {
       var _defined = function _defined(change) {
-        if (change.type !== 'update' || mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
+        if ( //change.type !== 'update' ||
+        mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
         child.props[change.currentPath] = change.newValue;
       };
 
@@ -6433,7 +6434,7 @@ module.exports = function (Doz, app) {
       component.propsPropagation = component.parent.propsPropagation;
       component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
 
-      if (component.excludeFromPropsPropagation) {
+      if (component.excludeFromPropsPropagation || component.props['d:no-propagation'] !== undefined) {
         Object.defineProperty(component, 'excludeFromPropsPropagation', {
           value: true
         });
