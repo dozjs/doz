@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.18.0] - 2022-04-15
+- **Added** directive `d:no-propagation`;
+- **Fixed** propsPropagation does not work on add props;
+
 ## [3.17.6] - 2022-04-14
 - **Fixed** propsPropagation does not work on set props;
 
