@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.18.1  
+// [DOZ]  Build version: 3.18.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4172,7 +4172,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.18.1',
+    value: '3.18.2',
     enumerable: true
   },
   tag: {
@@ -6348,13 +6348,22 @@ module.exports = getComponentName;
 /***/ (function(module, exports) {
 
 module.exports = function (Doz, app) {
+  function propCouldBeADirective(propName) {
+    return propName[0] === 'd' && (propName[1] === ':' || propName[1] === '-');
+  }
+
+  function canBePropagate(mainParent, prop) {
+    return mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(prop) === -1 || propCouldBeADirective(prop);
+  }
+
   function propagate(child, changes) {
     var mainParent = child._propsPropagationMainParent;
 
     if (changes) {
       var _defined = function _defined(change) {
         if ( //change.type !== 'update' ||
-        mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) return;
+        //((mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) || propCouldBeADirective(change.currentPath))
+        canBePropagate(mainParent, change.currentPath)) return;
         child.props[change.currentPath] = change.newValue;
       };
 
@@ -6365,7 +6374,8 @@ module.exports = function (Doz, app) {
       }
     } else {
       var _defined2 = function _defined2(propParent) {
-        if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) return;
+        if ( //(mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) || propCouldBeADirective(propParent)
+        canBePropagate(mainParent, propParent)) return;
         child.props[propParent] = mainParent.props[propParent];
       };
 
