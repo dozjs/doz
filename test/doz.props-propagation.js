@@ -116,5 +116,57 @@ describe('Doz.props-propagation', function () {
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><salutation-card-inner><div>Hello undefined</div></salutation-card-inner></salutation-card></dz-app></div>')
             }, 1000);
         });
+
+        it('should be ok #3', function (done) {
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            class SalutationCard extends Doz.Component{
+
+                constructor(o) {
+                    super(o);
+                    this.propsPropagation = true;
+                }
+
+                template(h) {
+                    return h`
+                        <${SalutationCardInner}/>
+                    `
+                }
+
+                onMount() {
+                    this.props.name = 'Ipsum';
+                }
+
+            }
+
+            class SalutationCardInner extends Doz.Component{
+
+                constructor(o) {
+                    super(o);
+                }
+
+                template(h) {
+                    return h`
+                        <div>Hello ${this.props.name}</div>
+                    `
+                }
+                onUpdate() {
+                    be.err(done).equal(this.props['d:store'], undefined)
+                }
+            }
+
+            new Doz({
+                root: '#app',
+
+                template(h) {
+                    return h`
+                        <${SalutationCard}
+                            d:store="mystore"
+                            name="Doz">
+                        </>
+                    `
+                }
+            });
+        });
     });
 });

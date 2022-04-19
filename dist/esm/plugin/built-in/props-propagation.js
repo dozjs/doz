@@ -1,4 +1,10 @@
 export default (function (Doz, app) {
+    function propCouldBeADirective(propName) {
+        return (propName[0] === 'd' && (propName[1] === ':' || propName[1] === '-'));
+    }
+    function canBePropagate(mainParent, prop) {
+        return ((mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(prop) === -1) || propCouldBeADirective(prop));
+    }
     function propagate(child, changes) {
         let mainParent = child._propsPropagationMainParent;
         if (changes) {
@@ -7,7 +13,8 @@ export default (function (Doz, app) {
             changes.forEach(change => {
                 if (
                 //change.type !== 'update' ||
-                (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1))
+                //((mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(change.currentPath) === -1) || propCouldBeADirective(change.currentPath))
+                canBePropagate(mainParent, change.currentPath))
                     return;
                 child.props[change.currentPath] = change.newValue;
             });
@@ -16,7 +23,9 @@ export default (function (Doz, app) {
             //console.log('initial')
             // when initialize use this
             Object.keys(mainParent.props).forEach(propParent => {
-                if (mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1)
+                if (
+                //(mainParent._propsPropagationIsArray && mainParent.propsPropagation.indexOf(propParent) === -1) || propCouldBeADirective(propParent)
+                canBePropagate(mainParent, propParent))
                     return;
                 child.props[propParent] = mainParent.props[propParent];
             });
