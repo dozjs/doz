@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.19.0  
+// [DOZ]  Build version: 3.19.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1486,7 +1486,8 @@ function createInstance() {
 
         if (typeof cmp.cfg === 'function') {
           // This implements single function component
-          if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+          //if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+          if (!(cmp.cfg.prototype instanceof Component)) {
             var func = cmp.cfg;
 
             cmp.cfg = /*#__PURE__*/function (_Component) {
@@ -2418,6 +2419,8 @@ var ObservableSlim = function () {
           var parentPath = _getPath(target, '__getParent');
 
           return parentPath.slice(0, -12);
+        } else if (property === 'prototype') {
+          return target[property];
         } // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
 
 
@@ -4175,7 +4178,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.19.0',
+    value: '3.19.1',
     enumerable: true
   },
   tag: {
