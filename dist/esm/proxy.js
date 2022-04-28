@@ -104,6 +104,9 @@ const ObservableSlim = (function () {
                     let parentPath = _getPath(target, '__getParent');
                     return parentPath.slice(0, -12);
                 }
+                else if (property === 'prototype') {
+                    return target[property];
+                }
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 let targetProp = target[property];
                 //console.log('èèèèèèèèèèèèèèèèèèèè', targetProp instanceof Date)

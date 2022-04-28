@@ -107,7 +107,8 @@ function createInstance(cfg = {}) {
 
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
-                    if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+                    //if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+                    if (!(cmp.cfg.prototype instanceof Component)) {
                         const func = cmp.cfg;
                         cmp.cfg = class extends Component {
                         };

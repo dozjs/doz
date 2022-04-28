@@ -33,7 +33,7 @@ describe('Doz.single.function.component', function () {
                 done();
         });
 
-        it('should be ok, simulate babel transform class to function', function (done) {
+        it.skip('should be ok, simulate babel transform class to function', function (done) {
 
             document.body.innerHTML = `<div id="app"></div>`;
 

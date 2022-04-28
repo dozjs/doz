@@ -124,6 +124,8 @@ const ObservableSlim = (function () {
                     // strip off the 12 characters for ".__getParent"
                     let parentPath = _getPath(target, '__getParent');
                     return parentPath.slice(0, -12);
+                } else if (property === 'prototype') {
+                    return target[property]
                 }
 
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
