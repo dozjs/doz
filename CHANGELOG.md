@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.19.2] - 2022-04-29
+- Revert before "**Fixed** wrong string using same component with props set to empty string"
+
 ## [3.19.1] - 2022-04-28
 - **Fixed** issue when a component is passed via prop
 

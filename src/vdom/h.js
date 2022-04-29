@@ -254,8 +254,8 @@ function fillCompiled(obj, values, parent, _this) {
                     parent.hasKeys = true;
             } else {
                 // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
-                if (value === '')
-                    value = ' '
+                /*if (value === '')
+                    value = ' '*/ //disattivato, genera props non vuote che comportano altri problemi.
                 obj[keys[i]] = value;
             }
         }
