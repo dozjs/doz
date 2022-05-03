@@ -100,8 +100,9 @@ function fillCompiled(obj, values, parent, _this) {
             }
             else {
                 // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
-                /*if (value === '')
-                    value = ' '*/ //disattivato, genera props non vuote che comportano altri problemi.
+                if (value === '' && keys[i] === '0') {
+                    value = ' ';
+                }
                 obj[keys[i]] = value;
             }
         }
