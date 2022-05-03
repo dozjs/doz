@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.19.2  
+// [DOZ]  Build version: 3.19.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3953,10 +3953,10 @@ function fillCompiled(obj, values, parent, _this) {
         if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
       } else {
         // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
+        if (value === '' && keys[i] === '0') {
+          value = ' ';
+        }
 
-        /*if (value === '')
-            value = ' '*/
-        //disattivato, genera props non vuote che comportano altri problemi.
         obj[keys[i]] = value;
       }
     }
@@ -4181,7 +4181,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.19.2',
+    value: '3.19.3',
     enumerable: true
   },
   tag: {
