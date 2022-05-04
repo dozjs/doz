@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.19.5  
+// [DOZ]  Build version: 3.19.6  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4181,7 +4181,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.19.5',
+    value: '3.19.6',
     enumerable: true
   },
   tag: {
@@ -6441,7 +6441,8 @@ module.exports = function (Doz, app) {
           value: true
         },
         _propsPropagationMainParent: {
-          value: component
+          value: component,
+          writable: true
         },
         _propsPropagationChildren: {
           value: []
@@ -6450,14 +6451,13 @@ module.exports = function (Doz, app) {
     }
 
     if (component.parent && component.parent.propsPropagation) {
-      component.propsPropagation = component.parent.propsPropagation;
-      component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
-
       if (component.excludeFromPropsPropagation || component.props['d:no-propagation'] !== undefined) {
         Object.defineProperty(component, 'excludeFromPropsPropagation', {
           value: true
         });
       } else {
+        component.propsPropagation = component.parent.propsPropagation;
+        component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
         addToPropagation(component);
         propagate(component);
       }
