@@ -71,7 +71,8 @@ module.exports = function(Doz, app) {
                     value: true
                 },
                 _propsPropagationMainParent: {
-                    value: component
+                    value: component,
+                    writable: true
                 },
                 _propsPropagationChildren: {
                     value: []
@@ -80,12 +81,11 @@ module.exports = function(Doz, app) {
         }
 
         if (component.parent && component.parent.propsPropagation) {
-            component.propsPropagation = component.parent.propsPropagation;
-            component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
-
             if (component.excludeFromPropsPropagation || component.props['d:no-propagation'] !== undefined) {
                 Object.defineProperty(component, 'excludeFromPropsPropagation', {value: true})
             } else {
+                component.propsPropagation = component.parent.propsPropagation;
+                component._propsPropagationMainParent = component.parent._propsPropagationMainParent;
                 addToPropagation(component);
                 propagate(component);
             }
