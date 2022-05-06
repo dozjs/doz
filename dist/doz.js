@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.19.6  
+// [DOZ]  Build version: 3.20.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -594,7 +594,7 @@ var _require2 = __webpack_require__(5),
 //const eventsAttributes = require('../utils/events-attributes');
 
 
-var _require3 = __webpack_require__(14),
+var _require3 = __webpack_require__(15),
     tplCache = _require3.tplCache;
 
 var selfClosingElements = {
@@ -1334,7 +1334,7 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var html = __webpack_require__(13); //const transformChildStyle = require('./helpers/transform-child-style');
+var html = __webpack_require__(14); //const transformChildStyle = require('./helpers/transform-child-style');
 
 
 var _require = __webpack_require__(1),
@@ -1350,11 +1350,11 @@ var hooks = __webpack_require__(6);
 var _require2 = __webpack_require__(7),
     serializeProps = _require2.serializeProps;
 
-var h = __webpack_require__(21);
+var h = __webpack_require__(12);
 
-var hmr = __webpack_require__(32);
+var hmr = __webpack_require__(33);
 
-var Component = __webpack_require__(12);
+var Component = __webpack_require__(13);
 
 var propsInit = __webpack_require__(23);
 
@@ -1759,6 +1759,292 @@ module.exports = {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
+var _require = __webpack_require__(1),
+    TAG = _require.TAG;
+
+var camelToDash = __webpack_require__(16);
+
+var deepCopy = __webpack_require__(32);
+
+var _require2 = __webpack_require__(7),
+    compile = _require2.compile;
+
+var tagText = TAG.TEXT_NODE_PLACE;
+
+var cacheStores = __webpack_require__(15);
+
+var LESSER = '<';
+var GREATER = '>';
+var PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
+var PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
+
+function placeholderIndex(str, values) {
+  //console.log(str)
+  if (typeof str !== 'string') {
+    return str;
+  }
+
+  if (str[0] === 'e' && str[1] === '-') {
+    var match = PLACEHOLDER_REGEX.exec(str);
+
+    if (match) {
+      // if is a possible text node
+      if (match[1][0] === '0' && match[1].length >= 2) {
+        // remove first fake 0 that identify a text node and cast to string every
+        return values[match[1].substr(1)] + '';
+      } else {
+        return values[match[1]];
+      }
+    } else return str;
+  } else {
+    return str.replace(PLACEHOLDER_REGEX_GLOBAL, function (match, p1) {
+      if (p1) {
+        return values[p1];
+      } else {
+        return match;
+      }
+    });
+  }
+}
+/**
+ * This method add special tag to value placeholder
+ * @param strings
+ * @param values
+ * @returns {*}
+ */
+
+
+module.exports = function (strings) {
+  var hCache;
+  var kCache;
+  var isStyleForWebComponentByAppCreate; // use internal app cache stores
+
+  if (this && this.app) {
+    hCache = this.app.cacheStores.hCache;
+    kCache = this.app.cacheStores.kCache;
+    isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
+  } else {
+    // use global cache stores
+    hCache = cacheStores.hCache;
+    kCache = cacheStores.kCache;
+  }
+
+  var tpl = hCache.get(strings); //console.log(this.app.appIntId);
+  //console.log(strings);
+  //let appIntId = this.app.appIntId;
+
+  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    values[_key - 1] = arguments[_key];
+  }
+
+  if (!tpl) {
+    //console.log(strings[0])
+    tpl = strings[0];
+    var allowTag = false;
+    var isInStyle = false;
+    var thereIsStyle = false;
+    var valueLength = values.length;
+
+    for (var i = 0; i < valueLength; ++i) {
+      var stringsI = strings[i];
+      var stringLength = stringsI.length;
+      var lastChar = stringsI[stringLength - 1];
+
+      for (var x = 0; x < stringLength; x++) {
+        if (stringsI[x] === LESSER) {
+          allowTag = false;
+        } else if (stringsI[x] === GREATER) {
+          allowTag = true;
+        }
+      }
+
+      if (stringsI.indexOf('<style') > -1) {
+        isInStyle = true;
+        thereIsStyle = true;
+      }
+
+      if (stringsI.indexOf('</style') > -1) {
+        isInStyle = false;
+      }
+
+      if (thereIsStyle && isStyleForWebComponentByAppCreate) {
+        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>');
+      }
+
+      if (isInStyle) {
+        allowTag = false;
+        tpl = tpl.replace(/ scoped>/, ' data-scoped>');
+      }
+
+      if (allowTag) {
+        if (_typeof(values[i]) === 'object' || typeof values[i] === 'function') {
+          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
+        } else {
+          // Questo serve ad evitare che "oldNode" o "newNode" siano stringhe vuote
+          // dal momento che se un placeholder allora anche il suo corrispettivo
+          // nodo di testo dev'essere creato o modificato.
+          // Senza questo eventuali strighe vuote potevano non essere considerate.
+          if (values[i] === '') {
+            values[i] = ' ';
+          } // possible html as string
+
+
+          if (/<.*>/.test(values[i])) {
+            tpl += "".concat(values[i]).concat(strings[i + 1]);
+          } else {
+            // add a fake 0 before index useful to identify a text node so cast to string every
+            tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
+          }
+        }
+      } else {
+        // Gestico eventuale caso di chiusura tag con placeholder
+        // tipo: </${FooBar}>
+        if (lastChar === '/') {
+          tpl += strings[i + 1];
+        } else {
+          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
+        }
+      }
+    }
+
+    tpl = tpl.trim();
+    hCache.set(strings, tpl);
+  } //console.log('TPL ------>', tpl)
+
+
+  var cloned;
+  var model = compile(tpl);
+  var clonedKey;
+
+  if (model.props.forceupdate) {
+    hCache["delete"](strings);
+  }
+
+  if (model.key !== undefined || model.props['item-list'] !== undefined) {
+    //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
+    clonedKey = generateItemKey(values);
+    cloned = clonedKey ? hCache.get(clonedKey) : undefined;
+  }
+
+  if (!cloned) {
+    cloned = deepCopy(model);
+    fillCompiled(cloned, values, null, this);
+
+    if (clonedKey) {
+      hCache.set(clonedKey, cloned);
+    }
+  }
+
+  if (model.key !== undefined) {
+    var _kCacheValue = kCache.get(cloned.key);
+
+    if (_kCacheValue
+    /*&& clonedKey !== _kCacheValue.clonedKey*/
+    ) {
+      kCache.set(cloned.key, {
+        isChanged: clonedKey !== _kCacheValue.clonedKey,
+        //isChanged: true,
+        clonedKey: clonedKey,
+        next: cloned,
+        prev: _kCacheValue.next
+      });
+    } else {
+      kCache.set(cloned.key, {
+        isChanged: true,
+        clonedKey: clonedKey,
+        next: cloned,
+        prev: {}
+      });
+    }
+  } //console.log('CLN ------>', cloned)
+
+
+  return cloned;
+};
+
+function generateItemKey(values) {
+  var key = '';
+
+  for (var i = 0; i < values.length; i++) {
+    if (typeof values[i] !== 'function' && _typeof(values[i]) !== 'object') {
+      key += values[i];
+    }
+  } //console.log(key);
+
+
+  return key;
+}
+
+function fillCompiled(obj, values, parent, _this) {
+  var keys = Object.keys(obj);
+
+  for (var i = 0; i < keys.length; i++) {
+    //for (let k in obj) {
+    if (obj[keys[i]] && _typeof(obj[keys[i]]) === 'object') {
+      fillCompiled(obj[keys[i]], values, obj, _this);
+    } else {
+      //console.log(i, keys[i])
+      var value = placeholderIndex(obj[keys[i]], values); //if (typeof value === 'function' && keys[i] === 'type') {
+
+      if ('type' === keys[i] && 'string' !== typeof value) {
+        var cmp = value || {};
+        var tagName = camelToDash(cmp.tag || cmp.name || TAG.ROOT); // Sanitize tag name
+
+        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
+
+        if (tagName.indexOf('-') === -1) {
+          tagName = "".concat(tagName, "-").concat(tagName);
+        }
+
+        var tagCmp = tagName + '-' + _this.uId + '-' + _this._localComponentLastId++;
+
+        if (_this._componentsMap.has(value)) {
+          tagCmp = _this._componentsMap.get(value);
+        } else {
+          _this._componentsMap.set(value, tagCmp);
+        } // add to local components
+
+
+        if (_this._components[tagCmp] === undefined) {
+          _this._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        } // add to local app components
+
+
+        if (_this.app._components[tagCmp] === undefined) {
+          _this.app._components[tagCmp] = {
+            tag: tagName,
+            cfg: cmp
+          };
+        }
+
+        value = tagName;
+        obj.props['data-attributeoriginaletagname'] = tagCmp;
+      }
+
+      if (Array.isArray(value) && keys[i] === '0') {
+        parent.children = value;
+        if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
+      } else {
+        // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
+        if (value === '' && keys[i] === '0') {
+          value = ' ';
+        }
+
+        obj[keys[i]] = value;
+      }
+    }
+  }
+}
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -1782,28 +2068,28 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 var _require = __webpack_require__(1),
     REGEX = _require.REGEX;
 
-var observer = __webpack_require__(33);
+var observer = __webpack_require__(34);
 
 var hooks = __webpack_require__(6);
 
-var _require2 = __webpack_require__(37),
+var _require2 = __webpack_require__(38),
     updateElement = _require2.updateElement;
 
-var drawDynamic = __webpack_require__(45);
+var drawDynamic = __webpack_require__(46);
 
-var proxy = __webpack_require__(15);
+var proxy = __webpack_require__(17);
 
-var toInlineStyle = __webpack_require__(46);
+var toInlineStyle = __webpack_require__(47);
 
-var queueReady = __webpack_require__(47);
+var queueReady = __webpack_require__(48);
 
-var queueDraw = __webpack_require__(48);
+var queueDraw = __webpack_require__(49);
 
-var extendInstance = __webpack_require__(49);
+var extendInstance = __webpack_require__(50);
 
-var removeAllAttributes = __webpack_require__(50);
+var removeAllAttributes = __webpack_require__(51);
 
-var h = __webpack_require__(21);
+var h = __webpack_require__(12);
 
 var loadLocal = __webpack_require__(52);
 
@@ -2284,7 +2570,7 @@ module.exports = Component;
 module.exports._Component = Component;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var regexN = /\n/g;
@@ -2323,7 +2609,7 @@ var html = {
 module.exports = html;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -2333,7 +2619,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
+/***/ (function(module, exports) {
+
+function camelToDash(s) {
+  return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+}
+
+module.exports = camelToDash;
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -2353,7 +2649,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
  */
 var delay = __webpack_require__(3);
 
-var stringDecoder = __webpack_require__(34);
+var stringDecoder = __webpack_require__(35);
 /**
  * ObservableSlim
  * @type {{create, observe, remove, beforeChange, beginRender, endRender}}
@@ -3074,12 +3370,12 @@ var ObservableSlim = function () {
 module.exports = ObservableSlim;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-var castType = __webpack_require__(36);
+var castType = __webpack_require__(37);
 
 function manipulate(instance, value, currentPath, onFly, init) {
   if (_typeof(instance.propsType) === 'object') {
@@ -3144,12 +3440,12 @@ function manipulate(instance, value, currentPath, onFly, init) {
 module.exports = manipulate;
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-var _require = __webpack_require__(38),
+var _require = __webpack_require__(39),
     attach = _require.attach,
     updateAttributes = _require.updateAttributes;
 
@@ -3160,14 +3456,14 @@ var _require2 = __webpack_require__(1),
     COMPONENT_ROOT_INSTANCE = _require2.COMPONENT_ROOT_INSTANCE,
     DEFAULT_SLOT_KEY = _require2.DEFAULT_SLOT_KEY;
 
-var canDecode = __webpack_require__(18);
+var canDecode = __webpack_require__(20);
 
 var hooks = __webpack_require__(6); //const directive = require('../directives');
 
 
 var makeSureAttach = __webpack_require__(4);
 
-var _require3 = __webpack_require__(42),
+var _require3 = __webpack_require__(43),
     scopedInner = _require3.scopedInner; //const {kCache} = require('./stores');
 
 
@@ -3652,10 +3948,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var html = __webpack_require__(13);
+var html = __webpack_require__(14);
 
 function canDecode(str) {
   return /&\w+;/.test(str) ? html.decode(str) : str;
@@ -3664,7 +3960,7 @@ function canDecode(str) {
 module.exports = canDecode;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports) {
 
 /*
@@ -3717,302 +4013,6 @@ function composeStyleInner(cssContent, tag, cmp) {
 module.exports = composeStyleInner;
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-function camelToDash(s) {
-  return s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
-}
-
-module.exports = camelToDash;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-var _require = __webpack_require__(1),
-    TAG = _require.TAG;
-
-var camelToDash = __webpack_require__(20);
-
-var deepCopy = __webpack_require__(51);
-
-var _require2 = __webpack_require__(7),
-    compile = _require2.compile;
-
-var tagText = TAG.TEXT_NODE_PLACE;
-
-var cacheStores = __webpack_require__(14);
-
-var LESSER = '<';
-var GREATER = '>';
-var PLACEHOLDER_REGEX_GLOBAL = /e-0_(\d+)_0-e/g;
-var PLACEHOLDER_REGEX = /e-0_(\d+)_0-e/;
-
-function placeholderIndex(str, values) {
-  //console.log(str)
-  if (typeof str !== 'string') {
-    return str;
-  }
-
-  if (str[0] === 'e' && str[1] === '-') {
-    var match = PLACEHOLDER_REGEX.exec(str);
-
-    if (match) {
-      // if is a possible text node
-      if (match[1][0] === '0' && match[1].length >= 2) {
-        // remove first fake 0 that identify a text node and cast to string every
-        return values[match[1].substr(1)] + '';
-      } else {
-        return values[match[1]];
-      }
-    } else return str;
-  } else {
-    return str.replace(PLACEHOLDER_REGEX_GLOBAL, function (match, p1) {
-      if (p1) {
-        return values[p1];
-      } else {
-        return match;
-      }
-    });
-  }
-}
-/**
- * This method add special tag to value placeholder
- * @param strings
- * @param values
- * @returns {*}
- */
-
-
-module.exports = function (strings) {
-  var hCache;
-  var kCache;
-  var isStyleForWebComponentByAppCreate; // use internal app cache stores
-
-  if (this && this.app) {
-    hCache = this.app.cacheStores.hCache;
-    kCache = this.app.cacheStores.kCache;
-    isStyleForWebComponentByAppCreate = this.app.isWebComponent && this._mainComponentByAppCreate;
-  } else {
-    // use global cache stores
-    hCache = cacheStores.hCache;
-    kCache = cacheStores.kCache;
-  }
-
-  var tpl = hCache.get(strings); //console.log(this.app.appIntId);
-  //console.log(strings);
-  //let appIntId = this.app.appIntId;
-
-  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    values[_key - 1] = arguments[_key];
-  }
-
-  if (!tpl) {
-    //console.log(strings[0])
-    tpl = strings[0];
-    var allowTag = false;
-    var isInStyle = false;
-    var thereIsStyle = false;
-    var valueLength = values.length;
-
-    for (var i = 0; i < valueLength; ++i) {
-      var stringsI = strings[i];
-      var stringLength = stringsI.length;
-      var lastChar = stringsI[stringLength - 1];
-
-      for (var x = 0; x < stringLength; x++) {
-        if (stringsI[x] === LESSER) {
-          allowTag = false;
-        } else if (stringsI[x] === GREATER) {
-          allowTag = true;
-        }
-      }
-
-      if (stringsI.indexOf('<style') > -1) {
-        isInStyle = true;
-        thereIsStyle = true;
-      }
-
-      if (stringsI.indexOf('</style') > -1) {
-        isInStyle = false;
-      }
-
-      if (thereIsStyle && isStyleForWebComponentByAppCreate) {
-        tpl = tpl.replace(/<style>/, '<style data-is-webcomponent>');
-      }
-
-      if (isInStyle) {
-        allowTag = false;
-        tpl = tpl.replace(/ scoped>/, ' data-scoped>');
-      }
-
-      if (allowTag) {
-        if (_typeof(values[i]) === 'object' || typeof values[i] === 'function') {
-          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
-        } else {
-          // Questo serve ad evitare che "oldNode" o "newNode" siano stringhe vuote
-          // dal momento che se un placeholder allora anche il suo corrispettivo
-          // nodo di testo dev'essere creato o modificato.
-          // Senza questo eventuali strighe vuote potevano non essere considerate.
-          if (values[i] === '') {
-            values[i] = ' ';
-          } // possible html as string
-
-
-          if (/<.*>/.test(values[i])) {
-            tpl += "".concat(values[i]).concat(strings[i + 1]);
-          } else {
-            // add a fake 0 before index useful to identify a text node so cast to string every
-            tpl += "<".concat(tagText, ">e-0_0").concat(i, "_0-e</").concat(tagText, ">").concat(strings[i + 1]);
-          }
-        }
-      } else {
-        // Gestico eventuale caso di chiusura tag con placeholder
-        // tipo: </${FooBar}>
-        if (lastChar === '/') {
-          tpl += strings[i + 1];
-        } else {
-          tpl += "e-0_".concat(i, "_0-e").concat(strings[i + 1]);
-        }
-      }
-    }
-
-    tpl = tpl.trim();
-    hCache.set(strings, tpl);
-  } //console.log('TPL ------>', tpl)
-
-
-  var cloned;
-  var model = compile(tpl);
-  var clonedKey;
-
-  if (model.props.forceupdate) {
-    hCache["delete"](strings);
-  }
-
-  if (model.key !== undefined || model.props['item-list'] !== undefined) {
-    //clonedKey = values.filter(item => typeof item !== 'function' && typeof item !== 'object').join('');
-    clonedKey = generateItemKey(values);
-    cloned = clonedKey ? hCache.get(clonedKey) : undefined;
-  }
-
-  if (!cloned) {
-    cloned = deepCopy(model);
-    fillCompiled(cloned, values, null, this);
-
-    if (clonedKey) {
-      hCache.set(clonedKey, cloned);
-    }
-  }
-
-  if (model.key !== undefined) {
-    var _kCacheValue = kCache.get(cloned.key);
-
-    if (_kCacheValue
-    /*&& clonedKey !== _kCacheValue.clonedKey*/
-    ) {
-      kCache.set(cloned.key, {
-        isChanged: clonedKey !== _kCacheValue.clonedKey,
-        //isChanged: true,
-        clonedKey: clonedKey,
-        next: cloned,
-        prev: _kCacheValue.next
-      });
-    } else {
-      kCache.set(cloned.key, {
-        isChanged: true,
-        clonedKey: clonedKey,
-        next: cloned,
-        prev: {}
-      });
-    }
-  } //console.log('CLN ------>', cloned)
-
-
-  return cloned;
-};
-
-function generateItemKey(values) {
-  var key = '';
-
-  for (var i = 0; i < values.length; i++) {
-    if (typeof values[i] !== 'function' && _typeof(values[i]) !== 'object') {
-      key += values[i];
-    }
-  } //console.log(key);
-
-
-  return key;
-}
-
-function fillCompiled(obj, values, parent, _this) {
-  var keys = Object.keys(obj);
-
-  for (var i = 0; i < keys.length; i++) {
-    //for (let k in obj) {
-    if (obj[keys[i]] && _typeof(obj[keys[i]]) === 'object') {
-      fillCompiled(obj[keys[i]], values, obj, _this);
-    } else {
-      //console.log(i, keys[i])
-      var value = placeholderIndex(obj[keys[i]], values); //if (typeof value === 'function' && keys[i] === 'type') {
-
-      if ('type' === keys[i] && 'string' !== typeof value) {
-        var cmp = value || {};
-        var tagName = camelToDash(cmp.tag || cmp.name || TAG.ROOT); // Sanitize tag name
-
-        tagName = tagName.replace(/_+/, ''); // if is a single word, rename with double word
-
-        if (tagName.indexOf('-') === -1) {
-          tagName = "".concat(tagName, "-").concat(tagName);
-        }
-
-        var tagCmp = tagName + '-' + _this.uId + '-' + _this._localComponentLastId++;
-
-        if (_this._componentsMap.has(value)) {
-          tagCmp = _this._componentsMap.get(value);
-        } else {
-          _this._componentsMap.set(value, tagCmp);
-        } // add to local components
-
-
-        if (_this._components[tagCmp] === undefined) {
-          _this._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        } // add to local app components
-
-
-        if (_this.app._components[tagCmp] === undefined) {
-          _this.app._components[tagCmp] = {
-            tag: tagName,
-            cfg: cmp
-          };
-        }
-
-        value = tagName;
-        obj.props['data-attributeoriginaletagname'] = tagCmp;
-      }
-
-      if (Array.isArray(value) && keys[i] === '0') {
-        parent.children = value;
-        if (value[0] && value[0].key !== undefined) parent.hasKeys = true;
-      } else {
-        // questo evita stringhe vuote che potrebbero causare visualizzazioni errate
-        if (value === '' && keys[i] === '0') {
-          value = ' ';
-        }
-
-        obj[keys[i]] = value;
-      }
-    }
-  }
-}
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
@@ -4052,7 +4052,7 @@ module.exports = mixin;
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var manipulate = __webpack_require__(16);
+var manipulate = __webpack_require__(18);
 
 function propsInit(instance) {
   (function iterate(props) {
@@ -4162,11 +4162,11 @@ var _require2 = __webpack_require__(0),
 
 var component = __webpack_require__(60);
 
-var Component = __webpack_require__(12);
+var Component = __webpack_require__(13);
 
 var mixin = __webpack_require__(61);
 
-var h = __webpack_require__(21);
+var h = __webpack_require__(12);
 
 var appCreate = __webpack_require__(26);
 
@@ -4174,7 +4174,7 @@ var _require3 = __webpack_require__(7),
     compile = _require3.compile; //const mapper = require('./vdom/mapper');
 
 
-var _require4 = __webpack_require__(17),
+var _require4 = __webpack_require__(19),
     update = _require4.update;
 
 var tag = __webpack_require__(62);
@@ -4230,7 +4230,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.19.6',
+    value: '3.20.0',
     enumerable: true
   },
   tag: {
@@ -5078,6 +5078,44 @@ module.exports = {
 /* 32 */
 /***/ (function(module, exports) {
 
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function deepCopy(obj) {
+  // if not array or object or is null return self
+  if (_typeof(obj) !== 'object' || obj === null) return obj;
+  var newObj, i; // handle case: array
+
+  if (Array.isArray(obj)) {
+    var l;
+    newObj = [];
+
+    for (i = 0, l = obj.length; i < l; i++) {
+      newObj[i] = deepCopy(obj[i]);
+    }
+
+    return newObj;
+  } // handle case: object
+
+
+  newObj = {};
+
+  for (i in obj) {
+    if (obj.hasOwnProperty(i)) {
+      //if (obj[i] === undefined)
+      //console.log(i, obj[i])
+      newObj[i] = deepCopy(obj[i]);
+    }
+  }
+
+  return newObj;
+}
+
+module.exports = deepCopy;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
 function hmr(instance, _module) {
   if (!_module || !_module.hot) return;
   var NS_PROPS = '__doz_hmr_props_store__';
@@ -5115,16 +5153,16 @@ function hmr(instance, _module) {
 module.exports = hmr;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var proxy = __webpack_require__(15);
+var proxy = __webpack_require__(17);
 
 var events = __webpack_require__(6);
 
-var propsListener = __webpack_require__(35);
+var propsListener = __webpack_require__(36);
 
-var manipulate = __webpack_require__(16);
+var manipulate = __webpack_require__(18);
 
 function runUpdate(instance, changes) {
   events.callUpdate(instance, changes);
@@ -5171,7 +5209,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -5184,7 +5222,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -5227,7 +5265,7 @@ function propsListener(instance, changes) {
 module.exports = propsListener;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -5272,17 +5310,17 @@ module.exports = function castType(value, type) {
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var element = __webpack_require__(17);
+var element = __webpack_require__(19);
 
 module.exports = {
   updateElement: element.update
 };
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -5305,9 +5343,9 @@ var _require = __webpack_require__(1),
     PROPS_ATTRIBUTES = _require.PROPS_ATTRIBUTES; //const castStringTo = require('../utils/cast-string-to');
 
 
-var objectPath = __webpack_require__(39);
+var objectPath = __webpack_require__(40);
 
-var isListener = __webpack_require__(40); //const mapper = require('./mapper');
+var isListener = __webpack_require__(41); //const mapper = require('./mapper');
 
 
 var _require2 = __webpack_require__(5),
@@ -5315,7 +5353,7 @@ var _require2 = __webpack_require__(5),
 
 var makeSureAttach = __webpack_require__(4);
 
-var booleanAttributes = __webpack_require__(41);
+var booleanAttributes = __webpack_require__(42);
 
 function isEventAttribute(name) {
   return isListener(name);
@@ -5569,7 +5607,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 function getByPath(path, obj) {
@@ -5592,7 +5630,7 @@ module.exports = getByPath;
 module.exports.getLast = getLast;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = function isListener(str) {
@@ -5601,18 +5639,18 @@ module.exports = function isListener(str) {
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = ['async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'challenge', 'checked', 'compact', 'contenteditable', 'controls', 'default', 'defer', 'disabled', 'formNoValidate', 'frameborder', 'hidden', 'indeterminate', 'ismap', 'loop', 'multiple', 'muted', 'nohref', 'noresize', 'noshade', 'novalidate', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'scrolling', 'seamless', 'selected', 'sortable', 'spellcheck', 'translate'];
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var composeStyleInner = __webpack_require__(19);
+var composeStyleInner = __webpack_require__(21);
 
-var createStyle = __webpack_require__(43);
+var createStyle = __webpack_require__(44);
 
 function scopedInner(cssContent, uId, tag, scoped, cmp) {
   if (typeof cssContent !== 'string') return;
@@ -5625,10 +5663,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var tagList = __webpack_require__(44);
+var tagList = __webpack_require__(45);
 
 var _require = __webpack_require__(1),
     TAG = _require.TAG;
@@ -5687,7 +5725,7 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
 module.exports = createStyle;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports) {
 
 module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'blockquote', //'body',
@@ -5695,7 +5733,7 @@ module.exports = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', '
 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'main', 'map', 'mark', 'menu', 'meter', 'nav', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'small', 'source', 'span', 'strong', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(1),
@@ -5760,7 +5798,7 @@ function drawDynamic(instance) {
 module.exports = drawDynamic;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -5775,7 +5813,7 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var camelToDash = __webpack_require__(20);
+var camelToDash = __webpack_require__(16);
 
 function toInlineStyle(obj) {
   var withStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -5803,7 +5841,7 @@ function toInlineStyle(obj) {
 module.exports = toInlineStyle;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 function add(instance) {
@@ -5826,7 +5864,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 function add(instance) {
@@ -5857,7 +5895,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports) {
 
 function extendInstance(instance, cfg, dProps) {
@@ -5867,7 +5905,7 @@ function extendInstance(instance, cfg, dProps) {
 module.exports = extendInstance;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 function removeAllAttributes(el) {
@@ -5882,44 +5920,6 @@ function removeAllAttributes(el) {
 }
 
 module.exports = removeAllAttributes;
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-function deepCopy(obj) {
-  // if not array or object or is null return self
-  if (_typeof(obj) !== 'object' || obj === null) return obj;
-  var newObj, i; // handle case: array
-
-  if (Array.isArray(obj)) {
-    var l;
-    newObj = [];
-
-    for (i = 0, l = obj.length; i < l; i++) {
-      newObj[i] = deepCopy(obj[i]);
-    }
-
-    return newObj;
-  } // handle case: object
-
-
-  newObj = {};
-
-  for (i in obj) {
-    if (obj.hasOwnProperty(i)) {
-      //if (obj[i] === undefined)
-      //console.log(i, obj[i])
-      newObj[i] = deepCopy(obj[i]);
-    }
-  }
-
-  return newObj;
-}
-
-module.exports = deepCopy;
 
 /***/ }),
 /* 52 */
@@ -6002,9 +6002,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var canDecode = __webpack_require__(18);
+var canDecode = __webpack_require__(20);
 
-var composeStyleInner = __webpack_require__(19);
+var composeStyleInner = __webpack_require__(21);
 
 var dashToCamel = __webpack_require__(8);
 
@@ -6575,7 +6575,7 @@ module.exports = component;
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Component = __webpack_require__(12);
+var Component = __webpack_require__(13);
 
 var mixin = __webpack_require__(22);
 
