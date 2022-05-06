@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.20.0] - 2022-05-06
+- **Added** experimental loadingComponent and errorComponent for async components
+
 ## [3.19.6] - 2022-05-04
 - **Fixed** propsPropagation error when a child component has propsPropagation set to true
 

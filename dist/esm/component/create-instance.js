@@ -3,6 +3,7 @@ import { COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX } fr
 import collection from "../collection.js";
 import hooks from "./hooks.js";
 import { serializeProps } from "../vdom/parser.js";
+import h from "../vdom/h.js";
 import hmr from "./helpers/hmr.js";
 import Component from "./Component.js";
 import propsInit from "./helpers/props-init.js";
@@ -104,14 +105,37 @@ function createInstance(cfg = {}) {
                 }
                 else {
                     if (cmp.cfg.then) {
-                        /*if ($child.parentElement
+                        let loadingComponent = null;
+                        let errorComponent = null;
+                        if ($child.parentElement
                             && $child.parentElement._dozAttach
-                            && $child.parentElement._dozAttach.props
-                            && $child.parentElement._dozAttach.props['d-async-loading']
-                        ) {
-                            console.log($child.parentElement._dozAttach);
-                        }*/
-                        (($child) => {
+                            && $child.parentElement._dozAttach.props) {
+                            if ($child.parentElement._dozAttach.props['d-async-loading'])
+                                loadingComponent = $child.parentElement._dozAttach.props['d-async-loading'];
+                            if ($child.parentElement._dozAttach.props['d-async-error'])
+                                errorComponent = $child.parentElement._dozAttach.props['d-async-error'];
+                        }
+                        (($child, loadingComponent, errorComponent) => {
+                            let loadingComponentElement = null;
+                            let errorComponentElement = null;
+                            if (loadingComponent) {
+                                let __props = {};
+                                let __componentDirectives = {};
+                                if (typeof loadingComponent === 'object' && loadingComponent.component) {
+                                    __props = loadingComponent.props || __props;
+                                    __componentDirectives = loadingComponent.directives || __componentDirectives;
+                                    loadingComponent = loadingComponent.component;
+                                }
+                                newElement = new loadingComponent({
+                                    tag: loadingComponent.tag || 'loading-component',
+                                    root: $child,
+                                    app: cfg.app,
+                                    props: __props,
+                                    componentDirectives: __componentDirectives,
+                                    parentCmp: parent.cmp || cfg.parent
+                                });
+                                loadingComponentElement = newElement;
+                            }
                             cmp.cfg
                                 .then(componentFromPromise => {
                                 //gestisco eventuale ES6 import
@@ -134,14 +158,34 @@ function createInstance(cfg = {}) {
                                 });
                                 propsInit(newElement);
                                 newElement.app.emit('componentPropsInit', newElement);
+                                if (loadingComponentElement)
+                                    loadingComponentElement.destroy();
                                 _runMount(newElement);
                                 walk(newElement.getHTMLElement(), { cmp: newElement });
                                 appendChildrenToParent(parent, newElement);
                             })
                                 .catch(e => {
+                                if (errorComponent) {
+                                    let __props = {};
+                                    let __componentDirectives = {};
+                                    if (typeof errorComponent === 'object' && errorComponent.component) {
+                                        __props = errorComponent.props || __props;
+                                        __componentDirectives = errorComponent.directives || __componentDirectives;
+                                        errorComponent = errorComponent.component;
+                                    }
+                                    newElement = new errorComponent({
+                                        tag: errorComponent.tag || 'error-component',
+                                        root: $child,
+                                        app: cfg.app,
+                                        props: __props,
+                                        componentDirectives: __componentDirectives,
+                                        parentCmp: parent.cmp || cfg.parent
+                                    });
+                                    errorComponentElement = newElement;
+                                }
                                 console.error(e);
                             });
-                        })($child);
+                        })($child, loadingComponent, errorComponent);
                     }
                     else {
                         newElement = new Component({

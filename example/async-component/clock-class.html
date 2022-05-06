@@ -36,14 +36,36 @@
             MyHelloWorld.tag = 'hello-world'
 
             resolve(MyHelloWorld)
-        }, 1000)
+        }, 5000)
     })
 
     const otherImport = import('./my-imported-component.js')
 
     const MyLoading = class extends Doz.Component {
+        constructor(o) {
+            super(o);
+
+            this.props = {
+                message: 'Loading...'
+            }
+        }
         template(h) {
-            return h`<div>Loading...</div>`
+            //language=html
+            return h`
+                <style>
+                    :component {
+                        display: block;
+                    }
+                </style>
+                <div>${this.props.message}</div>`
+        }
+
+        onMount() {
+            console.log('mount loading')
+        }
+
+        onDestroy() {
+            console.log('destroy loading')
         }
     }
 
@@ -67,7 +89,7 @@
 
         template(h){
             return h`
-                <div style="color: ${this.props.color}" d-async-loading="${MyLoading}" d-async-error="${MyError}">
+                <div style="color: ${this.props.color}" d-async-loading="${{component: MyLoading, props: {message: 'Wait...'}}}" d-async-error="${MyError}">
                     ${this.props.title}: ${this.props.time}
                     <${MyPromise} name="${this.props.time}"/>
                     <${otherImport}/>

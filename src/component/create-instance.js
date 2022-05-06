@@ -4,6 +4,7 @@ const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} = req
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
+const h = require('../vdom/h')
 const hmr = require('./helpers/hmr');
 const Component = require('./Component');
 const propsInit = require('./helpers/props-init');
@@ -126,18 +127,42 @@ function createInstance(cfg = {}) {
                 } else {
 
                     if (cmp.cfg.then) {
-
-                        /*if ($child.parentElement
+                        let loadingComponent = null;
+                        let errorComponent = null;
+                        if ($child.parentElement
                             && $child.parentElement._dozAttach
                             && $child.parentElement._dozAttach.props
-                            && $child.parentElement._dozAttach.props['d-async-loading']
                         ) {
-                            console.log($child.parentElement._dozAttach);
-                        }*/
-                        (($child) => {
+                            if ($child.parentElement._dozAttach.props['d-async-loading'])
+                                loadingComponent = $child.parentElement._dozAttach.props['d-async-loading'];
+                            if ($child.parentElement._dozAttach.props['d-async-error'])
+                                errorComponent = $child.parentElement._dozAttach.props['d-async-error'];
+                        }
+                        (($child, loadingComponent, errorComponent) => {
+                            let loadingComponentElement = null;
+                            let errorComponentElement = null;
+
+                            if (loadingComponent) {
+                                let __props = {}
+                                let __componentDirectives = {}
+                                if (typeof loadingComponent === 'object' && loadingComponent.component) {
+                                    __props = loadingComponent.props || __props;
+                                    __componentDirectives = loadingComponent.directives || __componentDirectives;
+                                    loadingComponent = loadingComponent.component;
+                                }
+                                newElement = new loadingComponent({
+                                    tag: loadingComponent.tag || 'loading-component',
+                                    root: $child,
+                                    app: cfg.app,
+                                    props: __props,
+                                    componentDirectives: __componentDirectives,
+                                    parentCmp: parent.cmp || cfg.parent
+                                });
+                                loadingComponentElement = newElement;
+                            }
+
                             cmp.cfg
                                 .then(componentFromPromise => {
-
                                     //gestisco eventuale ES6 import
                                     if (typeof componentFromPromise === 'object') {
                                         let oKeys = Object.keys(componentFromPromise);
@@ -161,16 +186,35 @@ function createInstance(cfg = {}) {
 
                                     propsInit(newElement);
                                     newElement.app.emit('componentPropsInit', newElement);
+                                    if (loadingComponentElement) loadingComponentElement.destroy();
                                     _runMount(newElement)
                                     walk(newElement.getHTMLElement(), {cmp: newElement});
                                     appendChildrenToParent(parent, newElement);
                                 })
                                 .catch(e => {
+                                    if (errorComponent) {
+                                        let __props = {}
+                                        let __componentDirectives = {}
+                                        if (typeof errorComponent === 'object' && errorComponent.component) {
+                                            __props = errorComponent.props || __props
+                                            __componentDirectives = errorComponent.directives || __componentDirectives
+                                            errorComponent = errorComponent.component;
+                                        }
+
+                                        newElement = new errorComponent({
+                                            tag: errorComponent.tag || 'error-component',
+                                            root: $child,
+                                            app: cfg.app,
+                                            props: __props,
+                                            componentDirectives: __componentDirectives,
+                                            parentCmp: parent.cmp || cfg.parent
+                                        });
+                                        errorComponentElement = newElement;
+                                    }
                                     console.error(e)
                                 })
+                        })($child, loadingComponent, errorComponent)
 
-
-                        })($child)
                     } else {
                         newElement = new Component({
                             tag: cmp.tag || cmpName,

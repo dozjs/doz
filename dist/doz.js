@@ -1350,6 +1350,8 @@ var hooks = __webpack_require__(6);
 var _require2 = __webpack_require__(7),
     serializeProps = _require2.serializeProps;
 
+var h = __webpack_require__(21);
+
 var hmr = __webpack_require__(32);
 
 var Component = __webpack_require__(12);
@@ -1517,14 +1519,39 @@ function createInstance() {
           });
         } else {
           if (cmp.cfg.then) {
-            /*if ($child.parentElement
-                && $child.parentElement._dozAttach
-                && $child.parentElement._dozAttach.props
-                && $child.parentElement._dozAttach.props['d-async-loading']
-            ) {
-                console.log($child.parentElement._dozAttach);
-            }*/
-            (function ($child) {
+            var loadingComponent = null;
+            var errorComponent = null;
+
+            if ($child.parentElement && $child.parentElement._dozAttach && $child.parentElement._dozAttach.props) {
+              if ($child.parentElement._dozAttach.props['d-async-loading']) loadingComponent = $child.parentElement._dozAttach.props['d-async-loading'];
+              if ($child.parentElement._dozAttach.props['d-async-error']) errorComponent = $child.parentElement._dozAttach.props['d-async-error'];
+            }
+
+            (function ($child, loadingComponent, errorComponent) {
+              var loadingComponentElement = null;
+              var errorComponentElement = null;
+
+              if (loadingComponent) {
+                var __props = {};
+                var __componentDirectives = {};
+
+                if (_typeof(loadingComponent) === 'object' && loadingComponent.component) {
+                  __props = loadingComponent.props || __props;
+                  __componentDirectives = loadingComponent.directives || __componentDirectives;
+                  loadingComponent = loadingComponent.component;
+                }
+
+                newElement = new loadingComponent({
+                  tag: loadingComponent.tag || 'loading-component',
+                  root: $child,
+                  app: cfg.app,
+                  props: __props,
+                  componentDirectives: __componentDirectives,
+                  parentCmp: parent.cmp || cfg.parent
+                });
+                loadingComponentElement = newElement;
+              }
+
               cmp.cfg.then(function (componentFromPromise) {
                 //gestisco eventuale ES6 import
                 if (_typeof(componentFromPromise) === 'object') {
@@ -1548,6 +1575,7 @@ function createInstance() {
                 });
                 propsInit(newElement);
                 newElement.app.emit('componentPropsInit', newElement);
+                if (loadingComponentElement) loadingComponentElement.destroy();
 
                 _runMount(newElement);
 
@@ -1556,9 +1584,30 @@ function createInstance() {
                 });
                 appendChildrenToParent(parent, newElement);
               })["catch"](function (e) {
+                if (errorComponent) {
+                  var _props = {};
+                  var _componentDirectives = {};
+
+                  if (_typeof(errorComponent) === 'object' && errorComponent.component) {
+                    _props = errorComponent.props || _props;
+                    _componentDirectives = errorComponent.directives || _componentDirectives;
+                    errorComponent = errorComponent.component;
+                  }
+
+                  newElement = new errorComponent({
+                    tag: errorComponent.tag || 'error-component',
+                    root: $child,
+                    app: cfg.app,
+                    props: _props,
+                    componentDirectives: _componentDirectives,
+                    parentCmp: parent.cmp || cfg.parent
+                  });
+                  errorComponentElement = newElement;
+                }
+
                 console.error(e);
               });
-            })($child);
+            })($child, loadingComponent, errorComponent);
           } else {
             newElement = new Component({
               tag: cmp.tag || cmpName,
