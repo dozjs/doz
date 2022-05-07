@@ -1,6 +1,6 @@
 import index from "../../index.js";
 import wait from "../../../utils/wait.js";
-import animateHelper from "./animate-helper.js";
+import animateHelper from "./animateHelper.js";
 const { directive } = index;
 directive('animate', {
     onAppComponentCreate(instance) {

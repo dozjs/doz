@@ -1,5 +1,5 @@
-const composeStyleInner = require('../../utils/compose-style-inner');
-const createStyle = require('../../utils/create-style');
+const composeStyleInner = require('../../utils/composeStyleInner');
+const createStyle = require('../../utils/createStyle');
 
 function scopedInner(cssContent, uId, tag, scoped, cmp) {
     if (typeof cssContent !== 'string') return;

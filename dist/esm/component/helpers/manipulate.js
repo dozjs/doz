@@ -1,4 +1,4 @@
-import castType from "../../utils/cast-type.js";
+import castType from "../../utils/castType.js";
 function manipulate(instance, value, currentPath, onFly, init) {
     if (typeof instance.propsType === 'object') {
         const type = instance.propsType[currentPath];

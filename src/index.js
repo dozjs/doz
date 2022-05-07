@@ -4,14 +4,14 @@ const {use} = require('./plugin');
 const {directive} = require('./directives');
 const component = require('./component');
 const Component = require('./component/Component');
-const mixin = require('./component/helpers/global-mixin');
+const mixin = require('./component/helpers/globalMixin');
 const h = require('./vdom/h');
-const appCreate = require('./app-create');
+const appCreate = require('./appCreate');
 const {compile} = require('./vdom/parser');
 //const mapper = require('./vdom/mapper');
 const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
-const createInstance = require('./component/create-instance')
+const createInstance = require('./component/createInstance')
 const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
 require('./directives/built-in/bootstrap');
 

@@ -1,8 +1,8 @@
-const isJSON = require('./is-json');
-const isNumber = require('./is-number');
-const toJSON = require('./to-json');
-const toNumber = require('./to-number');
-const typesMap = require('./types-map');
+const isJSON = require('./isJson');
+const isNumber = require('./isNumber');
+const toJSON = require('./toJson');
+const toNumber = require('./toNumber');
+const typesMap = require('./typesMap');
 
 function castStringTo(obj) {
 //return obj;

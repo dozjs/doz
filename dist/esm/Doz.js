@@ -1,10 +1,10 @@
 import bind from "./utils/bind.js";
-import createInstance from "./component/create-instance.js";
+import createInstance from "./component/createInstance.js";
 import { TAG, REGEX, ALREADY_WALKED } from "./constants.js";
-import toLiteralString from "./utils/to-literal-string.js";
+import toLiteralString from "./utils/toLiteralString.js";
 import plugin from "./plugin/index.js";
 import directive from "./directives/index.js";
-import makeSureAttach from "./component/make-sure-attach.js";
+import makeSureAttach from "./component/makeSureAttach.js";
 let appCounter = 0;
 class Doz {
     constructor(cfg = {}) {

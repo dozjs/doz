@@ -1,8 +1,8 @@
 import Doz from "./Doz.js";
-import appCreate from "./app-create.js";
+import appCreate from "./appCreate.js";
 import data from "./data.js";
-import dashToCamel from "./utils/dash-to-camel.js";
-import createStyleSoftEntrance from "./utils/create-style-soft-entrance.js";
+import dashToCamel from "./utils/dashToCamel.js";
+import createStyleSoftEntrance from "./utils/createStyleSoftEntrance.js";
 createStyleSoftEntrance();
 function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = [], exposedListeners = []) {
     data.webComponents.tags[tag] = data.webComponents.tags[tag] || {};

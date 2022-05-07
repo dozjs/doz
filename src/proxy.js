@@ -13,7 +13,7 @@
  */
 
 const delay = require('./utils/delay');
-const stringDecoder = require('./utils/string-decoder');
+const stringDecoder = require('./utils/stringDecoder');
 
 /**
  * ObservableSlim

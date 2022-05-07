@@ -1,4 +1,4 @@
-const castType = require('../../utils/cast-type');
+const castType = require('../../utils/castType');
 
 function manipulate(instance, value, currentPath, onFly, init) {
 

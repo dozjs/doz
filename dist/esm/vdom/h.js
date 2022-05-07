@@ -1,6 +1,6 @@
 import { TAG } from "../constants.js";
-import camelToDash from "../utils/camel-to-dash.js";
-import deepCopy from "../utils/deep-copy.js";
+import camelToDash from "../utils/camelToDash.js";
+import deepCopy from "../utils/deepCopy.js";
 import { compile } from "./parser.js";
 import cacheStores from "./stores.js";
 const tagText = TAG.TEXT_NODE_PLACE;

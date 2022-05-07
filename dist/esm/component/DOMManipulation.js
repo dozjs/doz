@@ -1,11 +1,11 @@
-import canDecode from "../utils/can-decode.js";
-import composeStyleInner from "../utils/compose-style-inner.js";
-import dashToCamel from "../utils/dash-to-camel.js";
+import canDecode from "../utils/canDecode.js";
+import composeStyleInner from "../utils/composeStyleInner.js";
+import dashToCamel from "../utils/dashToCamel.js";
 import Base from "./Base.js";
 import { COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG } from "../constants.js";
 import directive from "../directives/index.js";
 import { isDirective } from "../directives/helpers.js";
-import makeSureAttach from "./make-sure-attach.js";
+import makeSureAttach from "./makeSureAttach.js";
 class DOMManipulation extends Base {
     constructor(opt) {
         super(opt);

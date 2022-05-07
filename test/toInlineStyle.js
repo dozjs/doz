@@ -1,4 +1,4 @@
-const toInlineStyle = require('../src/utils/to-inline-style');
+const toInlineStyle = require('../src/utils/toInlineStyle');
 const be = require('bejs');
 
 describe('Utils.to-inline-style', function () {

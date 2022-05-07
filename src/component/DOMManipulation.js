@@ -1,11 +1,11 @@
-const canDecode = require('../utils/can-decode');
-const composeStyleInner = require('../utils/compose-style-inner');
-const dashToCamel = require('../utils/dash-to-camel');
+const canDecode = require('../utils/canDecode');
+const composeStyleInner = require('../utils/composeStyleInner');
+const dashToCamel = require('../utils/dashToCamel');
 const Base = require('./Base');
 const {COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, PROPS_ATTRIBUTES, DEFAULT_SLOT_KEY, TAG} = require('../constants');
 const directive = require('../directives');
 const {isDirective} = require('../directives/helpers');
-const makeSureAttach = require('./make-sure-attach');
+const makeSureAttach = require('./makeSureAttach');
 
 class DOMManipulation extends Base {
     constructor(opt) {

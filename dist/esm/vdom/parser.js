@@ -1,4 +1,4 @@
-import dashToCamel from "../utils/dash-to-camel.js";
+import dashToCamel from "../utils/dashToCamel.js";
 import { REGEX, ATTR, TAG, PROPS_ATTRIBUTES } from "../constants.js";
 import directive from "../directives/index.js";
 import { isDirective } from "../directives/helpers.js";

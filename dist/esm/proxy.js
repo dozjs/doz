@@ -1,5 +1,5 @@
 import delay from "./utils/delay.js";
-import stringDecoder from "./utils/string-decoder.js";
+import stringDecoder from "./utils/stringDecoder.js";
 /**
  * ObservableSlim
  * @type {{create, observe, remove, beforeChange, beginRender, endRender}}

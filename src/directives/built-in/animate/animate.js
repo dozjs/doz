@@ -1,6 +1,6 @@
 const {directive} = require('../../index');
 const wait = require('../../../utils/wait');
-const animateHelper = require('./animate-helper');
+const animateHelper = require('./animateHelper');
 
 directive('animate', {
 

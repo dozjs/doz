@@ -1,9 +1,9 @@
 import { REGEX, ATTR, PROPS_ATTRIBUTES } from "../constants.js";
-import objectPath from "../utils/object-path.js";
-import isListener from "../utils/is-listener.js";
+import objectPath from "../utils/objectPath.js";
+import isListener from "../utils/isListener.js";
 import { isDirective } from "../directives/helpers.js";
-import makeSureAttach from "../component/make-sure-attach.js";
-import booleanAttributes from "../utils/boolean-attributes.js";
+import makeSureAttach from "../component/makeSureAttach.js";
+import booleanAttributes from "../utils/booleanAttributes.js";
 function isEventAttribute(name) {
     return isListener(name);
 }

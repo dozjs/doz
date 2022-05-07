@@ -1,11 +1,11 @@
 const {REGEX, ATTR, PROPS_ATTRIBUTES} = require('../constants');
 //const castStringTo = require('../utils/cast-string-to');
-const objectPath = require('../utils/object-path');
-const isListener = require('../utils/is-listener');
+const objectPath = require('../utils/objectPath');
+const isListener = require('../utils/isListener');
 //const mapper = require('./mapper');
 const {isDirective} = require('../directives/helpers');
-const makeSureAttach = require('../component/make-sure-attach');
-const booleanAttributes = require('../utils/boolean-attributes');
+const makeSureAttach = require('../component/makeSureAttach');
+const booleanAttributes = require('../utils/booleanAttributes');
 
 function isEventAttribute(name) {
     return isListener(name);

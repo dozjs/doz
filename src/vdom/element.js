@@ -1,9 +1,9 @@
 const {attach, updateAttributes} = require('./attributes');
 const {TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY} = require('../constants');
-const canDecode = require('../utils/can-decode');
+const canDecode = require('../utils/canDecode');
 const hooks = require('../component/hooks');
 //const directive = require('../directives');
-const makeSureAttach = require('../component/make-sure-attach');
+const makeSureAttach = require('../component/makeSureAttach');
 const {scopedInner} = require('../component/helpers/style');
 //const {kCache} = require('./stores');
 

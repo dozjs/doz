@@ -1,8 +1,8 @@
 const Doz = require('./Doz');
-const appCreate = require('./app-create');
+const appCreate = require('./appCreate');
 const data = require('./data');
-const dashToCamel = require('./utils/dash-to-camel');
-require('./utils/create-style-soft-entrance')();
+const dashToCamel = require('./utils/dashToCamel');
+require('./utils/createStyleSoftEntrance')();
 
 function createDozWebComponent(tag, cmp, observedAttributes = [], prefix = 'dwc', globalTag, exposedMethods = [], exposedListeners = []) {
 

@@ -1,5 +1,5 @@
 const {directive} = require('../../index');
-const dashToCamel = require('../../../utils/dash-to-camel');
+const dashToCamel = require('../../../utils/dashToCamel');
 
 directive('is', {
 

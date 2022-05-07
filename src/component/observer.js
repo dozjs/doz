@@ -1,6 +1,6 @@
 const proxy = require('../proxy');
 const events = require('./hooks');
-const propsListener = require('./helpers/props-listener');
+const propsListener = require('./helpers/propsListener');
 const manipulate = require('./helpers/manipulate');
 
 function runUpdate(instance, changes) {

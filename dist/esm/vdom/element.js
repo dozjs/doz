@@ -1,8 +1,8 @@
 import { attach, updateAttributes } from "./attributes.js";
 import { TAG, NS, COMPONENT_INSTANCE, COMPONENT_ROOT_INSTANCE, DEFAULT_SLOT_KEY } from "../constants.js";
-import canDecode from "../utils/can-decode.js";
+import canDecode from "../utils/canDecode.js";
 import hooks from "../component/hooks.js";
-import makeSureAttach from "../component/make-sure-attach.js";
+import makeSureAttach from "../component/makeSureAttach.js";
 import { scopedInner } from "../component/helpers/style.js";
 //const {kCache} = require('./stores');
 const storeElementNode = Object.create(null);

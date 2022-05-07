@@ -1,4 +1,4 @@
-const toInlineStyle = require('./to-inline-style');
+const toInlineStyle = require('./toInlineStyle');
 
 function composeStyle(style, tag) {
     let out = '';

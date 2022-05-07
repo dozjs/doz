@@ -7,11 +7,11 @@ const {serializeProps} = require('../vdom/parser');
 const h = require('../vdom/h')
 const hmr = require('./helpers/hmr');
 const Component = require('./Component');
-const propsInit = require('./helpers/props-init');
+const propsInit = require('./helpers/propsInit');
 const delay = require('../utils/delay');
 const directive = require('../directives');
-const getComponentName = require('./helpers/get-component-name');
-const makeSureAttach = require('./make-sure-attach');
+const getComponentName = require('./helpers/getComponentName');
+const makeSureAttach = require('./makeSureAttach');
 
 function createInstance(cfg = {}) {
 

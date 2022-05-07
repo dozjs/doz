@@ -1,6 +1,6 @@
 import proxy from "../proxy.js";
 import events from "./hooks.js";
-import propsListener from "./helpers/props-listener.js";
+import propsListener from "./helpers/propsListener.js";
 import manipulate from "./helpers/manipulate.js";
 function runUpdate(instance, changes) {
     events.callUpdate(instance, changes);

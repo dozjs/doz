@@ -1,4 +1,4 @@
-const camelToDash = require('./camel-to-dash');
+const camelToDash = require('./camelToDash');
 
 function toInlineStyle(obj, withStyle = true) {
     obj = Object.entries(obj).reduce((styleString, [propName, propValue]) => {

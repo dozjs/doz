@@ -1,10 +1,10 @@
 const bind = require('./utils/bind');
-const createInstance = require('./component/create-instance');
+const createInstance = require('./component/createInstance');
 const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
-const toLiteralString = require('./utils/to-literal-string');
+const toLiteralString = require('./utils/toLiteralString');
 const plugin = require('./plugin');
 const directive = require('./directives');
-const makeSureAttach = require('./component/make-sure-attach');
+const makeSureAttach = require('./component/makeSureAttach');
 let appCounter = 0;
 
 class Doz {

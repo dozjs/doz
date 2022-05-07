@@ -10,7 +10,7 @@ function drawDynamic(instance) {
         let root = item.node.parentNode;
 
         //console.log('create dynamic', item.node, item.node.__dozProps)
-        const dynamicInstance = require('../create-instance')({
+        const dynamicInstance = require('../createInstance')({
             root,
             template: item.node,
             //template: item.node.outerHTML,

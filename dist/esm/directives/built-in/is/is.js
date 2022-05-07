@@ -1,5 +1,5 @@
 import index from "../../index.js";
-import dashToCamel from "../../../utils/dash-to-camel.js";
+import dashToCamel from "../../../utils/dashToCamel.js";
 const { directive } = index;
 directive('is', {
     hasDataIs($target) {
