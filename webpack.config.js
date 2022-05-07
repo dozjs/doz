@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const unminifiedWebpackPlugin = require('unminified-webpack-plugin');
 const WebpackAutoInject = require('webpack-auto-inject-version');
-const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
     entry: './index.js',
@@ -50,9 +49,6 @@ module.exports = {
                 }
             }
         }),
-        /*new CompressionPlugin({
-            algorithm: 'gzip',
-        }),*/
         new unminifiedWebpackPlugin()
     ]
 };
