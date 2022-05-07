@@ -13,7 +13,7 @@ describe('component', function () {
             const tag = 'my-component';
             component(tag);
             const result = collection.getComponent(tag);
-            console.log(result);
+            //console.log(result);
             be.err.not.undefined(result);
         });
 

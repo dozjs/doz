@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.async-component', function () {
+describe('asyncComponent', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -47,7 +47,7 @@ describe('Doz.async-component', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello <other-component><span>Friend</span></other-component></div></salutation-card></dz-app></div>')
             }, 1000);
         });
@@ -89,7 +89,7 @@ describe('Doz.async-component', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello <other-component><span>Friend</span></other-component></div></salutation-card></dz-app></div>')
             }, 1000);
         });
@@ -137,7 +137,7 @@ describe('Doz.async-component', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello <other-component><span>Friend</span></other-component></div></salutation-card></dz-app></div>')
             }, 1000);
         });

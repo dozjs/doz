@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-convert', function () {
+describe('propsConvert', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -216,7 +216,7 @@ describe('Doz.props-convert', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(result, [10])
             }, 100);
 

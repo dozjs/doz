@@ -1,8 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-
-describe('Doz.local.component2', function () {
+describe('localComponent2', function () {
 
     beforeEach(function () {
         window.DOZ_APP_ID = 'myapp';
@@ -57,7 +56,7 @@ describe('Doz.local.component2', function () {
 
             //setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.true(/Doz component/g.test(html));
                 be.err.true(/my button by wrapper component/g.test(html));
                 be.err.true(/my button by Doz/g.test(html));
@@ -88,7 +87,7 @@ describe('Doz.local.component2', function () {
                 }
 
                 template(h) {
-                    //console.log(this.props.data)
+                    ////console.log(this.props.data)
                     let res = h`
                         <div>
                             ${this.props.data.map(item => h`
@@ -96,15 +95,15 @@ describe('Doz.local.component2', function () {
                             `)}
                         </div>
                     `;
-                    console.log(JSON.stringify(res, null, 4))
-                    //console.log(res.children[0].props.theobj === globalObj)
+                    //console.log(JSON.stringify(res, null, 4))
+                    ////console.log(res.children[0].props.theobj === globalObj)
                     return res;
                 }
             };
 
             const RowComponent = class extends Doz.Component {
                 template(h) {
-                    //console.log('SAME OBJECT?', this.props.theobj.constructor === globalObj.constructor);
+                    ////console.log('SAME OBJECT?', this.props.theobj.constructor === globalObj.constructor);
                     if (this.props.theobj.constructor !== globalObj.constructor)
                         throw new Error('theobj doesn\'t match with globalObj');
                     return h`
@@ -133,8 +132,8 @@ describe('Doz.local.component2', function () {
 
             //setTimeout(() => {
                 const html = document.body.innerHTML;
-                //console.log(require('../src/vdom/map-compiled').data);
-                console.log(html);
+                ////console.log(require('../src/vdom/map-compiled').data);
+                //console.log(html);
                 be.err.true(/my name is Joy/g.test(html));
                 be.err.true(/my name is Mike/g.test(html));
                 be.err.true(/my name is Paul/g.test(html));
@@ -153,7 +152,7 @@ describe('Doz.local.component2', function () {
 
             const GridComponent = class extends Doz.Component {
                 template(h) {
-                    //console.log('ééééééé', this.props)
+                    ////console.log('ééééééé', this.props)
                     return h`
                         <div>
                         ${this.props.myFunc()}
@@ -180,8 +179,8 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(require('../src/vdom/mapper').data);
-                console.log(html);
+                //console.log(require('../src/vdom/mapper').data);
+                //console.log(html);
                 done();
             }, 100);
 
@@ -217,8 +216,8 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                //console.log(require('../src/vdom/map-compiled').data);
-                console.log(html);
+                ////console.log(require('../src/vdom/map-compiled').data);
+                //console.log(html);
                 done();
             }, 100);
 
@@ -253,8 +252,8 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML.trim();
-                //console.log(require('../src/vdom/map-compiled').data);
-                console.log(html);
+                ////console.log(require('../src/vdom/map-compiled').data);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><grid-component><div>foo</div></grid-component></dz-app></div>');
                 done();
             }, 100);
@@ -288,8 +287,8 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML.trim();
-                //console.log(require('../src/vdom/map-compiled').data);
-                console.log(html);
+                ////console.log(require('../src/vdom/map-compiled').data);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><grid-component><div>foo</div></grid-component></dz-app></div>');
                 done();
             }, 100);
@@ -325,8 +324,8 @@ describe('Doz.local.component2', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML.trim();
-                //console.log(require('../src/vdom/map-compiled').data);
-                console.log(html);
+                ////console.log(require('../src/vdom/map-compiled').data);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><dz-root><div>foo</div></dz-root></dz-app></div>');
                 done();
             }, 100);

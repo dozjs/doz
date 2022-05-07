@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.renderpause', function () {
+describe('renderPause', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -44,12 +44,12 @@ describe('Doz.renderpause', function () {
 
             setTimeout(()=>{
                 let html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal('<div id="app"><dz-app><div><x-parent><div>Hello World</div></x-parent></div></dz-app></div>', html);
                 be.err.true(app.getComponentById('x-parent').isRenderPause);
                 app.getComponentById('x-parent').renderResume();
                 html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal('<div id="app"><dz-app><div><x-parent><div>Ciao Mondo</div></x-parent></div></dz-app></div>', html);
                 be.err.false(app.getComponentById('x-parent').isRenderPause);
                 done();

@@ -7,7 +7,7 @@ const components = [
     require('./textures/components/wrapper-component')
 ];
 
-describe('Doz.local.component', function () {
+describe('localComponent', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -43,8 +43,8 @@ describe('Doz.local.component', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view);
+                //console.log(html);
+                //console.log(view);
                 be.err.true(/Doz/g.test(html));
                 be.err(done).true(/Luis/g.test(html));
             }, 100);
@@ -90,8 +90,8 @@ describe('Doz.local.component', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view);
+                //console.log(html);
+                //console.log(view);
                 be.err.true(/Doz component/g.test(html));
                 be.err(done).true(/Luis component/g.test(html));
             }, 100);
@@ -139,8 +139,8 @@ describe('Doz.local.component', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view);
+                //console.log(html);
+                //console.log(view);
                 be.err.true(/Doz component/g.test(html));
                 be.err(done).true(/Luis component/g.test(html));
             }, 100);
@@ -184,8 +184,8 @@ describe('Doz.local.component', function () {
 
                 setTimeout(() => {
                     const html = document.body.innerHTML;
-                    console.log(html);
-                    //console.log(view);
+                    //console.log(html);
+                    ////console.log(view);
                     be.err.true(/DOZ/g.test(html));
                     be.err(done).true(/LUIS/g.test(html));
                 }, 100);

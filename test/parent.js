@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.parent', function () {
+describe('parent', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -16,7 +16,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-parent', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 props: {
                     rows: [0,1,2]
@@ -44,7 +44,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-clear', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 template() {
                     return `<div style="clear:both"></div>`
@@ -53,7 +53,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-child-a', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 template() {
                     return `<div>child a</div>`
@@ -71,7 +71,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-child-c', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 template() {
                     return `<div>child c</div>`
@@ -80,7 +80,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-after', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 template() {
                     return `<div>prev</div><x-after-inner/>`
@@ -89,7 +89,7 @@ describe('Doz.parent', function () {
 
             Doz.component('x-after-inner', {
                 onCreate() {
-                    console.log(this.tag, this.parent.tag)
+                    //console.log(this.tag, this.parent.tag)
                 },
                 template() {
                     return `<div>after-inner</div>`
@@ -107,7 +107,7 @@ describe('Doz.parent', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 done()
             },200);
 

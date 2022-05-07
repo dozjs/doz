@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.remove.specials.attributes.js', function () {
+describe('removeSpecialsAttributes', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -19,11 +19,11 @@ describe('Doz.remove.specials.attributes.js', function () {
                     return h`<div id="d:on">Callback</div>`
                 },
                 onCreate() {
-                    console.log('created');
+                    //console.log('created');
                     setTimeout(() => {
                         this.emit('mycallback', 'hello');
                     }, 1000);
-                    console.log(this.parent.tag)
+                    //console.log(this.parent.tag)
                 }
             });
 
@@ -46,14 +46,14 @@ describe('Doz.remove.specials.attributes.js', function () {
                     `
                 },
                 aCallback(arg) {
-                    console.log('callback is called', arg);
+                    //console.log('callback is called', arg);
                     be.err.equal(arg, 'hello');
                 },
                 onMount() {
                     this.props.aValue = 'ciao';
                 },
                 onMountAsync() {
-                    console.log(document.body.innerHTML);
+                    //console.log(document.body.innerHTML);
 
                     // d-ref
                     be.err.false(document.getElementById('d-ref').hasAttribute('d-ref'));

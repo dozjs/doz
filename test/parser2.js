@@ -2,17 +2,13 @@ const {h} = require('../index');
 const {compile} = require('../src/vdom/parser');
 const assert = require('assert');
 
-function printObj(obj) {
-    console.log(JSON.stringify(obj, null, 2));
-}
-
 describe('parser2', function () {
     it('should ok', function () {
 
         const root = h`
             <main id="hola" d:store="mystore">
                 <ul id="list" data-any="${2}">
-                    <li onclick="console.log('hello')" data-o="cia">Hello World</li>
+                    <li onclick="//console.log('hello')" data-o="cia">Hello World</li>
                 </ul>
             </main>
         `;

@@ -9,7 +9,7 @@ const actions = {
     }
 };
 
-describe('Doz.actions', function () {
+describe('actions', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -46,9 +46,9 @@ describe('Doz.actions', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log('<div id="app"><dz-app><salutation-card><div>Hello Dear Teddy</div> </salutation-card></dz-app></div>');
-                //console.log(app);
+                //console.log(html);
+                //console.log('<div id="app"><dz-app><salutation-card><div>Hello Dear Teddy</div> </salutation-card></dz-app></div>');
+                ////console.log(app);
                 be.err(done).true(/Hello Dear Teddy</g.test(html));
             },100);
 

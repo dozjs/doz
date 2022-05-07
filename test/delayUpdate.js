@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.delay-update', function () {
+describe('delayUpdate', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -32,13 +31,13 @@ describe('Doz.delay-update', function () {
                 },
 
                 onBeforeUpdate() {
-                    console.log('onBeforeUpdate');
+                    //console.log('onBeforeUpdate');
                     this.startUpdate = Date.now();
                 },
 
                 onUpdate() {
                     const totalTime = Date.now() - this.startUpdate;
-                    console.log('onUpdate', totalTime);
+                    //console.log('onUpdate', totalTime);
                     if (totalTime >= this.delayUpdate)
                     done();
                 }
@@ -86,13 +85,13 @@ describe('Doz.delay-update', function () {
                 }
 
                 onBeforeUpdate() {
-                    console.log('onBeforeUpdate');
+                    //console.log('onBeforeUpdate');
                     this.startUpdate = Date.now();
                 }
 
                 onUpdate() {
                     const totalTime = Date.now() - this.startUpdate;
-                    console.log('onUpdate', totalTime);
+                    //console.log('onUpdate', totalTime);
                     if (totalTime >= this.delayUpdate)
                         done();
                 }

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.server-side-load-props', function () {
+describe('serverSideLoadProps', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -42,7 +42,7 @@ describe('Doz.server-side-load-props', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello boom</div></salutation-card></dz-app></div>')
             }, 100);
         });

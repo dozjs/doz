@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.get-html-element', function () {
+describe('getHtmlElement', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

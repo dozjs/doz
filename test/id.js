@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.id', function () {
+describe('id', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -45,7 +45,7 @@ describe('Doz.id', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
                 be.err.object(view.getComponentById('salutation1'));
                 be.err.object(view.getComponentById('salutation2'));
                 be.err(done).object(view.getComponentById('caller'));
@@ -125,7 +125,7 @@ describe('Doz.id', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
                 be.err.object(view.getComponentById('salutation1'));
                 be.err.object(view.getComponentById('salutation2'));
                 be.err(done).object(view.getComponentById('caller'));
@@ -171,7 +171,7 @@ describe('Doz.id', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
                 be.err.object(view.getComponentById('salutation'));
                 be.err(done).object(view.getComponentById('caller'));
             },100);

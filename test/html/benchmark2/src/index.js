@@ -32,7 +32,7 @@ const actions = {
     },
 
     del(id) {
-        console.log(id);
+        //console.log(id);
         this.mainComponent.prepareCommit();
         const data = this.getStore('records').data;
         const idx = data.findIndex(d => d.id === id);

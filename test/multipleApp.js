@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.multiple.app', function () {
+describe('multipleApp', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -46,12 +46,12 @@ describe('Doz.multiple.app', function () {
             });
 
             setTimeout(() => {
-                console.log(document.getElementById('app1').innerHTML)
+                //console.log(document.getElementById('app1').innerHTML)
                 be.err.not.null(document.getElementById(app1.appId + '-1--style'));
                 be.err.not.null(document.getElementById(app2.appId + '-1--style'));
                 be.err.not.empty(document.getElementById('app1').innerHTML);
                 be.err.not.empty(document.getElementById('app2').innerHTML);
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 done();
             }, 100);
         });

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-computed', function () {
+describe('propsComputed', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -59,7 +59,7 @@ describe('Doz.props-computed', function () {
             });
 
             setTimeout(() => {
-                console.log(result);
+                //console.log(result);
                 //done();
                 be.err.true(result[0] === result[2]);
                 be.err.true(result[1] === result[3]);
@@ -126,7 +126,7 @@ describe('Doz.props-computed', function () {
             });
 
             setTimeout(() => {
-                console.log(result);
+                //console.log(result);
                 //done();
                 be.err.true(result[0] === result[2]);
                 be.err.true(result[1] === result[3]);

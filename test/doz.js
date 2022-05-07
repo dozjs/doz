@@ -20,7 +20,7 @@ describe('Doz', function () {
                 template: ''
             });
 
-            //console.log(view);
+            ////console.log(view);
 
             be.err.not.null(view);
         });
@@ -35,10 +35,10 @@ describe('Doz', function () {
                         </div>`
                 },
                 onCreate() {
-                    console.log('onCreate')
+                    //console.log('onCreate')
                 },
                 onMount() {
-                    console.log('onMount');
+                    //console.log('onMount');
                     this.props.name = 'D O Z'
                 }
             });
@@ -52,11 +52,11 @@ describe('Doz', function () {
                 template: `<div><my-component name="Doz"></my-component></div>`
             });
 
-            //console.log(app.components);
+            ////console.log(app.components);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
 
                 be.err(done).true(/D O Z/g.test(html));
             },100);
@@ -85,7 +85,7 @@ describe('Doz', function () {
                         </div>`
                 },
                 onCreate() {
-                    console.log('onCreate')
+                    //console.log('onCreate')
                 }
             });
 
@@ -109,13 +109,13 @@ describe('Doz', function () {
                            `
             });
 
-            //console.log(app._usedComponents);
-            //console.log(app.getComponent('second-component'));
-            //console.log(app.getComponent());
+            ////console.log(app._usedComponents);
+            ////console.log(app.getComponent('second-component'));
+            ////console.log(app.getComponent());
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
 
                 be.err.true(/Doz/g.test(html));
                 be.err(done).true(/Luis/g.test(html));
@@ -135,11 +135,11 @@ describe('Doz', function () {
                 template: `<div><h2>without component</h2></div>`
             });
 
-            console.log(view._usedComponents);
+            //console.log(view._usedComponents);
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
 
                 be.err(done).true(/without component/g.test(html));
             },100);
@@ -156,10 +156,10 @@ describe('Doz', function () {
                         </div>`
                 },
                 onCreate() {
-                    console.log('onCreate')
+                    //console.log('onCreate')
                 },
                 onMount() {
-                    console.log('onMount');
+                    //console.log('onMount');
                     this.props.name = 'D O Z';
                 }
             });
@@ -178,7 +178,7 @@ describe('Doz', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
 
                 be.err(done).true(/D O Z/g.test(html));
             },100);

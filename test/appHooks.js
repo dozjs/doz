@@ -1,8 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-
-describe('Doz.app.hooks', function () {
+describe('hooks', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -78,32 +77,32 @@ describe('Doz.app.hooks', function () {
 
             app
                 .on('componentCreate', component => {
-                    console.log('componentCreate');
+                    //console.log('componentCreate');
                     result.create++;
                 })
                 .on('componentPropsInit', component => {
-                    console.log('componentPropsInit');
+                    //console.log('componentPropsInit');
                     result.propsInit++;
                 })
                 .on('componentMount', component => {
-                    console.log('componentMount');
+                    //console.log('componentMount');
                     result.mount++;
                 })
                 .on('componentMountAsync', component => {
-                    console.log('componentMountAsync');
+                    //console.log('componentMountAsync');
                     result.mountAsync++;
                 })
                 .on('componentUpdate', (component, changes) => {
-                    console.log('componentUpdate', changes);
+                    //console.log('componentUpdate', changes);
                     if (changes[0].newValue === 'Ciao Mondo')
                         result.update++;
                 })
                 .on('componentUnmount', component => {
-                    console.log('componentUnmount');
+                    //console.log('componentUnmount');
                     result.unmount++;
                 })
                 .on('componentDestroy', component => {
-                    console.log('componentDestroy');
+                    //console.log('componentDestroy');
                     result.destroy++;
 
                 });
@@ -111,8 +110,8 @@ describe('Doz.app.hooks', function () {
             app.draw();
 
             setTimeout(function () {
-                console.log(result)
-                console.log(shouldBe)
+                //console.log(result)
+                //console.log(shouldBe)
                 be.err(done).equal(result, shouldBe);
             }, 3500);
         });

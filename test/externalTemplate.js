@@ -1,8 +1,8 @@
 const Doz = require('../index');
 const be = require('bejs');
-const template = require('./textures/templates/template1.html');
+//const template = require('./textures/templates/template1.html');
 
-describe('Doz.external.template', function () {
+describe('externalTemplate', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -47,7 +47,7 @@ describe('Doz.external.template', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.true(/<b>MR.<\/b>/.test(html));
                 be.err.true(/<b>MRS.<\/b>/.test(html));
                 be.err(done).equal('Mario Bros', document.getElementById('game-name').innerHTML);

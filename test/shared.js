@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.shared', function () {
+describe('shared', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -60,8 +60,8 @@ describe('Doz.shared', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(app.shared);
+                //console.log(html);
+                //console.log(app.shared);
                 be.err(done).object(app.shared);
             },100);
 

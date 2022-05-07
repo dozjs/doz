@@ -1,7 +1,6 @@
 const {compile} = require('../src/vdom/parser');
 const {updateElement} = require('../src/vdom/index');
 const html = require('../src/utils/html');
-const be = require('bejs');
 const DOM = require('../src/component/DOMManipulation');
 
 describe('parser', function () {
@@ -22,11 +21,11 @@ describe('parser', function () {
                 `);
 
             updateElement(appRoot, initial, null, 0, fakeCmp);
-            console.log(document.body.innerHTML);
+            //console.log(document.body.innerHTML);
             const next = compile(`<div>hello<button disabled>rere</button></div>`);
             //next.children[1].children[0] = 'clicca';
             updateElement(appRoot, next, initial, 0, fakeCmp);
-            console.log(document.body.innerHTML);
+            //console.log(document.body.innerHTML);
         });
         it('should be return nodes without indent', function () {
             document.body.innerHTML = `<div id="app"></div>`;
@@ -37,12 +36,12 @@ describe('parser', function () {
                     </div>`);
 
             /*updateElement(appRoot, initial);
-            console.log(document.body.innerHTML);
+            //console.log(document.body.innerHTML);
             const next = transform(html.create(`<div>hello<button disabled>rere</button></div>`));
             //next.children[1].children[0] = 'clicca';
             updateElement(appRoot, next, initial);*/
-            console.log(initial);
-            console.log(document.body.innerHTML);
+            //console.log(initial);
+            //console.log(document.body.innerHTML);
         });
         it('tree walker', function () {
 
@@ -79,7 +78,7 @@ describe('parser', function () {
                     if (isCmp) {
                         const newNode = html.create(isCmp);
                         n.insertBefore(newNode, n.firstChild);
-                        console.log('mounted', n.nodeName);
+                        //console.log('mounted', n.nodeName);
                     }
                     if (n.hasChildNodes()) {
                         getInstances(n.firstChild)
@@ -87,9 +86,9 @@ describe('parser', function () {
                     n = n.nextSibling;
                 }
             }
-            console.log(appRoot.innerHTML);
+            //console.log(appRoot.innerHTML);
             getInstances(appRoot);
-            console.log(appRoot.innerHTML);
+            //console.log(appRoot.innerHTML);
         });
 
 

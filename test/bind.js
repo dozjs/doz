@@ -1,7 +1,7 @@
 const bind = require('../src/utils/bind');
 const be = require('bejs');
 
-describe('Utils.bind', function () {
+describe('bind', function () {
 
     it('should be ok', function (done) {
 

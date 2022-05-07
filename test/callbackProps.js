@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.callback', function () {
+describe('callbackProps', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -32,7 +32,7 @@ describe('Doz.callback', function () {
                         </div>`
                 },
                 aCallback: function(arg) {
-                    //console.log('callback is called', arg, this.template);
+                    ////console.log('callback is called', arg, this.template);
                     be.err(done).equal(arg, 'hello');
                 }
             });
@@ -42,11 +42,11 @@ describe('Doz.callback', function () {
                     return h`<div>Callback</div>`
                 },
                 onCreate() {
-                    console.log('created');
+                    //console.log('created');
                     setTimeout(()=>{
                         this.emit('mycallback', 'hello');
                     },1000);
-                    console.log(this.parent.tag)
+                    //console.log(this.parent.tag)
                 }
             });
 
@@ -61,7 +61,7 @@ describe('Doz.callback', function () {
                 `}
             });
 
-            console.log(document.body.innerHTML)
+            //console.log(document.body.innerHTML)
         });
         it('should be ok with function as string', function (done) {
 
@@ -85,7 +85,7 @@ describe('Doz.callback', function () {
                         </div>`
                 },
                 aCallback: function(arg) {
-                    console.log('callback is called', arg);
+                    //console.log('callback is called', arg);
                     be.err(done).equal(arg, 'hello');
                 }
             });
@@ -95,11 +95,11 @@ describe('Doz.callback', function () {
                     return h`<div>Callback</div>`
                 },
                 onCreate() {
-                    console.log('created');
+                    //console.log('created');
                     setTimeout(()=>{
                         this.emit('mycallback', 'hello');
                     },1000);
-                    console.log(this.parent.tag)
+                    //console.log(this.parent.tag)
                 }
             });
 
@@ -114,7 +114,7 @@ describe('Doz.callback', function () {
                 `}
             });
 
-            console.log(document.body.innerHTML)
+            //console.log(document.body.innerHTML)
         });
     });
 });

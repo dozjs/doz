@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.draw', function () {
+describe('draw', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -36,7 +35,7 @@ describe('Doz.draw', function () {
             })
                 .on('draw', (next, prev) => {
                     if (called) return;
-                    console.log(next);
+                    //console.log(next);
                     called = true;
                     done();
                 })
@@ -72,7 +71,7 @@ describe('Doz.draw', function () {
 
             setTimeout(function () {
                 const result = document.body.innerHTML;
-                console.log(result);
+                //console.log(result);
                 done();
             },100)
         });

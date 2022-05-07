@@ -115,7 +115,7 @@
             return `<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
         },
         click(t) {
-            console.log(t);
+            //console.log(t);
         }
     });
 
@@ -134,11 +134,11 @@
         mounted: [],
 
         onBeforeUpdate() {
-            console.log('before');
+            //console.log('before');
         },
 
         onUpdate() {
-            console.log('update');
+            //console.log('update');
 
             this.mounted.forEach(cmp => {
                 cmp.destroy();

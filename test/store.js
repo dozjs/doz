@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.store', function () {
+describe('store', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -26,7 +26,7 @@ describe('Doz.store', function () {
                     return `<div>${this.props.repeater}</div>`
                 },
                 onCreate() {
-                    //console.log(this.getStore('salutation1'));
+                    ////console.log(this.getStore('salutation1'));
                     this.getStore('salutation1').name = 'Hi by repeater';
                     this.props.repeater = this.getStore('salutation1').name + ' Teddy'
                 }
@@ -51,8 +51,8 @@ describe('Doz.store', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(app);
+                //console.log(html);
+                ////console.log(app);
                 be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
@@ -205,8 +205,8 @@ describe('Doz.store', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(html);
+                //console.log(html);
+                //console.log(html);
                 be.err.true(/nested/g.test(html));
                 be.err.true(/bye/g.test(html));
                 be.err(done).true(/I'M CALLER/g.test(html));
@@ -241,7 +241,7 @@ describe('Doz.store', function () {
                 }
 
                 onCreate() {
-                    //console.log(this.getStore('salutation1'));
+                    ////console.log(this.getStore('salutation1'));
                     this.getStore('salutation1').name = 'Hi by repeater';
                     this.props.repeater = this.getStore('salutation1').name + ' Teddy'
                 }
@@ -266,8 +266,8 @@ describe('Doz.store', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(app);
+                //console.log(html);
+                ////console.log(app);
                 be.err.true(/Hi by repeater</g.test(html));
                 be.err.true(/Hi by repeater Teddy</g.test(html));
                 be.err(done).true(/MRS. Tina/g.test(html));
@@ -304,7 +304,7 @@ describe('Doz.store', function () {
                 }
 
                 onCreate() {
-                    //console.log(this.getStore('salutation'));
+                    ////console.log(this.getStore('salutation'));
                     this.getStore('salutation').name = 'Hi by repeater';
                     this.props.repeater = this.getStore('salutation').name + ' Teddy'
                 }
@@ -323,8 +323,8 @@ describe('Doz.store', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                //console.log(app);
+                //console.log(html);
+                ////console.log(app);
                 be.err(done).true(/Hi by repeater Teddy</g.test(html));
             }, 100);
 

@@ -35,7 +35,7 @@
         onDrawByParent(newNode, oldNode) {
             if(newNode.type === 'h1') {
                 newNode.children.push(Doz.compile(`
-                    <button onclick="console.log(scope)">Click</button>
+                    <button onclick="//console.log(scope)">Click</button>
                 `));
             }
         }

@@ -50,7 +50,7 @@
             });
         },
         onLoadProps() {
-            console.log('props loaded');
+            //console.log('props loaded');
         }
     });
 
@@ -61,11 +61,11 @@
             <a-rnd d:onloadprops="onRNDPropsLoad"/>
         `,
         onRNDPropsLoad(cmp) {
-            console.log('onRNDPropsLoad', cmp.tag)
+            //console.log('onRNDPropsLoad', cmp.tag)
         },
         onCreate() {
             this.app.on('componentLoadProps', cmp => {
-                console.log('componentLoadProps', cmp.tag)
+                //console.log('componentLoadProps', cmp.tag)
             });
         }
     });

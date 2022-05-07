@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.slot', function () {
+describe('slot', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -47,7 +47,7 @@ describe('Doz.slot', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot(header)--><!--slot(body)--><!--slot(footer)--><dz-root><div><h1>Hello</h1></div><div><p>Lorem Ipsum Dolor Sit</p></div><div><div>Copyright</div></div></dz-root></salutation-card></div></dz-app></div>');
                 done()
             },100);
@@ -89,7 +89,7 @@ describe('Doz.slot', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot(header)--><!--slot(footer)--><dz-root><div><h1>Hello</h1></div><div><dz-slot>default body</dz-slot></div><div><div>Copyright</div></div></dz-root></salutation-card></div></dz-app></div>');
                 done()
             },100);
@@ -126,7 +126,7 @@ describe('Doz.slot', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><div><salutation-card><!--slot--><div><div><h1>Hello</h1></div></div></salutation-card></div></dz-app></div>');
                 done()
             },100);
@@ -164,7 +164,7 @@ describe('Doz.slot', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.equal(html, '<div id="app"><dz-app><div><dz-mount><salutation-card><!--slot--><div><h1>Hello</h1></div></salutation-card></dz-mount></div></dz-app></div>');
                 done()
             },100);

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.animate', function () {
+describe('animate', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

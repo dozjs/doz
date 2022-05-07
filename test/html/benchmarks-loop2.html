@@ -66,7 +66,7 @@
         sort() {
             console.time(currentBench = 'sort');
             //let record = Object.assign([], this.getStore('list').record);
-            //console.log(this.getStore('list').record[0])
+            ////console.log(this.getStore('list').record[0])
             this.getStore('list').record.sort();// = record.sort();
         },
 
@@ -140,7 +140,7 @@
                 </div>
                 <table class="table table-hover table-striped test-data">
                     ${this.props.record.map((row, i) => h`
-                        <tr d-key="${row.key}" onclick="${(e) => console.log(e)}">
+                        <tr d-key="${row.key}" onclick="${(e) => //console.log(e)}">
                             <td class="col-md-1">${row.key}</td>
                             <td class="col-md-4">${row.label}</td>
                             <td class="col-md-1">
@@ -162,12 +162,12 @@
         },
 
         onBeforeUpdate() {
-            //console.log('before');
+            ////console.log('before');
             //console.timeEnd(currentBench);
         },
 
         onAfterRender() {
-            //console.log('update');
+            ////console.log('update');
             /*if (currentBench)
                 console.timeEnd(currentBench);*/
         }

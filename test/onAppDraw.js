@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.on.app.draw', function () {
+describe('onAppDraw', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -21,7 +20,7 @@ describe('Doz.on.app.draw', function () {
                     `
                 },
                 onAppDraw(next, prev) {
-                    console.log(next, prev);
+                    //console.log(next, prev);
                     next.children[0] = 'Ciao'
                 }
             });
@@ -38,7 +37,7 @@ describe('Doz.on.app.draw', function () {
             });
 
             setTimeout(function () {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 done();
             }, 100);
 

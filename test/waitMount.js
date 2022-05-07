@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.waitMount', function () {
+describe('waitMount', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -31,7 +30,7 @@ describe('Doz.waitMount', function () {
                     `
                 },
                 async onWaitMount() {
-                    console.log('onWaitMount')
+                    //console.log('onWaitMount')
                     await new Promise(resolve => {
                         setTimeout(() => {
                             resolve()
@@ -40,7 +39,7 @@ describe('Doz.waitMount', function () {
                     this.runMount();
                 },
                 onMount() {
-                    console.log('onMount')
+                    //console.log('onMount')
                 }
             });
             new Doz({
@@ -51,13 +50,13 @@ describe('Doz.waitMount', function () {
                     `
                 },
                 onAppReady() {
-                    console.log('onAppReady')
-                    //console.log(this.app._onAppComponentsMounted.size)
+                    //console.log('onAppReady')
+                    ////console.log(this.app._onAppComponentsMounted.size)
                     /*setInterval(() => {
-                        this.app._onAppComponentsMounted.forEach(item => console.log(item))
+                        this.app._onAppComponentsMounted.forEach(item => //console.log(item))
                     },50)*/
 
-                    //console.log('onComponentsMounted')
+                    ////console.log('onComponentsMounted')
                     done();
                 }
             });
@@ -75,7 +74,7 @@ describe('Doz.waitMount', function () {
                     `
                 },
                 async onWaitMount() {
-                    console.log('onWaitMount')
+                    //console.log('onWaitMount')
                     await new Promise(resolve => {
                         setTimeout(() => {
                             resolve()
@@ -84,7 +83,7 @@ describe('Doz.waitMount', function () {
                     this.runMount();
                 },
                 onMount() {
-                    console.log('onMount')
+                    //console.log('onMount')
                 }
             })
 
@@ -108,8 +107,8 @@ describe('Doz.waitMount', function () {
                     this.mount(this.h`<salutation-card></salutation-card>`)
                 },
                 onAppReady() {
-                    console.log('onAppReady')
-                    console.log(document.body.innerHTML);
+                    //console.log('onAppReady')
+                    //console.log(document.body.innerHTML);
                     done();
                 }
             });

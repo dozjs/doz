@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.single.function.component', function () {
+describe('singleFunctionComponent', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

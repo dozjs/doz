@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.use', function () {
+describe('use', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -81,7 +81,7 @@ describe('Doz.use', function () {
 
             setTimeout(()=>{
                 const result = document.body.innerHTML;
-                console.log(result);
+                //console.log(result);
                 be.err(done).true(/Ciao Blat/.test(result));
             }, 100);
 

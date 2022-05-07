@@ -4,7 +4,6 @@ const {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} = req
 const collection = require('../collection');
 const hooks = require('./hooks');
 const {serializeProps} = require('../vdom/parser');
-const h = require('../vdom/h')
 const hmr = require('./helpers/hmr');
 const Component = require('./Component');
 const propsInit = require('./helpers/propsInit');

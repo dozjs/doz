@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-listener-class', function () {
+describe('propsListenerClass', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -37,12 +37,12 @@ describe('Doz.props-listener-class', function () {
                 }
 
                 nameHandler(value) {
-                    console.log('call nameHandler', value);
+                    //console.log('call nameHandler', value);
                     result.push(value);
                 }
 
                 myTitleHandler(value) {
-                    console.log('call myTitleHandler', value);
+                    //console.log('call myTitleHandler', value);
                     result.push(value);
                 }
 
@@ -81,7 +81,7 @@ describe('Doz.props-listener-class', function () {
                 },
 
                 descHandler(value) {
-                    console.log('call descHandler', value);
+                    //console.log('call descHandler', value);
                     result.push(value);
                 },
 

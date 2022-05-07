@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.global.mixin', function () {
+describe('mixins', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

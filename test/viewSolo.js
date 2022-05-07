@@ -1,8 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-
-describe('Doz.view.solo', function () {
+describe('viewSolo', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -29,8 +28,8 @@ describe('Doz.view.solo', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view);
+                //console.log(html);
+                //console.log(view);
                 be.err(done).true(/Hello world/g.test(html));
             }, 100);
 
@@ -57,8 +56,8 @@ describe('Doz.view.solo', function () {
 
             setTimeout(() => {
                 const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view);
+                //console.log(html);
+                //console.log(view);
                 be.err(done).true(/HELLO WORLD/g.test(html));
             }, 100);
 
@@ -133,7 +132,7 @@ describe('Doz.view.solo', function () {
                 onDestroy() {
                     setTimeout(function () {
                         queueEvents.push('onDestroy');
-                        console.log(queueEvents, shouldBe)
+                        //console.log(queueEvents, shouldBe)
                         be.err(done).equal(queueEvents, shouldBe);
                     },100);
                 }

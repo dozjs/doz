@@ -84,16 +84,16 @@
 
     const actions = {
         done(key) {
-            //console.log(key)
+            ////console.log(key)
             const store = this.getStore('todo');
             const index = store.record.findIndex(item => item.key === key);
-            console.log('key', key)
-            console.log('index', index)
+            //console.log('key', key)
+            //console.log('index', index)
             store.record[index].done = !store.record[index].done;
         },
 
         add() {
-            //console.log('add');
+            ////console.log('add');
             const store = this.getStore('todo');
             if (store.todo) {
                 store.record.push({
@@ -121,7 +121,7 @@
         updateTotal() {
             const store = this.getStore('todo');
             let totalDone = 0;
-            //console.log('total', store.record.length)
+            ////console.log('total', store.record.length)
             store.total = store.record.length;
             store.record.forEach(item => item.done ? totalDone++ : '');
             store.totalDone = totalDone;
@@ -171,7 +171,7 @@
                     }
                 </style>
                 <div forceupdate class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="${() => console.log(this.uId, this.props.title, this.props.key)}" title="HTML">H</button>
+                    <button onclick="${() => //console.log(this.uId, this.props.title, this.props.key)}" title="HTML">H</button>
                     <button onclick="${() => this.action.remove(this.props.key)}" title="Delete">&cross;</button>
                     <button onclick="${() => this.action.done(this.props.key)}" title="Done">&check;</button>
                     <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
@@ -187,10 +187,10 @@
             `;
         },
         onUnmount() {
-            console.log('UNMOUNT', this);
+            //console.log('UNMOUNT', this);
         },
         onDestroy() {
-            console.log('DESTROY')
+            //console.log('DESTROY')
         }
     });
 
@@ -250,9 +250,9 @@
         },
         reverse() {
             let record = Object.assign([], this.getStore('todo').record);
-            //console.log('before', JSON.stringify(record[0], null, 4));
+            ////console.log('before', JSON.stringify(record[0], null, 4));
             this.getStore('todo').record = record.reverse();
-            //console.log('after', this.getStore('todo').record[0]);
+            ////console.log('after', this.getStore('todo').record[0]);
         },
 
         sort() {
@@ -261,7 +261,7 @@
         },
 
         randomData() {
-            //console.log('add');
+            ////console.log('add');
             const storeTmp = [];
             let prefix = getRandomInt(1, 5)
 
@@ -310,7 +310,7 @@
                 {title: "Buy milk", done: false, key: Date.now() + Math.random()},
                 {title: "Buy cigarettes", done: false, key: Date.now() + Math.random()}
             ];
-            console.log(this);
+            //console.log(this);
         },
 
         onUpdate() {

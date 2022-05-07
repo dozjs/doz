@@ -8,7 +8,7 @@ module.exports = {
                 </div>`
         },
         onCreate() {
-            console.log('onCreate')
+            //console.log('onCreate')
         }
     }
 };

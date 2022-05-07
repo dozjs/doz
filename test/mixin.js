@@ -1,7 +1,7 @@
 const mixin = require('../src/utils/mixin');
 const be = require('bejs');
 
-describe('Utils.mixin', function () {
+describe('mixin', function () {
 
     it('should be ok', function () {
 

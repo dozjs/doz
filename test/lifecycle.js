@@ -1,8 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-
-describe('Doz.lifecycle', function () {
+describe('lifecycle', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -24,19 +22,19 @@ describe('Doz.lifecycle', function () {
                     return '<div>nested-nested-component</div>';
                 },
                 onBeforeMount() {
-                    console.log('before mount', this.tag);
+                    //console.log('before mount', this.tag);
                     step++;
                 },
                 onMount() {
-                    console.log('mount', this.tag);
+                    //console.log('mount', this.tag);
                     step++;
                 },
                 onBeforeUnmount() {
-                    console.log('before unmount', this.tag);
+                    //console.log('before unmount', this.tag);
                     step++;
                 },
                 onUnmount() {
-                    console.log('unmount', this.tag);
+                    //console.log('unmount', this.tag);
                     step++;
                 }
             });
@@ -46,19 +44,19 @@ describe('Doz.lifecycle', function () {
                     return '<div>nested component <nested-nested-component></nested-nested-component></div>';
                 },
                 onBeforeMount() {
-                    console.log('before mount', this.tag);
+                    //console.log('before mount', this.tag);
                     step++;
                 },
                 onMount() {
-                    console.log('mount', this.tag);
+                    //console.log('mount', this.tag);
                     step++;
                 },
                 onBeforeUnmount() {
-                    console.log('before unmount', this.tag);
+                    //console.log('before unmount', this.tag);
                     step++;
                 },
                 onUnmount() {
-                    console.log('unmount', this.tag);
+                    //console.log('unmount', this.tag);
                     step++;
                 }
             });
@@ -74,56 +72,56 @@ describe('Doz.lifecycle', function () {
                     `
                 },
                 onBeforeCreate() {
-                    console.log('before create');
+                    //console.log('before create');
                     step++;
                 },
                 onCreate() {
-                    console.log('create');
+                    //console.log('create');
                     step++;
                 },
                 onBeforeMount() {
-                    console.log('before mount');
+                    //console.log('before mount');
                     step++;
                 },
                 onMount() {
-                    console.log('mount');
+                    //console.log('mount');
                     step++;
                     setTimeout(() => this.props.salutation = 'Ciao Mondo', 1000);
                 },
                 onMountAsync() {
-                    console.log('mountAsync');
+                    //console.log('mountAsync');
                     step++;
                 },
                 onBeforeUpdate(changes) {
-                    console.log('before update', this.props.salutation, changes);
+                    //console.log('before update', this.props.salutation, changes);
                     step++;
                 },
                 onUpdate(changes) {
-                    console.log('update', this.props.salutation, changes);
+                    //console.log('update', this.props.salutation, changes);
                     step++;
                     setTimeout(() => this.destroy(), 1000)
                 },
                 onAfterRender() {
-                    console.log('after render');
+                    //console.log('after render');
                     step++;
                 },
                 onBeforeUnmount() {
-                    console.log('before unmount');
+                    //console.log('before unmount');
                     step++;
                 },
                 onUnmount() {
-                    console.log('unmount');
+                    //console.log('unmount');
                     step++;
                 },
                 onBeforeDestroy() {
-                    console.log('before destroy');
+                    //console.log('before destroy');
                     step++;
                 },
                 onDestroy() {
-                    console.log('destroy');
+                    //console.log('destroy');
                     step++;
 
-                    console.log('step', step);
+                    //console.log('step', step);
                     if (step === 21) done()
 
                 }

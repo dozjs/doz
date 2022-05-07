@@ -61,7 +61,7 @@
 
         onDrawByParent(newNode, oldNode) {
             if (newNode.type === 'a-card-body') {
-                //console.log('onDrawByParent oldNode', oldNode);
+                ////console.log('onDrawByParent oldNode', oldNode);
                 newNode.children[0] += ' time';
             }
         }
@@ -90,7 +90,7 @@
                         color: #ffd9c2;
                     }
                 </style>
-                <button onclick="console.log(this)">click</button>
+                <button onclick="//console.log(this)">click</button>
 
             `
         }
@@ -101,7 +101,7 @@
 
         // Manipulate v-dom
         onDrawByParent(newNode, oldNode) {
-            console.log(newNode)
+            //console.log(newNode)
             return  {
                 newNode: Doz.h`
                     <div>

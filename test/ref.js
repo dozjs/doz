@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.ref', function () {
+describe('ref', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -21,7 +21,7 @@ describe('Doz.ref', function () {
                     `
                 },
                 onMount() {
-                    console.log(this.ref.myDiv);
+                    //console.log(this.ref.myDiv);
                     be.err(done).domElement(this.ref.myDiv);
                 }
             });

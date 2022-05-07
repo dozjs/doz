@@ -21,8 +21,8 @@ describe('h', function () {
                 </div>
                 `;
 
-            console.log(mapper.data);
-            console.log(JSON.stringify(res, null, 4));
+            //console.log(mapper.data);
+            //console.log(JSON.stringify(res, null, 4));
         });
     });
 });

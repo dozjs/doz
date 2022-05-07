@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.class.observer.create', function () {
+describe('classObserverCreate', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -90,7 +90,7 @@ describe('Doz.class.observer.create', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><cmp-x><div>hello suffix3</div></cmp-x></dz-app></div>')
             }, 100);
 

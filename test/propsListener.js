@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-listener', function () {
+describe('propsListener', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -23,12 +23,12 @@ describe('Doz.props-listener', function () {
                 },
 
                 nameHandler(value) {
-                    console.log('call nameHandler', value);
+                    //console.log('call nameHandler', value);
                     result.push(value);
                 },
 
                 myTitleHandler(value) {
-                    console.log('call myTitleHandler', value);
+                    //console.log('call myTitleHandler', value);
                     result.push(value);
                 },
 
@@ -68,7 +68,7 @@ describe('Doz.props-listener', function () {
 
                 descHandler(value) {
                     be.err.not.undefined(this.props);
-                    console.log('call descHandler', value);
+                    //console.log('call descHandler', value);
                     result.push(value);
                 },
 
@@ -92,11 +92,11 @@ describe('Doz.props-listener', function () {
             Doz.component('salutation-card', {
                 propsListener: {
                     myTitle: function(value) {
-                        console.log('call myTitleHandler', value);
+                        //console.log('call myTitleHandler', value);
                         result.push(value);
                     },
                     name: (value) => {
-                        console.log('call nameHandler', value);
+                        //console.log('call nameHandler', value);
                         result.push(value);
                     }
                 },
@@ -118,7 +118,7 @@ describe('Doz.props-listener', function () {
                 propsListener: {
                     desc: function(value){
                         be.err.not.undefined(this.props);
-                        console.log('call descHandler', value);
+                        //console.log('call descHandler', value);
                         result.push(value);
                     }
                 },

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('doz.boolean.attributes', function () {
+describe('booleanAttributes', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

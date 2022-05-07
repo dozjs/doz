@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-as-arguments', function () {
+describe('propsAsArguments', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -34,7 +34,7 @@ describe('Doz.props-as-arguments', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err.true(/Mike Ricali/.test(html));
                 done();
             },100);

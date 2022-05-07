@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.dashcase.prop', function () {
+describe('dashCase', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -21,7 +21,7 @@ describe('Doz.dashcase.prop', function () {
                     `
                 },
                 onCreate() {
-                    console.log(this.props)
+                    //console.log(this.props)
                 }
             });
 
@@ -37,7 +37,7 @@ describe('Doz.dashcase.prop', function () {
 
             //setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err(done).true(/MR\. Doz/g.test(html));
             //},100);
         });
@@ -53,7 +53,7 @@ describe('Doz.dashcase.prop', function () {
                     `
                 },
                 onCreate() {
-                    console.log(this.props)
+                    //console.log(this.props)
                 }
             });
 
@@ -69,7 +69,7 @@ describe('Doz.dashcase.prop', function () {
 
             //setTimeout(()=>{
                 const html = document.body.innerHTML;
-                console.log(html);
+                //console.log(html);
                 be.err(done).true(/MR\. Doz/g.test(html));
             //},100);
         });

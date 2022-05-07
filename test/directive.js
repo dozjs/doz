@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.directive', function () {
+describe('directive', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

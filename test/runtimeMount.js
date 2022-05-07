@@ -1,8 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-
-describe('Doz.runtime.mount', function () {
+describe('runtimeMount', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -31,10 +30,10 @@ describe('Doz.runtime.mount', function () {
                         </div>
                     `);
 
-                    console.log('component mounted');
+                    //console.log('component mounted');
                     done();
                     this.other.onDestroy = function () {
-                        console.log('component destroyed');
+                        //console.log('component destroyed');
                     };
                 },
                 removeOther() {
@@ -46,7 +45,7 @@ describe('Doz.runtime.mount', function () {
                 onCreate() {
                     setTimeout(()=>{
                         this.drawOther();
-                        console.log('AFTER', document.body.innerHTML);
+                        //console.log('AFTER', document.body.innerHTML);
                     },1000);
                 }
             });
@@ -138,7 +137,7 @@ describe('Doz.runtime.mount', function () {
                     this.props.state = !this.props.state;
                 },
                 onMount() {
-                    console.log('MOUNT SECOND')
+                    //console.log('MOUNT SECOND')
                 }
             });
 

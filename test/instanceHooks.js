@@ -1,8 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-
-describe('Doz.instance.hooks', function () {
+describe('instanceHooks', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -97,56 +96,56 @@ describe('Doz.instance.hooks', function () {
                         />`
                 },
                 onMyCmpBeforeCreate() {
-                    console.log('onBeforeCreate');
+                    //console.log('onBeforeCreate');
                     queueEvents.push('onBeforeCreate');
                 },
                 onMyCmpCreate() {
-                    console.log('onCreate');
+                    //console.log('onCreate');
                     queueEvents.push('onCreate');
                 },
                 onMyCmpBeforeMount() {
-                    console.log('onBeforeMount');
+                    //console.log('onBeforeMount');
                     queueEvents.push('onBeforeMount');
                 },
                 onMyCmpMount() {
-                    console.log('onMount');
+                    //console.log('onMount');
                     queueEvents.push('onMount');
                     this.props.title = 'ciao';
                 },
                 onMyCmpMountAsync() {
-                    console.log('onMountAsync');
+                    //console.log('onMountAsync');
                     queueEvents.push('onMountAsync');
                 },
                 onMyCmpAfterRender() {
-                    console.log('onAfterRender');
+                    //console.log('onAfterRender');
                     queueEvents.push('onAfterRender');
                 },
                 onMyCmpBeforeUpdate() {
-                    console.log('onBeforeUpdate');
+                    //console.log('onBeforeUpdate');
                     queueEvents.push('onBeforeUpdate');
                 },
                 onMyCmpUpdate(cmp) {
-                    console.log('onUpdate');
+                    //console.log('onUpdate');
                     queueEvents.push('onUpdate');
                     cmp.destroy();
                 },
                 onMyCmpBeforeUnmount() {
-                    console.log('onBeforeUnmount');
+                    //console.log('onBeforeUnmount');
                     queueEvents.push('onBeforeUnmount');
                 },
                 onMyCmpUnmount() {
-                    console.log('onUnmount');
+                    //console.log('onUnmount');
                     queueEvents.push('onUnmount');
                 },
                 onMyCmpBeforeDestroy() {
-                    console.log('onBeforeDestroy');
+                    //console.log('onBeforeDestroy');
                     queueEvents.push('onBeforeDestroy');
                 },
                 onMyCmpDestroy() {
                     setTimeout(function () {
-                        console.log('onDestroy');
+                        //console.log('onDestroy');
                         queueEvents.push('onDestroy');
-                        console.log(queueEvents, shouldBe);
+                        //console.log(queueEvents, shouldBe);
                         be.err(done).equal(queueEvents, shouldBe);
                     }, 100);
                 }

@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.rawChildrenVnode', function () {
+describe('rawChildrenVnode', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -45,9 +44,9 @@ describe('Doz.rawChildrenVnode', function () {
                 },
 
                 onMountAsync() {
-                    console.log(this.rawChildren)
-                    /*console.log(this.rawChildrenVnode)
-                    console.log(JSON.stringify(this._prev.children, null, 4))*/
+                    //console.log(this.rawChildren)
+                    /*//console.log(this.rawChildrenVnode)
+                    //console.log(JSON.stringify(this._prev.children, null, 4))*/
                     done();
                 }
             });

@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.is', function () {
+describe('is', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -31,7 +31,7 @@ describe('Doz.is', function () {
                 },
 
                 onMountAsync() {
-                    console.log(document.body.innerHTML);
+                    //console.log(document.body.innerHTML);
                     be.err.equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><span data-is="a-component"><div id="d-is">hello ciao</div></span></salutation-card></dz-app></div>')
                     done();
                 }

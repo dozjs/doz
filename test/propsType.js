@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-type', function () {
+describe('propsType', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

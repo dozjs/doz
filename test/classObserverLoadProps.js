@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.class.observer.loadProps', function () {
+describe('classObserverLoadProps', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

@@ -2,7 +2,7 @@ const Doz = require('../index');
 const be = require('bejs');
 
 
-describe('Doz.appready', function () {
+describe('appReady', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -27,7 +27,7 @@ describe('Doz.appready', function () {
                     `
                 },
                 onAppReady() {
-                    console.log('ready', this.tag);
+                    //console.log('ready', this.tag);
                     done()
                 }
             });
@@ -64,7 +64,7 @@ describe('Doz.appready', function () {
                 }
 
                 onAppReady() {
-                    console.log('ready', this.tag);
+                    //console.log('ready', this.tag);
                     done()
                 }
             });
@@ -100,7 +100,7 @@ describe('Doz.appready', function () {
                     },1000)
                 },
                 onAppReady() {
-                    console.log('ready')
+                    //console.log('ready')
                 }
             });
 

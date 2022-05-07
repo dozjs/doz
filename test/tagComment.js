@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe.skip('Doz.tag.comment', function () {
+describe.skip('tagComment', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

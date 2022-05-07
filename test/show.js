@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.show', function () {
+describe('show', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -31,10 +31,10 @@ describe('Doz.show', function () {
                     setTimeout(() => {
                         be.err.equal(this.ref.myDiv.style.display, '');
                         this.props.show = false;
-                    }, 70);
+                    }, 200);
                     setTimeout(() => {
                         be.err(done).equal(this.ref.myDiv.style.display, 'none');
-                    }, 90);
+                    }, 300);
                 }
             });
             new Doz({

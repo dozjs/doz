@@ -1,7 +1,7 @@
 const Doz = require('../index');
 const be = require('bejs');
 
-describe('Doz.props-propagation', function () {
+describe('propsPropagation', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -112,7 +112,7 @@ describe('Doz.props-propagation', function () {
             });
 
             setTimeout(() => {
-                console.log(document.body.innerHTML);
+                //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><salutation-card-inner><div>Hello undefined</div></salutation-card-inner></salutation-card></dz-app></div>')
             }, 1000);
         });

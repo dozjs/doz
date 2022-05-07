@@ -195,10 +195,10 @@ var html = {
 
         if (template.childNodes.length > 1) {
             element = document.createElement(wrapper);
-            //console.log('TEMPLATE',template.innerHTML);
+            ////console.log('TEMPLATE',template.innerHTML);
             element.innerHTML = template.innerHTML;
         } else {
-            //console.log('TEMPLATE',template.innerHTML);
+            ////console.log('TEMPLATE',template.innerHTML);
             element = template.firstChild || document.createTextNode('');
         }
 
@@ -649,7 +649,7 @@ var ObservableSlim = function () {
                                 var keys = Object.keys(target);
                                 for (var i = 0, _l2 = keys.length; i < _l2; i++) {
                                     if (target[keys[i]] === targetProp) {
-                                        //console.log('target still exists');
+                                        ////console.log('target still exists');
                                         return;
                                     }
                                 }
@@ -1571,7 +1571,7 @@ function create(node, cmp, initial) {
     }).forEach($el.appendChild.bind($el));
 
     if (node.type.indexOf('-') !== -1 && !initial) {
-        //console.log('ADD TO DYNAMIC', $el)
+        ////console.log('ADD TO DYNAMIC', $el)
         cmp._processing.push({ node: $el, action: 'create' });
     }
 
@@ -2773,7 +2773,7 @@ if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
     }
 
     if (data.type === 'error-resolved') {
-      console.log('[parcel] ✨ Error resolved');
+      //console.log('[parcel] ✨ Error resolved');
 
       removeErrorOverlay();
     }

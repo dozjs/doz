@@ -1,7 +1,6 @@
 const Doz = require('../index');
-const be = require('bejs');
 
-describe('Doz.on.draw.by.parent', function () {
+describe('onDrawByParent', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -59,7 +58,7 @@ describe('Doz.on.draw.by.parent', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                ////console.log(html);
                 document.getElementById('button-scope').click();
             },200);
         });
