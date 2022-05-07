@@ -3,7 +3,6 @@ import { COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX } fr
 import collection from "../collection.js";
 import hooks from "./hooks.js";
 import { serializeProps } from "../vdom/parser.js";
-import h from "../vdom/h.js";
 import hmr from "./helpers/hmr.js";
 import Component from "./Component.js";
 import propsInit from "./helpers/propsInit.js";
