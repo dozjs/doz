@@ -25,6 +25,10 @@ const html = {
             element = template.firstChild || document.createTextNode('');
         }
 
+        /*let fragment = document.createDocumentFragment();
+        fragment.appendChild(element)*/
+
+        //return fragment;
         return element;
     },
 

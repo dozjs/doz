@@ -1717,7 +1717,8 @@ function createInstance() {
     }
 
     hooks.callMount(newElement);
-    hooks.callMountAsync(newElement);
+    hooks.callMountAsync(newElement); //cfg.root.appendChild(cfg.template);
+
     return newElement;
   } else {
     walk(cfg.template);
@@ -1728,7 +1729,8 @@ function createInstance() {
 
     for (var _i6 = 0; _i6 <= trash.length - 1; _i6++) {
       _defined4(trash[_i6], _i6, trash);
-    }
+    } //cfg.root.appendChild(cfg.template);
+
 
     return componentInstance;
   }
@@ -2309,6 +2311,10 @@ var html = {
     } else {
       element = template.firstChild || document.createTextNode('');
     }
+    /*let fragment = document.createDocumentFragment();
+    fragment.appendChild(element)*/
+    //return fragment;
+
 
     return element;
   },

@@ -341,13 +341,13 @@ function createInstance(cfg = {}) {
 
         hooks.callMount(newElement);
         hooks.callMountAsync(newElement);
-
+        //cfg.root.appendChild(cfg.template);
         return newElement;
 
     } else {
         walk(cfg.template);
         trash.forEach($child => $child.remove());
-
+        //cfg.root.appendChild(cfg.template);
         return componentInstance;
     }
 }
