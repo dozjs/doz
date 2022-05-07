@@ -25,11 +25,11 @@ const html = {
             element = template.firstChild || document.createTextNode('');
         }
 
-        /*let fragment = document.createDocumentFragment();
-        fragment.appendChild(element)*/
+        let fragment = document.createDocumentFragment();
+        fragment.appendChild(element)
 
-        //return fragment;
-        return element;
+        return fragment;
+        //return element;
     },
 
     decode(str) {
