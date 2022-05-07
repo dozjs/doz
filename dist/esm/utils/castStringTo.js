@@ -1,8 +1,8 @@
-import isJSON from "./is-json.js";
-import isNumber from "./is-number.js";
-import toJSON from "./to-json.js";
-import toNumber from "./to-number.js";
-import typesMap from "./types-map.js";
+import isJSON from "./isJson.js";
+import isNumber from "./isNumber.js";
+import toJSON from "./toJson.js";
+import toNumber from "./toNumber.js";
+import typesMap from "./typesMap.js";
 function castStringTo(obj) {
     //return obj;
     if (typeof obj !== 'string') {

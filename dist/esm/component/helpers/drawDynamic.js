@@ -1,6 +1,6 @@
 import { COMPONENT_DYNAMIC_INSTANCE, PROPS_ATTRIBUTES } from "../../constants.js";
 import directive from "../../directives/index.js";
-import createInstance from "../create-instance.js";
+import createInstance from "../createInstance.js";
 function drawDynamic(instance) {
     let index = instance._processing.length - 1;
     while (index >= 0) {

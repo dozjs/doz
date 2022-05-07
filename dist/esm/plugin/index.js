@@ -1,6 +1,6 @@
 import { registerPlugin, data } from "../collection.js";
-import propsPropagation from "./built-in/propsPropagation.js";
-import serverSideLoadProps from "./built-in/serverSideLoadProps.js";
+import propsPropagation from "./builtIn/propsPropagation.js";
+import serverSideLoadProps from "./builtIn/serverSideLoadProps.js";
 // Add props-propagation plugin
 use(propsPropagation);
 use(serverSideLoadProps);

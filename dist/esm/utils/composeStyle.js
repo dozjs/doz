@@ -1,4 +1,4 @@
-import toInlineStyle from "./to-inline-style.js";
+import toInlineStyle from "./toInlineStyle.js";
 function composeStyle(style, tag) {
     let out = '';
     Object.keys(style).forEach(key => {

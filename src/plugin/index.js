@@ -1,7 +1,7 @@
 const {registerPlugin, data} = require('../collection');
 // Add props-propagation plugin
-use(require('./built-in/propsPropagation'));
-use(require('./built-in/serverSideLoadProps'));
+use(require('./builtIn/propsPropagation'));
+use(require('./builtIn/serverSideLoadProps'));
 
 function use(plugin, options = {}) {
     if (typeof plugin !== 'function') {
