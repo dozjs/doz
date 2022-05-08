@@ -1370,6 +1370,7 @@ function createInstance() {
 
   if (!cfg.mountMainComponent) {
     if (cfg.template instanceof HTMLElement) {
+      console.log('s', !cfg.template.parentNode);
       /*if (!cfg.template.parentNode)
           cfg.root.appendChild(cfg.template);*/
     } else if (typeof cfg.template === 'string') {
@@ -1377,6 +1378,7 @@ function createInstance() {
     }
   }
 
+  console.log('-->', cfg.template);
   var componentInstance = null;
   var cmpName;
   var trash = [];
@@ -1400,7 +1402,7 @@ function createInstance() {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var _loop = function _loop() {
-      makeSureAttach($child); // Non bella ma funziona
+      makeSureAttach($child); // it is not good but it works
 
       if (!$child._dozAttach[ALREADY_WALKED]) {
         $child._dozAttach[ALREADY_WALKED] = true;

@@ -5,7 +5,6 @@ function drawDynamic(instance) {
 
     //let index = instance._processing.length //- 1;
     if (!instance._processing.length) return;
-
     //let fragment = document.createDocumentFragment();
 
     //while (index >= 0) {
