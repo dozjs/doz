@@ -15,12 +15,12 @@ function createInstance(cfg = {}) {
         return;
     if (!(cfg.mountMainComponent)) {
         if (cfg.template instanceof HTMLElement) {
-            if (!cfg.template.parentNode)
-                cfg.root.appendChild(cfg.template);
+            //if (!cfg.template.parentNode)
+            //  cfg.root.appendChild(cfg.template);
         }
         else if (typeof cfg.template === 'string') {
             cfg.template = html.create(cfg.template);
-            cfg.root.appendChild(cfg.template);
+            //cfg.root.appendChild(cfg.template);
         }
     }
     let componentInstance = null;
@@ -43,7 +43,7 @@ function createInstance(cfg = {}) {
     function walk($child, parent = {}) {
         while ($child) {
             makeSureAttach($child);
-            // Non bella ma funziona
+            // it is not good but it works
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
             }
@@ -297,11 +297,13 @@ function createInstance(cfg = {}) {
         trash.forEach($child => $child.remove());
         hooks.callMount(newElement);
         hooks.callMountAsync(newElement);
+        cfg.root.appendChild(cfg.template);
         return newElement;
     }
     else {
         walk(cfg.template);
         trash.forEach($child => $child.remove());
+        cfg.root.appendChild(cfg.template);
         return componentInstance;
     }
 }

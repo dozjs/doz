@@ -22,7 +22,10 @@ const html = {
         else {
             element = template.firstChild || document.createTextNode('');
         }
-        return element;
+        let fragment = document.createDocumentFragment();
+        fragment.appendChild(element);
+        return fragment;
+        //return element;
     },
     decode(str) {
         decoder = decoder || document.createElement('div');

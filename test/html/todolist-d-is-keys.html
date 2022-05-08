@@ -171,7 +171,7 @@
                     }
                 </style>
                 <div forceupdate class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="${() => //console.log(this.uId, this.props.title, this.props.key)}" title="HTML">H</button>
+                    <button onclick="${() => console.log(this.uId, this.props.title, this.props.key)}" title="HTML">H</button>
                     <button onclick="${() => this.action.remove(this.props.key)}" title="Delete">&cross;</button>
                     <button onclick="${() => this.action.done(this.props.key)}" title="Done">&check;</button>
                     <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">

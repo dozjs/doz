@@ -54,12 +54,14 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
+            //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < node.children.length; i++) {
-                //console.log(node.children[i])
                 let $childEl = create(node.children[i], cmp, initial, cmpParent);
                 if ($childEl)
+                    //fragmentEl.appendChild($childEl)
                     $el.appendChild($childEl);
             }
+            //$el.appendChild(fragmentEl)
         }
     }
     makeSureAttach($el);
@@ -295,9 +297,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         // If first item index is equal to childNodes length then just append..
         if ($myListParent.childNodes.length === diffIndex[0]) {
+            let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < listOfElement.length; i++) {
-                $myListParent.appendChild(listOfElement[i]);
+                fragmentEl.appendChild(listOfElement[i]);
+                //$myListParent.appendChild(listOfElement[i]);
             }
+            $myListParent.appendChild(fragmentEl);
             return;
         }
         //return ;

@@ -18,16 +18,13 @@ function createInstance(cfg = {}) {
 
     if (!(cfg.mountMainComponent)) {
         if (cfg.template instanceof HTMLElement) {
-            console.log('s', !cfg.template.parentNode)
-            /*if (!cfg.template.parentNode)
-                cfg.root.appendChild(cfg.template);*/
+            //if (!cfg.template.parentNode)
+              //  cfg.root.appendChild(cfg.template);
         } else if (typeof cfg.template === 'string') {
             cfg.template = html.create(cfg.template);
             //cfg.root.appendChild(cfg.template);
         }
     }
-
-    console.log('-->', cfg.template)
 
     let componentInstance = null;
     let cmpName;
@@ -312,7 +309,6 @@ function createInstance(cfg = {}) {
             $child = $child.nextElementSibling;
         }
     }
-
     if (cfg.mountMainComponent) {
         // Monto il componente principale
         let newElement = new cfg.component({

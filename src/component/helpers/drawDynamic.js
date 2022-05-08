@@ -3,15 +3,14 @@ const directive = require('../../directives');
 
 function drawDynamic(instance) {
 
-    //let index = instance._processing.length //- 1;
-    if (!instance._processing.length) return;
+    let index = instance._processing.length - 1;
+    //if (!instance._processing.length) return;
     //let fragment = document.createDocumentFragment();
 
     //while (index >= 0) {
     for (let index = 0; index < instance._processing.length; index++) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
-
         //console.log('create dynamic', item.node, item.node.__dozProps)
         const dynamicInstance = require('../createInstance')({
             root,
@@ -34,14 +33,10 @@ function drawDynamic(instance) {
             //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
 
             // if original node has children
-            if (item.node.childNodes.length) {
-                //console.log(item.node)
-                // replace again -.-
-                //root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-                // and append root element of dynamic instance :D
+            /*if (item.node.childNodes.length) {
+                console.log(dynamicInstance._rootElement.parentNode === item.node)
                 item.node.appendChild(dynamicInstance._rootElement);
-                //fragment.appendChild(dynamicInstance._rootElement);
-            }
+            }*/
 
             dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
             instance._processing.splice(index, 1);

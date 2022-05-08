@@ -3,7 +3,10 @@ import directive from "../../directives/index.js";
 import createInstance from "../createInstance.js";
 function drawDynamic(instance) {
     let index = instance._processing.length - 1;
-    while (index >= 0) {
+    //if (!instance._processing.length) return;
+    //let fragment = document.createDocumentFragment();
+    //while (index >= 0) {
+    for (let index = 0; index < instance._processing.length; index++) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
         //console.log('create dynamic', item.node, item.node.__dozProps)
@@ -24,12 +27,10 @@ function drawDynamic(instance) {
             }*/
             //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
             // if original node has children
-            if (item.node.childNodes.length) {
-                // replace again -.-
-                //root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-                // and append root element of dynamic instance :D
+            /*if (item.node.childNodes.length) {
+                console.log(dynamicInstance._rootElement.parentNode === item.node)
                 item.node.appendChild(dynamicInstance._rootElement);
-            }
+            }*/
             dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
             instance._processing.splice(index, 1);
             let n = Object.keys(instance.children).length;
@@ -42,7 +43,7 @@ function drawDynamic(instance) {
             }
             directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
         }
-        index -= 1;
+        //index -= 1;
     }
 }
 export default drawDynamic;

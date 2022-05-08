@@ -1369,16 +1369,13 @@ function createInstance() {
   if (!cfg.root) return;
 
   if (!cfg.mountMainComponent) {
-    if (cfg.template instanceof HTMLElement) {
-      console.log('s', !cfg.template.parentNode);
-      /*if (!cfg.template.parentNode)
-          cfg.root.appendChild(cfg.template);*/
+    if (cfg.template instanceof HTMLElement) {//if (!cfg.template.parentNode)
+      //  cfg.root.appendChild(cfg.template);
     } else if (typeof cfg.template === 'string') {
       cfg.template = html.create(cfg.template); //cfg.root.appendChild(cfg.template);
     }
   }
 
-  console.log('-->', cfg.template);
   var componentInstance = null;
   var cmpName;
   var trash = [];
@@ -3224,11 +3221,13 @@ function create(node, cmp, initial, cmpParent) {
       //console.log('node.children[0]', node.children[0])
       $el.textContent = canDecode(node.children[0]);
     } else {
+      //let fragmentEl = document.createDocumentFragment();
       for (var i = 0; i < node.children.length; i++) {
-        //console.log(node.children[i])
         var $childEl = create(node.children[i], cmp, initial, cmpParent);
-        if ($childEl) $el.appendChild($childEl);
-      }
+        if ($childEl) //fragmentEl.appendChild($childEl)
+          $el.appendChild($childEl);
+      } //$el.appendChild(fragmentEl)
+
     }
   }
 
@@ -3534,10 +3533,13 @@ function update($parent, newNode, oldNode) {
     ) return; // If first item index is equal to childNodes length then just append..
 
     if ($myListParent.childNodes.length === diffIndex[0]) {
+      var fragmentEl = document.createDocumentFragment();
+
       for (var _i11 = 0; _i11 < listOfElement.length; _i11++) {
-        $myListParent.appendChild(listOfElement[_i11]);
+        fragmentEl.appendChild(listOfElement[_i11]); //$myListParent.appendChild(listOfElement[i]);
       }
 
+      $myListParent.appendChild(fragmentEl);
       return;
     } //return ;
 
@@ -5709,12 +5711,12 @@ var _require = __webpack_require__(1),
 var directive = __webpack_require__(0);
 
 function drawDynamic(instance) {
-  //let index = instance._processing.length //- 1;
-  if (!instance._processing.length) return; //let fragment = document.createDocumentFragment();
+  var index = instance._processing.length - 1; //if (!instance._processing.length) return;
+  //let fragment = document.createDocumentFragment();
   //while (index >= 0) {
 
-  for (var index = 0; index < instance._processing.length; index++) {
-    var item = instance._processing[index];
+  for (var _index = 0; _index < instance._processing.length; _index++) {
+    var item = instance._processing[_index];
     var root = item.node.parentNode; //console.log('create dynamic', item.node, item.node.__dozProps)
 
     var dynamicInstance = __webpack_require__(10)({
@@ -5736,17 +5738,14 @@ function drawDynamic(instance) {
       }*/
       //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
       // if original node has children
-      if (item.node.childNodes.length) {
-        //console.log(item.node)
-        // replace again -.-
-        //root.replaceChild(item.node, dynamicInstance._rootElement.parentNode);
-        // and append root element of dynamic instance :D
-        item.node.appendChild(dynamicInstance._rootElement); //fragment.appendChild(dynamicInstance._rootElement);
-      }
 
+      /*if (item.node.childNodes.length) {
+          console.log(dynamicInstance._rootElement.parentNode === item.node)
+          item.node.appendChild(dynamicInstance._rootElement);
+      }*/
       dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
 
-      instance._processing.splice(index, 1);
+      instance._processing.splice(_index, 1);
 
       var n = Object.keys(instance.children).length;
       instance.children[n++] = dynamicInstance;
