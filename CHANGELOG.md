@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.20.1] - 2022-05-08
+- **Improvement** 
+
 ## [3.20.0] - 2022-05-06
 - **Added** experimental loadingComponent and errorComponent for async components
 
