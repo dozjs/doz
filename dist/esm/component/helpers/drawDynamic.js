@@ -5,11 +5,10 @@ function drawDynamic(instance) {
     let index = instance._processing.length - 1;
     //if (!instance._processing.length) return;
     //let fragment = document.createDocumentFragment();
-    //while (index >= 0) {
-    for (let index = 0; index < instance._processing.length; index++) {
+    while (index >= 0) {
+        //for (let index = 0; index < instance._processing.length; index++) {
         let item = instance._processing[index];
         let root = item.node.parentNode;
-        //console.log('create dynamic', item.node, item.node.__dozProps)
         const dynamicInstance = createInstance({
             root,
             template: item.node,
@@ -18,17 +17,8 @@ function drawDynamic(instance) {
             parent: instance
         });
         if (dynamicInstance) {
-            // Replace with dynamic instance original node
-            //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-            /*// Assign props attributes to new child
-            //console.log('Assign props attributes to new child')
-            if(item.node._dozAttach[PROPS_ATTRIBUTES]) {
-                dynamicInstance._rootElement.parentNode._dozAttach[PROPS_ATTRIBUTES] = item.node._dozAttach[PROPS_ATTRIBUTES];
-            }*/
-            //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
             // if original node has children
             /*if (item.node.childNodes.length) {
-                console.log(dynamicInstance._rootElement.parentNode === item.node)
                 item.node.appendChild(dynamicInstance._rootElement);
             }*/
             dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
@@ -43,7 +33,7 @@ function drawDynamic(instance) {
             }
             directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
         }
-        //index -= 1;
+        index -= 1;
     }
 }
 export default drawDynamic;

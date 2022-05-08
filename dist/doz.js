@@ -126,7 +126,7 @@ module.exports = {
     IS_PARENT_METHOD: /^parent.(.*)/,
     IS_STRING_QUOTED: /^"\w+"/,
     IS_SVG: /^svg$/,
-    IS_CLASS: /^(class\s|function\s+_class|function.*[\s\S]+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)|(\.apply\(this,arguments\))|\.call\(this,?.*?\)/i,
+    //IS_CLASS: /^(class\s|function\s+_class|function.*[\s\S]+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)|(\.apply\(this,arguments\))|\.call\(this,?.*?\)/i,
     GET_LISTENER: /^this.(.*)\((.*)\)/,
     GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
     IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
@@ -1366,13 +1366,14 @@ var makeSureAttach = __webpack_require__(4);
 
 function createInstance() {
   var cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!cfg.root) return;
+  if (!cfg.root) return; //console.log(cfg.root)
 
   if (!cfg.mountMainComponent) {
-    if (cfg.template instanceof HTMLElement) {//if (!cfg.template.parentNode)
-      //  cfg.root.appendChild(cfg.template);
+    if (cfg.template instanceof HTMLElement) {
+      if (!cfg.template.parentNode) cfg.root.appendChild(cfg.template);
     } else if (typeof cfg.template === 'string') {
-      cfg.template = html.create(cfg.template); //cfg.root.appendChild(cfg.template);
+      cfg.template = html.create(cfg.template);
+      cfg.root.appendChild(cfg.template);
     }
   }
 
@@ -1669,7 +1670,8 @@ function createInstance() {
 
       if (_ret === "continue") continue;
     }
-  }
+  } ///console.log(cfg.template)
+
 
   if (cfg.mountMainComponent) {
     // Monto il componente principale
@@ -1717,7 +1719,6 @@ function createInstance() {
 
     hooks.callMount(newElement);
     hooks.callMountAsync(newElement);
-    cfg.root.appendChild(cfg.template);
     return newElement;
   } else {
     walk(cfg.template);
@@ -1730,7 +1731,6 @@ function createInstance() {
       _defined4(trash[_i6], _i6, trash);
     }
 
-    cfg.root.appendChild(cfg.template);
     return componentInstance;
   }
 }
@@ -2311,9 +2311,7 @@ var html = {
       element = template.firstChild || document.createTextNode('');
     }
 
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(element);
-    return fragment; //return element;
+    return element;
   },
   decode: function decode(str) {
     decoder = decoder || document.createElement('div');
@@ -5713,11 +5711,11 @@ var directive = __webpack_require__(0);
 function drawDynamic(instance) {
   var index = instance._processing.length - 1; //if (!instance._processing.length) return;
   //let fragment = document.createDocumentFragment();
-  //while (index >= 0) {
 
-  for (var _index = 0; _index < instance._processing.length; _index++) {
-    var item = instance._processing[_index];
-    var root = item.node.parentNode; //console.log('create dynamic', item.node, item.node.__dozProps)
+  while (index >= 0) {
+    //for (let index = 0; index < instance._processing.length; index++) {
+    var item = instance._processing[index];
+    var root = item.node.parentNode;
 
     var dynamicInstance = __webpack_require__(10)({
       root: root,
@@ -5728,24 +5726,14 @@ function drawDynamic(instance) {
     });
 
     if (dynamicInstance) {
-      // Replace with dynamic instance original node
-      //console.log('....', item.node.outerHTML, dynamicInstance._rootElement.parentNode.outerHTML)
-
-      /*// Assign props attributes to new child
-      //console.log('Assign props attributes to new child')
-      if(item.node._dozAttach[PROPS_ATTRIBUTES]) {
-          dynamicInstance._rootElement.parentNode._dozAttach[PROPS_ATTRIBUTES] = item.node._dozAttach[PROPS_ATTRIBUTES];
-      }*/
-      //root.replaceChild(dynamicInstance._rootElement.parentNode, item.node);
       // if original node has children
 
       /*if (item.node.childNodes.length) {
-          console.log(dynamicInstance._rootElement.parentNode === item.node)
           item.node.appendChild(dynamicInstance._rootElement);
       }*/
       dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
 
-      instance._processing.splice(_index, 1);
+      instance._processing.splice(index, 1);
 
       var n = Object.keys(instance.children).length;
       instance.children[n++] = dynamicInstance;
@@ -5757,8 +5745,9 @@ function drawDynamic(instance) {
       }
 
       directive.callAppDynamicInstanceCreate(instance, dynamicInstance, item);
-    } //index -= 1;
+    }
 
+    index -= 1;
   }
 }
 
