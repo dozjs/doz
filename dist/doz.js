@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.20.1  
+// [DOZ]  Build version: 3.20.2  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4190,8 +4190,9 @@ var _require5 = __webpack_require__(63),
     defineWebComponent = _require5.defineWebComponent,
     defineWebComponentFromGlobal = _require5.defineWebComponentFromGlobal;
 
-__webpack_require__(65);
+var bootstrap = __webpack_require__(65);
 
+bootstrap();
 Object.defineProperties(Doz, {
   collection: {
     value: collection,
@@ -4234,7 +4235,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.20.1',
+    value: '3.20.2',
     enumerable: true
   },
   tag: {
@@ -6805,27 +6806,29 @@ module.exports = createStyleSoftEntrance;
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(66);
+module.exports = function run() {
+  __webpack_require__(66)();
 
-__webpack_require__(67);
+  __webpack_require__(67)();
 
-__webpack_require__(68);
+  __webpack_require__(68)();
 
-__webpack_require__(69);
+  __webpack_require__(69)();
 
-__webpack_require__(70);
+  __webpack_require__(70)();
 
-__webpack_require__(71);
+  __webpack_require__(71)();
 
-__webpack_require__(72);
+  __webpack_require__(72)();
 
-__webpack_require__(73);
+  __webpack_require__(73)();
 
-__webpack_require__(74);
+  __webpack_require__(74)();
 
-__webpack_require__(76);
+  __webpack_require__(76)();
 
-__webpack_require__(79);
+  __webpack_require__(79)();
+};
 
 /***/ }),
 /* 66 */
@@ -6834,70 +6837,72 @@ __webpack_require__(79);
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive(':store', {
-  createStore: function createStore(instance, storeName) {
-    if (typeof storeName === 'string') {
-      if (instance.app._stores[storeName] !== undefined) {
-        throw new Error("Store already defined: ".concat(storeName));
-      }
+module.exports = function () {
+  directive(':store', {
+    createStore: function createStore(instance, storeName) {
+      if (typeof storeName === 'string') {
+        if (instance.app._stores[storeName] !== undefined) {
+          throw new Error("Store already defined: ".concat(storeName));
+        }
 
-      instance.app._stores[storeName] = instance.props;
-      instance.store = storeName;
-    }
-  },
-  syncStore: function syncStore(instance, storeName) {
-    if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
-      instance.app._stores[storeName] = instance.props;
-    }
-  },
-  onAppInit: function onAppInit(app) {
-    Object.defineProperties(app, {
-      _stores: {
-        value: {},
-        writable: true
-      },
-      getStore: {
-        value: function value(store) {
-          return app._stores[store];
-        },
-        enumerable: true
+        instance.app._stores[storeName] = instance.props;
+        instance.store = storeName;
       }
-    });
-  },
-  // Create by property defined
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      getStore: {
-        value: function value(store) {
-          return instance.app._stores[store];
-        },
-        enumerable: true
+    },
+    syncStore: function syncStore(instance, storeName) {
+      if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
+        instance.app._stores[storeName] = instance.props;
       }
-    });
+    },
+    onAppInit: function onAppInit(app) {
+      Object.defineProperties(app, {
+        _stores: {
+          value: {},
+          writable: true
+        },
+        getStore: {
+          value: function value(store) {
+            return app._stores[store];
+          },
+          enumerable: true
+        }
+      });
+    },
+    // Create by property defined
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        getStore: {
+          value: function value(store) {
+            return instance.app._stores[store];
+          },
+          enumerable: true
+        }
+      });
 
-    if (instance.store !== undefined && instance.props['d:store'] === undefined) {
-      this.createStore(instance, instance.store);
+      if (instance.store !== undefined && instance.props['d:store'] === undefined) {
+        this.createStore(instance, instance.store);
+      }
+    },
+    // Create by props
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+      this.createStore(instance, directiveValue);
+    },
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
+      this.syncStore(instance, instance.store);
+    },
+    onAppComponentSetProps: function onAppComponentSetProps(instance) {
+      this.syncStore(instance, instance.store);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+      if (typeof obj.store === 'string') {
+        this.createStore(instance, obj.store);
+      }
+    },
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
+      if (instance.store && instance.app._stores[instance.store]) delete instance.app._stores[instance.store];
     }
-  },
-  // Create by props
-  onComponentCreate: function onComponentCreate(instance, directiveValue) {
-    this.createStore(instance, directiveValue);
-  },
-  onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
-    this.syncStore(instance, instance.store);
-  },
-  onAppComponentSetProps: function onAppComponentSetProps(instance) {
-    this.syncStore(instance, instance.store);
-  },
-  onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
-    if (typeof obj.store === 'string') {
-      this.createStore(instance, obj.store);
-    }
-  },
-  onAppComponentDestroy: function onAppComponentDestroy(instance) {
-    if (instance.store && instance.app._stores[instance.store]) delete instance.app._stores[instance.store];
-  }
-});
+  });
+};
 
 /***/ }),
 /* 67 */
@@ -6906,62 +6911,64 @@ directive(':store', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive(':id', {
-  createId: function createId(instance, id) {
-    if (typeof id === 'string') {
-      /*if (instance.app._ids[id] !== undefined) {
-          throw new Error(`ID already defined: ${id}`);
-      }*/
-      instance.app._ids[id] = instance;
-      instance.id = id;
-    }
-  },
-  onAppInit: function onAppInit(app) {
-    Object.defineProperties(app, {
-      _ids: {
-        value: {},
-        writable: true
-      },
-      getComponentById: {
-        value: function value(id) {
-          return app._ids[id];
-        },
-        enumerable: true
+module.exports = function () {
+  directive(':id', {
+    createId: function createId(instance, id) {
+      if (typeof id === 'string') {
+        /*if (instance.app._ids[id] !== undefined) {
+            throw new Error(`ID already defined: ${id}`);
+        }*/
+        instance.app._ids[id] = instance;
+        instance.id = id;
       }
-    });
-  },
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      getComponentById: {
-        value: function value(id) {
-          return instance.app._ids[id];
+    },
+    onAppInit: function onAppInit(app) {
+      Object.defineProperties(app, {
+        _ids: {
+          value: {},
+          writable: true
         },
-        enumerable: true
-      },
-      getCmp: {
-        value: function value(id) {
-          return instance.app._ids[id];
+        getComponentById: {
+          value: function value(id) {
+            return app._ids[id];
+          },
+          enumerable: true
+        }
+      });
+    },
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        getComponentById: {
+          value: function value(id) {
+            return instance.app._ids[id];
+          },
+          enumerable: true
         },
-        enumerable: true
-      }
-    });
+        getCmp: {
+          value: function value(id) {
+            return instance.app._ids[id];
+          },
+          enumerable: true
+        }
+      });
 
-    if (instance.id !== undefined && instance.props['d:id'] === undefined) {
-      this.createId(instance, instance.id);
+      if (instance.id !== undefined && instance.props['d:id'] === undefined) {
+        this.createId(instance, instance.id);
+      }
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+      this.createId(instance, directiveValue);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+      if (typeof obj.id === 'string') {
+        this.createId(instance, obj.id);
+      }
+    },
+    onAppComponentDestroy: function onAppComponentDestroy(instance) {
+      if (instance.id && instance.app._ids[instance.id]) delete instance.app._ids[instance.id];
     }
-  },
-  onComponentCreate: function onComponentCreate(instance, directiveValue) {
-    this.createId(instance, directiveValue);
-  },
-  onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
-    if (typeof obj.id === 'string') {
-      this.createId(instance, obj.id);
-    }
-  },
-  onAppComponentDestroy: function onAppComponentDestroy(instance) {
-    if (instance.id && instance.app._ids[instance.id]) delete instance.app._ids[instance.id];
-  }
-});
+  });
+};
 
 /***/ }),
 /* 68 */
@@ -6970,44 +6977,46 @@ directive(':id', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive(':alias', {
-  createAlias: function createAlias(instance, alias) {
-    if (typeof alias === 'string') {
-      instance.alias = alias;
-    }
-  },
-  onAppInit: function onAppInit(app) {
-    Object.defineProperties(app, {
-      getComponent: {
-        value: function value(alias) {
-          return this._tree ? this._tree.children[alias] : undefined;
-        },
-        enumerable: true
+module.exports = function () {
+  directive(':alias', {
+    createAlias: function createAlias(instance, alias) {
+      if (typeof alias === 'string') {
+        instance.alias = alias;
       }
-    });
-  },
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      getComponent: {
-        value: function value(alias) {
-          return this.children ? this.children[alias] : undefined;
-        },
-        enumerable: true
+    },
+    onAppInit: function onAppInit(app) {
+      Object.defineProperties(app, {
+        getComponent: {
+          value: function value(alias) {
+            return this._tree ? this._tree.children[alias] : undefined;
+          },
+          enumerable: true
+        }
+      });
+    },
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        getComponent: {
+          value: function value(alias) {
+            return this.children ? this.children[alias] : undefined;
+          },
+          enumerable: true
+        }
+      });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+      this.createAlias(instance, directiveValue);
+    },
+    onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
+      if (typeof obj.alias === 'string') {
+        this.createAlias(instance, obj.alias);
       }
-    });
-  },
-  onComponentCreate: function onComponentCreate(instance, directiveValue) {
-    this.createAlias(instance, directiveValue);
-  },
-  onAppComponentSetConfig: function onAppComponentSetConfig(instance, obj) {
-    if (typeof obj.alias === 'string') {
-      this.createAlias(instance, obj.alias);
+    },
+    onAppComponentAssignIndex: function onAppComponentAssignIndex(instance, n) {
+      return instance.alias ? instance.alias : n;
     }
-  },
-  onAppComponentAssignIndex: function onAppComponentAssignIndex(instance, n) {
-    return instance.alias ? instance.alias : n;
-  }
-});
+  });
+};
 
 /***/ }),
 /* 69 */
@@ -7016,38 +7025,40 @@ directive(':alias', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive(':on-$event', {
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      _callback: {
-        value: {},
-        writable: true
-      },
-      emit: {
-        value: function value(name) {
-          if (!instance._callback) return;
-
-          for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            args[_key - 1] = arguments[_key];
-          }
-
-          if (typeof instance._callback[name] === 'function') {
-            instance._callback[name].apply(instance.parent, args); // legacy for string
-
-          } else if (instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
-            instance.parent[instance._callback[name]].apply(instance.parent, args);
-          }
+module.exports = function () {
+  directive(':on-$event', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        _callback: {
+          value: {},
+          writable: true
         },
-        enumerable: true
-      }
-    });
-  },
-  onComponentCreate: function onComponentCreate(instance, directiveValue, keyArguments) {
-    var source = {};
-    source[keyArguments.event] = directiveValue;
-    Object.assign(instance._callback, source);
-  }
-});
+        emit: {
+          value: function value(name) {
+            if (!instance._callback) return;
+
+            for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+              args[_key - 1] = arguments[_key];
+            }
+
+            if (typeof instance._callback[name] === 'function') {
+              instance._callback[name].apply(instance.parent, args); // legacy for string
+
+            } else if (instance._callback[name] !== undefined && instance.parent[instance._callback[name]] !== undefined && typeof instance.parent[instance._callback[name]] === 'function') {
+              instance.parent[instance._callback[name]].apply(instance.parent, args);
+            }
+          },
+          enumerable: true
+        }
+      });
+    },
+    onComponentCreate: function onComponentCreate(instance, directiveValue, keyArguments) {
+      var source = {};
+      source[keyArguments.event] = directiveValue;
+      Object.assign(instance._callback, source);
+    }
+  });
+};
 
 /***/ }),
 /* 70 */
@@ -7056,24 +7067,27 @@ directive(':on-$event', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive(':onbeforecreate', {
-  onComponentBeforeCreate: function onComponentBeforeCreate(instance, directiveValue) {
-    if (typeof directiveValue === 'function') {
-      return directiveValue(instance);
-    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
-      return instance.parent[directiveValue].call(instance.parent, instance);
+module.exports = function () {
+  directive(':onbeforecreate', {
+    onComponentBeforeCreate: function onComponentBeforeCreate(instance, directiveValue) {
+      if (typeof directiveValue === 'function') {
+        return directiveValue(instance);
+      } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        return instance.parent[directiveValue].call(instance.parent, instance);
+      }
     }
-  }
-});
-directive(':oncreate', {
-  onComponentCreate: function onComponentCreate(instance, directiveValue) {
-    if (typeof directiveValue === 'function') {
-      directiveValue(instance);
-    } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
-      instance.parent[directiveValue].call(instance.parent, instance);
+  });
+  directive(':oncreate', {
+    onComponentCreate: function onComponentCreate(instance, directiveValue) {
+      if (typeof directiveValue === 'function') {
+        directiveValue(instance);
+      } else if (instance.parent && typeof instance.parent[directiveValue] === 'function') {
+        instance.parent[directiveValue].call(instance.parent, instance);
+      }
     }
-  }
-});
+  });
+};
+
 directive(':onbeforemount', {
   onComponentBeforeMount: function onComponentBeforeMount(instance, directiveValue) {
     if (typeof directiveValue === 'function') {
@@ -7181,20 +7195,22 @@ directive(':onloadprops', {
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-directive('ref', {
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      ref: {
-        value: {},
-        writable: true,
-        enumerable: true
-      }
-    });
-  },
-  onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-    instance.ref[directiveValue] = $target;
-  }
-});
+module.exports = function () {
+  directive('ref', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        ref: {
+          value: {},
+          writable: true,
+          enumerable: true
+        }
+      });
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+      instance.ref[directiveValue] = $target;
+    }
+  });
+};
 
 /***/ }),
 /* 72 */
@@ -7205,26 +7221,28 @@ var _require = __webpack_require__(0),
 
 var dashToCamel = __webpack_require__(8);
 
-directive('is', {
-  hasDataIs: function hasDataIs($target) {
-    return $target.dataset && $target.dataset.is;
-  },
-  onAppComponentAssignName: function onAppComponentAssignName(instance, $target) {
-    if (this.hasDataIs($target)) return $target.dataset.is;
-  },
-  onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName, isDirective) {
-    if (this.hasDataIs($target)) return dashToCamel(propsName);
-    /*else
-        return propsName;*/
-  },
-  onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
-    $target.dataset.is = directiveValue;
-    if (!initial) instance._processing.push({
-      node: $target,
-      action: 'create'
-    });
-  }
-});
+module.exports = function () {
+  directive('is', {
+    hasDataIs: function hasDataIs($target) {
+      return $target.dataset && $target.dataset.is;
+    },
+    onAppComponentAssignName: function onAppComponentAssignName(instance, $target) {
+      if (this.hasDataIs($target)) return $target.dataset.is;
+    },
+    onAppComponentPropsAssignName: function onAppComponentPropsAssignName($target, propsName, isDirective) {
+      if (this.hasDataIs($target)) return dashToCamel(propsName);
+      /*else
+          return propsName;*/
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
+      $target.dataset.is = directiveValue;
+      if (!initial) instance._processing.push({
+        node: $target,
+        action: 'create'
+      });
+    }
+  });
+};
 
 /***/ }),
 /* 73 */
@@ -7248,192 +7266,194 @@ var _require = __webpack_require__(0),
 
 var delay = __webpack_require__(3);
 
-directive('bind', {
-  // Start directive methods
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      _boundElements: {
-        value: {},
-        writable: true
-      }
-    });
-  },
-  onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
-    if (!Object.keys(instance._boundElements).length) return; //delay(() => {
+module.exports = function () {
+  directive('bind', {
+    // Start directive methods
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        _boundElements: {
+          value: {},
+          writable: true
+        }
+      });
+    },
+    onAppComponentUpdate: function onAppComponentUpdate(instance, changes) {
+      if (!Object.keys(instance._boundElements).length) return; //delay(() => {
 
-    this.updateBoundElementsByChanges(instance, changes); //});
-  },
-  onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
-    //delay(() => {
-    this.updateBoundElementsByPropsIteration(instance); //});
-  },
-  onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
-    if (!this.canBind($target)) return;
-    this.setBind(instance, $target, directiveValue);
-  },
-  // End directive methods
-  // Start custom methods
-  canBind: function canBind($target) {
-    return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
-  },
-  setBind: function setBind(instance, $target, value) {
-    var _this2 = this;
+      this.updateBoundElementsByChanges(instance, changes); //});
+    },
+    onAppComponentLoadProps: function onAppComponentLoadProps(instance) {
+      //delay(() => {
+      this.updateBoundElementsByPropsIteration(instance); //});
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
+      if (!this.canBind($target)) return;
+      this.setBind(instance, $target, directiveValue);
+    },
+    // End directive methods
+    // Start custom methods
+    canBind: function canBind($target) {
+      return ['INPUT', 'TEXTAREA', 'SELECT'].indexOf($target.nodeName) !== -1;
+    },
+    setBind: function setBind(instance, $target, value) {
+      var _this2 = this;
 
-    if (instance.props[value] === undefined) return; // Add UI events
+      if (instance.props[value] === undefined) return; // Add UI events
 
-    var events = ['compositionstart', 'compositionend', 'input', 'change'];
+      var events = ['compositionstart', 'compositionend', 'input', 'change'];
 
-    var _defined = function _defined(event) {
-      $target.addEventListener(event, function (e) {
-        var _value;
+      var _defined = function _defined(event) {
+        $target.addEventListener(event, function (e) {
+          var _value;
 
-        if (this.type === 'checkbox') {
-          if (!this.defaultValue) instance.props[value] = this.checked;else {
-            var inputs = instance.appRoot.querySelectorAll("input[name=".concat(this.name, "][type=checkbox]:checked"));
+          if (this.type === 'checkbox') {
+            if (!this.defaultValue) instance.props[value] = this.checked;else {
+              var inputs = instance.appRoot.querySelectorAll("input[name=".concat(this.name, "][type=checkbox]:checked"));
 
-            var _defined2 = _toConsumableArray(inputs);
+              var _defined2 = _toConsumableArray(inputs);
 
-            _value = new Array(_defined2.length);
+              _value = new Array(_defined2.length);
 
-            var _defined3 = function _defined3(input) {
-              return input.value;
-            };
+              var _defined3 = function _defined3(input) {
+                return input.value;
+              };
 
-            for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
-              _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+              for (var _i4 = 0; _i4 <= _defined2.length - 1; _i4++) {
+                _value[_i4] = _defined3(_defined2[_i4], _i4, _defined2);
+              } //instance.props[value] = castStringTo(_value);
+
+
+              instance.props[value] = _value;
+            }
+          } else {
+            _value = this.value;
+
+            if (this.multiple) {
+              var _defined6 = _toConsumableArray(this.options);
+
+              var _defined7 = function _defined7(option) {
+                return option.selected;
+              };
+
+              var _defined4 = [];
+
+              for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
+                if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
+              }
+
+              _value = new Array(_defined4.length);
+
+              var _defined5 = function _defined5(option) {
+                return option.value;
+              };
+
+              for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
+                _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
+              }
             } //instance.props[value] = castStringTo(_value);
 
 
             instance.props[value] = _value;
           }
-        } else {
-          _value = this.value;
-
-          if (this.multiple) {
-            var _defined6 = _toConsumableArray(this.options);
-
-            var _defined7 = function _defined7(option) {
-              return option.selected;
-            };
-
-            var _defined4 = [];
-
-            for (var _i8 = 0; _i8 <= _defined6.length - 1; _i8++) {
-              if (_defined7(_defined6[_i8], _i8, _defined6)) _defined4.push(_defined6[_i8]);
-            }
-
-            _value = new Array(_defined4.length);
-
-            var _defined5 = function _defined5(option) {
-              return option.value;
-            };
-
-            for (var _i6 = 0; _i6 <= _defined4.length - 1; _i6++) {
-              _value[_i6] = _defined5(_defined4[_i6], _i6, _defined4);
-            }
-          } //instance.props[value] = castStringTo(_value);
-
-
-          instance.props[value] = _value;
-        }
-      });
-    };
-
-    for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
-      _defined(events[_i2], _i2, events);
-    } // Map $target element with prop name
-
-
-    if (instance._boundElements[value] !== undefined) {
-      instance._boundElements[value].push($target);
-    } else {
-      instance._boundElements[value] = [$target];
-    } // Set first value
-    // Why this delay? because I need to waiting options tag
-
-
-    delay(function () {
-      _this2.updateBoundElement($target, instance.props[value], instance);
-    });
-  },
-  updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
-    var _this3 = this;
-
-    var _defined8 = function _defined8(item) {
-      var value = item.newValue;
-      var property = item.property;
-
-      _this3.updateBoundElements(instance, value, property);
-    };
-
-    for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
-      _defined8(changes[_i10], _i10, changes);
-    }
-  },
-  updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
-    var _this = this;
-
-    (function iterate(props) {
-      var keys = Object.keys(props);
-
-      for (var i = 0, l = keys.length; i < l; i++) {
-        var property = keys[i];
-
-        if (props[property] instanceof Object && props[property] !== null) {
-          iterate(props[property]);
-        } else {
-          _this.updateBoundElements(instance, props[property], property);
-        }
-      }
-    })(instance._rawProps);
-  },
-  updateBoundElements: function updateBoundElements(instance, value, property) {
-    var _this4 = this;
-
-    if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
-      var _defined9 = function _defined9($target) {
-        _this4.updateBoundElement($target, value, instance);
+        });
       };
 
-      var _defined10 = instance._boundElements[property];
+      for (var _i2 = 0; _i2 <= events.length - 1; _i2++) {
+        _defined(events[_i2], _i2, events);
+      } // Map $target element with prop name
 
-      for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
-        _defined9(_defined10[_i12], _i12, _defined10);
+
+      if (instance._boundElements[value] !== undefined) {
+        instance._boundElements[value].push($target);
+      } else {
+        instance._boundElements[value] = [$target];
+      } // Set first value
+      // Why this delay? because I need to waiting options tag
+
+
+      delay(function () {
+        _this2.updateBoundElement($target, instance.props[value], instance);
+      });
+    },
+    updateBoundElementsByChanges: function updateBoundElementsByChanges(instance, changes) {
+      var _this3 = this;
+
+      var _defined8 = function _defined8(item) {
+        var value = item.newValue;
+        var property = item.property;
+
+        _this3.updateBoundElements(instance, value, property);
+      };
+
+      for (var _i10 = 0; _i10 <= changes.length - 1; _i10++) {
+        _defined8(changes[_i10], _i10, changes);
       }
-    }
-  },
-  updateBoundElement: function updateBoundElement($target, value, instance) {
-    if ($target.type === 'checkbox') {
-      if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
-        var inputs = instance.appRoot.querySelectorAll("input[name=".concat($target.name, "][type=checkbox]"));
+    },
+    updateBoundElementsByPropsIteration: function updateBoundElementsByPropsIteration(instance) {
+      var _this = this;
 
-        var _defined11 = function _defined11(input) {
-          return input.checked = value.includes(input.value);
+      (function iterate(props) {
+        var keys = Object.keys(props);
+
+        for (var i = 0, l = keys.length; i < l; i++) {
+          var property = keys[i];
+
+          if (props[property] instanceof Object && props[property] !== null) {
+            iterate(props[property]);
+          } else {
+            _this.updateBoundElements(instance, props[property], property);
+          }
+        }
+      })(instance._rawProps);
+    },
+    updateBoundElements: function updateBoundElements(instance, value, property) {
+      var _this4 = this;
+
+      if (Object.prototype.hasOwnProperty.call(instance._boundElements, property)) {
+        var _defined9 = function _defined9($target) {
+          _this4.updateBoundElement($target, value, instance);
         };
 
-        var _defined12 = _toConsumableArray(inputs);
+        var _defined10 = instance._boundElements[property];
 
-        for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
-          _defined11(_defined12[_i14], _i14, _defined12);
+        for (var _i12 = 0; _i12 <= _defined10.length - 1; _i12++) {
+          _defined9(_defined10[_i12], _i12, _defined10);
         }
       }
-    } else if ($target.type === 'radio') {
-      $target.checked = $target.value === value;
-    } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
-      var _defined13 = function _defined13(option) {
-        return option.selected = value.includes(option.value);
-      };
+    },
+    updateBoundElement: function updateBoundElement($target, value, instance) {
+      if ($target.type === 'checkbox') {
+        if (!$target.defaultValue) $target.checked = value;else if (Array.isArray(value)) {
+          var inputs = instance.appRoot.querySelectorAll("input[name=".concat($target.name, "][type=checkbox]"));
 
-      var _defined14 = _toConsumableArray($target.options);
+          var _defined11 = function _defined11(input) {
+            return input.checked = value.includes(input.value);
+          };
 
-      for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
-        _defined13(_defined14[_i16], _i16, _defined14);
+          var _defined12 = _toConsumableArray(inputs);
+
+          for (var _i14 = 0; _i14 <= _defined12.length - 1; _i14++) {
+            _defined11(_defined12[_i14], _i14, _defined12);
+          }
+        }
+      } else if ($target.type === 'radio') {
+        $target.checked = $target.value === value;
+      } else if ($target.type === 'select-multiple' && Array.isArray(value)) {
+        var _defined13 = function _defined13(option) {
+          return option.selected = value.includes(option.value);
+        };
+
+        var _defined14 = _toConsumableArray($target.options);
+
+        for (var _i16 = 0; _i16 <= _defined14.length - 1; _i16++) {
+          _defined13(_defined14[_i16], _i16, _defined14);
+        }
+      } else {
+        $target.value = value;
       }
-    } else {
-      $target.value = value;
     }
-  }
-});
+  });
+};
 
 /***/ }),
 /* 74 */
@@ -7453,101 +7473,103 @@ function show($target, opt) {}
 
 function hide($target, opt) {}
 
-directive('show', {
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    /*Object.defineProperties(instance, {
-        show: {
-            value: show,
-            writable: true,
-            enumerable: true
-        },
-        hide: {
-            value: hide,
-            writable: true,
-            enumerable: true
-        }
-    });*/
-  },
-  setVisible: function setVisible($target, value) {
-    var thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
-    $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
-    var lockAnimation = false;
-
-    if ($target._dozAttach.__showInitialValue === undefined) {
-      $target._dozAttach.__showInitialValue = value;
-      lockAnimation = !value;
-    } //$target.__animationWasUsed =
-    //console.dir($target);
-
-
-    if ($target._dozAttach.__prevValueOfShow === value) return;
-    $target._dozAttach.__prevValueOfShow = value; //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
-
-    if (thereIsAnimateDirective && !lockAnimation) {
-      //console.log($target._dozAttach.__animationIsRunning)
-      if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = [];
-      $target._dozAttach.__animationUsedByShowDirective = true;
-
-      $target._dozAttach.__animationsList.push(function (resolve) {
-        //console.log('value', value)
-        if (value) {
-          $target.style.display = $target._dozAttach.__showOriginDisplay;
-
-          $target._dozAttach.__animationShow(function () {
-            $target.style.display = $target._dozAttach.__showOriginDisplay; //$target._dozAttach.__prevValueOfShow = value;
-
-            $target._dozAttach.__animationUsedByShowDirective = false;
-            resolve();
-          });
-        } else {
-          $target._dozAttach.__animationHide(function () {
-            $target.style.display = 'none'; //$target._dozAttach.__prevValueOfShow = value;
-
-            $target._dozAttach.__animationUsedByShowDirective = false;
-            resolve();
-          });
-        }
-      }); //console.log($target._dozAttach.__animationsList)
-
-
-      if (thereIsAnimateDirective.queue) {
-        if (!$target._dozAttach.__animationIsRunning) {
-          // please don't use it
-          queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
-        }
-      } else {
-        new Promise($target._dozAttach.__animationsList.shift()).then();
-      }
-    } else {
-      //$target._dozAttach.__prevValueOfShow = value;
-      //if (thereIsAnimateDirective)
-      //$target._dozAttach.__animationWasUsedByShowDirective = true;/**/
-      //delay(() => {
-      $target.style.display = !value
-      /*=== false*/
-      ? 'none' : $target._dozAttach.__showOriginDisplay; //});
-    }
-  },
-  onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-    this.setVisible($target, directiveValue);
-  },
-  onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
-    this.setVisible($target, directiveValue);
-  } // Per il momento gestisco con il virtual dom
-
-  /*onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
-      //console.log('callComponentVNodeTick', newNode.props)
-      if (newNode.props['d-animate']) return;
-      if (newNode.props.style) {
-          if (!directiveValue) {
-              newNode.props.style += '; display: none';
+module.exports = function () {
+  directive('show', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      /*Object.defineProperties(instance, {
+          show: {
+              value: show,
+              writable: true,
+              enumerable: true
+          },
+          hide: {
+              value: hide,
+              writable: true,
+              enumerable: true
           }
-      } else {
-          newNode.props.style = directiveValue ? 'display: none' : '';
-      }
-  }*/
+      });*/
+    },
+    setVisible: function setVisible($target, value) {
+      var thereIsAnimateDirective = $target._dozAttach.__animationDirectiveValue;
+      $target._dozAttach.__showOriginDisplay = extractStyleDisplayFromDozProps($target) || '';
+      var lockAnimation = false;
 
-});
+      if ($target._dozAttach.__showInitialValue === undefined) {
+        $target._dozAttach.__showInitialValue = value;
+        lockAnimation = !value;
+      } //$target.__animationWasUsed =
+      //console.dir($target);
+
+
+      if ($target._dozAttach.__prevValueOfShow === value) return;
+      $target._dozAttach.__prevValueOfShow = value; //if (thereIsAnimateDirective && !lockAnimation/*&& $target._dozAttach.__prevValueOfShow !== value*/ && $target._dozAttach.__animationWasUsedByShowDirective) {
+
+      if (thereIsAnimateDirective && !lockAnimation) {
+        //console.log($target._dozAttach.__animationIsRunning)
+        if (!$target._dozAttach.__animationsList) $target._dozAttach.__animationsList = [];
+        $target._dozAttach.__animationUsedByShowDirective = true;
+
+        $target._dozAttach.__animationsList.push(function (resolve) {
+          //console.log('value', value)
+          if (value) {
+            $target.style.display = $target._dozAttach.__showOriginDisplay;
+
+            $target._dozAttach.__animationShow(function () {
+              $target.style.display = $target._dozAttach.__showOriginDisplay; //$target._dozAttach.__prevValueOfShow = value;
+
+              $target._dozAttach.__animationUsedByShowDirective = false;
+              resolve();
+            });
+          } else {
+            $target._dozAttach.__animationHide(function () {
+              $target.style.display = 'none'; //$target._dozAttach.__prevValueOfShow = value;
+
+              $target._dozAttach.__animationUsedByShowDirective = false;
+              resolve();
+            });
+          }
+        }); //console.log($target._dozAttach.__animationsList)
+
+
+        if (thereIsAnimateDirective.queue) {
+          if (!$target._dozAttach.__animationIsRunning) {
+            // please don't use it
+            queue($target._dozAttach.__animationsList.shift(), $target._dozAttach.__animationsList);
+          }
+        } else {
+          new Promise($target._dozAttach.__animationsList.shift()).then();
+        }
+      } else {
+        //$target._dozAttach.__prevValueOfShow = value;
+        //if (thereIsAnimateDirective)
+        //$target._dozAttach.__animationWasUsedByShowDirective = true;/**/
+        //delay(() => {
+        $target.style.display = !value
+        /*=== false*/
+        ? 'none' : $target._dozAttach.__showOriginDisplay; //});
+      }
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+      this.setVisible($target, directiveValue);
+    },
+    onComponentDOMElementUpdate: function onComponentDOMElementUpdate(instance, $target, directiveValue) {
+      this.setVisible($target, directiveValue);
+    } // Per il momento gestisco con il virtual dom
+
+    /*onComponentVNodeTick(instance, newNode, oldNode, directiveValue) {
+        //console.log('callComponentVNodeTick', newNode.props)
+        if (newNode.props['d-animate']) return;
+        if (newNode.props.style) {
+            if (!directiveValue) {
+                newNode.props.style += '; display: none';
+            }
+        } else {
+            newNode.props.style = directiveValue ? 'display: none' : '';
+        }
+    }*/
+
+  });
+};
 
 /***/ }),
 /* 75 */
@@ -7589,218 +7611,220 @@ var wait = __webpack_require__(77);
 
 var animateHelper = __webpack_require__(78);
 
-directive('animate', {
-  onAppComponentCreate: function onAppComponentCreate(instance) {
-    Object.defineProperties(instance, {
-      animate: {
-        value: animateHelper,
-        enumerable: true
-      },
-      elementsWithAnimation: {
-        value: new Map(),
-        writable: true
-      }
-    });
-  },
-  createLockRemoveInstanceByCallback: function createLockRemoveInstanceByCallback(instance) {
-    instance.lockRemoveInstanceByCallback = function (callerMethod) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
+module.exports = function () {
+  directive('animate', {
+    onAppComponentCreate: function onAppComponentCreate(instance) {
+      Object.defineProperties(instance, {
+        animate: {
+          value: animateHelper,
+          enumerable: true
+        },
+        elementsWithAnimation: {
+          value: new Map(),
+          writable: true
+        }
+      });
+    },
+    createLockRemoveInstanceByCallback: function createLockRemoveInstanceByCallback(instance) {
+      instance.lockRemoveInstanceByCallback = function (callerMethod) {
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+
+        if (instance.lockRemoveInstanceByCallbackIsCalled) return;
+        instance.lockRemoveInstanceByCallbackIsCalled = true;
+        var animationsEnd = [];
+
+        var _iterator = _createForOfIteratorHelper(instance.elementsWithAnimation),
+            _step;
+
+        try {
+          var _loop = function _loop() {
+            var _step$value = _slicedToArray(_step.value, 2),
+                key = _step$value[0],
+                value = _step$value[1];
+
+            var $targetOfMap = key;
+            var directiveValueOfMap = value;
+            animationsEnd.push(new Promise(function (resolve) {
+              if (!document.body.contains($targetOfMap)) return resolve();
+              wait(function (cancelWait) {
+                if ($targetOfMap._dozAttach.__animationUsedByShowDirective) {
+                  cancelWait();
+                  return true;
+                }
+
+                return !$targetOfMap._dozAttach.__animationIsRunning;
+              }, function () {
+                var optAnimation = {
+                  duration: directiveValueOfMap.hide.duration,
+                  delay: directiveValueOfMap.hide.delay,
+                  iterationCount: directiveValueOfMap.hide.iterationCount,
+                  cb: directiveValueOfMap.hide.cb,
+                  classLib: directiveValueOfMap.classLib
+                };
+                instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
+                  $targetOfMap.style.display = 'none';
+                  resolve();
+                });
+              }, 1000, function () {
+                $targetOfMap._dozAttach.__animationReset();
+              });
+            }));
+          };
+
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            _loop();
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        Promise.all(animationsEnd).then(function () {
+          instance.lockRemoveInstanceByCallback = null;
+          instance.lockRemoveInstanceByCallbackIsCalled = false;
+          callerMethod.apply(instance, args);
+        }, function (reason) {
+          throw new Error(reason);
+        });
+      };
+    },
+    createAnimations: function createAnimations(instance, $target, directiveValue) {
+      var _this = this;
+
+      if ($target._dozAttach.__lockedForAnimation) return;
+      $target._dozAttach.__lockedForAnimation = true;
+
+      if (typeof directiveValue === 'string') {
+        directiveValue = {
+          show: directiveValue,
+          hide: directiveValue
+        };
       }
 
-      if (instance.lockRemoveInstanceByCallbackIsCalled) return;
-      instance.lockRemoveInstanceByCallbackIsCalled = true;
-      var animationsEnd = [];
+      $target._dozAttach.__animationDirectiveValue = directiveValue;
 
-      var _iterator = _createForOfIteratorHelper(instance.elementsWithAnimation),
-          _step;
+      if (directiveValue.show) {
+        /**/
+        if (_typeof(directiveValue.show) !== 'object') {
+          directiveValue.show = {
+            name: directiveValue.show
+          };
+        }
+
+        var optAnimation = {
+          duration: directiveValue.show.duration,
+          delay: directiveValue.show.delay,
+          iterationCount: directiveValue.show.iterationCount,
+          cb: directiveValue.show.cb,
+          classLib: directiveValue.classLib,
+          mode: 'show'
+        }; //Add always an useful method for show
+
+        $target._dozAttach.__animationShow = function (cb) {
+          return instance.animate($target, directiveValue.show.name, optAnimation, cb);
+        };
+        /**/
+        //(function ($target, directiveValue, instance) {
+
+
+        wait(function (cancelWait) {
+          //console.log($target._dozAttach.__animationIsRunning)
+          if ($target._dozAttach.__animationUsedByShowDirective) {
+            cancelWait();
+            return true;
+          }
+
+          return !$target._dozAttach.__animationIsRunning;
+        }, function () {
+          if (!document.body.contains($target)) return;
+
+          if ($target._dozAttach.__animationOriginDisplay) {
+            $target.style.display = $target._dozAttach.__animationOriginDisplay;
+          } //Exclude if element is not displayed
+
+
+          if ($target.style.display === 'none') return;
+          instance.animate($target, directiveValue.show.name, optAnimation);
+        }, 1000, function () {
+          $target._dozAttach.__animationReset();
+        }); //})($target, directiveValue, instance);
+      }
+
+      if (directiveValue.hide) {
+        if (_typeof(directiveValue.hide) !== 'object') {
+          directiveValue.hide = {
+            name: directiveValue.hide
+          };
+        }
+
+        var _optAnimation = {
+          duration: directiveValue.hide.duration,
+          delay: directiveValue.hide.delay,
+          iterationCount: directiveValue.hide.iterationCount,
+          cb: directiveValue.hide.cb,
+          classLib: directiveValue.classLib,
+          mode: 'hide'
+        }; //Add always an useful method for show
+
+        $target._dozAttach.__animationHide = function (cb) {
+          return instance.animate($target, directiveValue.hide.name, _optAnimation, cb);
+        };
+
+        this.createLockRemoveInstanceByCallback(instance);
+      }
+
+      instance.elementsWithAnimation.set($target, directiveValue);
+      setTimeout(function () {
+        var _defined = function _defined(i) {
+          var childInstance = instance.children[i];
+          var $childTarget = childInstance.getHTMLElement();
+          var elementAnimation = instance.elementsWithAnimation.get($childTarget);
+
+          if (elementAnimation) {
+            if (!childInstance.lockRemoveInstanceByCallback) {
+              childInstance.elementsWithAnimation.set($childTarget, elementAnimation);
+
+              _this.createLockRemoveInstanceByCallback(childInstance);
+            }
+          }
+        };
+
+        var _defined2 = Object.keys(instance.children);
+
+        for (var _i3 = 0; _i3 <= _defined2.length - 1; _i3++) {
+          _defined(_defined2[_i3], _i3, _defined2);
+        }
+      });
+    },
+    onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
+      //console.log('onComponentDOMElementCreate', 'animation', $target);
+      this.createAnimations(instance, $target, directiveValue);
+    },
+    onAppComponentMount: function onAppComponentMount(instance) {
+      if (!instance.elementsWithAnimation || !instance.elementsWithAnimation.size) return;
+
+      var _iterator2 = _createForOfIteratorHelper(instance.elementsWithAnimation),
+          _step2;
 
       try {
-        var _loop = function _loop() {
-          var _step$value = _slicedToArray(_step.value, 2),
-              key = _step$value[0],
-              value = _step$value[1];
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _step2$value = _slicedToArray(_step2.value, 2),
+              key = _step2$value[0],
+              value = _step2$value[1];
 
-          var $targetOfMap = key;
-          var directiveValueOfMap = value;
-          animationsEnd.push(new Promise(function (resolve) {
-            if (!document.body.contains($targetOfMap)) return resolve();
-            wait(function (cancelWait) {
-              if ($targetOfMap._dozAttach.__animationUsedByShowDirective) {
-                cancelWait();
-                return true;
-              }
-
-              return !$targetOfMap._dozAttach.__animationIsRunning;
-            }, function () {
-              var optAnimation = {
-                duration: directiveValueOfMap.hide.duration,
-                delay: directiveValueOfMap.hide.delay,
-                iterationCount: directiveValueOfMap.hide.iterationCount,
-                cb: directiveValueOfMap.hide.cb,
-                classLib: directiveValueOfMap.classLib
-              };
-              instance.animate($targetOfMap, directiveValueOfMap.hide.name, optAnimation, function () {
-                $targetOfMap.style.display = 'none';
-                resolve();
-              });
-            }, 1000, function () {
-              $targetOfMap._dozAttach.__animationReset();
-            });
-          }));
-        };
-
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          _loop();
+          this.createAnimations(instance, key, value);
         }
       } catch (err) {
-        _iterator.e(err);
+        _iterator2.e(err);
       } finally {
-        _iterator.f();
+        _iterator2.f();
       }
-
-      Promise.all(animationsEnd).then(function () {
-        instance.lockRemoveInstanceByCallback = null;
-        instance.lockRemoveInstanceByCallbackIsCalled = false;
-        callerMethod.apply(instance, args);
-      }, function (reason) {
-        throw new Error(reason);
-      });
-    };
-  },
-  createAnimations: function createAnimations(instance, $target, directiveValue) {
-    var _this = this;
-
-    if ($target._dozAttach.__lockedForAnimation) return;
-    $target._dozAttach.__lockedForAnimation = true;
-
-    if (typeof directiveValue === 'string') {
-      directiveValue = {
-        show: directiveValue,
-        hide: directiveValue
-      };
     }
-
-    $target._dozAttach.__animationDirectiveValue = directiveValue;
-
-    if (directiveValue.show) {
-      /**/
-      if (_typeof(directiveValue.show) !== 'object') {
-        directiveValue.show = {
-          name: directiveValue.show
-        };
-      }
-
-      var optAnimation = {
-        duration: directiveValue.show.duration,
-        delay: directiveValue.show.delay,
-        iterationCount: directiveValue.show.iterationCount,
-        cb: directiveValue.show.cb,
-        classLib: directiveValue.classLib,
-        mode: 'show'
-      }; //Add always an useful method for show
-
-      $target._dozAttach.__animationShow = function (cb) {
-        return instance.animate($target, directiveValue.show.name, optAnimation, cb);
-      };
-      /**/
-      //(function ($target, directiveValue, instance) {
-
-
-      wait(function (cancelWait) {
-        //console.log($target._dozAttach.__animationIsRunning)
-        if ($target._dozAttach.__animationUsedByShowDirective) {
-          cancelWait();
-          return true;
-        }
-
-        return !$target._dozAttach.__animationIsRunning;
-      }, function () {
-        if (!document.body.contains($target)) return;
-
-        if ($target._dozAttach.__animationOriginDisplay) {
-          $target.style.display = $target._dozAttach.__animationOriginDisplay;
-        } //Exclude if element is not displayed
-
-
-        if ($target.style.display === 'none') return;
-        instance.animate($target, directiveValue.show.name, optAnimation);
-      }, 1000, function () {
-        $target._dozAttach.__animationReset();
-      }); //})($target, directiveValue, instance);
-    }
-
-    if (directiveValue.hide) {
-      if (_typeof(directiveValue.hide) !== 'object') {
-        directiveValue.hide = {
-          name: directiveValue.hide
-        };
-      }
-
-      var _optAnimation = {
-        duration: directiveValue.hide.duration,
-        delay: directiveValue.hide.delay,
-        iterationCount: directiveValue.hide.iterationCount,
-        cb: directiveValue.hide.cb,
-        classLib: directiveValue.classLib,
-        mode: 'hide'
-      }; //Add always an useful method for show
-
-      $target._dozAttach.__animationHide = function (cb) {
-        return instance.animate($target, directiveValue.hide.name, _optAnimation, cb);
-      };
-
-      this.createLockRemoveInstanceByCallback(instance);
-    }
-
-    instance.elementsWithAnimation.set($target, directiveValue);
-    setTimeout(function () {
-      var _defined = function _defined(i) {
-        var childInstance = instance.children[i];
-        var $childTarget = childInstance.getHTMLElement();
-        var elementAnimation = instance.elementsWithAnimation.get($childTarget);
-
-        if (elementAnimation) {
-          if (!childInstance.lockRemoveInstanceByCallback) {
-            childInstance.elementsWithAnimation.set($childTarget, elementAnimation);
-
-            _this.createLockRemoveInstanceByCallback(childInstance);
-          }
-        }
-      };
-
-      var _defined2 = Object.keys(instance.children);
-
-      for (var _i3 = 0; _i3 <= _defined2.length - 1; _i3++) {
-        _defined(_defined2[_i3], _i3, _defined2);
-      }
-    });
-  },
-  onComponentDOMElementCreate: function onComponentDOMElementCreate(instance, $target, directiveValue) {
-    //console.log('onComponentDOMElementCreate', 'animation', $target);
-    this.createAnimations(instance, $target, directiveValue);
-  },
-  onAppComponentMount: function onAppComponentMount(instance) {
-    if (!instance.elementsWithAnimation || !instance.elementsWithAnimation.size) return;
-
-    var _iterator2 = _createForOfIteratorHelper(instance.elementsWithAnimation),
-        _step2;
-
-    try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-        var _step2$value = _slicedToArray(_step2.value, 2),
-            key = _step2$value[0],
-            value = _step2$value[1];
-
-        this.createAnimations(instance, key, value);
-      }
-    } catch (err) {
-      _iterator2.e(err);
-    } finally {
-      _iterator2.f();
-    }
-  }
-});
+  });
+};
 
 /***/ }),
 /* 77 */
@@ -7942,48 +7966,50 @@ module.exports = animateHelper;
 var _require = __webpack_require__(0),
     directive = _require.directive;
 
-function isInViewport(element) {
-  var rect = element.getBoundingClientRect();
-  return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-}
-
-directive('lazy', {
-  onAppInit: function onAppInit(app) {
-    var _this = this;
-
-    Object.defineProperties(app, {
-      lazyComponentsList: {
-        value: new Set(),
-        enumerable: false
-      }
-    });
-    window.addEventListener('scroll', function () {
-      var _defined = function _defined(component) {
-        _this.canRunMount(app, component);
-      };
-
-      var _defined2 = app.lazyComponentsList;
-
-      for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-      }
-    });
-  },
-  onComponentCreate: function onComponentCreate(instance) {
-    instance.waitMount = true;
-    instance.appReadyExcluded = true;
-    instance.app.lazyComponentsList.add(instance);
-  },
-  onComponentWaitMount: function onComponentWaitMount(instance) {
-    this.canRunMount(instance.app, instance);
-  },
-  canRunMount: function canRunMount(app, component) {
-    if (isInViewport(component.$domEl)) {
-      component.runMount();
-      app.lazyComponentsList["delete"](component);
-    }
+module.exports = function () {
+  function isInViewport(element) {
+    var rect = element.getBoundingClientRect();
+    return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
   }
-});
+
+  directive('lazy', {
+    onAppInit: function onAppInit(app) {
+      var _this = this;
+
+      Object.defineProperties(app, {
+        lazyComponentsList: {
+          value: new Set(),
+          enumerable: false
+        }
+      });
+      window.addEventListener('scroll', function () {
+        var _defined = function _defined(component) {
+          _this.canRunMount(app, component);
+        };
+
+        var _defined2 = app.lazyComponentsList;
+
+        for (var _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
+          _defined(_defined2[_i2], _i2, _defined2);
+        }
+      });
+    },
+    onComponentCreate: function onComponentCreate(instance) {
+      instance.waitMount = true;
+      instance.appReadyExcluded = true;
+      instance.app.lazyComponentsList.add(instance);
+    },
+    onComponentWaitMount: function onComponentWaitMount(instance) {
+      this.canRunMount(instance.app, instance);
+    },
+    canRunMount: function canRunMount(app, component) {
+      if (isInViewport(component.$domEl)) {
+        component.runMount();
+        app.lazyComponentsList["delete"](component);
+      }
+    }
+  });
+};
 
 /***/ })
 /******/ ]);
