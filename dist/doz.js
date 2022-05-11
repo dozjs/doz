@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.20.2  
+// [DOZ]  Build version: 3.20.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1619,7 +1619,7 @@ function createInstance() {
           }
         }
 
-        if (!newElement) {
+        if (!newElement || newElement.__beforeCreateReturnsFalse) {
           $child = $child.nextElementSibling;
           return "continue";
         }
@@ -1860,7 +1860,12 @@ var Component = /*#__PURE__*/function (_DOMManipulation) {
 
     loadLocal(_assertThisInitialized(_this));
     var beforeCreate = hooks.callBeforeCreate(_assertThisInitialized(_this));
-    if (beforeCreate === false) return _possibleConstructorReturn(_this); // Create observer to props
+
+    if (beforeCreate === false) {
+      _this.__beforeCreateReturnsFalse = true;
+      return _possibleConstructorReturn(_this);
+    } // Create observer to props
+
 
     observer.create(_assertThisInitialized(_this), true); // Add callback to ready queue
 
@@ -4235,7 +4240,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.20.2',
+    value: '3.20.3',
     enumerable: true
   },
   tag: {
