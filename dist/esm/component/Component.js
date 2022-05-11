@@ -44,8 +44,10 @@ class Component extends DOMManipulation {
         // Load local components
         loadLocal(this);
         const beforeCreate = hooks.callBeforeCreate(this);
-        if (beforeCreate === false)
+        if (beforeCreate === false) {
+            this.__beforeCreateReturnsFalse = true;
             return;
+        }
         // Create observer to props
         observer.create(this, true);
         // Add callback to ready queue

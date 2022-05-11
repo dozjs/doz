@@ -1,4 +1,5 @@
 const Doz = require('../index');
+const be = require("bejs");
 
 describe('lifecycle', function () {
 
@@ -136,5 +137,50 @@ describe('lifecycle', function () {
             });
         });
 
+        it('beforeCreate returns false', function (done) {
+            document.body.innerHTML = `
+                <div id="app"></div>
+            `;
+
+            const MyComponent = class extends Doz.Component {
+                template(h) {
+                    return h`
+                        <div>Hello world</div>
+                    `
+                }
+
+                onBeforeCreate() {
+                    return false;
+                }
+
+                onCreate() {
+                    throw new Error('onCreate is called')
+                }
+
+                onMount() {
+                    throw new Error('onMount is called')
+                }
+
+                onDestroy() {
+                    throw new Error('onDestroy is called')
+                }
+            }
+
+            new Doz({
+                root: '#app',
+                template(h) {
+                    return h`
+                        <h1>Welcome to my app:</h1>
+                        <${MyComponent}/>
+                    `
+                }
+            });
+
+            setTimeout(() => {
+                const html = document.body.innerHTML;
+                //console.log(html);
+                be.err(done).equal(html.trim(), '<div id="app"><dz-app><dz-root><h1>Welcome to my app:</h1><my-component></my-component></dz-root></dz-app></div>')
+            }, 100);
+        })
     });
 });

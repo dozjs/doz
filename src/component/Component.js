@@ -55,8 +55,10 @@ class Component extends DOMManipulation {
         loadLocal(this);
 
         const beforeCreate = hooks.callBeforeCreate(this);
-        if (beforeCreate === false)
+        if (beforeCreate === false) {
+            this.__beforeCreateReturnsFalse = true;
             return;
+        }
 
         // Create observer to props
         observer.create(this, true);
@@ -327,19 +329,15 @@ class Component extends DOMManipulation {
             this.lockRemoveInstanceByCallback(this.destroy, onlyInstance);
             return;
         }
-
         if (this.unmount(onlyInstance, true) === false) {
             return;
         }
-
         if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
             return;
         }
-
         Object.keys(this.children).forEach(child => {
             this.children[child].destroy();
         });
-
         hooks.callDestroy(this);
         if (this.parent && this.parent.children) {
             for (let i in this.parent.children) {

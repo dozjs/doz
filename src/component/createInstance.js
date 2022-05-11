@@ -228,7 +228,7 @@ function createInstance(cfg = {}) {
                     }
                 }
 
-                if (!newElement) {
+                if (!newElement || newElement.__beforeCreateReturnsFalse) {
                     $child = $child.nextElementSibling;
                     continue;
                 }
