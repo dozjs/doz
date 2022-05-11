@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.20.3  
+// [DOZ]  Build version: 3.20.4  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1619,7 +1619,11 @@ function createInstance() {
           }
         }
 
-        if (!newElement || newElement.__beforeCreateReturnsFalse) {
+        if (newElement && newElement.__beforeCreateReturnsFalse) {
+          newElement = undefined;
+        }
+
+        if (!newElement) {
           $child = $child.nextElementSibling;
           return "continue";
         }
@@ -4240,7 +4244,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.20.3',
+    value: '3.20.4',
     enumerable: true
   },
   tag: {
