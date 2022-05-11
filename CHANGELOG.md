@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [3.20.3] - 2022-05-12
+## [3.20.4] - 2022-05-12
 - **Fixed** if beforeCreate returns false the component will be not created  
 
 ## [3.20.2] - 2022-05-11
