@@ -199,7 +199,10 @@ function createInstance(cfg = {}) {
                         });
                     }
                 }
-                if (!newElement || newElement.__beforeCreateReturnsFalse) {
+                if (newElement && newElement.__beforeCreateReturnsFalse) {
+                    newElement = undefined;
+                }
+                if (!newElement) {
                     $child = $child.nextElementSibling;
                     continue;
                 }
