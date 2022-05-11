@@ -12,8 +12,9 @@ import { update } from "./vdom/element.js";
 import tag from "./decorators/tag.js";
 import createInstance from "./component/createInstance.js";
 import { createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal } from "./webComponent.js";
-import "./directives/builtIn/bootstrap.js";
+import bootstrap from "./directives/builtIn/bootstrap.js";
 const { directive } = directives;
+bootstrap();
 Object.defineProperties(Doz, {
     collection: {
         value: collection,

@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.20.2] - 2022-05-11
+- **Fixed** directives don't work on Parcel 2 
+
 ## [3.20.1] - 2022-05-08
 - **Improvement** 
 

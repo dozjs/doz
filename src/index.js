@@ -13,7 +13,9 @@ const {update} = require('./vdom/element');
 const tag = require('./decorators/tag');
 const createInstance = require('./component/createInstance')
 const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
-require('./directives/builtIn/bootstrap');
+const bootstrap = require('./directives/builtIn/bootstrap');
+
+bootstrap();
 
 Object.defineProperties(Doz, {
     collection: {
