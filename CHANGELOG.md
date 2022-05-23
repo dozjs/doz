@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.21.0] - 2022-05-23
+- **Added** app event `elementAttributesAttach`  
+
 ## [3.20.4] - 2022-05-12
 - **Fixed** if beforeCreate returns false the component will be not created  
 

@@ -250,7 +250,9 @@ function attach($target, nodeProps, cmp, cmpParent, isSVG) {
         name = propsKeys[i];
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG);
-        //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+        if (cmp && cmp.app && cmp.app.emit) {
+            cmp.app.emit('elementAttributesAttach', $target, name, nodeProps[name], cmp)
+        }
     }
 
     /*const datasetArray = Object.keys($target.dataset);
