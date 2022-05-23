@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.20.4  
+// [DOZ]  Build version: 3.21.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -4244,7 +4244,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.20.4',
+    value: '3.21.0',
     enumerable: true
   },
   tag: {
@@ -5567,7 +5567,11 @@ function attach($target, nodeProps, cmp, cmpParent, isSVG) {
   for (var i = 0, len = propsKeys.length; i < len; i++) {
     name = propsKeys[i];
     addEventListener($target, name, nodeProps[name], cmp, cmpParent);
-    setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG); //cmp.$$afterAttributeCreate($target, name, nodeProps[name], nodeProps);
+    setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG);
+
+    if (cmp && cmp.app && cmp.app.emit) {
+      cmp.app.emit('elementAttributesAttach', $target, name, nodeProps[name], cmp);
+    }
   }
   /*const datasetArray = Object.keys($target.dataset);
   for (let i = 0; i < datasetArray.length; i++) {
