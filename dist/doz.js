@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.21.0  
+// [DOZ]  Build version: 3.21.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1458,6 +1458,9 @@ function createInstance() {
 
           if (newElement.waitMount) {
             //cfg.app._onAppComponentsMounted.set(newElement, true);
+            walk(newElement.getHTMLElement().firstElementChild, {
+              cmp: newElement
+            });
             if (!newElement.appReadyExcluded) cfg.app._onAppComponentsMounted["delete"](newElement);
           }
         };
@@ -4244,7 +4247,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.21.0',
+    value: '3.21.1',
     enumerable: true
   },
   tag: {
