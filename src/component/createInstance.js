@@ -280,6 +280,7 @@ function createInstance(cfg = {}) {
 
                     if (newElement.waitMount) {
                         //cfg.app._onAppComponentsMounted.set(newElement, true);
+                        walk(newElement.getHTMLElement().firstElementChild, { cmp: newElement });
                         if (!newElement.appReadyExcluded)
                             cfg.app._onAppComponentsMounted.delete(newElement);
                     }

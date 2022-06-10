@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.21.1] - 2022-06-10
+- **Fixed** `runMount` fails if there are child components 
+
 ## [3.21.0] - 2022-05-23
 - **Added** app event `elementAttributesAttach`  
 
