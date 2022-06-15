@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.21.1  
+// [DOZ]  Build version: 3.22.0  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3341,6 +3341,16 @@ function update($parent, newNode, oldNode) {
 
       return;
     }
+  } // la proprietà data-follow="qualcosa" ci permette di aggiornare il nodo corretto qualora questo fosse spostato nel dom
+
+
+  if (newNode && newNode.props && newNode.props['data-follow']) {
+    //console.log('trovato');
+    var followElement = document.querySelector("[data-follow=\"".concat(newNode.props['data-follow'], "\"]"));
+
+    if (followElement && followElement.parentElement) {
+      $parent = followElement.parentElement; //console.log($parent);
+    }
   }
 
   if (!oldNode) {
@@ -3543,13 +3553,13 @@ function update($parent, newNode, oldNode) {
     ) return; // If first item index is equal to childNodes length then just append..
 
     if ($myListParent.childNodes.length === diffIndex[0]) {
-      var fragmentEl = document.createDocumentFragment();
-
+      //let fragmentEl = document.createDocumentFragment();
       for (var _i11 = 0; _i11 < listOfElement.length; _i11++) {
-        fragmentEl.appendChild(listOfElement[_i11]); //$myListParent.appendChild(listOfElement[i]);
-      }
+        //fragmentEl.appendChild(listOfElement[i]);
+        $myListParent.appendChild(listOfElement[_i11]);
+      } //$myListParent.appendChild(fragmentEl);
 
-      $myListParent.appendChild(fragmentEl);
+
       return;
     } //return ;
 
@@ -4247,7 +4257,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.21.1',
+    value: '3.22.0',
     enumerable: true
   },
   tag: {
