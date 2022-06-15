@@ -145,6 +145,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         }
     }
+    // la proprietà data-follow="qualcosa" ci permette di aggiornare il nodo corretto qualora questo fosse spostato nel dom
+    if (newNode && newNode.props && newNode.props['data-follow']) {
+        //console.log('trovato');
+        let followElement = document.querySelector(`[data-follow="${newNode.props['data-follow']}"]`);
+        if (followElement && followElement.parentElement) {
+            $parent = followElement.parentElement;
+            //console.log($parent);
+        }
+    }
     if (!oldNode) {
         //if (oldNode === undefined || oldNode == null) {
         //console.log('create node', newNode.type);
@@ -297,12 +306,12 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         // If first item index is equal to childNodes length then just append..
         if ($myListParent.childNodes.length === diffIndex[0]) {
-            let fragmentEl = document.createDocumentFragment();
+            //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < listOfElement.length; i++) {
-                fragmentEl.appendChild(listOfElement[i]);
-                //$myListParent.appendChild(listOfElement[i]);
+                //fragmentEl.appendChild(listOfElement[i]);
+                $myListParent.appendChild(listOfElement[i]);
             }
-            $myListParent.appendChild(fragmentEl);
+            //$myListParent.appendChild(fragmentEl);
             return;
         }
         //return ;
