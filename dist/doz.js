@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.22.0  
+// [DOZ]  Build version: 3.22.1  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -3349,7 +3349,8 @@ function update($parent, newNode, oldNode) {
     var followElement = document.querySelector("[data-follow=\"".concat(newNode.props['data-follow'], "\"]"));
 
     if (followElement && followElement.parentElement) {
-      $parent = followElement.parentElement; //console.log($parent);
+      $parent = followElement.parentElement;
+      makeSureAttach($parent); //console.log($parent);
     }
   }
 
@@ -4257,7 +4258,7 @@ Object.defineProperties(Doz, {
     enumerable: true
   },
   version: {
-    value: '3.22.0',
+    value: '3.22.1',
     enumerable: true
   },
   tag: {
