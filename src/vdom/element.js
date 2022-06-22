@@ -183,6 +183,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         let followElement = document.querySelector(`[data-follow="${newNode.props['data-follow']}"]`);
         if (followElement && followElement.parentElement) {
             $parent = followElement.parentElement;
+            makeSureAttach($parent);
             //console.log($parent);
         }
     }

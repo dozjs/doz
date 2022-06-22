@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.22.1] - 2022-06-22
+- **Fixed** dozAttach can be undefined using `data-follow` 
+
 ## [3.22.0] - 2022-06-15
 - **Added** `data-follow` support 
 
