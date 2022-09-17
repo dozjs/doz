@@ -5,7 +5,7 @@ import stringDecoder from "./utils/stringDecoder.js";
  * @type {{create, observe, remove, beforeChange, beginRender, endRender}}
  */
 const ObservableSlim = (function () {
-    // An array that stores all of the observables created through the public create() method below.
+    // An array that stores all the observables created through the public create() method below.
     let observables = [];
     // An array of all the objects that we have assigned Proxies to
     let targets = [];
@@ -109,7 +109,7 @@ const ObservableSlim = (function () {
                 }
                 // for performance improvements, we assign this to a variable so we do not have to lookup the property value again
                 let targetProp = target[property];
-                //console.log('èèèèèèèèèèèèèèèèèèèè', targetProp instanceof Date)
+                //console.log(targetProp instanceof Date)
                 if (target instanceof Date && targetProp instanceof Function) {
                     return targetProp.bind(target);
                 }
@@ -127,7 +127,6 @@ const ObservableSlim = (function () {
                     let observableTargets = observable.targets;
                     for (let i = 0, l = observableTargets.length; i < l; i++) {
                         if (targetProp === observableTargets[i]) {
-                            //console.log('aaaaa', i)
                             a = i;
                             break;
                         }
@@ -135,7 +134,6 @@ const ObservableSlim = (function () {
                     //console.log('get')
                     if (a > -1)
                         return observable.proxies[a];
-                    //console.log('oooo')
                     // if we're arrived here, then that means there is no proxy for the object the user just accessed, so we
                     // have to create a new proxy for it
                     let newPath = (path !== '') ? (path + '.' + property) : property;
@@ -178,7 +176,8 @@ const ObservableSlim = (function () {
                         let res = observable.beforeChange(changes);
                         if (res === false) {
                             observable.checkBeforeChange = '';
-                            return false;
+                            return true;
+                            //return false;
                         }
                     }
                     observable.checkBeforeChange = '';
@@ -247,7 +246,8 @@ const ObservableSlim = (function () {
                             let res = observable.beforeChange(changes);
                             if (res === false) {
                                 observable.checkBeforeChange = '';
-                                return false;
+                                return true;
+                                //return false;
                             }
                         }
                         observable.checkBeforeChange = '';

@@ -3,7 +3,7 @@ import ObservableSlim from "../src/proxy.js";
 
 describe('observable-slim.js', _ => {
 
-    var test, p;
+    let test, p;
 
     beforeEach(() => {
         test = {};
