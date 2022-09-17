@@ -1,8 +1,6 @@
-const mixin = require('../../utils/mixin');
-
+import mixin from "../../utils/mixin.js";
 function localMixin(instance) {
     mixin(instance, instance.mixin);
     instance.mixin = [];
 }
-
-module.exports = localMixin;
+export default localMixin;

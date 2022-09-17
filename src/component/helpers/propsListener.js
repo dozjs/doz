@@ -1,7 +1,5 @@
-const delay = require('../../utils/delay');
-
+import delay from "../../utils/delay.js";
 function propsListener(instance, changes) {
-
     if (typeof instance.propsListener === 'object')
         for (let i = 0; i < changes.length; i++) {
             const item = changes[i];
@@ -13,7 +11,6 @@ function propsListener(instance, changes) {
                 }
             }
         }
-
     if (typeof instance.propsListenerAsync === 'object')
         for (let i = 0; i < changes.length; i++) {
             const item = changes[i];
@@ -21,13 +18,11 @@ function propsListener(instance, changes) {
             if (item.type === 'update' && propPath) {
                 const func = instance[propPath] || propPath;
                 if (typeof func === 'function') {
-                    (function(item) {
+                    (function (item) {
                         delay(() => func.call(instance, item.newValue, item.previousValue));
                     })(item);
                 }
             }
         }
-
 }
-
-module.exports = propsListener;
+export default propsListener;

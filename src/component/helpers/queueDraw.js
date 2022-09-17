@@ -4,7 +4,6 @@ function add(instance) {
         instance.app._onAppDrawCB.push(instance.onAppDraw);
     }
 }
-
 function emit(instance, next, prev) {
     instance.app._onAppDrawCB.forEach(cb => {
         if (typeof cb === 'function' && cb._instance) {
@@ -12,8 +11,9 @@ function emit(instance, next, prev) {
         }
     });
 }
-
-module.exports = {
+export { add };
+export { emit };
+export default {
     add,
     emit
 };

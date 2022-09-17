@@ -1,5 +1,5 @@
-const {scopedInner} = require('../src/component/helpers/style');
-const be = require('bejs');
+import {scopedInner} from "../src/component/helpers/style.js";
+import be from "bejs";
 
 describe('componentScopedInner', function () {
 

@@ -1,3 +1,3 @@
-module.exports = function isJSON(obj) {
+export default (function isJSON(obj) {
     return /^[{\[]/.test(obj);
-};
+});

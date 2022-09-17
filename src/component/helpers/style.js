@@ -1,13 +1,12 @@
-const composeStyleInner = require('../../utils/composeStyleInner');
-const createStyle = require('../../utils/createStyle');
-
+import composeStyleInner from "../../utils/composeStyleInner.js";
+import createStyle from "../../utils/createStyle.js";
 function scopedInner(cssContent, uId, tag, scoped, cmp) {
-    if (typeof cssContent !== 'string') return;
-
+    if (typeof cssContent !== 'string')
+        return;
     cssContent = composeStyleInner(cssContent, tag, cmp);
     return createStyle(cssContent, uId, tag, scoped, cmp);
 }
-
-module.exports = {
+export { scopedInner };
+export default {
     scopedInner
 };

@@ -2,7 +2,6 @@ const regexN = /\n/g;
 const regexS = /\s+/g;
 const replace = ' ';
 let decoder;
-
 const html = {
     /**
      * Create DOM element
@@ -14,26 +13,21 @@ const html = {
         let element;
         str = str.replace(regexN, replace);
         str = str.replace(regexS, replace);
-
         let template = document.createElement('div');
         template.innerHTML = str;
-
-        if(wrapper && template.childNodes.length > 1) {
+        if (wrapper && template.childNodes.length > 1) {
             element = document.createElement(wrapper);
             element.innerHTML = template.innerHTML;
-        } else {
+        }
+        else {
             element = template.firstChild || document.createTextNode('');
         }
-
         return element;
     },
-
     decode(str) {
         decoder = decoder || document.createElement('div');
         decoder.innerHTML = str;
         return decoder.textContent;
     }
-
 };
-
-module.exports = html;
+export default html;

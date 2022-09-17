@@ -1,8 +1,7 @@
-const {directive} = require('../../index');
-
-module.exports = function() {
+import index from "../../index.js";
+const { directive } = index;
+export default (function () {
     directive(':store', {
-
         createStore(instance, storeName) {
             if (typeof storeName === 'string') {
                 if (instance.app._stores[storeName] !== undefined) {
@@ -12,13 +11,11 @@ module.exports = function() {
                 instance.store = storeName;
             }
         },
-
         syncStore(instance, storeName) {
             if (typeof storeName === 'string' && instance.app._stores[storeName] !== undefined) {
                 instance.app._stores[storeName] = instance.props;
             }
         },
-
         onAppInit(app) {
             Object.defineProperties(app, {
                 _stores: {
@@ -33,7 +30,6 @@ module.exports = function() {
                 }
             });
         },
-
         // Create by property defined
         onAppComponentCreate(instance) {
             Object.defineProperties(instance, {
@@ -44,34 +40,28 @@ module.exports = function() {
                     enumerable: true
                 }
             });
-
             if (instance.store !== undefined && instance.props['d:store'] === undefined) {
                 this.createStore(instance, instance.store);
             }
         },
-
         // Create by props
         onComponentCreate(instance, directiveValue) {
             this.createStore(instance, directiveValue);
         },
-
         onAppComponentLoadProps(instance) {
             this.syncStore(instance, instance.store);
         },
-
         onAppComponentSetProps(instance) {
             this.syncStore(instance, instance.store);
         },
-
         onAppComponentSetConfig(instance, obj) {
             if (typeof obj.store === 'string') {
                 this.createStore(instance, obj.store);
             }
         },
-
         onAppComponentDestroy(instance) {
             if (instance.store && instance.app._stores[instance.store])
                 delete instance.app._stores[instance.store];
         },
     });
-}
+});

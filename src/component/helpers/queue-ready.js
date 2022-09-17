@@ -4,7 +4,8 @@ function add(instance) {
     if (typeof instance.onAppReady === 'function') {
         instance.onAppReady._instance = instance;
         instance.app._onAppReadyCB.push(instance.onAppReady);
-    } else if (instanceProto &&
+    }
+    else if (instanceProto &&
         instanceProto.constructor &&
         instanceProto.constructor.__postListeners &&
         instanceProto.constructor.__postListeners.onAppReady) {
@@ -12,7 +13,7 @@ function add(instance) {
         instance.app._onAppReadyCB.push(instanceProto.constructor.__postListeners.onAppReady);
     }
 }
-
-module.exports = {
+export { add };
+export default {
     add
 };

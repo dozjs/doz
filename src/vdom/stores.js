@@ -1,5 +1,8 @@
-module.exports = {
-    kCache: new Map(),
-    tplCache: Object.create(null),
-    hCache: new Map()
+export const kCache = new Map();
+export const tplCache = Object.create(null);
+export const hCache = new Map();
+export default {
+    kCache,
+    tplCache,
+    hCache
 };

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     tag: 'id-component',
     cfg: {
         template() {

@@ -1,6 +1,5 @@
-const delay = require('../utils/delay');
-const directive = require('../directives');
-
+import delay from "../utils/delay.js";
+import directive from "../directives/index.js";
 function callBeforeCreate(context) {
     directive.callAppComponentBeforeCreate(context);
     directive.callComponentBeforeCreate(context);
@@ -8,7 +7,6 @@ function callBeforeCreate(context) {
         return context.onBeforeCreate.call(context);
     }
 }
-
 function callCreate(context) {
     directive.callAppComponentCreate(context);
     directive.callComponentCreate(context);
@@ -17,7 +15,6 @@ function callCreate(context) {
     }
     context.app.emit('componentCreate', context);
 }
-
 function callConfigCreate(context) {
     directive.callAppComponentConfigCreate(context);
     if (typeof context.onConfigCreate === 'function') {
@@ -28,7 +25,6 @@ function callConfigCreate(context) {
     }
     context.app.emit('componentConfigCreate', context);
 }
-
 function callBeforeMount(context) {
     directive.callAppComponentBeforeMount(context);
     directive.callComponentBeforeMount(context);
@@ -36,7 +32,6 @@ function callBeforeMount(context) {
         return context.onBeforeMount.call(context);
     }
 }
-
 function callMount(context) {
     directive.callAppComponentMount(context);
     directive.callComponentMount(context);
@@ -45,9 +40,8 @@ function callMount(context) {
     }
     context.app.emit('componentMount', context);
 }
-
 function callMountAsync(context) {
-    delay(()=> {
+    delay(() => {
         directive.callAppComponentMountAsync(context);
         directive.callComponentMountAsync(context);
     });
@@ -56,7 +50,6 @@ function callMountAsync(context) {
     }
     context.app.emit('componentMountAsync', context);
 }
-
 function callBeforeUpdate(context, changes) {
     directive.callAppComponentBeforeUpdate(context, changes);
     directive.callComponentBeforeUpdate(context, changes);
@@ -64,7 +57,6 @@ function callBeforeUpdate(context, changes) {
         return context.onBeforeUpdate.call(context, changes);
     }
 }
-
 function callUpdate(context, changes) {
     directive.callAppComponentUpdate(context, changes);
     directive.callComponentUpdate(context, changes);
@@ -73,12 +65,10 @@ function callUpdate(context, changes) {
     }
     context.app.emit('componentUpdate', context, changes);
 }
-
 function callDrawByParent(context, newNode, oldNode) {
-    if (!context) return ;
-
+    if (!context)
+        return;
     directive.callAppComponentDrawByParent(context, newNode, oldNode);
-
     if (typeof context.onDrawByParent === 'function') {
         return context.onDrawByParent.call(context, newNode, oldNode);
     }
@@ -87,7 +77,6 @@ function callDrawByParent(context, newNode, oldNode) {
     }
     //context.app.emit('componentDrawByParent', context, changes);
 }
-
 function callAfterRender(context, changes) {
     directive.callAppComponentAfterRender(context, changes);
     directive.callComponentAfterRender(context, changes);
@@ -95,7 +84,6 @@ function callAfterRender(context, changes) {
         return context.onAfterRender.call(context, changes);
     }
 }
-
 function callBeforeUnmount(context) {
     directive.callAppComponentBeforeUnmount(context);
     directive.callComponentBeforeUnmount(context);
@@ -103,7 +91,6 @@ function callBeforeUnmount(context) {
         return context.onBeforeUnmount.call(context);
     }
 }
-
 function callUnmount(context) {
     directive.callAppComponentUnmount(context);
     directive.callComponentUnmount(context);
@@ -112,7 +99,6 @@ function callUnmount(context) {
     }
     context.app.emit('componentUnmount', context);
 }
-
 function callBeforeDestroy(context) {
     directive.callAppComponentBeforeDestroy(context);
     directive.callComponentBeforeDestroy(context);
@@ -120,32 +106,25 @@ function callBeforeDestroy(context) {
         return context.onBeforeDestroy.call(context);
     }
 }
-
 function callDestroy(context) {
     directive.callAppComponentDestroy(context);
     directive.callComponentDestroy(context);
     context.app.emit('componentDestroy', context);
-
     const style = document.getElementById(context.uId + '--style');
     const styleReset = document.getElementById(context.uId + '--style-reset');
-
     if (style) {
         style.parentNode.removeChild(style);
     }
     if (styleReset) {
         styleReset.parentNode.removeChild(styleReset);
     }
-
     if (context._unmountedPlaceholder && context._unmountedPlaceholder.parentNode)
         context._unmountedPlaceholder.parentNode.removeChild(context._unmountedPlaceholder);
-
     if (typeof context.onDestroy === 'function') {
         context.onDestroy.call(context);
         context = null;
     }
-
 }
-
 function callLoadProps(context) {
     directive.callAppComponentLoadProps(context);
     directive.callComponentLoadProps(context);
@@ -154,7 +133,6 @@ function callLoadProps(context) {
     }
     context.app.emit('componentLoadProps', context);
 }
-
 function callWaitMount(context) {
     directive.callAppComponentWaitMount(context);
     directive.callComponentWaitMount(context);
@@ -163,17 +141,23 @@ function callWaitMount(context) {
     }
     context.app.emit('componentWaitMount', context);
 }
-/*
-function callComponentsMounted(context) {
-    directive.callAppComponentsMounted(context);
-    directive.callComponentsMounted(context);
-    if (typeof context.onComponentsMounted === 'function') {
-        context.onComponentsMounted.call(context);
-    }
-    context.app.emit('componentsMounted', context);
-}
-*/
-module.exports = {
+export { callBeforeCreate };
+export { callCreate };
+export { callConfigCreate };
+export { callBeforeMount };
+export { callMount };
+export { callMountAsync };
+export { callBeforeUpdate };
+export { callUpdate };
+export { callDrawByParent };
+export { callAfterRender };
+export { callBeforeUnmount };
+export { callUnmount };
+export { callBeforeDestroy };
+export { callDestroy };
+export { callLoadProps };
+export { callWaitMount };
+export default {
     callBeforeCreate,
     callCreate,
     callConfigCreate,
@@ -189,6 +173,5 @@ module.exports = {
     callBeforeDestroy,
     callDestroy,
     callLoadProps,
-    callWaitMount,
-    //callComponentsMounted
+    callWaitMount
 };

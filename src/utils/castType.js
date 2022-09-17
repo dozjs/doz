@@ -1,5 +1,4 @@
 const types = {
-
     string(value) {
         if (typeof value === 'string')
             return value;
@@ -26,7 +25,8 @@ const types = {
             return value;
         try {
             return JSON.parse(value);
-        } catch (e) {
+        }
+        catch (e) {
             return value;
         }
     },
@@ -39,12 +39,10 @@ const types = {
         else
             return new Date(value);
     }
-
 };
-
-module.exports = function castType(value, type) {
+export default (function castType(value, type) {
     if (types[type] !== undefined) {
         value = types[type](value);
     }
     return value;
-};
+});

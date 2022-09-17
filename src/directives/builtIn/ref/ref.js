@@ -1,8 +1,7 @@
-const {directive} = require('../../index');
-
-module.exports = function() {
+import index from "../../index.js";
+const { directive } = index;
+export default (function () {
     directive('ref', {
-
         onAppComponentCreate(instance) {
             Object.defineProperties(instance, {
                 ref: {
@@ -12,10 +11,8 @@ module.exports = function() {
                 }
             });
         },
-
         onComponentDOMElementCreate(instance, $target, directiveValue) {
             instance.ref[directiveValue] = $target;
         }
-
     });
-}
+});

@@ -1,6 +1,6 @@
-const {component} = require('../index');
-const be = require('bejs');
-const collection = require('../src/collection');
+import {component} from "../src/index.js";
+import be from "bejs";
+import collection from "../src/collection.js";
 
 describe('component', function () {
 

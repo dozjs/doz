@@ -1,5 +1,5 @@
-const element = require('./element');
-
-module.exports = {
-    updateElement: element.update
+import element from "./element.js";
+export const updateElement = element.update;
+export default {
+    updateElement
 };

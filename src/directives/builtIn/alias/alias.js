@@ -1,14 +1,12 @@
-const {directive} = require('../../index');
-
-module.exports = function() {
+import index from "../../index.js";
+const { directive } = index;
+export default (function () {
     directive(':alias', {
-
         createAlias(instance, alias) {
             if (typeof alias === 'string') {
                 instance.alias = alias;
             }
         },
-
         onAppInit(app) {
             Object.defineProperties(app, {
                 getComponent: {
@@ -21,7 +19,6 @@ module.exports = function() {
                 }
             });
         },
-
         onAppComponentCreate(instance) {
             Object.defineProperties(instance, {
                 getComponent: {
@@ -34,19 +31,16 @@ module.exports = function() {
                 }
             });
         },
-
         onComponentCreate(instance, directiveValue) {
             this.createAlias(instance, directiveValue);
         },
-
         onAppComponentSetConfig(instance, obj) {
             if (typeof obj.alias === 'string') {
                 this.createAlias(instance, obj.alias);
             }
         },
-
         onAppComponentAssignIndex(instance, n) {
-            return instance.alias ? instance.alias : n
+            return instance.alias ? instance.alias : n;
         }
     });
-}
+});

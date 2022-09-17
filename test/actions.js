@@ -1,5 +1,5 @@
-const Doz = require('../index');
-const be = require('bejs');
+import Doz from '../src/index.js'
+import be from "bejs"
 
 const actions = {
     updateTitle(title, name) {

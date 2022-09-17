@@ -5,21 +5,20 @@
  * @param exclude {Array} exclude properties from copy
  * @returns {*}
  */
-
 function extend(targetObj, defaultObj, exclude = []) {
     for (let i in defaultObj) {
         /* istanbul ignore else  */
         if (Object.prototype.hasOwnProperty.call(defaultObj, i) && exclude.indexOf(i) === -1) {
             if (!Object.prototype.hasOwnProperty.call(targetObj, i) || typeof targetObj[i] === 'undefined') {
                 targetObj[i] = defaultObj[i];
-            } else if (typeof targetObj[i] === 'object') {
+            }
+            else if (typeof targetObj[i] === 'object') {
                 extend(targetObj[i], defaultObj[i]);
             }
         }
     }
     return targetObj;
 }
-
 /**
  * Creates new target object and copies deep missing properties to the target object
  * @param args[0]] {Object} target object
@@ -31,6 +30,5 @@ function copy(...args) {
     args[0] = Object.assign({}, args[0]);
     return extend.apply(this, args);
 }
-
-module.exports = extend;
-module.exports.copy = copy;
+export default extend;
+export { copy };

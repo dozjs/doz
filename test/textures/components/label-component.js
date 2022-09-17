@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     tag: 'label-component',
     cfg: {
         template() {

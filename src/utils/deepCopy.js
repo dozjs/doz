@@ -1,6 +1,7 @@
 function deepCopy(obj) {
     // if not array or object or is null return self
-    if (typeof obj !== 'object' || obj === null) return obj;
+    if (typeof obj !== 'object' || obj === null)
+        return obj;
     let newObj, i;
     // handle case: array
     if (Array.isArray(obj)) {
@@ -20,5 +21,4 @@ function deepCopy(obj) {
         }
     return newObj;
 }
-
-module.exports = deepCopy;
+export default deepCopy;

@@ -1,4 +1,4 @@
-module.exports = function toNumber(obj) {
+export default (function toNumber(obj) {
     const num = parseFloat(obj);
     if (!isNaN(num)) {
         if (isFinite(obj)) {
@@ -9,4 +9,4 @@ module.exports = function toNumber(obj) {
         }
     }
     return obj;
-};
+});

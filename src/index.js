@@ -1,22 +1,20 @@
-const Doz = require('./Doz');
-const collection = require('./collection');
-const {use} = require('./plugin');
-const {directive} = require('./directives');
-const component = require('./component');
-const Component = require('./component/Component');
-const mixin = require('./component/helpers/globalMixin');
-const h = require('./vdom/h');
-const appCreate = require('./appCreate');
-const {compile} = require('./vdom/parser');
-//const mapper = require('./vdom/mapper');
-const {update} = require('./vdom/element');
-const tag = require('./decorators/tag');
-const createInstance = require('./component/createInstance')
-const {createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal} = require('./webComponent');
-const bootstrap = require('./directives/builtIn/bootstrap');
-
+import Doz from "./Doz.js";
+import collection from "./collection.js";
+import { use } from "./plugin/index.js";
+import directives from "./directives/index.js";
+import component from "./component/index.js";
+import Component from "./component/Component.js";
+import mixin from "./component/helpers/globalMixin.js";
+import h from "./vdom/h.js";
+import appCreate from "./appCreate.js";
+import { compile } from "./vdom/parser.js";
+import { update } from "./vdom/element.js";
+import tag from "./decorators/tag.js";
+import createInstance from "./component/createInstance.js";
+import { createDozWebComponent, defineWebComponent, defineWebComponentFromGlobal } from "./webComponent.js";
+import bootstrap from "./directives/builtIn/bootstrap.js";
+const { directive } = directives;
 bootstrap();
-
 Object.defineProperties(Doz, {
     collection: {
         value: collection,
@@ -78,31 +76,30 @@ Object.defineProperties(Doz, {
         value: defineWebComponentFromGlobal,
         enumerable: true
     },
-    appCreate : {
+    appCreate: {
         value: appCreate,
         enumerable: true
     },
-    createInstance : {
+    createInstance: {
         value: createInstance,
         enumerable: true
     }
 });
-
-module.exports = Doz;
-module.exports.appCreate = appCreate;
-module.exports.collection = collection;
-module.exports.compile = compile;
-module.exports.Component = Component;
-module.exports.component = component;
-module.exports.define = component;
-module.exports.h = h;
-module.exports.update = update;
-module.exports.mixin = mixin;
-module.exports.use = use;
-module.exports.directive = directive;
-module.exports.version = Doz.version;
-module.exports.tag = tag;
-module.exports.createDozWebComponent = createDozWebComponent;
-module.exports.defineWebComponent = defineWebComponent;
-module.exports.defineWebComponentFromGlobal = defineWebComponentFromGlobal;
-module.exports.createInstance = createInstance;
+export const version = Doz.version;
+export default Doz;
+export { appCreate };
+export { collection };
+export { compile };
+export { Component };
+export { component };
+export { component as define };
+export { h };
+export { update };
+export { mixin };
+export { use };
+export { directive };
+export { tag };
+export { createDozWebComponent };
+export { defineWebComponent };
+export { defineWebComponentFromGlobal };
+export { createInstance };

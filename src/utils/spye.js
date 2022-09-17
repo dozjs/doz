@@ -2,7 +2,6 @@
  * @class
  */
 class Spye {
-
     /**
      * Create instance
      * @param query {Object} element that you want watch
@@ -12,29 +11,21 @@ class Spye {
      * @param [opts.unwatchAfterRemove=false] {boolean} stop check after detect element remove
      */
     constructor(element, opts = {}) {
-
         this.opts = Object.assign({}, {
             autoWatch: true,
             unwatchAfterCreate: false,
             unwatchAfterRemove: false,
         }, opts);
-
         this.element = element;
-
         this._checkCount = 0;
-
         this._created = null;
-
         this._onCreate = () => {
         };
-
         this._onRemove = () => {
         };
-
         if (this.opts.autoWatch)
             this.watch();
     }
-
     /**
      * Check
      * @returns {Spye}
@@ -56,10 +47,8 @@ class Spye {
             if (this.opts.unwatchAfterRemove)
                 this.unwatch();
         }
-
         return this;
     }
-
     /**
      * Start watching
      * @returns {Spye}
@@ -70,7 +59,6 @@ class Spye {
         });
         return this;
     }
-
     /**
      * Stop watching
      * @returns {Spye}
@@ -80,7 +68,6 @@ class Spye {
         this._tick = null;
         return this;
     }
-
     /**
      * Fired when element is created
      * @param callback
@@ -90,7 +77,6 @@ class Spye {
         this._onCreate = callback;
         return this;
     }
-
     /**
      * Fired when element is removed
      * @param callback
@@ -100,7 +86,5 @@ class Spye {
         this._onRemove = callback;
         return this;
     }
-
 }
-
-module.exports = Spye;
+export default Spye;

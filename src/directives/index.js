@@ -1,13 +1,9 @@
-const {registerDirective} = require('../collection');
-
+import { registerDirective } from "../collection.js";
+import app from "./types/app.js";
+import component from "./types/component.js";
 function directive(name, options = {}) {
     registerDirective(name, options);
 }
-
-module.exports = Object.assign(
-    {
-        directive
-    },
-    require('./types/app'),
-    require('./types/component')
-);
+export default Object.assign({
+    directive
+}, app, component);

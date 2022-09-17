@@ -1,5 +1,5 @@
-const toInlineStyle = require('../src/utils/toInlineStyle');
-const be = require('bejs');
+import toInlineStyle from "../src/utils/toInlineStyle.js";
+import be from "bejs";
 
 describe('toInlineStyle', function () {
 

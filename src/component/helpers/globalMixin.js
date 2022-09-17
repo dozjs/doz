@@ -1,8 +1,6 @@
-const Component = require('../Component');
-const mixin = require('../../utils/mixin');
-
+import Component from "../Component.js";
+import mixin from "../../utils/mixin.js";
 function globalMixin(obj) {
     mixin(Component.prototype, obj);
 }
-
-module.exports = globalMixin;
+export default globalMixin;

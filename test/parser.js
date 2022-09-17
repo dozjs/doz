@@ -1,7 +1,7 @@
-const {compile} = require('../src/vdom/parser');
-const {updateElement} = require('../src/vdom/index');
-const html = require('../src/utils/html');
-const DOM = require('../src/component/DOMManipulation');
+import {compile} from '../src/index.js';
+import {updateElement} from '../src/vdom/index.js';
+import html from "../src/utils/html.js";
+import DOM from "../src/component/DOMManipulation.js";
 
 describe('parser', function () {
 

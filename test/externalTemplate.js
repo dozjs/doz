@@ -1,6 +1,5 @@
-const Doz = require('../index');
-const be = require('bejs');
-//const template = require('./textures/templates/template1.html');
+import Doz from "../src/index.js";
+import be from "bejs";
 
 describe('externalTemplate', function () {
 

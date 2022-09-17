@@ -1,5 +1,5 @@
-const bind = require('../src/utils/bind');
-const be = require('bejs');
+import bind from '../src/utils/bind.js'
+import be from "bejs";
 
 describe('bind', function () {
 

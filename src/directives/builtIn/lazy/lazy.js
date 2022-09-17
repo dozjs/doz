@@ -1,16 +1,13 @@
-const {directive} = require('../../index');
-
-module.exports = function() {
+import index from "../../index.js";
+const { directive } = index;
+export default (function () {
     function isInViewport(element) {
         const rect = element.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
+        return (rect.top >= 0 &&
             rect.left >= 0 &&
             rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth));
     }
-
     directive('lazy', {
         onAppInit(app) {
             Object.defineProperties(app, {
@@ -22,8 +19,8 @@ module.exports = function() {
             window.addEventListener('scroll', () => {
                 app.lazyComponentsList.forEach(component => {
                     this.canRunMount(app, component);
-                })
-            })
+                });
+            });
         },
         onComponentCreate(instance) {
             instance.waitMount = true;
@@ -31,7 +28,7 @@ module.exports = function() {
             instance.app.lazyComponentsList.add(instance);
         },
         onComponentWaitMount(instance) {
-            this.canRunMount(instance.app, instance)
+            this.canRunMount(instance.app, instance);
         },
         canRunMount(app, component) {
             if (isInViewport(component.$domEl)) {
@@ -40,4 +37,4 @@ module.exports = function() {
             }
         }
     });
-}
+});

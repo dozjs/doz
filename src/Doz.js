@@ -1,44 +1,35 @@
-const bind = require('./utils/bind');
-const createInstance = require('./component/createInstance');
-const {TAG, REGEX, ALREADY_WALKED} = require('./constants');
-const toLiteralString = require('./utils/toLiteralString');
-const plugin = require('./plugin');
-const directive = require('./directives');
-const makeSureAttach = require('./component/makeSureAttach');
+import bind from "./utils/bind.js";
+import createInstance from "./component/createInstance.js";
+import { TAG, REGEX, ALREADY_WALKED } from "./constants.js";
+import toLiteralString from "./utils/toLiteralString.js";
+import plugin from "./plugin/index.js";
+import directive from "./directives/index.js";
+import makeSureAttach from "./component/makeSureAttach.js";
 let appCounter = 0;
-
 class Doz {
-
     constructor(cfg = {}) {
-
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
-
         if (REGEX.IS_ID_SELECTOR.test(cfg.root)) {
             cfg.root = document.getElementById(cfg.root.substring(1));
         }
-
         if (REGEX.IS_ID_SELECTOR.test(cfg.template)) {
             cfg.template = document.getElementById(cfg.template.substring(1));
             cfg.template = cfg.template.innerHTML;
         }
-
         if (!(cfg.root instanceof HTMLElement || cfg.root instanceof ShadowRoot)) {
             throw new TypeError('root must be an HTMLElement or an valid ID selector like #example-root');
         }
-
         if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
-
         if (cfg.root.hasChildNodes) {
-            const appNode = cfg.root.firstElementChild;// document.querySelector(TAG.APP);
+            const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
             // This fix double app rendering in SSR
             makeSureAttach(appNode);
             if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
                 appNode.parentNode.removeChild(appNode);
             }
         }
-
         this.cfg = Object.assign({}, {
             components: [],
             shared: {},
@@ -50,7 +41,6 @@ class Doz {
             autoDraw: true,
             enableExternalTemplate: false
         }, cfg);
-
         Object.defineProperties(this, {
             _lastUId: {
                 value: 0,
@@ -82,7 +72,6 @@ class Doz {
                             cb.call(cb._instance);
                         }
                     });
-
                     this._onAppReadyCB = [];
                 }
             },
@@ -150,17 +139,13 @@ class Doz {
             },
             mount: {
                 value: function (template, root, parent = this._tree) {
-
                     if (typeof root === 'string') {
                         root = document.querySelector(root);
                     }
-
                     root = root || parent._rootElement;
-
                     if (!(root instanceof HTMLElement)) {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
-
                     const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     const autoCmp = {
                         tag: TAG.MOUNT,
@@ -172,7 +157,6 @@ class Doz {
                             }
                         }
                     };
-
                     return createInstance({
                         root,
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
@@ -185,25 +169,23 @@ class Doz {
                 enumerable: true
             }
         });
-
         if (Array.isArray(this.cfg.components)) {
             this.cfg.components.forEach(cmp => {
                 if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
                     this._components[cmp.tag] = cmp;
                 }
             });
-        } else if (typeof this.cfg.components === 'object') {
+        }
+        else if (typeof this.cfg.components === 'object') {
             Object.keys(this.cfg.components).forEach(objName => {
                 this._components[objName] = {
                     tag: objName,
                     cfg: this.cfg.components[objName]
-                }
+                };
             });
         }
-
         plugin.load(this);
         directive.callAppInit(this);
-
         if (this.cfg.mainComponent) {
             this._tree = createInstance({
                 mountMainComponent: true,
@@ -211,10 +193,10 @@ class Doz {
                 component: this.cfg.mainComponent,
                 app: this,
                 innerHTML: this.cfg.innerHTML
-            });// || [];
-
+            }); // || [];
             //console.log(this._tree)
-        } else {
+        }
+        else {
             this._components[TAG.APP] = {
                 tag: TAG.APP,
                 cfg: {
@@ -227,89 +209,70 @@ class Doz {
                     }
                 }
             };
-
             Object.keys(cfg).forEach(p => {
                 if (!['template', 'root'].includes(p))
                     this._components[TAG.APP].cfg[p] = cfg[p];
             });
-
         }
-
         //Apply listeners
         if (this.cfg.listeners) {
             Object.keys(this.cfg.listeners).forEach(event => {
                 //console.log(event)
-                this.on(event, this.cfg.listeners[event])
-            })
+                this.on(event, this.cfg.listeners[event]);
+            });
         }
-
         if (!this.cfg.mainComponent && this.cfg.autoDraw)
             this.draw();
-
         this.canAppReady();
     }
-
     canAppReady() {
         if (this._onAppComponentsMounted.size) {
             setTimeout(() => {
                 this.canAppReady();
-            })
-        } else {
+            });
+        }
+        else {
             this._callAppReady();
             this.emit('ready', this);
         }
     }
-
     draw() {
-
         if (!this.cfg.autoDraw)
             this.cfg.root.innerHTML = '';
         this._tree = createInstance({
             root: this.cfg.root,
             template: this.baseTemplate,
             app: this
-        });// || [];
-
+        }); // || [];
         return this;
     }
-
     get mainComponent() {
         return this._tree;
     }
-
     on(event, callback) {
         if (typeof event !== 'string')
             throw new TypeError('Event must be a string');
-
         if (typeof callback !== 'function')
             throw new TypeError('Callback must be a function');
-
         if (!this._onAppCB[event]) {
             this._onAppCB[event] = [];
         }
-
         this._onAppCB[event].push(callback);
-
         return this;
     }
-
     emit(event, ...args) {
         if (this._onAppCB[event]) {
             this._onAppCB[event].forEach(func => {
                 func.apply(this, args);
             });
         }
-
         if (this.onAppEmit) {
-            this.onAppEmit(event, ...args)
+            this.onAppEmit(event, ...args);
         }
-
         return this;
     }
-
     generateUId() {
         return this.appId + '-' + (++this._lastUId);
     }
 }
-
-module.exports = Doz;
+export default Doz;

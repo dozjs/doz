@@ -1,5 +1,4 @@
 function loadLocal(instance) {
-
     // Add local components
     if (Array.isArray(instance.components)) {
         instance.components.forEach(cmp => {
@@ -8,15 +7,15 @@ function loadLocal(instance) {
             }
         });
         delete instance.components;
-    } else if (typeof instance.components === 'object'){
+    }
+    else if (typeof instance.components === 'object') {
         Object.keys(instance.components).forEach(objName => {
             instance._components[objName] = {
                 tag: objName,
                 cfg: instance.components[objName]
-            }
+            };
         });
         delete instance.components;
     }
 }
-
-module.exports = loadLocal;
+export default loadLocal;

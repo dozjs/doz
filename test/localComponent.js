@@ -1,10 +1,14 @@
-const Doz = require('../index');
-const be = require('bejs');
+import Doz from "../src/index.js";
+import be from "bejs";
+
+import idComponent from "./textures/components/id-component.js";
+import labelComponent from "./textures/components/label-component.js";
+import wrapperComponent from "./textures/components/wrapper-component.js";
 
 const components = [
-    require('./textures/components/id-component'),
-    require('./textures/components/label-component'),
-    require('./textures/components/wrapper-component')
+    idComponent,
+    labelComponent,
+    wrapperComponent
 ];
 
 describe('localComponent', function () {

@@ -3,5 +3,4 @@ function toLiteralString(str) {
         .replace(/{{/gm, '${')
         .replace(/}}/gm, '}');
 }
-
-module.exports = toLiteralString;
+export default toLiteralString;

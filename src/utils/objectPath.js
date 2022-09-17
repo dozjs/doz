@@ -1,11 +1,8 @@
 function getByPath(path, obj) {
-    return path.split('.').reduce((res, prop) =>
-            res
-                ? res[prop]
-                : undefined
-        , obj);
+    return path.split('.').reduce((res, prop) => res
+        ? res[prop]
+        : undefined, obj);
 }
-
 function getLast(path, obj) {
     if (path.indexOf('.') !== -1) {
         path = path.split('.');
@@ -14,6 +11,5 @@ function getLast(path, obj) {
     }
     return getByPath(path, obj);
 }
-
-module.exports = getByPath;
-module.exports.getLast = getLast;
+export default getByPath;
+export { getLast };

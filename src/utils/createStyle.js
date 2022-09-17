@@ -1,23 +1,21 @@
-const tagList = require('./tags');
-const {TAG} = require('../constants');
-
+import tagList from "./tags.js";
+import { TAG } from "../constants.js";
 function createStyle(cssContent, uId, tag, scoped, cmp) {
     let result;
     const styleId = `${uId}--style`;
     const styleResetId = `${uId}--style-reset`;
     //const styleExists = document.getElementById(styleId);
-
     let styleExists;
-
     if (cmp && cmp.app.useShadowRoot) {
         styleExists = cmp.app._root.getElementById(styleId);
-    } else {
+    }
+    else {
         styleExists = document.getElementById(styleId);
     }
-
     if (styleExists) {
         result = styleExists.innerHTML = cssContent;
-    } else {
+    }
+    else {
         if (scoped) {
             let resetContent = `${tag}, ${tag} *,`;
             resetContent += tagList.map(t => `${tag} ${t}`).join(',');
@@ -28,23 +26,22 @@ function createStyle(cssContent, uId, tag, scoped, cmp) {
             if (cmp && cmp.app.useShadowRoot) {
                 let tagApp = cmp.app._root.querySelector(TAG.APP);
                 cmp.app._root.insertBefore(styleResetEl, tagApp);
-            } else {
+            }
+            else {
                 document.head.appendChild(styleResetEl);
             }
         }
-
         const styleEl = document.createElement("style");
         styleEl.id = styleId;
         result = styleEl.innerHTML = cssContent;
         if (cmp && cmp.app.useShadowRoot) {
             let tagApp = cmp.app._root.querySelector(TAG.APP);
             cmp.app._root.insertBefore(styleEl, tagApp);
-        } else {
+        }
+        else {
             document.head.appendChild(styleEl);
         }
     }
-
     return result;
 }
-
-module.exports = createStyle;
+export default createStyle;

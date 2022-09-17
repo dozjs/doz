@@ -1,5 +1,5 @@
-const mixin = require('../src/utils/mixin');
-const be = require('bejs');
+import mixin from  '../src/utils/mixin.js'
+import be from "bejs";
 
 describe('mixin', function () {
 

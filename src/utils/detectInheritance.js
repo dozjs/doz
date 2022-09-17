@@ -5,10 +5,10 @@ function detectInheritance(proto, _class) {
     }
     if (proto.constructor !== _class) {
         return detectInheritance(proto.__proto__, _class);
-    } else {
+    }
+    else {
         //console.log('ok trovato', proto.constructor.name);
         return true;
     }
 }
-
-module.exports = detectInheritance;
+export default detectInheritance;

@@ -1,9 +1,7 @@
-const html = require('./html');
-
+import html from "./html.js";
 function canDecode(str) {
     return /&\w+;/.test(str)
         ? html.decode(str)
-        : str
+        : str;
 }
-
-module.exports = canDecode;
+export default canDecode;

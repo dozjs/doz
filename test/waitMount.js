@@ -1,4 +1,4 @@
-const Doz = require('../index');
+import Doz from "../src/index.js";
 
 describe('waitMount', function () {
 

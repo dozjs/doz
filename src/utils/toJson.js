@@ -1,7 +1,8 @@
-module.exports = function toJSON (obj) {
+export default (function toJSON(obj) {
     try {
-        return JSON.parse(obj)
-    } catch (e) {
+        return JSON.parse(obj);
+    }
+    catch (e) {
         return obj;
     }
-};
+});

@@ -6,5 +6,4 @@ function createStyleSoftEntrance() {
         document.head.appendChild(style);
     }
 }
-
-module.exports = createStyleSoftEntrance;
+export default createStyleSoftEntrance;

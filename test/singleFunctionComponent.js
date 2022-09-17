@@ -1,4 +1,5 @@
-const Doz = require('../index');
+import Doz from "../src/index.js";
+import be from "bejs";
 
 describe('singleFunctionComponent', function () {
 

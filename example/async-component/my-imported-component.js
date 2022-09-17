@@ -1,4 +1,4 @@
-import {Component} from '../../dist/esm/index.js'
+import {Component} from '../../src/index.js'
 
 class MyImportedComponent extends Component {
     template(h) {

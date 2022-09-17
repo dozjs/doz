@@ -1,5 +1,4 @@
-const h = require('../src/vdom/h');
-const mapper = require('../src/vdom/mapper');
+import h from '../src/vdom/h.js';
 
 describe('h', function () {
 

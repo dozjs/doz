@@ -1,13 +1,10 @@
 class Base {
-
     constructor(opt = {}) {
         opt.cmp = opt.cmp || {
             tag: opt.tag,
             cfg: {}
         };
-
         opt.app = opt.app || {};
-
         Object.defineProperties(this, {
             //Private
             _opt: {
@@ -97,7 +94,6 @@ class Base {
             _componentsMap: {
                 value: new Map()
             },
-
             //Public
             tag: {
                 value: opt.cmp.tag,
@@ -199,5 +195,4 @@ class Base {
         });
     }
 }
-
-module.exports = Base;
+export default Base;

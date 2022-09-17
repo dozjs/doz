@@ -1,6 +1,6 @@
-const {h} = require('../index');
-const {compile} = require('../src/vdom/parser');
-const assert = require('assert');
+import {h} from '../src/index.js'
+import {compile} from '../src/index.js';
+import assert from 'assert'
 
 describe('parser2', function () {
     it('should ok', function () {

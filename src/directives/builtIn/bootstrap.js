@@ -1,14 +1,24 @@
-module.exports = function run() {
-    require('./store/store')();
-    require('./id/id')();
-    require('./alias/alias')();
-    require('./on/on')();
-    require('./hooks/hooks')();
-
-    require('./ref/ref')();
-    require('./is/is')();
-    require('./bind/bind')();
-    require('./show/show')();
-    require('./animate/animate')();
-    require('./lazy/lazy')();
-}
+import store from "./store/store.js";
+import id from "./id/id.js";
+import alias from "./alias/alias.js";
+import on from "./on/on.js";
+import hooks from "./hooks/hooks.js";
+import ref from "./ref/ref.js";
+import is from "./is/is.js";
+import bind from "./bind/bind.js";
+import show from "./show/show.js";
+import animate from "./animate/animate.js";
+import lazy from "./lazy/lazy.js";
+export default (function run() {
+    store();
+    id();
+    alias();
+    on();
+    hooks();
+    ref();
+    is();
+    bind();
+    show();
+    animate();
+    lazy();
+});

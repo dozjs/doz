@@ -3,5 +3,4 @@ function dashToCamel(s) {
         return m[1].toUpperCase();
     });
 }
-
-module.exports = dashToCamel;
+export default dashToCamel;
