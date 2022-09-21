@@ -106,7 +106,10 @@ appCreate('#app', ButtonCounter);
 
 #### CDN unpkg
 ```html
-<script src="https://unpkg.com/doz/dist/doz.min.js"></script>
+<script type="module">
+    import {Component} from 'https://unpkg.com/doz/dist/doz.min.js'
+    //...
+</script>
 ```
 
 ## Changelog
