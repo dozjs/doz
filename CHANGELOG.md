@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [4.0.2] - 2022-09-21
+- **Improved** component attributes now are removed at creation of the HTML element
+- **Removed** IE11 info
+
 ## [4.0.1] - 2022-09-21
 - **Fixed** version script
 
