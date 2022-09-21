@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - vdom update</title>
-    <script src="../../dist/doz.js?589654888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -18,7 +17,8 @@
 <body>
 <div id="app"></div>
 
-<script>
+<script type="module">
+    import Doz from '../../src/index.js?123'
 
     Doz.component('x-cmp', {
         template(h) {

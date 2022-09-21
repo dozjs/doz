@@ -2,7 +2,7 @@ import { REGEX } from "../constants.js";
 import observer from "./observer.js";
 import hooks from "./hooks.js";
 import { updateElement } from "../vdom/index.js";
-import drawDynamic from "./helpers/drawDynamic.js";
+//import drawDynamic from "./helpers/drawDynamic.js";
 import proxy from "../proxy.js";
 import toInlineStyle from "../utils/toInlineStyle.js";
 import queueReady from "./helpers/queue-ready.js";
@@ -22,6 +22,7 @@ import delay from "../utils/delay.js";
 import makeSureAttach from "./makeSureAttach.js";
 import data from "../data.js";
 //const mapCompiled = require('../vdom/map-compiled');
+
 class Component extends DOMManipulation {
     constructor(opt) {
         super(opt);
@@ -174,7 +175,7 @@ class Component extends DOMManipulation {
         //console.log(this._prev)
         if (!silentAfterRenderEvent)
             hooks.callAfterRender(this);
-        drawDynamic(this);
+        //drawDynamic(this);
     }
     renderPause() {
         this._renderPause = true;

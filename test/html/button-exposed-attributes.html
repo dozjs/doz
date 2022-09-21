@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - button exposed attributes</title>
-    <script src="../../dist/doz.js?589654448488"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -18,7 +17,8 @@
 <body>
 <div id="app"></div>
 
-<script>
+<script type="module">
+    import Doz from '../../src/index.js?123'
 
     const MyComponent = class extends Doz.Component {
         constructor(obj) {

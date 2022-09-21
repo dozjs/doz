@@ -6,14 +6,18 @@ function drawDynamic(instance) {
     let index = instance._processing.length - 1;
     //if (!instance._processing.length) return;
     //let fragment = document.createDocumentFragment();
-    console.log('instance._processing', JSON.stringify(instance._processing))
+    console.log('instance._processing', instance._processing)
+    let item, root;
     while (index >= 0) {
         //for (let index = 0; index < instance._processing.length; index++) {
-        let item = instance._processing[index];
-        let root = item.node;//item.node.parentNode;
+        console.log(index)
+        item = instance._processing[index];
+        //let root = item.node.parentNode;
+        root = null; //item.node;
 
-        console.log('root', root)
-        console.log('item', item)
+        //console.log('root', root)
+        /*console.log('item', item.node)
+        console.log('index', index)*/
         //root = item.node
         const dynamicInstance = createInstance({
             root,//: item.node,
@@ -22,6 +26,7 @@ function drawDynamic(instance) {
             app: instance.app,
             parent: instance
         });
+        console.log('instance created', dynamicInstance)
         if (dynamicInstance) {
             // if original node has children
             /*if (item.node.childNodes.length) {

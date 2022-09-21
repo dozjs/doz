@@ -5,7 +5,6 @@
     <meta name="description" content="DOZ - Clock">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - component as web-component</title>
-    <script src="../../dist/doz.js?5754ds7d4uimj2e8e3"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -33,8 +32,9 @@
     <div>12 div</div>
 </dwc-my-cmp2>
 
+<script type="module">
+    import Doz from '../../src/index.js?123'
 
-<script>
     const {component, defineWebComponent, defineWebComponentFromGlobal} = Doz;
 
     component('doz-clock', {

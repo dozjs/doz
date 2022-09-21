@@ -12,23 +12,26 @@ import getComponentName from "./helpers/getComponentName.js";
 import makeSureAttach from "./makeSureAttach.js";
 
 function createInstance(cfg = {}) {
-    if (!cfg.root)
-        return;
+    /*if (!cfg.root)
+        return;*/
 
-    if (!(cfg.mountMainComponent)) {
-        if (cfg.template instanceof HTMLElement) {
-            if (!cfg.template.parentNode)
+    if (cfg.root) {
+        if (!(cfg.mountMainComponent)) {
+            if (cfg.template instanceof HTMLElement) {
+                /*if (!cfg.template.parentNode)
+                    cfg.root.appendChild(cfg.template);*/
+            } else if (typeof cfg.template === 'string') {
+                //console.log('create tpl html')
+                cfg.template = html.create(cfg.template);
                 cfg.root.appendChild(cfg.template);
-        }
-        else if (typeof cfg.template === 'string') {
-            console.log('create tpl html')
-            cfg.template = html.create(cfg.template);
-            cfg.root.appendChild(cfg.template);
+            }
         }
     }
+
     let componentInstance = null;
     let cmpName;
     const trash = [];
+
     function appendChildrenToParent(parent, newElement) {
         if (parent.cmp) {
             let n = Object.keys(parent.cmp.children).length++;
@@ -43,17 +46,24 @@ function createInstance(cfg = {}) {
             }
         }
     }
+
+    function flushTrash() {
+        trash.forEach($child => $child.remove());
+    }
+
+    let walkCount = 0;
+
     function walk($child, parent = {}) {
-        console.log('walk called', $child)
+        console.log('walkCount', walkCount++, $child)
         while ($child) {
             makeSureAttach($child);
             // it is not good but it works
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
+                $child._countWalk = 0;
             }
             else {
                 $child = $child.nextElementSibling;
-                console.log('already walked', $child);
                 continue;
             }
             directive.callAppWalkDOM(parent, $child);
@@ -70,11 +80,8 @@ function createInstance(cfg = {}) {
                 cfg.app._components[cmpName] ||
                 collection.getComponent(cmpName);
             let parentElement;
+
             if (cmp) {
-                //console.log(cmpName)
-                if ($child._dozAttach[ALREADY_WALKED]) {
-                    console.log('------------>', $child.outerHTML)
-                }
                 if (parent.cmp) {
                     const rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
@@ -109,8 +116,7 @@ function createInstance(cfg = {}) {
                         componentDirectives,
                         parentCmp: parent.cmp || cfg.parent
                     });
-                }
-                else {
+                } else {
                     if (cmp.cfg.then) {
                         let loadingComponent = null;
                         let errorComponent = null;
@@ -213,13 +219,17 @@ function createInstance(cfg = {}) {
                     $child = $child.nextElementSibling;
                     continue;
                 }
+
                 newElement.rawChildrenObject = $child._dozAttach.elementChildren;
                 newElement.$domEl = $child;
+
                 if (typeof newElement.module === 'object') {
                     hmr(newElement, newElement.module);
                 }
+
                 propsInit(newElement);
                 newElement.app.emit('componentPropsInit', newElement);
+
                 function _runMount(_newElement = null) {
                     newElement = _newElement || newElement;
                     if (newElement._isRendered)
@@ -236,14 +246,14 @@ function createInstance(cfg = {}) {
                         let slotPlaceholder = document.createComment('slot');
                         newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
-                    // This is an hack for call render a second time so the
+                    // This is a hack for call render a second time so the
                     // event onAppDraw and onDrawByParent are fired after
                     // that the component is mounted.
                     // This hack makes also the component that has keys
                     // Really this hack is very important :D :D
-                    delay(() => {
+                    /*delay(() => {
                         newElement.render(false, [], true);
-                    });
+                    });*/
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
                     //if (newElement.waitMount) {
@@ -272,18 +282,17 @@ function createInstance(cfg = {}) {
                 appendChildrenToParent(parent, newElement);
                 cfg.autoCmp = null;
             }
-            if ($child.hasChildNodes()) {
-                if (parentElement) {
-                    walk($child.firstElementChild, { cmp: parentElement });
-                }
-                else {
-                    walk($child.firstElementChild, { cmp: parent.cmp });
-                }
+            if ($child.firstElementChild) {
+                //console.log('$child.firstElementChild', $child.firstElementChild)
+                walk($child.firstElementChild, {
+                    cmp: parentElement ? parentElement : parent.cmp
+                });
             }
+
             $child = $child.nextElementSibling;
         }
     }
-    ///console.log(cfg.template)
+
     if (cfg.mountMainComponent) {
         // Monto il componente principale
         let newElement = new cfg.component({
@@ -307,15 +316,14 @@ function createInstance(cfg = {}) {
             });
         }
         walk(newElement.getHTMLElement(), { cmp: newElement });
-        trash.forEach($child => $child.remove());
+        flushTrash()
         hooks.callMount(newElement);
         hooks.callMountAsync(newElement);
         return newElement;
-    }
-    else {
-        console.log('cfg.template', cfg.template)
+    } else {
+        //console.log('cfg.template', cfg.template)
         walk(cfg.template);
-        trash.forEach($child => $child.remove());
+        flushTrash()
         return componentInstance;
     }
 }

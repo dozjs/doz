@@ -112,7 +112,9 @@
 
     Doz.component('doz-list-item', {
         template(h) {
-            return h`<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
+            return h`
+                <li onclick="this.click('${this.props.title}')">${this.props.title}</li>
+            `
         },
         click(t) {
             //console.log(t);

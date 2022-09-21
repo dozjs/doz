@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - props propagation</title>
     <title>Title</title>
-    <script src="../dist/doz.js?5849645f414"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -22,7 +21,8 @@
 </head>
 <body>
 <div id="app"></div>
-<script>
+<script type="module">
+    import Doz from '../src/index.js'
 
     class MyChild1 extends Doz.Component {
         template(h) {
