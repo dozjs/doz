@@ -6,7 +6,7 @@ import { serializeProps } from "../vdom/parser.js";
 import hmr from "./helpers/hmr.js";
 import Component from "./Component.js";
 import propsInit from "./helpers/propsInit.js";
-import delay from "../utils/delay.js";
+//import delay from "../utils/delay.js";
 import directive from "../directives/index.js";
 import getComponentName from "./helpers/getComponentName.js";
 import makeSureAttach from "./makeSureAttach.js";
