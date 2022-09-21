@@ -60,7 +60,7 @@ function createInstance(cfg = {}) {
             // it is not good but it works
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
-                $child._countWalk = 0;
+                //$child._countWalk = 0;
             }
             else {
                 $child = $child.nextElementSibling;
