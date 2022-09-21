@@ -8,7 +8,7 @@
     "sideEffects": false,
     "typings": "types/index.d.ts",
     "scripts": {
-        "preversion": "npm run-script test && npm run-script build && npm run-script doc && git commit -a -m BUILD",
+        "preversion": "npm run-script test && npm run-script build && git commit -a -m BUILD",
         "postversion": "npm publish && git push --follow-tags",
         "release:major": "npm version major",
         "release:minor": "npm version minor",
