@@ -8,17 +8,13 @@
     "sideEffects": false,
     "typings": "types/index.d.ts",
     "scripts": {
-        "release:before": "npm run-script test && npm run-script doc && git commit -a -m DOC",
-        "release:major": "webpack --env.major && npm run-script release:publish",
-        "release:minor": "webpack --env.minor && npm run-script release:publish",
-        "release:patch": "webpack --env.patch && npm run-script release:publish",
-        "release:publish": "git commit -a -m BUILD && version-to-tag.sh && npm publish",
-        "buld.and.push": "npm run-script build && git commit -a -m BUILD && git push",
-        "watch": "webpack --watch --progress --debug --mode development",
+        "preversion": "npm run-script test && npm run-script build && npm run-script doc && git commit -a -m BUILD",
+        "postversion": "npm publish && git push --follow-tags",
+        "release:major": "npm version major",
+        "release:minor": "npm version minor",
+        "release:patch": "npm version patch",
         "build": "rollup --config rollup.config.js",
-        "test": "mocha test",
-        "test:hmr-watch": "parcel watch test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist",
-        "test:hmr-build": "parcel build test/html/HMR/index.js --out-file bundle --no-cache --out-dir test/html/HMR/public/dist --public-url ./"
+        "test": "mocha test"
     },
     "repository": {
         "type": "git",
@@ -60,6 +56,8 @@
         "jsdom": "^19.0.0",
         "mocha": "^10.0.0",
         "rollup": "^2.79.0",
+        "rollup-plugin-terser": "^7.0.2",
+        "rollup-plugin-version-injector": "^1.3.3",
         "typescript": "^3.1.1"
     },
     "mocha": {
