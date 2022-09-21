@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [4.0.0] - 2022-09-21
+- **Breaking changes**
+  - Drop UMD distribution
+- **Added** full support to ESM 
+- **Improved** performance during the component creation
+
 ## [3.22.1] - 2022-06-22
 - **Fixed** dozAttach can be undefined using `data-follow` 
 
