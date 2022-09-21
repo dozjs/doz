@@ -1,6 +1,6 @@
 function removeAllAttributes(el, exclude = []) {
     let attributeName;
-    if (el.attributes)
+    if (el && el.attributes)
         for (let i = el.attributes.length - 1; i >= 0; i--) {
             attributeName = el.attributes[i].name;
             // exclude anyway data attributes

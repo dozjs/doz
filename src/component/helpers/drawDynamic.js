@@ -1,16 +1,22 @@
 import { COMPONENT_DYNAMIC_INSTANCE, PROPS_ATTRIBUTES } from "../../constants.js";
 import directive from "../../directives/index.js";
 import createInstance from "../createInstance.js";
+
 function drawDynamic(instance) {
     let index = instance._processing.length - 1;
     //if (!instance._processing.length) return;
     //let fragment = document.createDocumentFragment();
+    console.log('instance._processing', JSON.stringify(instance._processing))
     while (index >= 0) {
         //for (let index = 0; index < instance._processing.length; index++) {
         let item = instance._processing[index];
-        let root = item.node.parentNode;
+        let root = item.node;//item.node.parentNode;
+
+        console.log('root', root)
+        console.log('item', item)
+        //root = item.node
         const dynamicInstance = createInstance({
-            root,
+            root,//: item.node,
             template: item.node,
             //template: item.node.outerHTML,
             app: instance.app,
@@ -36,4 +42,5 @@ function drawDynamic(instance) {
         index -= 1;
     }
 }
+
 export default drawDynamic;

@@ -10,16 +10,18 @@ import delay from "../utils/delay.js";
 import directive from "../directives/index.js";
 import getComponentName from "./helpers/getComponentName.js";
 import makeSureAttach from "./makeSureAttach.js";
+
 function createInstance(cfg = {}) {
     if (!cfg.root)
         return;
-    //console.log(cfg.root)
+
     if (!(cfg.mountMainComponent)) {
         if (cfg.template instanceof HTMLElement) {
             if (!cfg.template.parentNode)
                 cfg.root.appendChild(cfg.template);
         }
         else if (typeof cfg.template === 'string') {
+            console.log('create tpl html')
             cfg.template = html.create(cfg.template);
             cfg.root.appendChild(cfg.template);
         }
@@ -42,6 +44,7 @@ function createInstance(cfg = {}) {
         }
     }
     function walk($child, parent = {}) {
+        console.log('walk called', $child)
         while ($child) {
             makeSureAttach($child);
             // it is not good but it works
@@ -50,6 +53,7 @@ function createInstance(cfg = {}) {
             }
             else {
                 $child = $child.nextElementSibling;
+                console.log('already walked', $child);
                 continue;
             }
             directive.callAppWalkDOM(parent, $child);
@@ -68,6 +72,9 @@ function createInstance(cfg = {}) {
             let parentElement;
             if (cmp) {
                 //console.log(cmpName)
+                if ($child._dozAttach[ALREADY_WALKED]) {
+                    console.log('------------>', $child.outerHTML)
+                }
                 if (parent.cmp) {
                     const rawChild = $child.outerHTML;
                     parent.cmp.rawChildren.push(rawChild);
@@ -306,9 +313,11 @@ function createInstance(cfg = {}) {
         return newElement;
     }
     else {
+        console.log('cfg.template', cfg.template)
         walk(cfg.template);
         trash.forEach($child => $child.remove());
         return componentInstance;
     }
 }
+
 export default createInstance;

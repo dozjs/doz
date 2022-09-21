@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - benchmark</title>
     <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst"></script-->
-    <script src="../../dist/doz.js?589654888"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -35,7 +34,8 @@
 
 <div id="app"></div>
 
-<script>
+<script type="module">
+    import Doz from '../../src/index.js?123'
 
     let currentBench = "";
 
@@ -95,10 +95,10 @@
     });
 
     Doz.component('doz-buttons', {
-        template() {
+        template(h) {
             return (
-                `<div>
-                    <button onclick="this.action.add(1000)" >Add 1000</button>
+               h`<div>
+                    <button onclick="this.action.add(10)" >Add 1000</button>
                     <button onclick="this.action.add(10000)" >Add 10000</button>
                     <button onclick="this.action.reverse()" >Reverse</button>
                     <button onclick="this.action.sort()" >Sort</button>
@@ -111,8 +111,8 @@
     });
 
     Doz.component('doz-list-item', {
-        template() {
-            return `<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
+        template(h) {
+            return h`<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
         },
         click(t) {
             //console.log(t);
@@ -121,10 +121,10 @@
 
     Doz.component('doz-list', {
         store: 'list',
-        template() {
+        template(h) {
             return (
-                `<div>
-                    <ul>${this.each(this.props.record, item => `<doz-list-item title="${item}"></doz-list-item>`)}</ul>
+                h`<div>
+                    <ul>${this.props.record.map(item => h`<doz-list-item title="${item}"></doz-list-item>`)}</ul>
                 </div>`
             );
         },
