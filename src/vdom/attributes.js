@@ -4,14 +4,17 @@ import isListener from "../utils/isListener.js";
 import { isDirective } from "../directives/helpers.js";
 import makeSureAttach from "../component/makeSureAttach.js";
 import booleanAttributes from "../utils/booleanAttributes.js";
+
 function isEventAttribute(name) {
     return isListener(name);
 }
+
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
-    console.log('setAttribute', $target, name, value)
     if (name === 'data-attributeoriginaletagname')
         return;
+
     makeSureAttach($target);
+
     if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
         $target._dozAttach[PROPS_ATTRIBUTES] = {};
     }
@@ -25,6 +28,13 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
     let _isDirective = isDirective(name);
     if (_isDirective)
         $target._dozAttach.hasDirective = true;
+
+    if ($target.tagName.indexOf('-') !== -1) {
+        //console.log(cmp.exposeAttributes)
+        if (!cmp.exposeAttributes.includes(name) || !name.startsWith('data-'))
+           return;
+    }
+
     if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) {
         // why? I need to remove any orphan keys in the mapper. Orphan keys are created by handler attributes
         // like onclick, onmousedown etc. ...

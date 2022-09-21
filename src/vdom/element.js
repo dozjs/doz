@@ -7,12 +7,14 @@ import { scopedInner } from "../component/helpers/style.js";
 //const {kCache} = require('./stores');
 const storeElementNode = Object.create(null);
 const deadChildren = [];
+
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
         nodeA.props && nodeA.props.forceupdate;
 }
+
 function create(node, cmp, initial, cmpParent) {
     //console.log(node)
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
@@ -74,6 +76,7 @@ function create(node, cmp, initial, cmpParent) {
     }
     return $el;
 }
+
 function setHeadStyle(node, cmp) {
     cmp.__hasStyle = true;
     let isScoped = node.styleScoped;

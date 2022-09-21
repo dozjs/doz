@@ -8,7 +8,7 @@ import toInlineStyle from "../utils/toInlineStyle.js";
 import queueReady from "./helpers/queue-ready.js";
 import queueDraw from "./helpers/queueDraw.js";
 import extendInstance from "./helpers/extendInstance.js";
-import removeAllAttributes from "../utils/removeAllAttributes.js";
+//import removeAllAttributes from "../utils/removeAllAttributes.js";
 import h from "../vdom/h.js";
 import loadLocal from "./helpers/loadLocal.js";
 import localMixin from "./helpers/localMixin.js";
