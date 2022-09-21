@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.1 - September 21, 2022 18:32:48 */
+/* Doz, version: 4.0.2 - September 21, 2022 22:25:20 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2014,11 +2014,13 @@ var booleanAttributes = [
 function isEventAttribute(name) {
     return isListener(name);
 }
+
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
-    //console.log('setAttribute', $target, name, value)
     if (name === 'data-attributeoriginaletagname')
         return;
+
     makeSureAttach($target);
+
     if (!$target._dozAttach[PROPS_ATTRIBUTES]) {
         $target._dozAttach[PROPS_ATTRIBUTES] = {};
     }
@@ -2032,6 +2034,13 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
     let _isDirective = isDirective(name);
     if (_isDirective)
         $target._dozAttach.hasDirective = true;
+
+    if ($target.tagName.indexOf('-') !== -1) {
+        //console.log(cmp.exposeAttributes)
+        if (!cmp.exposeAttributes.includes(name) || !name.startsWith('data-'))
+           return;
+    }
+
     if ((isCustomAttribute(name) || typeof value === 'function' || typeof value === 'object') && !_isDirective) ;
     else {
         if (value === undefined)
@@ -2445,12 +2454,14 @@ function scopedInner(cssContent, uId, tag, scoped, cmp) {
 //const {kCache} = require('./stores');
 const storeElementNode = Object.create(null);
 const deadChildren = [];
+
 function isChanged(nodeA, nodeB) {
     return typeof nodeA !== typeof nodeB ||
         typeof nodeA === 'string' && nodeA !== nodeB ||
         nodeA.type !== nodeB.type ||
         nodeA.props && nodeA.props.forceupdate;
 }
+
 function create(node, cmp, initial, cmpParent) {
     //console.log(node)
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
@@ -2511,6 +2522,7 @@ function create(node, cmp, initial, cmpParent) {
     }
     return $el;
 }
+
 function setHeadStyle(node, cmp) {
     cmp.__hasStyle = true;
     let isScoped = node.styleScoped;
@@ -2897,18 +2909,6 @@ var queueDraw = {
 
 function extendInstance(instance, cfg, dProps) {
     Object.assign(instance, cfg, dProps);
-}
-
-function removeAllAttributes(el, exclude = []) {
-    let attributeName;
-    if (el && el.attributes)
-        for (let i = el.attributes.length - 1; i >= 0; i--) {
-            attributeName = el.attributes[i].name;
-            // exclude anyway data attributes
-            if (exclude.includes(attributeName) || attributeName.split('-')[0] === 'data')
-                continue;
-            el.removeAttribute(attributeName);
-        }
 }
 
 function deepCopy(obj) {
@@ -3704,8 +3704,8 @@ class Component extends DOMManipulation {
         const rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial);
         //Remove attributes from component tag
         //removeAllAttributes(this._cfgRoot, ['style', 'class'/*, 'key'*/, 'title']);
-        if (!this._mainComponentByAppCreate)
-            removeAllAttributes(this._cfgRoot, this.exposeAttributes);
+        /*if (!this._mainComponentByAppCreate)
+            removeAllAttributes(this._cfgRoot, this.exposeAttributes);*/
         //console.log(this._rootElement)
         if (!this._rootElement && rootElement) {
             this._rootElement = rootElement;
@@ -3958,7 +3958,7 @@ function createInstance(cfg = {}) {
             // it is not good but it works
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
-                $child._countWalk = 0;
+                //$child._countWalk = 0;
             }
             else {
                 $child = $child.nextElementSibling;
@@ -5745,7 +5745,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '4.0.1',
+        value: '4.0.2',
         enumerable: true
     },
     tag: {
