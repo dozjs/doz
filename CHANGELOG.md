@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [4.0.1] - 2022-09-21
+- **Fixed** version script
+
 ## [4.0.0] - 2022-09-21
 - **Breaking changes**
   - Drop UMD distribution
