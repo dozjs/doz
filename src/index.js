@@ -57,7 +57,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '[VI]{version} - {date}[/VI]',
+        value: '[VI]{version}[/VI]',
         enumerable: true
     },
     tag: {
