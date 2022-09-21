@@ -20,7 +20,7 @@ class DOMManipulation extends Base {
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1 && !initial) {
                 //this._processing.push({ node: $el, action: 'create' });
-                doCreateInstance(this, $el)
+                doCreateInstance(this, $el);
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {

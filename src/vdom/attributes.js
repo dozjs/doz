@@ -8,7 +8,7 @@ function isEventAttribute(name) {
     return isListener(name);
 }
 function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
-    //console.log('setAttribute', $target, name, value)
+    console.log('setAttribute', $target, name, value)
     if (name === 'data-attributeoriginaletagname')
         return;
     makeSureAttach($target);
