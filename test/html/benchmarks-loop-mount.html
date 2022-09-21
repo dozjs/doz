@@ -98,7 +98,7 @@
         template(h) {
             return (
                h`<div>
-                    <button onclick="this.action.add(10)" >Add 1000</button>
+                    <button onclick="this.action.add(1000)" >Add 1000</button>
                     <button onclick="this.action.add(10000)" >Add 10000</button>
                     <button onclick="this.action.reverse()" >Reverse</button>
                     <button onclick="this.action.sort()" >Sort</button>
@@ -112,9 +112,7 @@
 
     Doz.component('doz-list-item', {
         template(h) {
-            return h`
-                <li onclick="this.click('${this.props.title}')">${this.props.title}</li>
-            `
+            return h`<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
         },
         click(t) {
             //console.log(t);

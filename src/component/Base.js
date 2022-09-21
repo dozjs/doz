@@ -75,6 +75,10 @@ class Base {
                 value: '',
                 writable: true
             },
+            _hasSlots: {
+                value: false,
+                writable: true
+            },
             _slots: {
                 value: {},
                 writable: true

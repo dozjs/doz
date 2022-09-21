@@ -51,10 +51,10 @@ function createInstance(cfg = {}) {
         trash.forEach($child => $child.remove());
     }
 
-    let walkCount = 0;
+    //let walkCount = 0;
 
     function walk($child, parent = {}) {
-        console.log('walkCount', walkCount++, $child)
+        //console.log('walkCount', walkCount++, $child)
         while ($child) {
             makeSureAttach($child);
             // it is not good but it works
@@ -98,6 +98,7 @@ function createInstance(cfg = {}) {
                 }
                 const props = serializeProps($child);
                 const componentDirectives = {};
+                const parentCmp = parent.cmp || cfg.parent
                 let newElement;
                 if (typeof cmp.cfg === 'function') {
                     // This implements single function component
@@ -114,7 +115,8 @@ function createInstance(cfg = {}) {
                         app: cfg.app,
                         props,
                         componentDirectives,
-                        parentCmp: parent.cmp || cfg.parent
+                        parentCmp
+                        //parentCmp: parent.cmp || cfg.parent
                     });
                 } else {
                     if (cmp.cfg.then) {
@@ -145,7 +147,8 @@ function createInstance(cfg = {}) {
                                     app: cfg.app,
                                     props: __props,
                                     componentDirectives: __componentDirectives,
-                                    parentCmp: parent.cmp || cfg.parent
+                                    parentCmp
+                                    //parentCmp: parent.cmp || cfg.parent
                                 });
                                 loadingComponentElement = newElement;
                             }
@@ -167,7 +170,8 @@ function createInstance(cfg = {}) {
                                     app: cfg.app,
                                     props,
                                     componentDirectives,
-                                    parentCmp: parent.cmp || cfg.parent
+                                    parentCmp
+                                    //parentCmp: parent.cmp || cfg.parent
                                 });
                                 propsInit(newElement);
                                 newElement.app.emit('componentPropsInit', newElement);
@@ -192,7 +196,8 @@ function createInstance(cfg = {}) {
                                         app: cfg.app,
                                         props: __props,
                                         componentDirectives: __componentDirectives,
-                                        parentCmp: parent.cmp || cfg.parent
+                                        parentCmp
+                                        //parentCmp: parent.cmp || cfg.parent
                                     });
                                     errorComponentElement = newElement;
                                 }
@@ -201,6 +206,7 @@ function createInstance(cfg = {}) {
                         })($child, loadingComponent, errorComponent);
                     }
                     else {
+                        //if (!cfg.simulateNull)
                         newElement = new Component({
                             tag: cmp.tag || cmpName,
                             cmp,
@@ -208,7 +214,8 @@ function createInstance(cfg = {}) {
                             app: cfg.app,
                             props,
                             componentDirectives,
-                            parentCmp: parent.cmp || cfg.parent
+                            parentCmp
+                            //parentCmp: parent.cmp || cfg.parent
                         });
                     }
                 }
@@ -246,14 +253,20 @@ function createInstance(cfg = {}) {
                         let slotPlaceholder = document.createComment('slot');
                         newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                     }
+
                     // This is a hack for call render a second time so the
                     // event onAppDraw and onDrawByParent are fired after
                     // that the component is mounted.
                     // This hack makes also the component that has keys
                     // Really this hack is very important :D :D
-                    /*delay(() => {
-                        newElement.render(false, [], true);
-                    });*/
+                    // delay(() => {
+                    //      newElement.render(false, [], true);
+                    // });
+
+                    if (newElement._hasSlots && parentCmp) {
+                        parentCmp.render(false, [], true);
+                    }
+
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
                     //if (newElement.waitMount) {

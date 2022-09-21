@@ -6,7 +6,7 @@ import { COMPONENT_DYNAMIC_INSTANCE, COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE
 import directive from "../directives/index.js";
 import { isDirective } from "../directives/helpers.js";
 import makeSureAttach from "./makeSureAttach.js";
-import createInstance from "./createInstance.js";
+import doCreateInstance from "./doCreateInstance.js";
 
 class DOMManipulation extends Base {
     constructor(opt) {
@@ -20,26 +20,7 @@ class DOMManipulation extends Base {
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1 && !initial) {
                 //this._processing.push({ node: $el, action: 'create' });
-
-                let dynamicInstance = createInstance({
-                    root: null,
-                    template: $el,
-                    app: this.app,
-                    parent: this
-                });
-
-                if (dynamicInstance) {
-                    dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-                    let n = Object.keys(this.children).length;
-                    this.children[n++] = dynamicInstance;
-                    if (this.childrenByTag[dynamicInstance.tag] === undefined) {
-                        this.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
-                    }
-                    else {
-                        this.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-                    }
-                    directive.callAppDynamicInstanceCreate(this, dynamicInstance, { node: $el, action: 'create' });
-                }
+                doCreateInstance(this, $el)
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
@@ -54,6 +35,7 @@ class DOMManipulation extends Base {
                 else {
                     this._slots[slotName].push($el);
                 }
+                this._hasSlots = true;
             }
         }
     }
