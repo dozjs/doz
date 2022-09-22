@@ -4,6 +4,7 @@ import directive from "../directives/index.js";
 
 function doCreateInstance(instance, $el) {
     let dynamicInstance = createInstance({
+        noDeepWalk: true,
         root: null,
         template: $el,
         app: instance.app,

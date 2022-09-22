@@ -18,7 +18,10 @@ class DOMManipulation extends Base {
             directive.callComponentDOMElementCreate(this, $el, initial);
         }
         if (typeof $el.hasAttribute === 'function') {
-            if (node.type.indexOf('-') !== -1 && !initial) {
+
+            //console.log(node.type, initial)
+            if (node.type.indexOf('-') !== -1 /*&& !initial*/) {
+                //console.log(node.type)
                 //this._processing.push({ node: $el, action: 'create' });
                 doCreateInstance(this, $el);
             }

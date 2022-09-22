@@ -110,9 +110,15 @@
         }
     });
 
+    Doz.component('my-button', {
+        template(h) {
+            return h`<button>click</button>`
+        }
+    })
+
     Doz.component('doz-list-item', {
         template(h) {
-            return h`<li onclick="this.click('${this.props.title}')">${this.props.title}</li>`
+            return h`<li onclick="this.click('${this.props.title}')">${this.props.title}<my-button></my-button></li>`
         },
         click(t) {
             //console.log(t);

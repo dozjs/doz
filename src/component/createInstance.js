@@ -295,6 +295,11 @@ function createInstance(cfg = {}) {
                 appendChildrenToParent(parent, newElement);
                 cfg.autoCmp = null;
             }
+
+            if (cfg.noDeepWalk) {
+                break
+            }
+
             if ($child.firstElementChild) {
                 //console.log('$child.firstElementChild', $child.firstElementChild)
                 walk($child.firstElementChild, {
