@@ -124,7 +124,7 @@
         template(h) {
             return (
                 h`<div>
-                    <ul>${this.props.record.map(item => h`<doz-list-item title="${item}"></doz-list-item>`)}</ul>
+                    <ul>${this.props.record.map(item => h`<doz-list-item title="${item}" data-qualcosa="ciao"></doz-list-item>`)}</ul>
                 </div>`
             );
         },

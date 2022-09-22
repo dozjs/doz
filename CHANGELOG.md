@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [4.0.3] - 2022-09-22
+- **Fixed** component data attributes do not work
+
 ## [4.0.2] - 2022-09-21
 - **Improved** component attributes now are removed at creation of the HTML element
 - **Removed** IE11 info
