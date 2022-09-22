@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.2 - September 21, 2022 22:25:20 */
+/* Doz, version: 4.0.3 - September 22, 2022 12:03:09 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2035,9 +2035,10 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
     if (_isDirective)
         $target._dozAttach.hasDirective = true;
 
+    // solo se custom tag escludo tutti gli attributi tranne quelli esposti
     if ($target.tagName.indexOf('-') !== -1) {
         //console.log(cmp.exposeAttributes)
-        if (!cmp.exposeAttributes.includes(name) || !name.startsWith('data-'))
+        if (!cmp.exposeAttributes.includes(name) && !name.startsWith('data-'))
            return;
     }
 
@@ -5745,7 +5746,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '4.0.2',
+        value: '4.0.3',
         enumerable: true
     },
     tag: {
