@@ -31,7 +31,7 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
 
     if ($target.tagName.indexOf('-') !== -1) {
         //console.log(cmp.exposeAttributes)
-        if (!cmp.exposeAttributes.includes(name) || !name.startsWith('data-'))
+        if (!cmp.exposeAttributes.includes(name) /*|| !name.startsWith('data-')*/)
            return;
     }
 
