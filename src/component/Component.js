@@ -273,8 +273,10 @@ class Component extends DOMManipulation {
         if (!onlyInstance && (!this._rootElement || hooks.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
             return;
         }
+
         Object.keys(this.children).forEach(child => {
-            this.children[child].destroy();
+            //if (this.children[child])
+                this.children[child].destroy();
         });
         hooks.callDestroy(this);
         if (this.parent && this.parent.children) {

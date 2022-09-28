@@ -33,10 +33,10 @@ function createInstance(cfg = {}) {
     const trash = [];
 
     function appendChildrenToParent(parent, newElement) {
-        //console.log(parent)
         if (parent.cmp) {
             let n = Object.keys(parent.cmp.children).length++;
             directive.callAppComponentAssignIndex(newElement, n, (index) => {
+                //console.log(parent.cmp.tag)
                 parent.cmp.children[index] = newElement;
             });
             if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
@@ -272,7 +272,7 @@ function createInstance(cfg = {}) {
                     }
 
                     hooks.callMount(newElement);
-                    //hooks.callMountAsync(newElement);
+                    hooks.callMountAsync(newElement);
                     //if (newElement.waitMount) {
                     //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
                     if (newElement.waitMount) {
@@ -336,7 +336,7 @@ function createInstance(cfg = {}) {
         walk(newElement.getHTMLElement(), { cmp: newElement });
         flushTrash()
         hooks.callMount(newElement);
-        //hooks.callMountAsync(newElement);
+        hooks.callMountAsync(newElement);
         return newElement;
     } else {
         //console.log(!!cfg.parent)
