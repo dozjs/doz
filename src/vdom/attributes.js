@@ -68,7 +68,9 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
             || name === 'role'
             || name === 'for'
             || isSVG
-            || (cmp && cmp.app && cmp.app.setAllAttributes)) {
+            || (cmp && cmp.app && cmp.app.setAllAttributes)
+            || (window.SSR && !name.startsWith('d-'))
+        ) {
             $target.setAttribute(name, value);
         }
     }
