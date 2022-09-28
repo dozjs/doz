@@ -37,14 +37,14 @@ describe('hooks', function () {
             `;
 
             Doz.component('nested-nested-component', {
-                template() {
-                    return '<div>nested-nested-component</div>';
+                template(h) {
+                    return h`<div>nested-nested-component</div>`;
                 }
             });
 
             Doz.component('nested-component', {
-                template() {
-                    return '<div>nested component <nested-nested-component></nested-nested-component></div>';
+                template(h) {
+                    return h`<div>nested component <nested-nested-component></nested-nested-component></div>`;
                 }
             });
 
@@ -52,8 +52,8 @@ describe('hooks', function () {
                 props: {
                     salutation: 'Hello World'
                 },
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <h2>${this.props.salutation}</h2>
                         <nested-component></nested-component>
                     `
@@ -69,10 +69,10 @@ describe('hooks', function () {
             const app = new Doz({
                 autoDraw: false,
                 root: '#app',
-                template: `
+                template(h) { return h`
                     <h1>Welcome to my app:</h1>
                     <hello-world></hello-world>
-                `
+                `}
             });
 
             app
