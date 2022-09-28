@@ -135,6 +135,10 @@ class Base {
                 writable: true,
                 enumerable: true
             },
+            childrenToWalk: {
+                value: [],
+                enumerable: true
+            },
             children: {
                 value: {},
                 enumerable: true

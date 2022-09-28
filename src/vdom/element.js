@@ -56,20 +56,18 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < node.children.length; i++) {
                 let $childEl = create(node.children[i], cmp, initial, cmpParent);
-                if ($childEl)
-                    //fragmentEl.appendChild($childEl)
+                if ($childEl) {
                     $el.appendChild($childEl);
+                }
             }
-            //$el.appendChild(fragmentEl)
         }
     }
     makeSureAttach($el);
     $el._dozAttach.elementChildren = node.children;
     $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
-    cmp.$$afterNodeElementCreate($el, node, initial);
+    cmp.$$afterNodeElementCreate($el, node, initial, cmp);
     // Create eventually style
     if (node.style) {
         setHeadStyle(node, cmp);
@@ -273,7 +271,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 // console.log('elemento creato', $newElement);
                 // appendo per il momento
                 listOfElement.push($newElement);
-                //$myListParent.appendChild($newElement);
             }
             else {
                 // Get the child from newNode and oldNode by the same key
@@ -312,10 +309,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         if ($myListParent.childNodes.length === diffIndex[0]) {
             //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < listOfElement.length; i++) {
-                //fragmentEl.appendChild(listOfElement[i]);
                 $myListParent.appendChild(listOfElement[i]);
             }
-            //$myListParent.appendChild(fragmentEl);
             return;
         }
         //return ;

@@ -15,20 +15,21 @@ describe('alias', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('salutation-card', {
-                template() {
-                    return `<div>Hello ${this.props.title} ${this.props.name}</div>`
+                template(h) {
+                    return h`<div>Hello ${this.props.title} ${this.props.name}</div>`
                 }
             });
 
             Doz.component('caller-o', {
-                template() {
-                    return `<div>call me</div>`
+                template(h) {
+                    return h`<div>call me</div>`
                 }
             });
 
             const view = new Doz({
                 root: '#app',
-                template: `
+                template(h) {
+                    return h`
                     <salutation-card
                         d:alias="salutation1"
                         title="MR."
@@ -41,11 +42,14 @@ describe('alias', function () {
                     </salutation-card>
                     <caller-o d:alias="caller"></caller-o>
                 `
-            });
+            }});
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                //console.log(html);
+                console.log(html);
+                console.log(view.getComponent('salutation1'));
+                console.log(view.getComponent('salutation2'));
+                console.log(view.getComponent('caller'));
                 be.err.object(view.getComponent('salutation1'));
                 be.err.object(view.getComponent('salutation2'));
                 be.err(done).object(view.getComponent('caller'));

@@ -12,15 +12,24 @@ class DOMManipulation extends Base {
     constructor(opt) {
         super(opt);
     }
-    $$afterNodeElementCreate($el, node, initial) {
+    $$afterNodeElementCreate($el, node, initial, cmp) {
         if ($el._dozAttach.hasDirective) {
             directive.callAppDOMElementCreate(this, $el, node, initial);
             directive.callComponentDOMElementCreate(this, $el, initial);
         }
+        //console.log('element created', $el.outerHTML)
+        //this._canWalk = false;
+        //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
+
+
         if (typeof $el.hasAttribute === 'function') {
-            if (node.type.indexOf('-') !== -1 && !initial) {
+            if (node.type.indexOf('-') !== -1) {
+                //this.childrenToWalk.push($el)
                 //this._processing.push({ node: $el, action: 'create' });
-                doCreateInstance(this, $el);
+                //if (!initial) {
+                    //console.log('NODO PER COMPONENT', $el.nodeName, initial)
+                    doCreateInstance(this, $el);
+                //}
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {

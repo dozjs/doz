@@ -11,6 +11,7 @@ export default (function () {
             Object.defineProperties(app, {
                 getComponent: {
                     value: function (alias) {
+                        //console.log(this._tree.children)
                         return this._tree
                             ? this._tree.children[alias]
                             : undefined;

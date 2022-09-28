@@ -5,7 +5,9 @@ import toLiteralString from "./utils/toLiteralString.js";
 import plugin from "./plugin/index.js";
 import directive from "./directives/index.js";
 import makeSureAttach from "./component/makeSureAttach.js";
+
 let appCounter = 0;
+
 class Doz {
     constructor(cfg = {}) {
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;

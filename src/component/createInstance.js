@@ -33,6 +33,7 @@ function createInstance(cfg = {}) {
     const trash = [];
 
     function appendChildrenToParent(parent, newElement) {
+        //console.log(parent)
         if (parent.cmp) {
             let n = Object.keys(parent.cmp.children).length++;
             directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -54,18 +55,21 @@ function createInstance(cfg = {}) {
     //let walkCount = 0;
 
     function walk($child, parent = {}) {
-        //console.log('walkCount', walkCount++, $child)
-        while ($child) {
+        //console.log('WALK COUNT', walkCount++, $child.nodeName)
+        //console.log('parent', parent)
+
+        //while ($child) {
             makeSureAttach($child);
             // it is not good but it works
             if (!$child._dozAttach[ALREADY_WALKED]) {
                 $child._dozAttach[ALREADY_WALKED] = true;
                 //$child._countWalk = 0;
             }
-            else {
+            /*else {
+                //console.log('already walked', $child.outerHTML)
                 $child = $child.nextElementSibling;
-                continue;
-            }
+                //continue;
+            }*/
             directive.callAppWalkDOM(parent, $child);
             cmpName = getComponentName($child);
             directive.callAppComponentAssignName(parent, $child, (name) => {
@@ -89,12 +93,12 @@ function createInstance(cfg = {}) {
                 // For node created by mount method
                 if (parent.cmp && parent.cmp.mounted) {
                     $child = $child.nextElementSibling;
-                    continue;
+                    //continue;
                 }
                 if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                     trash.push($child);
                     $child = $child.nextElementSibling;
-                    continue;
+                    //continue;
                 }
                 const props = serializeProps($child);
                 const componentDirectives = {};
@@ -224,7 +228,7 @@ function createInstance(cfg = {}) {
                 }
                 if (!newElement) {
                     $child = $child.nextElementSibling;
-                    continue;
+                    //continue;
                 }
 
                 newElement.rawChildrenObject = $child._dozAttach.elementChildren;
@@ -268,7 +272,7 @@ function createInstance(cfg = {}) {
                     }
 
                     hooks.callMount(newElement);
-                    hooks.callMountAsync(newElement);
+                    //hooks.callMountAsync(newElement);
                     //if (newElement.waitMount) {
                     //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
                     if (newElement.waitMount) {
@@ -295,15 +299,16 @@ function createInstance(cfg = {}) {
                 appendChildrenToParent(parent, newElement);
                 cfg.autoCmp = null;
             }
-            if ($child.firstElementChild) {
-                //console.log('$child.firstElementChild', $child.firstElementChild)
+            //console.log($child.firstElementChild)
+            /*if ($child.firstElementChild) {
+                let _cmp = parentElement ? parentElement : parent.cmp;
                 walk($child.firstElementChild, {
-                    cmp: parentElement ? parentElement : parent.cmp
-                });
-            }
-
-            $child = $child.nextElementSibling;
-        }
+                    cmp: _cmp
+                })
+            }*/
+            //console.log($child, $child.nextElementSibling)
+            //$child = $child.nextElementSibling;
+        //}
     }
 
     if (cfg.mountMainComponent) {
@@ -331,11 +336,11 @@ function createInstance(cfg = {}) {
         walk(newElement.getHTMLElement(), { cmp: newElement });
         flushTrash()
         hooks.callMount(newElement);
-        hooks.callMountAsync(newElement);
+        //hooks.callMountAsync(newElement);
         return newElement;
     } else {
-        //console.log('cfg.template', cfg.template)
-        walk(cfg.template);
+        //console.log(!!cfg.parent)
+        walk(cfg.template, {cmp: cfg.parent});
         flushTrash()
         return componentInstance;
     }

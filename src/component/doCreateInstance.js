@@ -3,6 +3,7 @@ import {COMPONENT_DYNAMIC_INSTANCE} from "../constants.js";
 import directive from "../directives/index.js";
 
 function doCreateInstance(instance, $el) {
+    //console.log('creo instance', $el.outerHTML)
     let dynamicInstance = createInstance({
         root: null,
         template: $el,
