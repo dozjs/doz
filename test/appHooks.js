@@ -60,6 +60,7 @@ describe('hooks', function () {
                 },
                 onMount() {
                     setTimeout(() => this.props.salutation = 'Ciao Mondo', 1000);
+                    //console.log(this.tag, Object.keys(this.children).length)
                 },
                 /*onMountAsync() {
                     console.log(this.children)
@@ -72,10 +73,12 @@ describe('hooks', function () {
             const app = new Doz({
                 autoDraw: false,
                 root: '#app',
-                template(h) { return h`
-                    <h1>Welcome to my app:</h1>
-                    <hello-world></hello-world>
-                `}
+                template(h) {
+                    return h`
+                        <h1>Welcome to my app:</h1>
+                        <hello-world></hello-world>
+                    `
+                }
             });
 
             app

@@ -12,7 +12,7 @@ import getComponentName from "./helpers/getComponentName.js";
 import makeSureAttach from "./makeSureAttach.js";
 
 function appendChildrenToParent(parent, newElement) {
-    console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
+    //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
     if (parent.cmp) {
         let n = Object.keys(parent.cmp.children).length++;
         directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -26,7 +26,7 @@ function appendChildrenToParent(parent, newElement) {
             parent.cmp.childrenByTag[newElement.tag].push(newElement);
         }
     }
-    console.log('diventano', Object.keys(parent.cmp.children).length)
+    //console.log('diventano', Object.keys(parent.cmp.children).length)
 }
 
 function createInstance(cfg = {}) {
@@ -285,8 +285,6 @@ function createInstance(cfg = {}) {
                     hooks.callMount(newElement);
                     hooks.callMountAsync(newElement);
 
-                    //if (newElement.waitMount) {
-                    //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
                     if (newElement.waitMount) {
                         //cfg.app._onAppComponentsMounted.set(newElement, true);
                         walk(newElement.getHTMLElement().firstElementChild, { cmp: newElement });
@@ -307,19 +305,18 @@ function createInstance(cfg = {}) {
                 else {
                     newElement.runMount = _runMount;
                 }
-                parentElement = newElement;
+                //parentElement = newElement;
                 appendChildrenToParent(parent, newElement);
                 cfg.autoCmp = null;
             }
-            //console.log($child.firstElementChild)
             /*if ($child.firstElementChild) {
                 let _cmp = parentElement ? parentElement : parent.cmp;
                 walk($child.firstElementChild, {
                     cmp: _cmp
                 })
-            }*/
-            //console.log($child, $child.nextElementSibling)
-            //$child = $child.nextElementSibling;
+            }
+            $child = $child.nextElementSibling;
+            */
         //}
     }
 
