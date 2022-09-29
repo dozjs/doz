@@ -32,8 +32,9 @@ export default (function (Doz, app) {
         }
     }
     function propagateToAll(mainParent, changes) {
-        //console.log(mainParent._propsPropagationChildren)
+        //console.log(mainParent._propsPropagationChildren.length)
         mainParent._propsPropagationChildren.forEach(child => {
+            //console.log('propagate', mainParent.tag, child.tag)
             propagate(child, changes);
         });
     }
@@ -50,12 +51,14 @@ export default (function (Doz, app) {
     }
     app.on('componentSetProps', component => {
         if (component.propsPropagation) {
+            //console.log('componentSetProps', component.tag)
             propagateToAll(component);
         }
     });
     app.on('componentPropsInit', component => {
         // for MainParent only
         if (component.propsPropagation) {
+            //console.log('componentPropsInit', component.tag)
             Object.defineProperties(component, {
                 _propsPropagationIsArray: {
                     value: Array.isArray(component.propsPropagation)

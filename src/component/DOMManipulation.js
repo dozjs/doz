@@ -24,6 +24,7 @@ class DOMManipulation extends Base {
 
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1) {
+                //console.log('......', $el.nodeName)
                 //this.childrenToWalk.push($el)
                 //this._processing.push({ node: $el, action: 'create' });
                 //if (!initial) {

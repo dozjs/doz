@@ -58,7 +58,7 @@ describe('onDrawByParent', function () {
 
             setTimeout(()=>{
                 const html = document.body.innerHTML;
-                ////console.log(html);
+                console.log(html);
                 document.getElementById('button-scope').click();
             },200);
         });

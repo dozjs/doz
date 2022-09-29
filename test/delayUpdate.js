@@ -20,8 +20,8 @@ describe('delayUpdate', function () {
                     aNumber: 0
                 },
 
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Number: ${this.props.aNumber}</div>
                     `
                 },

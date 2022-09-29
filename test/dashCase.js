@@ -15,8 +15,8 @@ describe('dashCase', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('salutation-card', {
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 },
@@ -27,12 +27,14 @@ describe('dashCase', function () {
 
             new Doz({
                 root: '#app',
-                template: `
-                    <salutation-card
-                        my-title="MR."
-                        name="Doz">
-                    </salutation-card>
-                `
+                template(h) {
+                    return h`
+                        <salutation-card
+                            my-title="MR."
+                            name="Doz">
+                        </salutation-card>
+                    `
+                }
             });
 
             //setTimeout(()=>{

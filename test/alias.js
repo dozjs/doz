@@ -45,11 +45,11 @@ describe('alias', function () {
             }});
 
             setTimeout(()=>{
-                const html = document.body.innerHTML;
-                console.log(html);
-                console.log(view.getComponent('salutation1'));
-                console.log(view.getComponent('salutation2'));
-                console.log(view.getComponent('caller'));
+                //const html = document.body.innerHTML;
+                //console.log(html);
+                //console.log(view.getComponent('salutation1'));
+                //console.log(view.getComponent('salutation2'));
+                //console.log(view.getComponent('caller'));
                 be.err.object(view.getComponent('salutation1'));
                 be.err.object(view.getComponent('salutation2'));
                 be.err(done).object(view.getComponent('caller'));

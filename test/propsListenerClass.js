@@ -91,7 +91,7 @@ describe('propsListenerClass', function () {
             });
 
             setTimeout(()=>{
-                be.err(done).equal(result, ['a desc', 'a name', 'a title'])
+                be.err(done).equal(result, ['a name', 'a title', 'a desc'])
             }, 100);
 
         });

@@ -13,24 +13,6 @@ describe('propsPropagation', function () {
         it('should be ok #1', function (done) {
             document.body.innerHTML = `<div id="app"></div>`;
 
-            class SalutationCard extends Doz.Component{
-
-                constructor(o) {
-                    super(o);
-                    this.propsPropagation = true;
-                }
-
-                template(h) {
-                    return h`
-                        <${SalutationCardInner}/>
-                    `
-                }
-
-                onMount() {
-                    this.props.name = 'Ipsum';
-                }
-            }
-
             class SalutationCardInner extends Doz.Component{
 
                 constructor(o) {
@@ -46,6 +28,24 @@ describe('propsPropagation', function () {
                 onUpdate() {
                     if (this.props.name === 'Ipsum')
                         done()
+                }
+            }
+
+            class SalutationCard extends Doz.Component{
+
+                constructor(o) {
+                    super(o);
+                    this.propsPropagation = true;
+                }
+
+                template(h) {
+                    return h`
+                        <${SalutationCardInner}/>
+                    `
+                }
+
+                onMount() {
+                    this.props.name = 'Ipsum';
                 }
             }
 
@@ -114,7 +114,7 @@ describe('propsPropagation', function () {
             setTimeout(() => {
                 //console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><salutation-card-inner><div>Hello undefined</div></salutation-card-inner></salutation-card></dz-app></div>')
-            }, 1000);
+            }, 100);
         });
 
         it('should be ok #3', function (done) {
@@ -151,7 +151,9 @@ describe('propsPropagation', function () {
                     `
                 }
                 onUpdate() {
+                    //console.log(new Date().getTime(), this.tag, this.uId)
                     be.err(done).equal(this.props['d:store'], undefined)
+                    this.app.mainComponent.destroy()
                 }
             }
 

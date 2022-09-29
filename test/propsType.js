@@ -1,7 +1,7 @@
 import Doz from "../src/index.js";
 import be from "bejs";
 
-describe('propsType', function () {
+describe('propsType x', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';
@@ -14,8 +14,8 @@ describe('propsType', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             Doz.component('my-cmp', {
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Hello ${this.props.mnumber} ${this.props.mstring}</div>
                     `
                 },
@@ -70,8 +70,8 @@ describe('propsType', function () {
                     mdate: 'date'
                 },
 
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Hello ${this.props.mnumber} ${this.props.mstring}</div>
                     `
                 },
@@ -91,7 +91,7 @@ describe('propsType', function () {
             });
             new Doz({
                 root: '#app',
-                template: `
+                template(h) { return h`
                     <my-cmp
                         mnumber="5"
                         mfloat="5.3"
@@ -104,7 +104,7 @@ describe('propsType', function () {
                         mbooleanfalse="false"
                         mdate="2019-06-08"
                     />
-                `
+                `}
             });
         });
     });

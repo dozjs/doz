@@ -14,7 +14,8 @@
         "release:minor": "npm version minor",
         "release:patch": "npm version patch",
         "build": "rollup --config rollup.config.js",
-        "test": "mocha test"
+        "test": "mocha test",
+        "_tmp_test_": "mocha test/props*.js"
     },
     "repository": {
         "type": "git",

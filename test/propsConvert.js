@@ -34,8 +34,8 @@ describe('propsConvert', function () {
                     }
                 },
 
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 },
@@ -84,7 +84,8 @@ describe('propsConvert', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
+                //console.log(result)
+                be.err(done).equal(result, [ 'a name suffix2', 'a title suffix1', 'a desc suffix3' ])
             }, 100);
 
         });
@@ -119,8 +120,8 @@ describe('propsConvert', function () {
                     };
                 }
 
-                template() {
-                    return `
+                template(h) {
+                    return h`
                         <div>Hello ${this.props.myTitle} ${this.props.name}</div>
                     `
                 }
@@ -169,7 +170,8 @@ describe('propsConvert', function () {
             });
 
             setTimeout(() => {
-                be.err(done).equal(result, ['a desc suffix3', 'a name suffix2', 'a title suffix1'])
+                //console.log(result)
+                be.err(done).equal(result, [ 'a name suffix2', 'a title suffix1', 'a desc suffix3' ])
             }, 100);
 
         });
