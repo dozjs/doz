@@ -1,10 +1,12 @@
 import { data } from "../../collection.js";
 import { extractDirectivesFromProps, isDirective, extractDirectiveNameAndKeyValues } from "../helpers.js";
 import { REGEX, PROPS_ATTRIBUTES } from "../../constants.js";
+import delay from "../../utils/delay.js";
 // Hooks for the component
 function callMethod(...args) {
     let method = args[0];
     let cmp = args[1];
+    //let isDelayed = args[2] === 'delay';
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
@@ -29,7 +31,10 @@ function callMethod(...args) {
             outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
             outArgs.push(keyArguments);
-            directiveObj[method].apply(directiveObj, outArgs);
+            /*if (isDelayed)
+                delay(() => directiveObj[method].apply(directiveObj, outArgs));
+                else*/
+                    directiveObj[method].apply(directiveObj, outArgs);
         }
     });
 }
