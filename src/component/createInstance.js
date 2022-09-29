@@ -12,6 +12,7 @@ import getComponentName from "./helpers/getComponentName.js";
 import makeSureAttach from "./makeSureAttach.js";
 
 function appendChildrenToParent(parent, newElement) {
+    console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
     if (parent.cmp) {
         let n = Object.keys(parent.cmp.children).length++;
         directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -25,6 +26,7 @@ function appendChildrenToParent(parent, newElement) {
             parent.cmp.childrenByTag[newElement.tag].push(newElement);
         }
     }
+    console.log('diventano', Object.keys(parent.cmp.children).length)
 }
 
 function createInstance(cfg = {}) {
@@ -349,9 +351,9 @@ function createInstance(cfg = {}) {
         hooks.callMountAsync(newElement);
         return newElement;
     } else {
-        if (cfg.parent)
-        console.log(cfg.parent.tag)
-        console.log(cfg.template.outerHTML)
+        //if (cfg.parent)
+        //console.log(cfg.parent.tag)
+        //console.log(cfg.template.outerHTML)
         walk(cfg.template, {cmp: cfg.parent});
         flushTrash()
         return componentInstance;
