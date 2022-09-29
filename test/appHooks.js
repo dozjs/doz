@@ -61,6 +61,9 @@ describe('hooks', function () {
                 onMount() {
                     setTimeout(() => this.props.salutation = 'Ciao Mondo', 1000);
                 },
+                /*onMountAsync() {
+                    console.log(this.children)
+                },*/
                 onUpdate(changes) {
                     setTimeout(() => this.destroy(), 1000)
                 }
