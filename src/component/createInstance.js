@@ -59,7 +59,7 @@ function createInstance(cfg = {}) {
     function walk($child, parent = {}) {
         //console.log('WALK COUNT', walkCount++, $child.nodeName)
         //console.log('parent', parent)
-
+console.log('aaaaaaaaaa', $child)
         //while ($child) {
         makeSureAttach($child);
         // it is not good but it works

@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - September 22, 2022 12:03:09 */
+/* Doz, version: 4.0.3 - September 30, 2022 09:40:12 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -80,7 +80,6 @@ const REGEX = {
     IS_PARENT_METHOD: /^parent.(.*)/,
     IS_STRING_QUOTED: /^"\w+"/,
     IS_SVG: /^svg$/,
-    //IS_CLASS: /^(class\s|function\s+_class|function.*[\s\S]+_classCallCheck\(this, .*\))|(throw new TypeError\("Cannot call a class)|(function.*\.__proto__\|\|Object\.getPrototypeOf\(.*?\))|(\)\.call\(this,)|(\).apply\(this,arg)|(for\(var.+=arguments.length)|(\.apply\(this,arguments\))|\.call\(this,?.*?\)/i,
     GET_LISTENER: /^this.(.*)\((.*)\)/,
     GET_LISTENER_SCOPE: /^scope.(.*)\((.*)\)/,
     IS_LISTENER_SCOPE: /(^|\()scope[.)]/g,
@@ -202,6 +201,7 @@ function callMethod$1(...args) {
     let method = args.shift();
     let oKeys = data.directivesKeys; // Object.keys(data.directives);
     let callback;
+    //let isDelayed = args[1] === 'delay'
     // Search for a possible callback
     for (let i = 0; i < args.length; i++) {
         if (typeof args[i] === 'function') {
@@ -214,11 +214,17 @@ function callMethod$1(...args) {
         if (data.directives[key] /*!== undefined*/) {
             //if (typeof data.directives[key][method] === 'function') {
             if (data.directives[key][method] /*!== undefined*/) {
-                //console.log(method)
-                let res = data.directives[key][method].apply(data.directives[key], args);
-                // If res returns something, fire the callback
-                if (res !== undefined && callback)
-                    callback(res);
+                function callFunc() {
+                    let res = data.directives[key][method].apply(data.directives[key], args);
+                    // If res returns something, fire the callback
+                    if (res !== undefined && callback)
+                        callback(res);
+                }
+                /*if (isDelayed) {
+                    delay(() => callFunc())
+                } else {*/
+                    callFunc();
+                //}
             }
         }
     }
@@ -458,6 +464,7 @@ function extractDirectiveNameAndKeyValues(attributeName) {
 function callMethod(...args) {
     let method = args[0];
     let cmp = args[1];
+    //let isDelayed = args[2] === 'delay';
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
@@ -482,7 +489,10 @@ function callMethod(...args) {
             outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
             outArgs.push(keyArguments);
-            directiveObj[method].apply(directiveObj, outArgs);
+            /*if (isDelayed)
+                delay(() => directiveObj[method].apply(directiveObj, outArgs));
+                else*/
+                    directiveObj[method].apply(directiveObj, outArgs);
         }
     });
 }
@@ -2064,7 +2074,9 @@ function setAttribute($target, name, value, cmp, cmpParent, isSVG) {
             || name === 'role'
             || name === 'for'
             || isSVG
-            || (cmp && cmp.app && cmp.app.setAllAttributes)) {
+            || (cmp && cmp.app && cmp.app.setAllAttributes)
+            || (window.SSR && !name.startsWith('d-'))
+        ) {
             $target.setAttribute(name, value);
         }
     }
@@ -2503,20 +2515,18 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < node.children.length; i++) {
                 let $childEl = create(node.children[i], cmp, initial, cmpParent);
-                if ($childEl)
-                    //fragmentEl.appendChild($childEl)
+                if ($childEl) {
                     $el.appendChild($childEl);
+                }
             }
-            //$el.appendChild(fragmentEl)
         }
     }
     makeSureAttach($el);
     $el._dozAttach.elementChildren = node.children;
     $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
-    cmp.$$afterNodeElementCreate($el, node, initial);
+    cmp.$$afterNodeElementCreate($el, node, initial, cmp);
     // Create eventually style
     if (node.style) {
         setHeadStyle(node, cmp);
@@ -2720,7 +2730,6 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 // console.log('elemento creato', $newElement);
                 // appendo per il momento
                 listOfElement.push($newElement);
-                //$myListParent.appendChild($newElement);
             }
             else {
                 // Get the child from newNode and oldNode by the same key
@@ -2759,10 +2768,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         if ($myListParent.childNodes.length === diffIndex[0]) {
             //let fragmentEl = document.createDocumentFragment();
             for (let i = 0; i < listOfElement.length; i++) {
-                //fragmentEl.appendChild(listOfElement[i]);
                 $myListParent.appendChild(listOfElement[i]);
             }
-            //$myListParent.appendChild(fragmentEl);
             return;
         }
         //return ;
@@ -3374,6 +3381,10 @@ class Base {
                 writable: true,
                 enumerable: true
             },
+            childrenToWalk: {
+                value: [],
+                enumerable: true
+            },
             children: {
                 value: {},
                 enumerable: true
@@ -3440,6 +3451,7 @@ class Base {
 }
 
 function doCreateInstance(instance, $el) {
+    //console.log('creo instance', $el.outerHTML)
     let dynamicInstance = createInstance({
         root: null,
         template: $el,
@@ -3449,14 +3461,14 @@ function doCreateInstance(instance, $el) {
 
     if (dynamicInstance) {
         dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-        let nc = Object.keys(instance.children).length;
+        /*let nc = Object.keys(instance.children).length;
         instance.children[nc++] = dynamicInstance;
         if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
             instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
         }
         else {
             instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-        }
+        }*/
         directives.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
     }
 }
@@ -3465,15 +3477,25 @@ class DOMManipulation extends Base {
     constructor(opt) {
         super(opt);
     }
-    $$afterNodeElementCreate($el, node, initial) {
+    $$afterNodeElementCreate($el, node, initial, cmp) {
         if ($el._dozAttach.hasDirective) {
             directives.callAppDOMElementCreate(this, $el, node, initial);
             directives.callComponentDOMElementCreate(this, $el, initial);
         }
+        //console.log('element created', $el.outerHTML)
+        //this._canWalk = false;
+        //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
+
+
         if (typeof $el.hasAttribute === 'function') {
-            if (node.type.indexOf('-') !== -1 && !initial) {
+            if (node.type.indexOf('-') !== -1) {
+                //console.log('......', $el.nodeName)
+                //this.childrenToWalk.push($el)
                 //this._processing.push({ node: $el, action: 'create' });
-                doCreateInstance(this, $el);
+                //if (!initial) {
+                    //console.log('NODO PER COMPONENT', $el.nodeName, initial)
+                    doCreateInstance(this, $el);
+                //}
             }
 
             if ($el.nodeName === TAG.SLOT_UPPERCASE) {
@@ -3825,8 +3847,9 @@ class Component extends DOMManipulation {
         if (!onlyInstance && (!this._rootElement || hooks$1.callBeforeDestroy(this) === false /*|| !this._rootElement.parentNode*/)) {
             return;
         }
+        //console.log(this.tag, Object.keys(this.children))
         Object.keys(this.children).forEach(child => {
-            this.children[child].destroy();
+                this.children[child].destroy();
         });
         hooks$1.callDestroy(this);
         if (this.parent && this.parent.children) {
@@ -3913,6 +3936,23 @@ function getComponentName($child) {
     return $child._dozAttach.originalTagName || $child.nodeName.toLowerCase();
 }
 
+function appendChildrenToParent(parent, newElement) {
+    //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
+    if (parent.cmp) {
+        let n = Object.keys(parent.cmp.children).length++;
+        directives.callAppComponentAssignIndex(newElement, n, (index) => {
+            //console.log(parent.cmp.tag)
+            parent.cmp.children[index] = newElement;
+        });
+        if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
+            parent.cmp.childrenByTag[newElement.tag] = [newElement];
+        } else {
+            parent.cmp.childrenByTag[newElement.tag].push(newElement);
+        }
+    }
+    //console.log('diventano', Object.keys(parent.cmp.children).length)
+}
+
 function createInstance(cfg = {}) {
     /*if (!cfg.root)
         return;*/
@@ -3931,20 +3971,6 @@ function createInstance(cfg = {}) {
     let cmpName;
     const trash = [];
 
-    function appendChildrenToParent(parent, newElement) {
-        if (parent.cmp) {
-            let n = Object.keys(parent.cmp.children).length++;
-            directives.callAppComponentAssignIndex(newElement, n, (index) => {
-                parent.cmp.children[index] = newElement;
-            });
-            if (parent.cmp.childrenByTag[newElement.tag] === undefined) {
-                parent.cmp.childrenByTag[newElement.tag] = [newElement];
-            }
-            else {
-                parent.cmp.childrenByTag[newElement.tag].push(newElement);
-            }
-        }
-    }
 
     function flushTrash() {
         trash.forEach($child => $child.remove());
@@ -3953,105 +3979,114 @@ function createInstance(cfg = {}) {
     //let walkCount = 0;
 
     function walk($child, parent = {}) {
-        //console.log('walkCount', walkCount++, $child)
-        while ($child) {
-            makeSureAttach($child);
-            // it is not good but it works
-            if (!$child._dozAttach[ALREADY_WALKED]) {
-                $child._dozAttach[ALREADY_WALKED] = true;
-                //$child._countWalk = 0;
-            }
-            else {
-                $child = $child.nextElementSibling;
-                continue;
-            }
-            directives.callAppWalkDOM(parent, $child);
-            cmpName = getComponentName($child);
-            directives.callAppComponentAssignName(parent, $child, (name) => {
-                cmpName = name;
-            });
-            let localComponents = {};
-            if (parent.cmp && parent.cmp._components) {
-                localComponents = parent.cmp._components;
-            }
-            const cmp = cfg.autoCmp ||
-                localComponents[cmpName] ||
-                cfg.app._components[cmpName] ||
-                collection.getComponent(cmpName);
-            let parentElement;
+        //console.log('WALK COUNT', walkCount++, $child.nodeName)
+        //console.log('parent', parent)
 
-            if (cmp) {
-                if (parent.cmp) {
-                    const rawChild = $child.outerHTML;
-                    parent.cmp.rawChildren.push(rawChild);
+        //while ($child) {
+        makeSureAttach($child);
+        // it is not good but it works
+        if (!$child._dozAttach[ALREADY_WALKED]) {
+            $child._dozAttach[ALREADY_WALKED] = true;
+            //$child._countWalk = 0;
+        } else {
+            //console.log('already walked')
+            return;
+        }
+        /*else {
+            //console.log('already walked', $child.outerHTML)
+            $child = $child.nextElementSibling;
+            //continue;
+        }*/
+        directives.callAppWalkDOM(parent, $child);
+        cmpName = getComponentName($child);
+        directives.callAppComponentAssignName(parent, $child, (name) => {
+            cmpName = name;
+        });
+        let localComponents = {};
+        if (parent.cmp && parent.cmp._components) {
+            localComponents = parent.cmp._components;
+        }
+        const cmp = cfg.autoCmp ||
+            localComponents[cmpName] ||
+            cfg.app._components[cmpName] ||
+            collection.getComponent(cmpName);
+
+        //console.log(cmp)
+
+        if (cmp) {
+            if (parent.cmp) {
+                const rawChild = $child.outerHTML;
+                parent.cmp.rawChildren.push(rawChild);
+            }
+            // For node created by mount method
+            if (parent.cmp && parent.cmp.mounted) {
+                return;
+                //$child = $child.nextElementSibling;
+                //continue;
+            }
+            if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+                trash.push($child);
+                return;
+                //$child = $child.nextElementSibling;
+                //continue;
+            }
+            const props = serializeProps($child);
+            const componentDirectives = {};
+            const parentCmp = parent.cmp || cfg.parent;
+            let newElement;
+            if (typeof cmp.cfg === 'function') {
+                // This implements single function component
+                //if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+                if (!(cmp.cfg.prototype instanceof Component)) {
+                    const func = cmp.cfg;
+                    cmp.cfg = class extends Component {
+                    };
+                    cmp.cfg.prototype.template = func;
                 }
-                // For node created by mount method
-                if (parent.cmp && parent.cmp.mounted) {
-                    $child = $child.nextElementSibling;
-                    continue;
-                }
-                if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-                    trash.push($child);
-                    $child = $child.nextElementSibling;
-                    continue;
-                }
-                const props = serializeProps($child);
-                const componentDirectives = {};
-                const parentCmp = parent.cmp || cfg.parent;
-                let newElement;
-                if (typeof cmp.cfg === 'function') {
-                    // This implements single function component
-                    //if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
-                    if (!(cmp.cfg.prototype instanceof Component)) {
-                        const func = cmp.cfg;
-                        cmp.cfg = class extends Component {
-                        };
-                        cmp.cfg.prototype.template = func;
+                newElement = new cmp.cfg({
+                    tag: cmp.tag || cmpName,
+                    root: $child,
+                    app: cfg.app,
+                    props,
+                    componentDirectives,
+                    parentCmp
+                    //parentCmp: parent.cmp || cfg.parent
+                });
+            } else {
+                if (cmp.cfg.then) {
+                    let loadingComponent = null;
+                    let errorComponent = null;
+                    if ($child.parentElement
+                        && $child.parentElement._dozAttach
+                        && $child.parentElement._dozAttach.props) {
+                        if ($child.parentElement._dozAttach.props['d-async-loading'])
+                            loadingComponent = $child.parentElement._dozAttach.props['d-async-loading'];
+                        if ($child.parentElement._dozAttach.props['d-async-error'])
+                            errorComponent = $child.parentElement._dozAttach.props['d-async-error'];
                     }
-                    newElement = new cmp.cfg({
-                        tag: cmp.tag || cmpName,
-                        root: $child,
-                        app: cfg.app,
-                        props,
-                        componentDirectives,
-                        parentCmp
-                        //parentCmp: parent.cmp || cfg.parent
-                    });
-                } else {
-                    if (cmp.cfg.then) {
-                        let loadingComponent = null;
-                        let errorComponent = null;
-                        if ($child.parentElement
-                            && $child.parentElement._dozAttach
-                            && $child.parentElement._dozAttach.props) {
-                            if ($child.parentElement._dozAttach.props['d-async-loading'])
-                                loadingComponent = $child.parentElement._dozAttach.props['d-async-loading'];
-                            if ($child.parentElement._dozAttach.props['d-async-error'])
-                                errorComponent = $child.parentElement._dozAttach.props['d-async-error'];
-                        }
-                        (($child, loadingComponent, errorComponent) => {
-                            let loadingComponentElement = null;
-                            if (loadingComponent) {
-                                let __props = {};
-                                let __componentDirectives = {};
-                                if (typeof loadingComponent === 'object' && loadingComponent.component) {
-                                    __props = loadingComponent.props || __props;
-                                    __componentDirectives = loadingComponent.directives || __componentDirectives;
-                                    loadingComponent = loadingComponent.component;
-                                }
-                                newElement = new loadingComponent({
-                                    tag: loadingComponent.tag || 'loading-component',
-                                    root: $child,
-                                    app: cfg.app,
-                                    props: __props,
-                                    componentDirectives: __componentDirectives,
-                                    parentCmp
-                                    //parentCmp: parent.cmp || cfg.parent
-                                });
-                                loadingComponentElement = newElement;
+                    (($child, loadingComponent, errorComponent) => {
+                        let loadingComponentElement = null;
+                        if (loadingComponent) {
+                            let __props = {};
+                            let __componentDirectives = {};
+                            if (typeof loadingComponent === 'object' && loadingComponent.component) {
+                                __props = loadingComponent.props || __props;
+                                __componentDirectives = loadingComponent.directives || __componentDirectives;
+                                loadingComponent = loadingComponent.component;
                             }
-                            cmp.cfg
-                                .then(componentFromPromise => {
+                            newElement = new loadingComponent({
+                                tag: loadingComponent.tag || 'loading-component',
+                                root: $child,
+                                app: cfg.app,
+                                props: __props,
+                                componentDirectives: __componentDirectives,
+                                parentCmp
+                                //parentCmp: parent.cmp || cfg.parent
+                            });
+                            loadingComponentElement = newElement;
+                        }
+                        cmp.cfg
+                            .then(componentFromPromise => {
                                 //gestisco eventuale ES6 import
                                 if (typeof componentFromPromise === 'object') {
                                     let oKeys = Object.keys(componentFromPromise);
@@ -4076,10 +4111,10 @@ function createInstance(cfg = {}) {
                                 if (loadingComponentElement)
                                     loadingComponentElement.destroy();
                                 _runMount(newElement);
-                                walk(newElement.getHTMLElement(), { cmp: newElement });
+                                walk(newElement.getHTMLElement(), {cmp: newElement});
                                 appendChildrenToParent(parent, newElement);
                             })
-                                .catch(e => {
+                            .catch(e => {
                                 if (errorComponent) {
                                     let __props = {};
                                     let __componentDirectives = {};
@@ -4100,107 +4135,107 @@ function createInstance(cfg = {}) {
                                 }
                                 console.error(e);
                             });
-                        })($child, loadingComponent, errorComponent);
-                    }
-                    else {
-                        //if (!cfg.simulateNull)
-                        newElement = new Component({
-                            tag: cmp.tag || cmpName,
-                            cmp,
-                            root: $child,
-                            app: cfg.app,
-                            props,
-                            componentDirectives,
-                            parentCmp
-                            //parentCmp: parent.cmp || cfg.parent
-                        });
-                    }
+                    })($child, loadingComponent, errorComponent);
+                } else {
+                    //if (!cfg.simulateNull)
+                    newElement = new Component({
+                        tag: cmp.tag || cmpName,
+                        cmp,
+                        root: $child,
+                        app: cfg.app,
+                        props,
+                        componentDirectives,
+                        parentCmp
+                        //parentCmp: parent.cmp || cfg.parent
+                    });
                 }
-                if (newElement && newElement.__beforeCreateReturnsFalse) {
-                    newElement = undefined;
+            }
+            if (newElement && newElement.__beforeCreateReturnsFalse) {
+                newElement = undefined;
+            }
+            if (!newElement) {
+                return;
+                //$child = $child.nextElementSibling;
+                //continue;
+            }
+
+            newElement.rawChildrenObject = $child._dozAttach.elementChildren;
+            newElement.$domEl = $child;
+
+            if (typeof newElement.module === 'object') {
+                hmr(newElement, newElement.module);
+            }
+
+            propsInit(newElement);
+            newElement.app.emit('componentPropsInit', newElement);
+
+            function _runMount(_newElement = null) {
+                newElement = _newElement || newElement;
+                if (newElement._isRendered)
+                    return;
+                newElement._isRendered = true;
+                newElement.render(true);
+                if (!componentInstance) {
+                    componentInstance = newElement;
                 }
-                if (!newElement) {
-                    $child = $child.nextElementSibling;
-                    continue;
+                newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
+                newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
+                // Replace first element child if defaultSlot exists with a slot comment
+                if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
+                    let slotPlaceholder = document.createComment('slot');
+                    newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
                 }
 
-                newElement.rawChildrenObject = $child._dozAttach.elementChildren;
-                newElement.$domEl = $child;
+                // This is a hack for call render a second time so the
+                // event onAppDraw and onDrawByParent are fired after
+                // that the component is mounted.
+                // This hack makes also the component that has keys
+                // Really this hack is very important :D :D
+                // delay(() => {
+                //      newElement.render(false, [], true);
+                // });
 
-                if (typeof newElement.module === 'object') {
-                    hmr(newElement, newElement.module);
+                if (newElement._hasSlots && parentCmp) {
+                    delay(() =>
+                        parentCmp.render(false, [], true)
+                    );
                 }
 
-                propsInit(newElement);
-                newElement.app.emit('componentPropsInit', newElement);
+                hooks$1.callMount(newElement);
+                hooks$1.callMountAsync(newElement);
 
-                function _runMount(_newElement = null) {
-                    newElement = _newElement || newElement;
-                    if (newElement._isRendered)
-                        return;
-                    newElement._isRendered = true;
-                    newElement.render(true);
-                    if (!componentInstance) {
-                        componentInstance = newElement;
-                    }
-                    newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
-                    newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
-                    // Replace first element child if defaultSlot exists with a slot comment
-                    if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
-                        let slotPlaceholder = document.createComment('slot');
-                        newElement.getHTMLElement().replaceChild(slotPlaceholder, newElement.getHTMLElement().firstElementChild);
-                    }
-
-                    // This is a hack for call render a second time so the
-                    // event onAppDraw and onDrawByParent are fired after
-                    // that the component is mounted.
-                    // This hack makes also the component that has keys
-                    // Really this hack is very important :D :D
-                    // delay(() => {
-                    //      newElement.render(false, [], true);
-                    // });
-
-                    if (newElement._hasSlots && parentCmp) {
-                        parentCmp.render(false, [], true);
-                    }
-
-                    hooks$1.callMount(newElement);
-                    hooks$1.callMountAsync(newElement);
-                    //if (newElement.waitMount) {
-                    //console.log(cfg.app._onAppComponentsMounted.size, newElement.tag)
-                    if (newElement.waitMount) {
-                        //cfg.app._onAppComponentsMounted.set(newElement, true);
-                        walk(newElement.getHTMLElement().firstElementChild, { cmp: newElement });
-                        if (!newElement.appReadyExcluded)
-                            cfg.app._onAppComponentsMounted.delete(newElement);
-                    }
-                }
                 if (newElement.waitMount) {
-                    //console.log(cfg.app._onAppComponentsMounted)
+                    //cfg.app._onAppComponentsMounted.set(newElement, true);
+                    walk(newElement.getHTMLElement().firstElementChild, {cmp: newElement});
                     if (!newElement.appReadyExcluded)
-                        cfg.app._onAppComponentsMounted.set(newElement, false);
-                    newElement.runMount = _runMount;
-                    hooks$1.callWaitMount(newElement);
+                        cfg.app._onAppComponentsMounted.delete(newElement);
                 }
-                else if (hooks$1.callBeforeMount(newElement) !== false) {
-                    _runMount();
-                }
-                else {
-                    newElement.runMount = _runMount;
-                }
-                parentElement = newElement;
-                appendChildrenToParent(parent, newElement);
-                cfg.autoCmp = null;
-            }
-            if ($child.firstElementChild) {
-                //console.log('$child.firstElementChild', $child.firstElementChild)
-                walk($child.firstElementChild, {
-                    cmp: parentElement ? parentElement : parent.cmp
-                });
             }
 
-            $child = $child.nextElementSibling;
+            if (newElement.waitMount) {
+                //console.log(cfg.app._onAppComponentsMounted)
+                if (!newElement.appReadyExcluded)
+                    cfg.app._onAppComponentsMounted.set(newElement, false);
+                newElement.runMount = _runMount;
+                hooks$1.callWaitMount(newElement);
+            } else if (hooks$1.callBeforeMount(newElement) !== false) {
+                _runMount();
+            } else {
+                newElement.runMount = _runMount;
+            }
+            //parentElement = newElement;
+            appendChildrenToParent(parent, newElement);
+            cfg.autoCmp = null;
         }
+        /*if ($child.firstElementChild) {
+            let _cmp = parentElement ? parentElement : parent.cmp;
+            walk($child.firstElementChild, {
+                cmp: _cmp
+            })
+        }
+        $child = $child.nextElementSibling;
+        */
+        //}
     }
 
     if (cfg.mountMainComponent) {
@@ -4225,14 +4260,16 @@ function createInstance(cfg = {}) {
                 newElement.getHTMLElement().appendChild(child);
             });
         }
-        walk(newElement.getHTMLElement(), { cmp: newElement });
+        walk(newElement.getHTMLElement(), {cmp: newElement});
         flushTrash();
         hooks$1.callMount(newElement);
         hooks$1.callMountAsync(newElement);
         return newElement;
     } else {
-        //console.log('cfg.template', cfg.template)
-        walk(cfg.template);
+        //if (cfg.parent)
+        //console.log(cfg.parent.tag)
+        //console.log(cfg.template.outerHTML)
+        walk(cfg.template, {cmp: cfg.parent});
         flushTrash();
         return componentInstance;
     }
@@ -4272,8 +4309,9 @@ var propsPropagation = (function (Doz, app) {
         }
     }
     function propagateToAll(mainParent, changes) {
-        //console.log(mainParent._propsPropagationChildren)
+        //console.log(mainParent._propsPropagationChildren.length)
         mainParent._propsPropagationChildren.forEach(child => {
+            //console.log('propagate', mainParent.tag, child.tag)
             propagate(child, changes);
         });
     }
@@ -4290,12 +4328,14 @@ var propsPropagation = (function (Doz, app) {
     }
     app.on('componentSetProps', component => {
         if (component.propsPropagation) {
+            //console.log('componentSetProps', component.tag)
             propagateToAll(component);
         }
     });
     app.on('componentPropsInit', component => {
         // for MainParent only
         if (component.propsPropagation) {
+            //console.log('componentPropsInit', component.tag)
             Object.defineProperties(component, {
                 _propsPropagationIsArray: {
                     value: Array.isArray(component.propsPropagation)
@@ -4369,6 +4409,7 @@ var plugin = {
 };
 
 let appCounter = 0;
+
 class Doz {
     constructor(cfg = {}) {
         this.baseTemplate = `<${TAG.APP}></${TAG.APP}>`;
@@ -4921,6 +4962,7 @@ var alias = (function () {
             Object.defineProperties(app, {
                 getComponent: {
                     value: function (alias) {
+                        //console.log(this._tree.children)
                         return this._tree
                             ? this._tree.children[alias]
                             : undefined;
@@ -5160,10 +5202,10 @@ var is = (function () {
         },
         onComponentDOMElementCreate(instance, $target, directiveValue, initial) {
             $target.dataset.is = directiveValue;
-            if (!initial) {
+            //if (!initial) {
                 //instance._processing.push({node: $target, action: 'create'});
                 doCreateInstance(instance, $target);
-            }
+            //}
         },
     });
 });

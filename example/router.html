@@ -5,7 +5,6 @@
     <meta name="description" content="DOZ - ROUTER">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - router</title>
-    <script src="../node_modules/doz-router/dist/bundle.js?508"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -48,6 +47,7 @@
 
 <script type="module">
     import Doz from '../src/index.js'
+    import DozRouter from '../node_modules/doz-router/src/index.js'
 
     Doz.component('home-page', {
         template(h) {
@@ -126,7 +126,7 @@
             `
         },
         onCreate() {
-            this.props.id = this.getComponentById('router')._param['id'];
+            //this.props.id = this.getComponentById('router')._param['id'];
             console.log(this.tag, 'created')
         },
         onDestroy() {
@@ -142,7 +142,7 @@
         },
         onCreate() {
             console.log(this.getComponentById('router'))
-            this.props.element = this.getComponentById('router')._query['t'];
+            //this.props.element = this.getComponentById('router')._query['t'];
             console.log(this.tag, 'created')
         },
         onDestroy() {
@@ -166,7 +166,7 @@
 
     Doz.component('section-page', {
         template(h) {
-            let id = this.getComponentById('router')._param['id'];
+            let id =0;// this.getComponentById('router')._param['id'];
             return h`
                 <div>I'm section page index ${id}</div>
             `
@@ -212,7 +212,7 @@
                 <a data-router-link href="/section/4">Section 4</a>
             </nav>
             <div class="container">
-                <doz-router d:id="router">
+                <${DozRouter} d:id="router">
                     <home-page route="/"/>
                     <about-page route="/about" />
                     <contact-page route="/contact"/>
@@ -223,7 +223,7 @@
                     <user-details-page route="/user/:id"/>
                     <not-found-page route="*"/>
                     <section-page route="/section/:id" preserve/>
-                </doz-router>
+                </>
             </div>
             <div style="color: white; padding: 40px">A router plugin for Doz</div>
         `},
