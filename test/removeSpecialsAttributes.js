@@ -53,7 +53,7 @@ describe('removeSpecialsAttributes', function () {
                     this.props.aValue = 'ciao';
                 },
                 onMountAsync() {
-                    //console.log(document.body.innerHTML);
+                    console.log(document.body.innerHTML);
 
                     // d-ref
                     be.err.false(document.getElementById('d-ref').hasAttribute('d-ref'));

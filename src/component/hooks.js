@@ -41,12 +41,20 @@ function callMount(context) {
     context.app.emit('componentMount', context);
 }
 function callMountAsync(context) {
+    /*
     delay(() => {
         directive.callAppComponentMountAsync(context);
         directive.callComponentMountAsync(context);
     });
     if (typeof context.onMountAsync === 'function') {
         delay(() => context.onMountAsync.call(context));
+    }
+    context.app.emit('componentMountAsync', context);
+    */
+    directive.callAppComponentMountAsync(context);
+    directive.callComponentMountAsync(context);
+    if (typeof context.onMountAsync === 'function') {
+        context.onMountAsync.call(context);
     }
     context.app.emit('componentMountAsync', context);
 }
