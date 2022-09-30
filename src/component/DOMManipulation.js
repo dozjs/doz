@@ -20,7 +20,7 @@ class DOMManipulation extends Base {
         //console.log('element created', $el.outerHTML)
         //this._canWalk = false;
         //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
-        console.log('......', $el.nodeName)
+        //console.log('......', $el.nodeName)
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1) {
 

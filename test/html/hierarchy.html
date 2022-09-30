@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hierarchy</title>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+    import {Component, appCreate} from '../../src/index.js'
+
+    class Child3 extends Component {
+        template(h) {
+            return h`
+                <div>Child 3</div>
+            `
+        }
+
+        onMount() {
+            console.log('mount Child 3')
+        }
+    }
+
+    class Child2 extends Component {
+        template(h) {
+            return h`
+                <div>Child 2 <${Child3}/></div>
+            `
+        }
+
+        onMount() {
+            console.log('mount Child 2')
+        }
+    }
+
+    class Child1 extends Component {
+        template(h) {
+            return h`
+                <div>Child 1 <${Child2}/></div>
+            `
+        }
+
+        onMount() {
+            console.log('mount Child 1')
+        }
+    }
+
+    class MainComponent extends Component {
+        template(h) {
+            return h`
+                <div>Father <${Child1}/></div>
+            `
+        }
+
+        onMount() {
+            console.log('mount MainComponent')
+            console.log('children', this.children)
+            console.log('children', this.children[0])
+            console.log('children', this.children[0].children[0])
+            console.log('children', this.children[0].children[0].children[0])
+        }
+    }
+
+    appCreate('#app', MainComponent)
+</script>
+</body>
+</html>
