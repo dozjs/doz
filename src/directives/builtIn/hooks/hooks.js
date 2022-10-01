@@ -20,7 +20,7 @@ directive(':onmount', {
         }
     }
 });
-directive(':onmountasync', {
+/*directive(':onmountasync', {
     onComponentMountAsync(instance, directiveValue) {
         if (typeof directiveValue === 'function') {
             directiveValue(instance);
@@ -29,7 +29,7 @@ directive(':onmountasync', {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
-});
+});*/
 directive(':onafterrender', {
     onComponentAfterRender(instance, changes, directiveValue) {
         if (typeof directiveValue === 'function') {

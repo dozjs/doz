@@ -1,5 +1,5 @@
 import { data } from "../../collection.js";
-import delay from "../../utils/delay.js";
+//import delay from "../../utils/delay.js";
 // All methods that starts with prefix callApp are considered extra of directives hooks
 // because they don't use any prop but are useful for initializing stuff.
 // For example built-in like d:store and d:id
@@ -15,22 +15,19 @@ function callMethod(...args) {
             break;
         }
     }
+    //console.log(oKeys)
     for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
+
         if (data.directives[key] /*!== undefined*/) {
+            //console.log(data.directives[key])
             //if (typeof data.directives[key][method] === 'function') {
             if (data.directives[key][method] /*!== undefined*/) {
-                function callFunc() {
-                    let res = data.directives[key][method].apply(data.directives[key], args);
-                    // If res returns something, fire the callback
-                    if (res !== undefined && callback)
-                        callback(res);
-                }
-                /*if (isDelayed) {
-                    delay(() => callFunc())
-                } else {*/
-                    callFunc()
-                //}
+                let res = data.directives[key][method].apply(data.directives[key], args);
+                //console.log(key, method, res)
+                // If res returns something, fire the callback
+                if (res !== undefined && callback)
+                    callback(res);
             }
         }
     }
