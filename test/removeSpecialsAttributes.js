@@ -51,8 +51,15 @@ describe('removeSpecialsAttributes', function () {
                 },
                 onMount() {
                     this.props.aValue = 'ciao';
-                },
-                onMountAsync() {
+                }
+            });
+
+            new Doz({
+                root: '#app',
+                template(h) { return h`
+                    <salutation-card />
+                `},
+                onMount() {
                     console.log(document.body.innerHTML);
 
                     // d-ref
@@ -72,13 +79,6 @@ describe('removeSpecialsAttributes', function () {
 
                     done();
                 }
-            });
-
-            new Doz({
-                root: '#app',
-                template: `
-                    <salutation-card />
-                `
             });
         });
     });
