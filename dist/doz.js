@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - September 30, 2022 09:40:12 */
+/* Doz, version: 4.0.3 - October 1, 2022 16:54:07 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -415,10 +415,16 @@ var app = {
     callAppComponentWaitMount
 };
 
+var isEmptyObject = (function isEmptyObject(obj) {
+    for(let i in obj) return false;
+    return true;
+});
+
 function extractDirectivesFromProps(cmp) {
     //let canBeDeleteProps = true;
     let props;
-    if (!Object.keys(cmp.props).length) {
+    //if (!Object.keys(cmp.props).length) {
+    if (isEmptyObject(cmp.props)) {
         props = cmp._rawProps;
         //canBeDeleteProps = false;
     }
@@ -715,12 +721,20 @@ function callMount(context) {
     context.app.emit('componentMount', context);
 }
 function callMountAsync(context) {
+    /*
     delay(() => {
-        directives.callAppComponentMountAsync(context);
-        directives.callComponentMountAsync(context);
+        directive.callAppComponentMountAsync(context);
+        directive.callComponentMountAsync(context);
     });
     if (typeof context.onMountAsync === 'function') {
         delay(() => context.onMountAsync.call(context));
+    }
+    context.app.emit('componentMountAsync', context);
+    */
+    directives.callAppComponentMountAsync(context);
+    directives.callComponentMountAsync(context);
+    if (typeof context.onMountAsync === 'function') {
+        context.onMountAsync.call(context);
     }
     context.app.emit('componentMountAsync', context);
 }
@@ -2916,6 +2930,7 @@ var queueDraw = {
 };
 
 function extendInstance(instance, cfg, dProps) {
+    //console.log(cfg, dProps)
     Object.assign(instance, cfg, dProps);
 }
 
@@ -3251,6 +3266,53 @@ class Base {
             cfg: {}
         };
         opt.app = opt.app || {};
+        this._opt = opt;
+        this._cfgRoot = opt.root;
+        this._publicProps = Object.assign({}, opt.props);
+        this._isRendered = false;
+        this._prev = null;
+        this._rootElement = null;
+        this._parentElement = null;
+        this._components = {};
+        this._processing = [];
+        this._dynamicChildren = [];
+        this._unmounted = false;
+        this._unmountedParentNode = null;
+        this._configured = false;
+        this._props = {};
+        this._directiveProps = {};
+        this._computedCache = new Map();
+        this._renderPause = false;
+        this._rawHTML = '';
+        this._hasSlots = false;
+        this._slots = {};
+        this._defaultSlot = null;
+        this._localComponentLastId = 0;
+        this._currentStyle = '';
+        this._componentsMap = new Map();
+        this.tag = opt.cmp.tag;
+        this.app = opt.app;
+        this.exposeAttributes = ['style', 'class'];
+        this.parent = opt.parentCmp;
+        this.appRoot = opt.app._root;
+        this.action = opt.app.action;
+        this.shared = opt.app.shared;
+        this.childrenToWalk = [];
+        this._childrenInc = 0;
+        this.children = {};
+        this.childrenByTag = {};
+        this.rawChildren = [];
+        this.rawChildrenVnode = [];
+        this.autoCreateChildren = true;
+        this.updateChildrenProps = true;
+        this.mixin = [];
+        this.propsConvertOnFly = false;
+        this.propsComputedOnFly = false;
+        this.delayUpdate = 0;
+        this.propsData = {};
+        this.lockRemoveInstanceByCallback = null;
+        this.waitMount = false;
+/*
         Object.defineProperties(this, {
             //Private
             _opt: {
@@ -3350,10 +3412,6 @@ class Base {
                 enumerable: true,
                 writable: true
             },
-            /*uId: {
-                value: opt.uId,
-                enumerable: true
-            },*/
             app: {
                 value: opt.app,
                 enumerable: true
@@ -3383,6 +3441,11 @@ class Base {
             },
             childrenToWalk: {
                 value: [],
+                enumerable: true
+            },
+            _childrenInc: {
+                value: 0,
+                writable: true,
                 enumerable: true
             },
             children: {
@@ -3447,6 +3510,8 @@ class Base {
                 writable: true
             }
         });
+*/
+
     }
 }
 
@@ -3485,11 +3550,10 @@ class DOMManipulation extends Base {
         //console.log('element created', $el.outerHTML)
         //this._canWalk = false;
         //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
-
-
+        //console.log('......', $el.nodeName)
         if (typeof $el.hasAttribute === 'function') {
             if (node.type.indexOf('-') !== -1) {
-                //console.log('......', $el.nodeName)
+
                 //this.childrenToWalk.push($el)
                 //this._processing.push({ node: $el, action: 'create' });
                 //if (!initial) {
@@ -3585,10 +3649,6 @@ class DOMManipulation extends Base {
     }
 }
 
-function cloneObject(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-
 function toLiteralString(str) {
     return str
         .replace(/{{/gm, '${')
@@ -3600,7 +3660,10 @@ function toLiteralString(str) {
 class Component extends DOMManipulation {
     constructor(opt) {
         super(opt);
-        Object.defineProperty(this, '_isSubclass', {
+        this._isSubclass = this.__proto__.constructor !== Component;
+        this.uId = this.app.generateUId();
+        this.h = h.bind(this);
+        /*Object.defineProperty(this, '_isSubclass', {
             value: this.__proto__.constructor !== Component
         });
         Object.defineProperty(this, 'uId', {
@@ -3610,7 +3673,7 @@ class Component extends DOMManipulation {
         Object.defineProperty(this, 'h', {
             value: h.bind(this),
             enumerable: false
-        });
+        });*/
         this._initRawProps(opt);
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -3710,11 +3773,11 @@ class Component extends DOMManipulation {
         if (this._renderPause)
             return;
         this.beginSafeRender();
-        const propsKeys = Object.keys(this.props);
+        //const propsKeys = Object.keys(this.props);
         const templateArgs = [this.h];
-        for (let i = 0; i < propsKeys.length; i++) {
+        /*for (let i = 0; i < propsKeys.length; i++) {
             templateArgs.push(this.props[propsKeys[i]]);
-        }
+        }*/
         const template = this.template.apply(this, templateArgs);
         this.endSafeRender();
         let next = template && typeof template === 'object'
@@ -3899,9 +3962,10 @@ class Component extends DOMManipulation {
         else {
             this._rawProps = Object.assign({}, opt.props);
         }
-        Object.defineProperty(this, '_initialProps', {
+        this._initialProps = deepCopy(this._rawProps);
+        /*Object.defineProperty(this, '_initialProps', {
             value: cloneObject(this._rawProps)
-        });
+        });*/
     }
     getDozWebComponentById(id) {
         return this.getWebComponentById(id);
@@ -3938,8 +4002,9 @@ function getComponentName($child) {
 
 function appendChildrenToParent(parent, newElement) {
     //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
+    //return;
     if (parent.cmp) {
-        let n = Object.keys(parent.cmp.children).length++;
+        let n =  parent.cmp._childrenInc++; //Object.keys(parent.cmp.children).length++;
         directives.callAppComponentAssignIndex(newElement, n, (index) => {
             //console.log(parent.cmp.tag)
             parent.cmp.children[index] = newElement;
@@ -3981,7 +4046,7 @@ function createInstance(cfg = {}) {
     function walk($child, parent = {}) {
         //console.log('WALK COUNT', walkCount++, $child.nodeName)
         //console.log('parent', parent)
-
+        //console.log('aaaaaaaaaa', $child)
         //while ($child) {
         makeSureAttach($child);
         // it is not good but it works
@@ -4014,10 +4079,7 @@ function createInstance(cfg = {}) {
         //console.log(cmp)
 
         if (cmp) {
-            if (parent.cmp) {
-                const rawChild = $child.outerHTML;
-                parent.cmp.rawChildren.push(rawChild);
-            }
+            if (parent.cmp) ;
             // For node created by mount method
             if (parent.cmp && parent.cmp.mounted) {
                 return;
@@ -4202,7 +4264,7 @@ function createInstance(cfg = {}) {
                 }
 
                 hooks$1.callMount(newElement);
-                hooks$1.callMountAsync(newElement);
+                //hooks.callMountAsync(newElement);
 
                 if (newElement.waitMount) {
                     //cfg.app._onAppComponentsMounted.set(newElement, true);
@@ -4263,7 +4325,7 @@ function createInstance(cfg = {}) {
         walk(newElement.getHTMLElement(), {cmp: newElement});
         flushTrash();
         hooks$1.callMount(newElement);
-        hooks$1.callMountAsync(newElement);
+        //hooks.callMountAsync(newElement);
         return newElement;
     } else {
         //if (cfg.parent)
