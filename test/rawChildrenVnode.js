@@ -43,7 +43,7 @@ describe('rawChildrenVnode', function () {
                     `
                 },
 
-                onMountAsync() {
+                onMount() {
                     //console.log(this.rawChildren)
                     /*//console.log(this.rawChildrenVnode)
                     //console.log(JSON.stringify(this._prev.children, null, 4))*/

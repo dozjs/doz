@@ -16,7 +16,7 @@ describe('hooks', function () {
                 create: 4,
                 propsInit: 4,
                 mount: 4,
-                mountAsync: 4,
+                //mountAsync: 4,
                 update: 1,
                 unmount: 3,
                 destroy: 3
@@ -26,7 +26,7 @@ describe('hooks', function () {
                 create: 0,
                 propsInit: 0,
                 mount: 0,
-                mountAsync: 0,
+                //mountAsync: 0,
                 update: 0,
                 unmount: 0,
                 destroy: 0
@@ -94,10 +94,10 @@ describe('hooks', function () {
                     //console.log('componentMount');
                     result.mount++;
                 })
-                .on('componentMountAsync', component => {
+                /*.on('componentMountAsync', component => {
                     //console.log('componentMountAsync');
                     result.mountAsync++;
-                })
+                })*/
                 .on('componentUpdate', (component, changes) => {
                     //console.log('componentUpdate', changes);
                     if (changes[0].newValue === 'Ciao Mondo')

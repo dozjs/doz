@@ -27,11 +27,12 @@ describe('getHtmlElement', function () {
 
                 onMount() {
                     be.err.not.null(this.getHTMLElement());
-                },
+                    be.err(done).not.null(this.getHTMLElement());
+                }/*,
 
                 onMountAsync() {
                     be.err(done).not.null(this.getHTMLElement());
-                }
+                }*/
             });
 
             new Doz({

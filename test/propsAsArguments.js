@@ -1,7 +1,8 @@
 import Doz from "../src/index.js";
 import be from "bejs";
 
-describe('propsAsArguments', function () {
+//disabled for performance
+describe.skip('propsAsArguments', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

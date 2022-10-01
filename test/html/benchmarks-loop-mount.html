@@ -41,7 +41,7 @@
 
     let actions = {
         add(num) {
-            console.time(currentBench = 'add items ' + num);
+            //console.time(currentBench = 'add items ' + num);
             const record = Object.assign([], this.getStore('list').record);
             const initLength = this.getStore('list').record.length;
 
@@ -52,24 +52,24 @@
         },
 
         clear() {
-            console.time(currentBench = 'clear');
+            //console.time(currentBench = 'clear');
             this.getStore('list').record = [];
         },
 
         reverse() {
-            console.time(currentBench = 'reverse');
+            //console.time(currentBench = 'reverse');
             let record = Object.assign([], this.getStore('list').record);
             this.getStore('list').record = record.reverse();
         },
 
         sort() {
-            console.time(currentBench = 'sort');
+            //console.time(currentBench = 'sort');
             let record = Object.assign([], this.getStore('list').record);
             this.getStore('list').record = record.sort();
         },
 
         remove() {
-            console.time(currentBench = 'remove');
+            //console.time(currentBench = 'remove');
             let record = Object.assign([], this.getStore('list').record);
             record.splice(Math.floor(Math.random()*record.length), 1);
             this.getStore('list').record = record;
@@ -83,7 +83,7 @@
             let tmp = record[i1];
             record[i1] = record[i2];
             record[i2] = tmp;
-            console.time(currentBench = "swap");
+            //console.time(currentBench = "swap");
             this.getStore('list').record = record;
         }
     };
@@ -139,7 +139,7 @@
 
         onUpdate() {
             //console.log('update');
-            console.timeEnd(currentBench);
+            //console.timeEnd(currentBench);
         }
 
     });
@@ -147,11 +147,11 @@
     new Doz({
         actions,
         root: document.getElementById('app'),
-        template: `
+        template(h) {return h`
             <doz-label title="Loop mount component"></doz-label>
             <doz-buttons></doz-buttons>
             <doz-list></doz-list>
-        `
+        `}
     });
 
 </script>

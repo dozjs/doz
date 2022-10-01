@@ -42,10 +42,10 @@ describe('slot', function () {
                             </salutation-card>
                         </div>
                     `
-                },
+                }/*,
                 onMountAsync() {
                     //this.render(false, [], true)
-                }
+                }*/
             });
 
             setTimeout(()=>{

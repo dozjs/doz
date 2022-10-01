@@ -13,8 +13,9 @@ import makeSureAttach from "./makeSureAttach.js";
 
 function appendChildrenToParent(parent, newElement) {
     //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
+    //return;
     if (parent.cmp) {
-        let n = Object.keys(parent.cmp.children).length++;
+        let n =  parent.cmp._childrenInc++ //Object.keys(parent.cmp.children).length++;
         directive.callAppComponentAssignIndex(newElement, n, (index) => {
             //console.log(parent.cmp.tag)
             parent.cmp.children[index] = newElement;
@@ -94,8 +95,8 @@ function createInstance(cfg = {}) {
 
         if (cmp) {
             if (parent.cmp) {
-                const rawChild = $child.outerHTML;
-                parent.cmp.rawChildren.push(rawChild);
+                //const rawChild = $child.outerHTML;
+                //parent.cmp.rawChildren.push(rawChild);
             }
             // For node created by mount method
             if (parent.cmp && parent.cmp.mounted) {
@@ -283,7 +284,7 @@ function createInstance(cfg = {}) {
                 }
 
                 hooks.callMount(newElement);
-                hooks.callMountAsync(newElement);
+                //hooks.callMountAsync(newElement);
 
                 if (newElement.waitMount) {
                     //cfg.app._onAppComponentsMounted.set(newElement, true);
@@ -344,7 +345,7 @@ function createInstance(cfg = {}) {
         walk(newElement.getHTMLElement(), {cmp: newElement});
         flushTrash()
         hooks.callMount(newElement);
-        hooks.callMountAsync(newElement);
+        //hooks.callMountAsync(newElement);
         return newElement;
     } else {
         //if (cfg.parent)

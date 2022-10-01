@@ -16,7 +16,8 @@ import { compile } from "../vdom/parser.js";
 import propsInit from "./helpers/propsInit.js";
 import DOMManipulation from "./DOMManipulation.js";
 import directive from "../directives/index.js";
-import cloneObject from "../utils/cloneObject.js";
+//import cloneObject from "../utils/cloneObject.js";
+import deepCopy from "../utils/deepCopy.js";
 import toLiteralString from "../utils/toLiteralString.js";
 import delay from "../utils/delay.js";
 import makeSureAttach from "./makeSureAttach.js";
@@ -26,7 +27,10 @@ import data from "../data.js";
 class Component extends DOMManipulation {
     constructor(opt) {
         super(opt);
-        Object.defineProperty(this, '_isSubclass', {
+        this._isSubclass = this.__proto__.constructor !== Component;
+        this.uId = this.app.generateUId();
+        this.h = h.bind(this);
+        /*Object.defineProperty(this, '_isSubclass', {
             value: this.__proto__.constructor !== Component
         });
         Object.defineProperty(this, 'uId', {
@@ -36,7 +40,7 @@ class Component extends DOMManipulation {
         Object.defineProperty(this, 'h', {
             value: h.bind(this),
             enumerable: false
-        });
+        });*/
         this._initRawProps(opt);
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -136,11 +140,11 @@ class Component extends DOMManipulation {
         if (this._renderPause)
             return;
         this.beginSafeRender();
-        const propsKeys = Object.keys(this.props);
+        //const propsKeys = Object.keys(this.props);
         const templateArgs = [this.h];
-        for (let i = 0; i < propsKeys.length; i++) {
+        /*for (let i = 0; i < propsKeys.length; i++) {
             templateArgs.push(this.props[propsKeys[i]]);
-        }
+        }*/
         const template = this.template.apply(this, templateArgs);
         this.endSafeRender();
         let next = template && typeof template === 'object'
@@ -325,9 +329,10 @@ class Component extends DOMManipulation {
         else {
             this._rawProps = Object.assign({}, opt.props);
         }
-        Object.defineProperty(this, '_initialProps', {
+        this._initialProps = deepCopy(this._rawProps);
+        /*Object.defineProperty(this, '_initialProps', {
             value: cloneObject(this._rawProps)
-        });
+        });*/
     }
     getDozWebComponentById(id) {
         return this.getWebComponentById(id);

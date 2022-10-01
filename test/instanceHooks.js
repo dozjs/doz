@@ -25,8 +25,8 @@ describe('instanceHooks', function () {
                 'onAfterRender',
                 'onMount',
                 'onMountProto',
-                'onMountAsync',
-                'onMountAsyncProto',
+                //'onMountAsync',
+                //'onMountAsyncProto',
                 'onBeforeUpdate',
                 'onUpdate',
                 'onBeforeUnmount',
@@ -54,9 +54,9 @@ describe('instanceHooks', function () {
                     queueEvents.push('onMountProto');
                 }
 
-                onMountAsync() {
+                /*onMountAsync() {
                     queueEvents.push('onMountAsyncProto');
-                }
+                }*/
 
                 onUpdate() {
                     queueEvents.push('onUpdateProto');
@@ -85,7 +85,6 @@ describe('instanceHooks', function () {
                             d:oncreate="onMyCmpCreate"
                             d:onbeforemount="onMyCmpBeforeMount"
                             d:onmount="onMyCmpMount"
-                            d:onmountasync="onMyCmpMountAsync"
                             d:onafterrender="onMyCmpAfterRender"
                             d:onbeforeupdate="onMyCmpBeforeUpdate"
                             d:onupdate="onMyCmpUpdate"
@@ -112,10 +111,10 @@ describe('instanceHooks', function () {
                     queueEvents.push('onMount');
                     this.props.title = 'ciao';
                 },
-                onMyCmpMountAsync() {
+                /*onMyCmpMountAsync() {
                     //console.log('onMountAsync');
                     queueEvents.push('onMountAsync');
-                },
+                },*/
                 onMyCmpAfterRender() {
                     //console.log('onAfterRender');
                     queueEvents.push('onAfterRender');

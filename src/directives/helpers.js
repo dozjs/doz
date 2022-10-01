@@ -1,8 +1,10 @@
 import { REGEX, PROPS_ATTRIBUTES } from "../constants.js";
+import isEmptyObject from "../utils/isEmptyObject.js";
 function extractDirectivesFromProps(cmp) {
     //let canBeDeleteProps = true;
     let props;
-    if (!Object.keys(cmp.props).length) {
+    //if (!Object.keys(cmp.props).length) {
+    if (isEmptyObject(cmp.props)) {
         props = cmp._rawProps;
         //canBeDeleteProps = false;
     }

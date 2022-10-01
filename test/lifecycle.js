@@ -89,10 +89,10 @@ describe('lifecycle', function () {
                     step++;
                     setTimeout(() => this.props.salutation = 'Ciao Mondo', 1000);
                 },
-                onMountAsync() {
+                /*onMountAsync() {
                     //console.log('mountAsync');
                     step++;
-                },
+                },*/
                 onBeforeUpdate(changes) {
                     //console.log('before update', this.props.salutation, changes);
                     step++;
@@ -123,7 +123,7 @@ describe('lifecycle', function () {
                     step++;
 
                     //console.log('step', step);
-                    if (step === 21) done()
+                    if (step === 20) done()
 
                 }
             });

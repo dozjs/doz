@@ -77,7 +77,7 @@ describe('viewSolo', function () {
                 'onAfterRender',
                 'onMount',
                 'onBeforeUpdate',
-                'onMountAsync',
+                //'onMountAsync',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
@@ -107,9 +107,9 @@ describe('viewSolo', function () {
                     queueEvents.push('onMount');
                     this.props.title = 'ciao';
                 },
-                onMountAsync() {
+                /*onMountAsync() {
                     queueEvents.push('onMountAsync');
-                },
+                },*/
                 onAfterRender() {
                     queueEvents.push('onAfterRender');
                 },
