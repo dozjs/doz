@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+  import Doz from '../../src/index.js'
+
+  Doz.component('caller-o', {
+    template(h) {
+      return h`<div id="d:on">Callback</div>`
+    },
+    onCreate() {
+      //console.log('created');
+      setTimeout(() => {
+        this.emit('mycallback', 'hello');
+      }, 1000);
+      //console.log(this.parent.tag)
+    }
+  });
+
+  Doz.component('a-component', {
+    template() {
+      return `<div id="d-is">hello</div>`
+    }
+  });
+
+  Doz.component('salutation-card', {
+    props: {
+      aValue: ''
+    },
+    template(h) {
+      return h`
+          <div id="d-ref" d-ref="myDiv">Hello</div>
+          <input id="d-bind" type="text" d-bind="aValue">
+          <span id="d-is" d-is="a-component"></span>
+          <caller-o d:on-mycallback="aCallback"/>
+      `
+    },
+    aCallback(arg) {
+      console.log('callback is called', arg);
+    },
+    onMount() {
+      this.props.aValue = 'ciao';
+      console.log(this.getHTMLElement().outerHTML);
+      console.log(this.getHTMLElement().querySelector('#d-ref'));
+    }
+  });
+
+  new Doz({
+    root: '#app',
+    template(h) {
+      return h`
+            <salutation-card />
+        `
+    },
+    onMount() {
+      //console.log(document.body.innerHTML);
+    }}
+  )
+</script>
+
+</body>
+</html>

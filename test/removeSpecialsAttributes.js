@@ -51,6 +51,7 @@ describe('removeSpecialsAttributes', function () {
                 },
                 onMount() {
                     this.props.aValue = 'ciao';
+                    console.log(document.body.innerHTML);
                 }
             });
 
