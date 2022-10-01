@@ -51,7 +51,23 @@ describe('removeSpecialsAttributes', function () {
                 },
                 onMount() {
                     this.props.aValue = 'ciao';
-                    console.log(document.body.innerHTML);
+
+                    // d-ref
+                    be.err.false(this.getHTMLElement().querySelector('#d-ref').hasAttribute('d-ref'));
+                    be.err.false(this.getHTMLElement().querySelector('#d-ref').hasAttribute('dref'));
+
+                    // d-bind
+                    be.err.false(this.getHTMLElement().querySelector('#d-bind').hasAttribute('d-bind'));
+                    be.err.false(this.getHTMLElement().querySelector('#d-bind').hasAttribute('dbind'));
+
+                    // d-is
+                    be.err.false(this.getHTMLElement().querySelector('#d-is').parentNode.hasAttribute('d-is'));
+                    be.err.false(this.getHTMLElement().querySelector('#d-is').parentNode.hasAttribute('dis'));
+
+                    // d:on
+                    //be.err.false(document.getElementById('d:on').parentNode.hasAttribute('d:on'));
+
+                    done();
                 }
             });
 
@@ -59,27 +75,7 @@ describe('removeSpecialsAttributes', function () {
                 root: '#app',
                 template(h) { return h`
                     <salutation-card />
-                `},
-                onMount() {
-                    console.log(document.body.innerHTML);
-
-                    // d-ref
-                    be.err.false(document.getElementById('d-ref').hasAttribute('d-ref'));
-                    be.err.false(document.getElementById('d-ref').hasAttribute('dref'));
-
-                    // d-bind
-                    be.err.false(document.getElementById('d-bind').hasAttribute('d-bind'));
-                    be.err.false(document.getElementById('d-bind').hasAttribute('dbind'));
-
-                    // d-is
-                    be.err.false(document.getElementById('d-is').parentNode.hasAttribute('d-is'));
-                    be.err.false(document.getElementById('d-is').parentNode.hasAttribute('dis'));
-
-                    // d:on
-                    //be.err.false(document.getElementById('d:on').parentNode.hasAttribute('d:on'));
-
-                    done();
-                }
+                `}
             });
         });
     });

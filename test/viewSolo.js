@@ -77,12 +77,12 @@ describe('viewSolo', function () {
                 'onAfterRender',
                 'onMount',
                 'onBeforeUpdate',
+                'onMountAsync',
                 'onUpdate',
                 'onBeforeUnmount',
                 'onUnmount',
                 'onBeforeDestroy',
                 'onAfterRender',
-                'onMountAsync',
                 'onDestroy'
             ];
 

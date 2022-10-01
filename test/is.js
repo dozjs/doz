@@ -28,12 +28,6 @@ describe('is', function () {
                     return h`
                         <span d-is="a-component" my-title="ciao"></span>
                     `
-                },
-
-                onMountAsync() {
-                    //console.log(document.body.innerHTML);
-                    be.err.equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><span data-is="a-component"><div id="d-is">hello ciao</div></span></salutation-card></dz-app></div>')
-                    done();
                 }
             });
 
@@ -41,7 +35,12 @@ describe('is', function () {
                 root: '#app',
                 template: `
                     <salutation-card />
-                `
+                `,
+                onMount() {
+                    //console.log(document.body.innerHTML);
+                    be.err.equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><span data-is="a-component"><div id="d-is">hello ciao</div></span></salutation-card></dz-app></div>')
+                    done();
+                }
             });
         });
     });
