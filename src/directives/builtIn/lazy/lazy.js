@@ -10,12 +10,13 @@ export default (function () {
     }
     directive('lazy', {
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app.lazyComponentsList = new Set();
+            /*Object.defineProperties(app, {
                 lazyComponentsList: {
                     value: new Set(),
                     enumerable: false
                 }
-            });
+            });*/
             window.addEventListener('scroll', () => {
                 app.lazyComponentsList.forEach(component => {
                     this.canRunMount(app, component);

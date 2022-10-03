@@ -153,9 +153,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                     : method.bind(cmpParent);
             }
         }
-        else {
-            /*return;
-            console.log('bbb')*/
+        /*else {
             match = value.match(REGEX.GET_LISTENER);
             if (match) {
                 //console.log('aaaaa')
@@ -165,10 +163,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 if (stringArgs) {
                     args = stringArgs.split(',').map(item => {
                         item = trimQuotes(item.trim());
-                        /*let itemMap = mapper.get(item);
-                        if (itemMap !== undefined)
-                            item = itemMap;*/
-                        //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
                         return item === 'this'
                             ? cmp
                             : item;
@@ -186,7 +180,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                         : method.bind(cmp);
                 }
             }
-        }
+        }*/
     }
     if (typeof value === 'function') {
         if (alreadyFunction) {

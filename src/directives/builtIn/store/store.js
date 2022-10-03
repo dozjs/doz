@@ -17,6 +17,13 @@ export default (function () {
             }
         },
         onAppInit(app) {
+            app._stores = {};
+            app.getStore = function (store) {
+                return app._stores[store];
+            };
+            //app.constructor.Component.hello = 'aaaaaaaa'
+            //console.log(app)
+            /*
             Object.defineProperties(app, {
                 _stores: {
                     value: {},
@@ -29,9 +36,15 @@ export default (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         // Create by property defined
         onAppComponentCreate(instance) {
+            instance.getStore = function (store) {
+                return instance.app._stores[store];
+            }
+            /*
             Object.defineProperties(instance, {
                 getStore: {
                     value: function (store) {
@@ -40,6 +53,8 @@ export default (function () {
                     enumerable: true
                 }
             });
+
+             */
             if (instance.store !== undefined && instance.props['d:store'] === undefined) {
                 this.createStore(instance, instance.store);
             }

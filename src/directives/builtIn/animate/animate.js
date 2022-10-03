@@ -5,7 +5,9 @@ const { directive } = index;
 export default (function () {
     directive('animate', {
         onAppComponentCreate(instance) {
-            Object.defineProperties(instance, {
+            instance.animate = animateHelper;
+            instance.elementsWithAnimation = new Map();
+            /*Object.defineProperties(instance, {
                 animate: {
                     value: animateHelper,
                     enumerable: true
@@ -14,7 +16,7 @@ export default (function () {
                     value: new Map(),
                     writable: true
                 }
-            });
+            });*/
         },
         createLockRemoveInstanceByCallback(instance) {
             instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {

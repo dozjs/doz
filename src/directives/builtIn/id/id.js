@@ -12,7 +12,11 @@ export default (function () {
             }
         },
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app._ids = {};
+            app.getComponentById = function (id) {
+                return app._ids[id];
+            }
+            /*Object.defineProperties(app, {
                 _ids: {
                     value: {},
                     writable: true
@@ -23,9 +27,17 @@ export default (function () {
                     },
                     enumerable: true
                 }
-            });
+            });*/
+
         },
         onAppComponentCreate(instance) {
+            instance.getComponentById = function (id) {
+                return instance.app._ids[id];
+            };
+
+            instance.getCmp = instance.getComponentById;
+
+            /*
             Object.defineProperties(instance, {
                 getComponentById: {
                     value: function (id) {
@@ -40,6 +52,8 @@ export default (function () {
                     enumerable: true
                 }
             });
+
+             */
             if (instance.id !== undefined && instance.props['d:id'] === undefined) {
                 this.createId(instance, instance.id);
             }

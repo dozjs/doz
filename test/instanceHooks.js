@@ -22,7 +22,7 @@ describe('instanceHooks', function () {
                 'onCreate',
                 'onCreateProto',
                 'onBeforeMount',
-                'onAfterRender',
+                //'onAfterRender',
                 'onMount',
                 'onMountProto',
                 //'onMountAsync',
@@ -35,7 +35,7 @@ describe('instanceHooks', function () {
                 'onBeforeDestroy',
                 'onDestroyProto',
                 'onUpdateProto',
-                'onAfterRender',
+                //'onAfterRender',
                 'onDestroy'
             ];
 

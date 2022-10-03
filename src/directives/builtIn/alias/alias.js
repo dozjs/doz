@@ -8,7 +8,13 @@ export default (function () {
             }
         },
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app.getComponent = function (alias) {
+                //console.log(this._tree.children)
+                return this._tree
+                    ? this._tree.children[alias]
+                    : undefined;
+            };
+            /*Object.defineProperties(app, {
                 getComponent: {
                     value: function (alias) {
                         //console.log(this._tree.children)
@@ -18,9 +24,15 @@ export default (function () {
                     },
                     enumerable: true
                 }
-            });
+            });*/
         },
         onAppComponentCreate(instance) {
+            instance.getComponent = function (alias) {
+                return this.children
+                    ? this.children[alias]
+                    : undefined;
+            }
+            /*
             Object.defineProperties(instance, {
                 getComponent: {
                     value: function (alias) {
@@ -31,6 +43,8 @@ export default (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         onComponentCreate(instance, directiveValue) {
             this.createAlias(instance, directiveValue);

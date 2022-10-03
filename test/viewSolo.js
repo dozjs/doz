@@ -74,7 +74,7 @@ describe('viewSolo', function () {
                 'onBeforeCreate',
                 'onCreate',
                 'onBeforeMount',
-                'onAfterRender',
+                //'onAfterRender',
                 'onMount',
                 'onBeforeUpdate',
                 //'onMountAsync',
@@ -82,7 +82,7 @@ describe('viewSolo', function () {
                 'onBeforeUnmount',
                 'onUnmount',
                 'onBeforeDestroy',
-                'onAfterRender',
+                //'onAfterRender',
                 'onDestroy'
             ];
 

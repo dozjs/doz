@@ -5,15 +5,18 @@ const { directive } = index;
 export default (function () {
     directive('is', {
         hasDataIs($target) {
-            return $target.dataset && $target.dataset.is;
+            return $target.dataset && /**/$target.dataset.is;
         },
         onAppComponentAssignName(instance, $target) {
-            if (this.hasDataIs($target))
-                return $target.dataset.is;
+            //console.log('onAppComponentAssignName',$target)
+            if (this.hasDataIs($target)) {
+                return $target.dataset.is;/**/
+            }
         },
         onAppComponentPropsAssignName($target, propsName, isDirective) {
+            //console.log('onAppComponentPropsAssignName',$target)
             if (this.hasDataIs($target))
-                return dashToCamel(propsName);
+                return dashToCamel(propsName);/**/
             /*else
                 return propsName;*/
         },

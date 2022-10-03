@@ -177,8 +177,8 @@ class Component extends DOMManipulation {
         }
         this._prev = next;
         //console.log(this._prev)
-        if (!silentAfterRenderEvent)
-            hooks.callAfterRender(this);
+        /*if (!silentAfterRenderEvent)
+            hooks.callAfterRender(this);*/
         //drawDynamic(this);
     }
     renderPause() {

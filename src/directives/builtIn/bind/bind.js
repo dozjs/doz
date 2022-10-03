@@ -5,12 +5,13 @@ export default (function () {
     directive('bind', {
         // Start directive methods
         onAppComponentCreate(instance) {
-            Object.defineProperties(instance, {
+            instance._boundElements = {}
+            /*Object.defineProperties(instance, {
                 _boundElements: {
                     value: {},
                     writable: true
                 }
-            });
+            });*/
         },
         onAppComponentUpdate(instance, changes) {
             if (!Object.keys(instance._boundElements).length)

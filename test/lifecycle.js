@@ -123,7 +123,7 @@ describe('lifecycle', function () {
                     step++;
 
                     //console.log('step', step);
-                    if (step === 20) done()
+                    if (step === 18) done()
 
                 }
             });
