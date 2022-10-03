@@ -1,4 +1,5 @@
 import data from "./data.js";
+import Base from "./component/Base.js";
 /**
  * Register a component to global
  * @param cmp
@@ -39,6 +40,7 @@ function registerPlugin(plugin) {
  * @param cfg
  */
 function registerDirective(name, cfg = {}) {
+    //console.log('directive', name)
     if (typeof name !== 'string') {
         throw new TypeError('Doz directive name must be a string');
     }
@@ -57,7 +59,7 @@ function registerDirective(name, cfg = {}) {
         namePart.shift();
     }
     cfg.name = name;
-    cfg._keyArguments = namePart.map(item => item.substr(1)); // remove $
+    cfg._keyArguments = namePart.map(item => item.substring(1)); // remove $
     if (Object.prototype.hasOwnProperty.call(data.directives, name))
         console.warn('Doz', `directive ${name} overwritten`);
     data.directives[name] = cfg;
