@@ -231,11 +231,12 @@ function propsFixer(nName, aName, aValue, props, $node) {
     let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
         ? dashToCamel(aName)
         : aName;
+    /*
     if ($node) {
         directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
-    }
+    }*/
     /*
         if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
             aValue = mapper.getAll(aValue);

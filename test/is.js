@@ -26,7 +26,7 @@ describe('is', function () {
                 },
                 template(h) {
                     return h`
-                        <span d-is="a-component" my-title="ciao"></span>
+                        <span d-is="a-component" myTitle="ciao"></span>
                     `
                 }
             });

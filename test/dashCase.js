@@ -63,7 +63,7 @@ describe('dashCase', function () {
                 root: '#app',
                 template: `
                     <div d-is="salutation-card"
-                        my-title="MR."
+                        myTitle="MR."
                         name="Doz">
                     </div>
                 `
