@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 3, 2022 13:05:54 */
+/* Doz, version: 4.0.3 - October 3, 2022 19:43:35 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -199,6 +199,7 @@ var delay = d;
 // because they don't use any prop but are useful for initializing stuff.
 // For example built-in like d:store and d:id
 function callMethod$1(...args) {
+    //return;
     //console.log(data.directivesKeys)
     let method = args.shift();
     let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
@@ -211,10 +212,9 @@ function callMethod$1(...args) {
             break;
         }
     }
-    //console.log(oKeys)
+    //console.log(oKeys, args)
     for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-
         //if (data.directives[key] /*!== undefined*/) {
             //console.log(data.directives[key])
             //if (typeof data.directives[key][method] === 'function') {
@@ -420,24 +420,29 @@ var isEmptyObject = (function isEmptyObject(obj) {
 });
 
 function extractDirectivesFromProps(cmp) {
-    //let canBeDeleteProps = true;
     let props;
-    //if (!Object.keys(cmp.props).length) {
+
     if (isEmptyObject(cmp.props)) {
         props = cmp._rawProps;
-        //canBeDeleteProps = false;
-    }
-    else {
+    } else {
         props = cmp.props;
     }
-    Object.keys(props).forEach(key => {
+
+    //if (!isEmptyObject(cmp.props))
+    for (let key in props) {
+        if (isDirective(key)) {
+            let keyWithoutD = key.substring(2);
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    }/**/
+    /*Object.keys(props).forEach(key => {
         if (isDirective(key)) {
             let keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
-            /*if (canBeDeleteProps)
-                delete props[key];*/
         }
-    });
+    });*/
+
+    //console.log(cmp._directiveProps)
     return cmp._directiveProps;
 }
 function isDirective(aName) {
@@ -465,15 +470,20 @@ function extractDirectiveNameAndKeyValues(attributeName) {
     return [directiveName, keyArgumentsValues];
 }
 
+//import delay from "../../utils/delay.js";
 // Hooks for the component
 function callMethod(...args) {
+    //return
     let method = args[0];
+
     let cmp = args[1];
     //let isDelayed = args[2] === 'delay';
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
     let directivesKeyValue = extractDirectivesFromProps(cmp);
+    //console.log(directivesKeyValue)
+    //console.log(method, directivesKeyValue)
     Object.keys(directivesKeyValue).forEach(key => {
         let keyArgumentsValues = [];
         let keyArguments = {};
@@ -494,10 +504,7 @@ function callMethod(...args) {
             outArgs.push(directivesKeyValue[originKey]);
             directiveObj._keyArguments.forEach((keyArg, i) => keyArguments[keyArg] = keyArgumentsValues[i]);
             outArgs.push(keyArguments);
-            /*if (isDelayed)
-                delay(() => directiveObj[method].apply(directiveObj, outArgs));
-                else*/
-                    directiveObj[method].apply(directiveObj, outArgs);
+            directiveObj[method].apply(directiveObj, outArgs);
         }
     });
 }
@@ -3516,7 +3523,7 @@ function doCreateInstance(instance, $el) {
         else {
             instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
         }*/
-        directives.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
+        //directive.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
     }
 }
 
@@ -4039,7 +4046,7 @@ function createInstance(cfg = {}) {
         }
          */
 
-        directives.callAppWalkDOM(parent, $child);
+        //directive.callAppWalkDOM(parent, $child);
         cmpName = getComponentName($child);
         directives.callAppComponentAssignName(parent, $child, (name) => {
             cmpName = name;
