@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 1, 2022 16:54:07 */
+/* Doz, version: 4.0.3 - October 3, 2022 13:05:54 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -194,12 +194,14 @@ if (window.requestAnimationFrame) {
 }
 var delay = d;
 
+//import delay from "../../utils/delay.js";
 // All methods that starts with prefix callApp are considered extra of directives hooks
 // because they don't use any prop but are useful for initializing stuff.
 // For example built-in like d:store and d:id
 function callMethod$1(...args) {
+    //console.log(data.directivesKeys)
     let method = args.shift();
-    let oKeys = data.directivesKeys; // Object.keys(data.directives);
+    let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
     let callback;
     //let isDelayed = args[1] === 'delay'
     // Search for a possible callback
@@ -209,24 +211,21 @@ function callMethod$1(...args) {
             break;
         }
     }
+    //console.log(oKeys)
     for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-        if (data.directives[key] /*!== undefined*/) {
+
+        //if (data.directives[key] /*!== undefined*/) {
+            //console.log(data.directives[key])
             //if (typeof data.directives[key][method] === 'function') {
             if (data.directives[key][method] /*!== undefined*/) {
-                function callFunc() {
-                    let res = data.directives[key][method].apply(data.directives[key], args);
-                    // If res returns something, fire the callback
-                    if (res !== undefined && callback)
-                        callback(res);
-                }
-                /*if (isDelayed) {
-                    delay(() => callFunc())
-                } else {*/
-                    callFunc();
-                //}
+                let res = data.directives[key][method].apply(data.directives[key], args);
+                //console.log(key, method, res)
+                // If res returns something, fire the callback
+                if (res !== undefined && callback)
+                    callback(res);
             }
-        }
+        //}
     }
 }
 function callAppInit(...args) {
@@ -1004,7 +1003,7 @@ function compile(tpl) {
             for (let attMatch; attMatch = REGEX.HTML_ATTRIBUTE.exec(match[3]);) {
                 props[attMatch[2]] = attMatch[5] || attMatch[6] || '';
                 //console.warn(props[attMatch[2]])
-                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props, null);
+                propsFixer(match[0].substring(1, match[0].length - 1), attMatch[2], props[attMatch[2]], props);
             }
             if (!match[4] && elementsClosedByOpening[currentParent.type]) {
                 if (elementsClosedByOpening[currentParent.type][match[2]]) {
@@ -1070,14 +1069,14 @@ function serializeProps($node) {
     if ($node._dozAttach[PROPS_ATTRIBUTES]) {
         let keys = Object.keys($node._dozAttach[PROPS_ATTRIBUTES]);
         for (let i = 0; i < keys.length; i++) {
-            propsFixer($node.nodeName, keys[i], $node._dozAttach[PROPS_ATTRIBUTES][keys[i]], props, $node);
+            propsFixer($node.nodeName, keys[i], $node._dozAttach[PROPS_ATTRIBUTES][keys[i]], props);
         }
     }
     else if ($node.attributes) {
         const attributes = Array.from($node.attributes);
         for (let j = attributes.length - 1; j >= 0; --j) {
             let attr = attributes[j];
-            propsFixer($node.nodeName, attr.name, attr.nodeValue, props, $node);
+            propsFixer($node.nodeName, attr.name, attr.nodeValue, props);
         }
     }
     return props;
@@ -1091,11 +1090,12 @@ function propsFixer(nName, aName, aValue, props, $node) {
     let propsName = REGEX.IS_CUSTOM_TAG.test(nName) && !_isDirective
         ? dashToCamel(aName)
         : aName;
+    /*
     if ($node) {
-        directives.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
+        directive.callAppComponentPropsAssignName($node, aName, aValue, _isDirective, props, newPropsName => {
             propsName = newPropsName;
         });
-    }
+    }*/
     /*
         if (typeof aValue === 'string' && !mapper.isValidId(aValue) && !isListener(aName)) {
             aValue = mapper.getAll(aValue);
@@ -1978,12 +1978,6 @@ var observer = {
     create: create$1
 };
 
-function getByPath(path, obj) {
-    return path.split('.').reduce((res, prop) => res
-        ? res[prop]
-        : undefined, obj);
-}
-
 var isListener = (function isListener(str) {
     if (typeof str !== 'string')
         return false;
@@ -2134,9 +2128,6 @@ function isCustomAttribute(name) {
 function extractEventName(name) {
     return name.slice(2).toLowerCase();
 }
-function trimQuotes(str) {
-    return str.replace(REGEX.TRIM_QUOTES, '$1');
-}
 function addEventListener($target, name, value, cmp, cmpParent) {
     if (!isEventAttribute(name))
         return;
@@ -2147,6 +2138,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
         alreadyFunction = true;
     }
     // Legacy logic where use a string instead of function
+    /*
     if (typeof value === 'string') {
         // If use scope. from onDrawByParent event
         let match = value.match(REGEX.GET_LISTENER_SCOPE);
@@ -2157,16 +2149,12 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             if (stringArgs) {
                 args = stringArgs.split(',').map(item => {
                     item = trimQuotes(item.trim());
-                    //return item === 'scope' ? cmpParent : castStringTo(trimQuotes(item))
-                    /*let itemMap = mapper.get(item);
-                    if (itemMap !== undefined)
-                        item = itemMap;*/
                     return item === 'scope'
                         ? cmpParent
                         : item;
                 });
             }
-            const method = getByPath(handler, cmpParent);
+            const method = objectPath(handler, cmpParent);
             if (method !== undefined) {
                 value = args
                     ? method.bind(cmpParent, ...args)
@@ -2174,8 +2162,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             }
         }
         else {
-            /*return;
-            console.log('bbb')*/
             match = value.match(REGEX.GET_LISTENER);
             if (match) {
                 //console.log('aaaaa')
@@ -2185,10 +2171,6 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 if (stringArgs) {
                     args = stringArgs.split(',').map(item => {
                         item = trimQuotes(item.trim());
-                        /*let itemMap = mapper.get(item);
-                        if (itemMap !== undefined)
-                            item = itemMap;*/
-                        //return item === 'this' ? cmp : castStringTo(trimQuotes(item))
                         return item === 'this'
                             ? cmp
                             : item;
@@ -2199,7 +2181,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                     handler = isParentMethod[1];
                     cmp = cmp.parent;
                 }
-                const method = getByPath(handler, cmp);
+                const method = objectPath(handler, cmp);
                 if (method !== undefined) {
                     value = args
                         ? method.bind(cmp, ...args)
@@ -2207,7 +2189,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
                 }
             }
         }
-    }
+    }*/
     if (typeof value === 'function') {
         if (alreadyFunction) {
             $target.addEventListener(extractEventName(name), value.bind(cmp));
@@ -3810,8 +3792,8 @@ class Component extends DOMManipulation {
         }
         this._prev = next;
         //console.log(this._prev)
-        if (!silentAfterRenderEvent)
-            hooks$1.callAfterRender(this);
+        /*if (!silentAfterRenderEvent)
+            hooks.callAfterRender(this);*/
         //drawDynamic(this);
     }
     renderPause() {
@@ -4045,23 +4027,18 @@ function createInstance(cfg = {}) {
 
     function walk($child, parent = {}) {
         //console.log('WALK COUNT', walkCount++, $child.nodeName)
-        //console.log('parent', parent)
-        //console.log('aaaaaaaaaa', $child)
-        //while ($child) {
         makeSureAttach($child);
         // it is not good but it works
+        /*
         if (!$child._dozAttach[ALREADY_WALKED]) {
-            $child._dozAttach[ALREADY_WALKED] = true;
-            //$child._countWalk = 0;
+           $child._dozAttach[ALREADY_WALKED] = true;
+           $child._countWalk = 0;
         } else {
-            //console.log('already walked')
-            return;
+            console.log('already walked')
+           return;
         }
-        /*else {
-            //console.log('already walked', $child.outerHTML)
-            $child = $child.nextElementSibling;
-            //continue;
-        }*/
+         */
+
         directives.callAppWalkDOM(parent, $child);
         cmpName = getComponentName($child);
         directives.callAppComponentAssignName(parent, $child, (name) => {
@@ -4075,22 +4052,20 @@ function createInstance(cfg = {}) {
             localComponents[cmpName] ||
             cfg.app._components[cmpName] ||
             collection.getComponent(cmpName);
-
+        //let parentElement;
         //console.log(cmp)
-
         if (cmp) {
-            if (parent.cmp) ;
+            /*if (parent.cmp) {
+                const rawChild = $child.outerHTML;
+                parent.cmp.rawChildren.push(rawChild);
+            }*/
             // For node created by mount method
             if (parent.cmp && parent.cmp.mounted) {
                 return;
-                //$child = $child.nextElementSibling;
-                //continue;
             }
             if (parent.cmp && parent.cmp.autoCreateChildren === false) {
                 trash.push($child);
                 return;
-                //$child = $child.nextElementSibling;
-                //continue;
             }
             const props = serializeProps($child);
             const componentDirectives = {};
@@ -4098,7 +4073,6 @@ function createInstance(cfg = {}) {
             let newElement;
             if (typeof cmp.cfg === 'function') {
                 // This implements single function component
-                //if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
                 if (!(cmp.cfg.prototype instanceof Component)) {
                     const func = cmp.cfg;
                     cmp.cfg = class extends Component {
@@ -4173,7 +4147,7 @@ function createInstance(cfg = {}) {
                                 if (loadingComponentElement)
                                     loadingComponentElement.destroy();
                                 _runMount(newElement);
-                                walk(newElement.getHTMLElement(), {cmp: newElement});
+                                //walk(newElement.getHTMLElement(), {cmp: newElement});
                                 appendChildrenToParent(parent, newElement);
                             })
                             .catch(e => {
@@ -4217,8 +4191,6 @@ function createInstance(cfg = {}) {
             }
             if (!newElement) {
                 return;
-                //$child = $child.nextElementSibling;
-                //continue;
             }
 
             newElement.rawChildrenObject = $child._dozAttach.elementChildren;
@@ -4268,7 +4240,7 @@ function createInstance(cfg = {}) {
 
                 if (newElement.waitMount) {
                     //cfg.app._onAppComponentsMounted.set(newElement, true);
-                    walk(newElement.getHTMLElement().firstElementChild, {cmp: newElement});
+                    //walk(newElement.getHTMLElement().firstElementChild, {cmp: newElement});
                     if (!newElement.appReadyExcluded)
                         cfg.app._onAppComponentsMounted.delete(newElement);
                 }
@@ -4289,15 +4261,6 @@ function createInstance(cfg = {}) {
             appendChildrenToParent(parent, newElement);
             cfg.autoCmp = null;
         }
-        /*if ($child.firstElementChild) {
-            let _cmp = parentElement ? parentElement : parent.cmp;
-            walk($child.firstElementChild, {
-                cmp: _cmp
-            })
-        }
-        $child = $child.nextElementSibling;
-        */
-        //}
     }
 
     if (cfg.mountMainComponent) {
@@ -4903,6 +4866,13 @@ var store = (function () {
             }
         },
         onAppInit(app) {
+            app._stores = {};
+            app.getStore = function (store) {
+                return app._stores[store];
+            };
+            //app.constructor.Component.hello = 'aaaaaaaa'
+            //console.log(app)
+            /*
             Object.defineProperties(app, {
                 _stores: {
                     value: {},
@@ -4915,9 +4885,15 @@ var store = (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         // Create by property defined
         onAppComponentCreate(instance) {
+            instance.getStore = function (store) {
+                return instance.app._stores[store];
+            };
+            /*
             Object.defineProperties(instance, {
                 getStore: {
                     value: function (store) {
@@ -4926,6 +4902,8 @@ var store = (function () {
                     enumerable: true
                 }
             });
+
+             */
             if (instance.store !== undefined && instance.props['d:store'] === undefined) {
                 this.createStore(instance, instance.store);
             }
@@ -4965,7 +4943,11 @@ var id = (function () {
             }
         },
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app._ids = {};
+            app.getComponentById = function (id) {
+                return app._ids[id];
+            };
+            /*Object.defineProperties(app, {
                 _ids: {
                     value: {},
                     writable: true
@@ -4976,9 +4958,17 @@ var id = (function () {
                     },
                     enumerable: true
                 }
-            });
+            });*/
+
         },
         onAppComponentCreate(instance) {
+            instance.getComponentById = function (id) {
+                return instance.app._ids[id];
+            };
+
+            instance.getCmp = instance.getComponentById;
+
+            /*
             Object.defineProperties(instance, {
                 getComponentById: {
                     value: function (id) {
@@ -4993,6 +4983,8 @@ var id = (function () {
                     enumerable: true
                 }
             });
+
+             */
             if (instance.id !== undefined && instance.props['d:id'] === undefined) {
                 this.createId(instance, instance.id);
             }
@@ -5021,7 +5013,13 @@ var alias = (function () {
             }
         },
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app.getComponent = function (alias) {
+                //console.log(this._tree.children)
+                return this._tree
+                    ? this._tree.children[alias]
+                    : undefined;
+            };
+            /*Object.defineProperties(app, {
                 getComponent: {
                     value: function (alias) {
                         //console.log(this._tree.children)
@@ -5031,9 +5029,15 @@ var alias = (function () {
                     },
                     enumerable: true
                 }
-            });
+            });*/
         },
         onAppComponentCreate(instance) {
+            instance.getComponent = function (alias) {
+                return this.children
+                    ? this.children[alias]
+                    : undefined;
+            };
+            /*
             Object.defineProperties(instance, {
                 getComponent: {
                     value: function (alias) {
@@ -5044,6 +5048,8 @@ var alias = (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         onComponentCreate(instance, directiveValue) {
             this.createAlias(instance, directiveValue);
@@ -5063,6 +5069,21 @@ const { directive: directive$8 } = directives;
 var on = (function () {
     directive$8(':on-$event', {
         onAppComponentCreate(instance) {
+            instance._callback = {};
+            instance.emit = function (name, ...args) {
+                if (!instance._callback)
+                    return;
+                if (typeof instance._callback[name] === 'function') {
+                    instance._callback[name].apply(instance.parent, args);
+                    // legacy for string
+                }
+                else if (instance._callback[name] !== undefined
+                    && instance.parent[instance._callback[name]] !== undefined
+                    && typeof instance.parent[instance._callback[name]] === 'function') {
+                    instance.parent[instance._callback[name]].apply(instance.parent, args);
+                }
+            };
+            /*
             Object.defineProperties(instance, {
                 _callback: {
                     value: {},
@@ -5085,6 +5106,8 @@ var on = (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         onComponentCreate(instance, directiveValue, keyArguments) {
             let source = {};
@@ -5115,7 +5138,7 @@ directive$7(':onmount', {
         }
     }
 });
-directive$7(':onmountasync', {
+/*directive(':onmountasync', {
     onComponentMountAsync(instance, directiveValue) {
         if (typeof directiveValue === 'function') {
             directiveValue(instance);
@@ -5124,7 +5147,7 @@ directive$7(':onmountasync', {
             instance.parent[directiveValue].call(instance.parent, instance);
         }
     }
-});
+});*/
 directive$7(':onafterrender', {
     onComponentAfterRender(instance, changes, directiveValue) {
         if (typeof directiveValue === 'function') {
@@ -5232,6 +5255,8 @@ const { directive: directive$6 } = directives;
 var ref = (function () {
     directive$6('ref', {
         onAppComponentCreate(instance) {
+            instance.ref = {};
+            /*
             Object.defineProperties(instance, {
                 ref: {
                     value: {},
@@ -5239,6 +5264,8 @@ var ref = (function () {
                     enumerable: true
                 }
             });
+
+             */
         },
         onComponentDOMElementCreate(instance, $target, directiveValue) {
             instance.ref[directiveValue] = $target;
@@ -5250,15 +5277,18 @@ const { directive: directive$5 } = directives;
 var is = (function () {
     directive$5('is', {
         hasDataIs($target) {
-            return $target.dataset && $target.dataset.is;
+            return $target.dataset && /**/$target.dataset.is;
         },
         onAppComponentAssignName(instance, $target) {
-            if (this.hasDataIs($target))
-                return $target.dataset.is;
+            //console.log('onAppComponentAssignName',$target)
+            if (this.hasDataIs($target)) {
+                return $target.dataset.is;/**/
+            }
         },
         onAppComponentPropsAssignName($target, propsName, isDirective) {
+            //console.log('onAppComponentPropsAssignName',$target)
             if (this.hasDataIs($target))
-                return dashToCamel(propsName);
+                return dashToCamel(propsName);/**/
             /*else
                 return propsName;*/
         },
@@ -5277,12 +5307,13 @@ var bind = (function () {
     directive$4('bind', {
         // Start directive methods
         onAppComponentCreate(instance) {
-            Object.defineProperties(instance, {
+            instance._boundElements = {};
+            /*Object.defineProperties(instance, {
                 _boundElements: {
                     value: {},
                     writable: true
                 }
-            });
+            });*/
         },
         onAppComponentUpdate(instance, changes) {
             if (!Object.keys(instance._boundElements).length)
@@ -5598,7 +5629,9 @@ const { directive: directive$2 } = directives;
 var animate = (function () {
     directive$2('animate', {
         onAppComponentCreate(instance) {
-            Object.defineProperties(instance, {
+            instance.animate = animateHelper;
+            instance.elementsWithAnimation = new Map();
+            /*Object.defineProperties(instance, {
                 animate: {
                     value: animateHelper,
                     enumerable: true
@@ -5607,7 +5640,7 @@ var animate = (function () {
                     value: new Map(),
                     writable: true
                 }
-            });
+            });*/
         },
         createLockRemoveInstanceByCallback(instance) {
             instance.lockRemoveInstanceByCallback = (callerMethod, ...args) => {
@@ -5763,12 +5796,13 @@ var lazy = (function () {
     }
     directive$1('lazy', {
         onAppInit(app) {
-            Object.defineProperties(app, {
+            app.lazyComponentsList = new Set();
+            /*Object.defineProperties(app, {
                 lazyComponentsList: {
                     value: new Set(),
                     enumerable: false
                 }
-            });
+            });*/
             window.addEventListener('scroll', () => {
                 app.lazyComponentsList.forEach(component => {
                     this.canRunMount(app, component);
