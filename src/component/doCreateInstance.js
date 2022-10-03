@@ -21,7 +21,7 @@ function doCreateInstance(instance, $el) {
         else {
             instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
         }*/
-        directive.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
+        //directive.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
     }
 }
 

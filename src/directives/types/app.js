@@ -4,6 +4,7 @@ import { data } from "../../collection.js";
 // because they don't use any prop but are useful for initializing stuff.
 // For example built-in like d:store and d:id
 function callMethod(...args) {
+    //return;
     //console.log(data.directivesKeys)
     let method = args.shift();
     let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
@@ -16,10 +17,9 @@ function callMethod(...args) {
             break;
         }
     }
-    //console.log(oKeys)
+    //console.log(oKeys, args)
     for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-
         //if (data.directives[key] /*!== undefined*/) {
             //console.log(data.directives[key])
             //if (typeof data.directives[key][method] === 'function') {

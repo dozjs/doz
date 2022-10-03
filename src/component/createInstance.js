@@ -71,7 +71,7 @@ function createInstance(cfg = {}) {
         }
          */
 
-        directive.callAppWalkDOM(parent, $child);
+        //directive.callAppWalkDOM(parent, $child);
         cmpName = getComponentName($child);
         directive.callAppComponentAssignName(parent, $child, (name) => {
             cmpName = name;

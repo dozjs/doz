@@ -1,24 +1,29 @@
 import { REGEX, PROPS_ATTRIBUTES } from "../constants.js";
 import isEmptyObject from "../utils/isEmptyObject.js";
 function extractDirectivesFromProps(cmp) {
-    //let canBeDeleteProps = true;
     let props;
-    //if (!Object.keys(cmp.props).length) {
+
     if (isEmptyObject(cmp.props)) {
         props = cmp._rawProps;
-        //canBeDeleteProps = false;
-    }
-    else {
+    } else {
         props = cmp.props;
     }
-    Object.keys(props).forEach(key => {
+
+    //if (!isEmptyObject(cmp.props))
+    for (let key in props) {
+        if (isDirective(key)) {
+            let keyWithoutD = key.substring(2);
+            cmp._directiveProps[keyWithoutD] = props[key];
+        }
+    }/**/
+    /*Object.keys(props).forEach(key => {
         if (isDirective(key)) {
             let keyWithoutD = key.replace(REGEX.REPLACE_D_DIRECTIVE, '');
             cmp._directiveProps[keyWithoutD] = props[key];
-            /*if (canBeDeleteProps)
-                delete props[key];*/
         }
-    });
+    });*/
+
+    //console.log(cmp._directiveProps)
     return cmp._directiveProps;
 }
 function isDirective(aName) {
