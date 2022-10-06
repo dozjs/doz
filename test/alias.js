@@ -45,8 +45,8 @@ describe('alias', function () {
             }});
 
             setTimeout(()=>{
-                //const html = document.body.innerHTML;
-                //console.log(html);
+                const html = document.body.innerHTML;
+                console.log(html);
                 //console.log(view.getComponent('salutation1'));
                 //console.log(view.getComponent('salutation2'));
                 //console.log(view.getComponent('caller'));

@@ -12,10 +12,13 @@ function callMethod(...args) {
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
-    let directivesKeyValue = extractDirectivesFromProps(cmp);
+    let directivesKeyValue = cmp._directiveProps || extractDirectivesFromProps(cmp);
+    if(!cmp._directiveKeys) {
+        cmp._directiveKeys = Object.keys(directivesKeyValue)
+    }
     //console.log(directivesKeyValue)
     //console.log(method, directivesKeyValue)
-    Object.keys(directivesKeyValue).forEach(key => {
+    cmp._directiveKeys.forEach(key => {
         let keyArgumentsValues = [];
         let keyArguments = {};
         let originKey = key;

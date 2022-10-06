@@ -1,6 +1,7 @@
 import index from "../../index.js";
 const { directive } = index;
 export default (function () {
+
     directive(':store', {
         createStore(instance, storeName) {
             if (typeof storeName === 'string') {
@@ -21,8 +22,6 @@ export default (function () {
             app.getStore = function (store) {
                 return app._stores[store];
             };
-            //app.constructor.Component.hello = 'aaaaaaaa'
-            //console.log(app)
             /*
             Object.defineProperties(app, {
                 _stores: {
@@ -41,9 +40,10 @@ export default (function () {
         },
         // Create by property defined
         onAppComponentCreate(instance) {
-            instance.getStore = function (store) {
+            /*instance.getStore = function (store) {
                 return instance.app._stores[store];
-            }
+            }*/
+            instance.getStore = instance.app.getStore
             /*
             Object.defineProperties(instance, {
                 getStore: {

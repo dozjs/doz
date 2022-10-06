@@ -209,10 +209,11 @@ function addEventListener($target, name, value, cmp, cmpParent) {
 }
 function attach($target, nodeProps, cmp, cmpParent, isSVG) {
     let name;
-    //console.log(nodeProps)
+    //console.log($target, nodeProps)
     const propsKeys = Object.keys(nodeProps);
     for (let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
+        //console.log(name, nodeProps[name])
         addEventListener($target, name, nodeProps[name], cmp, cmpParent);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG);
         if (cmp && cmp.app && cmp.app.emit) {

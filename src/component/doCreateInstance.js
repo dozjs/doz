@@ -11,17 +11,8 @@ function doCreateInstance(instance, $el) {
         parent: instance
     });
 
-    if (dynamicInstance) {
+    if (dynamicInstance && dynamicInstance._rootElement) {
         dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-        /*let nc = Object.keys(instance.children).length;
-        instance.children[nc++] = dynamicInstance;
-        if (instance.childrenByTag[dynamicInstance.tag] === undefined) {
-            instance.childrenByTag[dynamicInstance.tag] = [dynamicInstance];
-        }
-        else {
-            instance.childrenByTag[dynamicInstance.tag].push(dynamicInstance);
-        }*/
-        //directive.callAppDynamicInstanceCreate(instance, dynamicInstance, { node: $el, action: 'create' });
     }
 }
 

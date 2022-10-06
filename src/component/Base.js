@@ -19,7 +19,7 @@ class Base {
         this._unmountedParentNode = null;
         this._configured = false;
         this._props = {};
-        this._directiveProps = {};
+        this._directiveProps = null;
         this._computedCache = new Map();
         this._renderPause = false;
         this._rawHTML = '';

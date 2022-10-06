@@ -8,11 +8,13 @@ function extractDirectivesFromProps(cmp) {
     } else {
         props = cmp.props;
     }
-
+    //console.log(cmp.uId, props)
     //if (!isEmptyObject(cmp.props))
+    if (!cmp._directiveProps) cmp._directiveProps = {};
     for (let key in props) {
         if (isDirective(key)) {
             let keyWithoutD = key.substring(2);
+            console.log(cmp.uId, keyWithoutD, props[key])
             cmp._directiveProps[keyWithoutD] = props[key];
         }
     }/**/
@@ -22,7 +24,7 @@ function extractDirectivesFromProps(cmp) {
             cmp._directiveProps[keyWithoutD] = props[key];
         }
     });*/
-
+    //cmp._directivesExtracted = true;
     //console.log(cmp._directiveProps)
     return cmp._directiveProps;
 }

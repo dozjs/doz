@@ -5,12 +5,15 @@ const { directive } = index;
 export default (function () {
     directive('is', {
         hasDataIs($target) {
-            return $target.dataset && /**/$target.dataset.is;
+            //console.log($target._dozAttach.props && $target._dozAttach.props['d-is'])
+            return $target._dozAttach.props && $target._dozAttach.props['d-is'];
+            //return $target.dataset && /**/$target.dataset.is;
         },
         onAppComponentAssignName(instance, $target) {
             //console.log('onAppComponentAssignName',$target)
             if (this.hasDataIs($target)) {
-                return $target.dataset.is;/**/
+                return $target._dozAttach.props['d-is'];/**/
+                //return $target.dataset.is;/**/
             }
         },
         onAppComponentPropsAssignName($target, propsName, isDirective) {
