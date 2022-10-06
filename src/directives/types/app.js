@@ -7,7 +7,7 @@ function callMethod(...args) {
     //return;
     //console.log(data.directivesKeys)
     let method = args.shift();
-    let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
+    //let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
     let callback;
     //let isDelayed = args[1] === 'delay'
     // Search for a possible callback
@@ -17,13 +17,29 @@ function callMethod(...args) {
             break;
         }
     }
+//console.log(method)
+    if (data.directivesMethodsMap[method])
+        for (let i = 0; i < data.directivesMethodsMap[method].length; i++) {
+            let func = data.directivesMethodsMap[method][i];
+            let res = func.apply(func.___this___, args)
+            // If res returns something, fire the callback
+            if (res !== undefined && callback)
+                callback(res);
+        }
+        /*data.directivesMethodsMap[method].forEach(func => {
+            let res = func.apply(func.___this___, args)
+            // If res returns something, fire the callback
+            if (res !== undefined && callback)
+                callback(res);
+        })*/
+
     //console.log(oKeys, args)
-    for (let i = 0; i < oKeys.length; i++) {
+    /*for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-        //if (data.directives[key] /*!== undefined*/) {
-            //console.log(data.directives[key])
+        //if (key === 'is')
+        //console.log(key, method, !!data.directives[key][method], args)
             //if (typeof data.directives[key][method] === 'function') {
-            if (data.directives[key][method] /*!== undefined*/) {
+            if (data.directives[key][method]) {
                 let res = data.directives[key][method].apply(data.directives[key], args);
                 //console.log(key, method, res)
                 // If res returns something, fire the callback
@@ -31,7 +47,7 @@ function callMethod(...args) {
                     callback(res);
             }
         //}
-    }
+    }*/
 }
 function callAppInit(...args) {
     let resArgs = ['onAppInit'];

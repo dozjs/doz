@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 6, 2022 15:06:53 */
+/* Doz, version: 4.0.3 - October 7, 2022 00:04:54 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -105,269 +105,15 @@ const webComponents = {
 const plugins = [];
 const directives$1 = {};
 const directivesKeys = [];
+const directivesMethodsMap = {};
 var data = {
     components,
     webComponents,
     plugins,
     directives: directives$1,
-    directivesKeys
+    directivesKeys,
+    directivesMethodsMap
 };
-
-class Base {
-    constructor(opt = {}) {
-        opt.cmp = opt.cmp || {
-            tag: opt.tag,
-            cfg: {}
-        };
-        opt.app = opt.app || {};
-        this._opt = opt;
-        this._cfgRoot = opt.root;
-        this._publicProps = Object.assign({}, opt.props);
-        this._isRendered = false;
-        this._prev = null;
-        this._rootElement = null;
-        this._parentElement = null;
-        this._components = {};
-        this._processing = [];
-        this._dynamicChildren = [];
-        this._unmounted = false;
-        this._unmountedParentNode = null;
-        this._configured = false;
-        this._props = {};
-        this._directiveProps = null;
-        this._computedCache = new Map();
-        this._renderPause = false;
-        this._rawHTML = '';
-        this._hasSlots = false;
-        this._slots = {};
-        this._defaultSlot = null;
-        this._localComponentLastId = 0;
-        this._currentStyle = '';
-        this._componentsMap = new Map();
-        this.tag = opt.cmp.tag;
-        this.app = opt.app;
-        this.exposeAttributes = ['style', 'class'];
-        this.parent = opt.parentCmp;
-        this.appRoot = opt.app._root;
-        this.action = opt.app.action;
-        this.shared = opt.app.shared;
-        this.childrenToWalk = [];
-        this._childrenInc = 0;
-        this.children = {};
-        this.childrenByTag = {};
-        this.rawChildren = [];
-        this.rawChildrenVnode = [];
-        this.autoCreateChildren = true;
-        this.updateChildrenProps = true;
-        this.mixin = [];
-        this.propsConvertOnFly = false;
-        this.propsComputedOnFly = false;
-        this.delayUpdate = 0;
-        this.propsData = {};
-        this.lockRemoveInstanceByCallback = null;
-        this.waitMount = false;
-/*
-        Object.defineProperties(this, {
-            //Private
-            _opt: {
-                value: opt
-            },
-            _cfgRoot: {
-                value: opt.root
-            },
-            _publicProps: {
-                value: Object.assign({}, opt.props)
-            },
-            _isRendered: {
-                value: false,
-                writable: true
-            },
-            _prev: {
-                value: null,
-                writable: true
-            },
-            _rootElement: {
-                value: null,
-                writable: true
-            },
-            _parentElement: {
-                value: null,
-                writable: true
-            },
-            _components: {
-                value: {},
-                writable: true
-            },
-            _processing: {
-                value: [],
-                writable: true
-            },
-            _dynamicChildren: {
-                value: [],
-                writable: true
-            },
-            _unmounted: {
-                value: false,
-                writable: true
-            },
-            _unmountedParentNode: {
-                value: null,
-                writable: true
-            },
-            _configured: {
-                value: false,
-                writable: true
-            },
-            _props: {
-                value: {},
-                writable: true
-            },
-            _directiveProps: {
-                value: {},
-                writable: true
-            },
-            _computedCache: {
-                value: new Map()
-            },
-            _renderPause: {
-                value: false,
-                writable: true
-            },
-            _rawHTML: {
-                value: '',
-                writable: true
-            },
-            _hasSlots: {
-                value: false,
-                writable: true
-            },
-            _slots: {
-                value: {},
-                writable: true
-            },
-            _defaultSlot: {
-                value: null,
-                writable: true
-            },
-            _localComponentLastId: {
-                value: 0,
-                writable: true
-            },
-            _currentStyle: {
-                value: '',
-                writable: true
-            },
-            _componentsMap: {
-                value: new Map()
-            },
-            //Public
-            tag: {
-                value: opt.cmp.tag,
-                enumerable: true,
-                writable: true
-            },
-            app: {
-                value: opt.app,
-                enumerable: true
-            },
-            exposeAttributes: {
-                value: ['style', 'class'],
-                enumerable: true,
-                writable: true
-            },
-            parent: {
-                value: opt.parentCmp,
-                enumerable: true,
-                configurable: true
-            },
-            appRoot: {
-                value: opt.app._root,
-                enumerable: true
-            },
-            action: {
-                value: opt.app.action,
-                enumerable: true
-            },
-            shared: {
-                value: opt.app.shared,
-                writable: true,
-                enumerable: true
-            },
-            childrenToWalk: {
-                value: [],
-                enumerable: true
-            },
-            _childrenInc: {
-                value: 0,
-                writable: true,
-                enumerable: true
-            },
-            children: {
-                value: {},
-                enumerable: true
-            },
-            childrenByTag: {
-                value: {},
-                enumerable: true
-            },
-            rawChildren: {
-                value: [],
-                enumerable: true
-            },
-            rawChildrenVnode: {
-                value: [],
-                enumerable: true
-            },
-            autoCreateChildren: {
-                value: true,
-                enumerable: true,
-                writable: true
-            },
-            updateChildrenProps: {
-                value: true,
-                enumerable: true,
-                writable: true
-            },
-            mixin: {
-                value: [],
-                enumerable: true,
-                writable: true
-            },
-            propsConvertOnFly: {
-                value: false,
-                enumerable: true,
-                writable: true
-            },
-            propsComputedOnFly: {
-                value: false,
-                enumerable: true,
-                writable: true
-            },
-            delayUpdate: {
-                value: 0,
-                enumerable: true,
-                writable: true
-            },
-            propsData: {
-                value: {},
-                enumerable: true,
-                writable: true
-            },
-            lockRemoveInstanceByCallback: {
-                value: null,
-                enumerable: true,
-                writable: true
-            },
-            waitMount: {
-                value: false,
-                enumerable: true,
-                writable: true
-            }
-        });
-*/
-
-    }
-}
 
 /**
  * Register a component to global
@@ -418,7 +164,7 @@ function registerDirective(name, cfg = {}) {
     }
     if (name[0] === ':') {
         cfg._onlyDozComponent = true;
-        name = name.substr(1);
+        name = name.substring(1);
     }
     name = name.toLowerCase();
     let namePart = [];
@@ -434,6 +180,18 @@ function registerDirective(name, cfg = {}) {
     data.directives[name] = cfg;
     if (!data.directivesKeys.includes(name))
         data.directivesKeys.push(name);
+
+    for (let m in cfg) {
+        if (typeof cfg[m] === 'function' && m[0] === 'o' && m[1] === 'n' && m[2] === 'A' && m[3] === 'p' && m[4] === 'p') {
+            cfg[m].___this___ = cfg;
+            if (!data.directivesMethodsMap[m]) {
+                data.directivesMethodsMap[m] = [cfg[m]];
+            } else {
+                data.directivesMethodsMap[m].push(cfg[m]);
+            }
+        }
+    }
+    //console.log(data.directivesMethodsMap)
 }
 var collection = {
     registerComponent,
@@ -458,7 +216,7 @@ function callMethod$1(...args) {
     //return;
     //console.log(data.directivesKeys)
     let method = args.shift();
-    let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
+    //let oKeys = /*['store'];*/ data.directivesKeys; // Object.keys(data.directives);
     let callback;
     //let isDelayed = args[1] === 'delay'
     // Search for a possible callback
@@ -468,13 +226,29 @@ function callMethod$1(...args) {
             break;
         }
     }
+//console.log(method)
+    if (data.directivesMethodsMap[method])
+        for (let i = 0; i < data.directivesMethodsMap[method].length; i++) {
+            let func = data.directivesMethodsMap[method][i];
+            let res = func.apply(func.___this___, args);
+            // If res returns something, fire the callback
+            if (res !== undefined && callback)
+                callback(res);
+        }
+        /*data.directivesMethodsMap[method].forEach(func => {
+            let res = func.apply(func.___this___, args)
+            // If res returns something, fire the callback
+            if (res !== undefined && callback)
+                callback(res);
+        })*/
+
     //console.log(oKeys, args)
-    for (let i = 0; i < oKeys.length; i++) {
+    /*for (let i = 0; i < oKeys.length; i++) {
         let key = oKeys[i];
-        //if (data.directives[key] /*!== undefined*/) {
-            //console.log(data.directives[key])
+        //if (key === 'is')
+        //console.log(key, method, !!data.directives[key][method], args)
             //if (typeof data.directives[key][method] === 'function') {
-            if (data.directives[key][method] /*!== undefined*/) {
+            if (data.directives[key][method]) {
                 let res = data.directives[key][method].apply(data.directives[key], args);
                 //console.log(key, method, res)
                 // If res returns something, fire the callback
@@ -482,7 +256,7 @@ function callMethod$1(...args) {
                     callback(res);
             }
         //}
-    }
+    }*/
 }
 function callAppInit(...args) {
     let resArgs = ['onAppInit'];
@@ -733,12 +507,13 @@ function extractDirectiveNameAndKeyValues(attributeName) {
 function callMethod(...args) {
     //return
     let method = args[0];
-
+    //console.log(method)
     let cmp = args[1];
     //let isDelayed = args[2] === 'delay';
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
+    //per questioni di performance è necessario estrarre le direttive solo una volta
     let directivesKeyValue = cmp._directiveProps || extractDirectivesFromProps(cmp);
     if(!cmp._directiveKeys) {
         cmp._directiveKeys = Object.keys(directivesKeyValue);
@@ -3508,6 +3283,262 @@ function propsInit(instance) {
             }
         }
     })(instance._rawProps);
+}
+
+class Base {
+    constructor(opt = {}) {
+        opt.cmp = opt.cmp || {
+            tag: opt.tag,
+            cfg: {}
+        };
+        opt.app = opt.app || {};
+        this._opt = opt;
+        this._cfgRoot = opt.root;
+        this._publicProps = Object.assign({}, opt.props);
+        this._isRendered = false;
+        this._prev = null;
+        this._rootElement = null;
+        this._parentElement = null;
+        this._components = {};
+        this._processing = [];
+        this._dynamicChildren = [];
+        this._unmounted = false;
+        this._unmountedParentNode = null;
+        this._configured = false;
+        this._props = {};
+        this._directiveProps = null;
+        this._computedCache = new Map();
+        this._renderPause = false;
+        this._rawHTML = '';
+        this._hasSlots = false;
+        this._slots = {};
+        this._defaultSlot = null;
+        this._localComponentLastId = 0;
+        this._currentStyle = '';
+        this._componentsMap = new Map();
+        this.tag = opt.cmp.tag;
+        this.app = opt.app;
+        this.exposeAttributes = ['style', 'class'];
+        this.parent = opt.parentCmp;
+        this.appRoot = opt.app._root;
+        this.action = opt.app.action;
+        this.shared = opt.app.shared;
+        this.childrenToWalk = [];
+        this._childrenInc = 0;
+        this.children = {};
+        this.childrenByTag = {};
+        this.rawChildren = [];
+        this.rawChildrenVnode = [];
+        this.autoCreateChildren = true;
+        this.updateChildrenProps = true;
+        this.mixin = [];
+        this.propsConvertOnFly = false;
+        this.propsComputedOnFly = false;
+        this.delayUpdate = 0;
+        this.propsData = {};
+        this.lockRemoveInstanceByCallback = null;
+        this.waitMount = false;
+/*
+        Object.defineProperties(this, {
+            //Private
+            _opt: {
+                value: opt
+            },
+            _cfgRoot: {
+                value: opt.root
+            },
+            _publicProps: {
+                value: Object.assign({}, opt.props)
+            },
+            _isRendered: {
+                value: false,
+                writable: true
+            },
+            _prev: {
+                value: null,
+                writable: true
+            },
+            _rootElement: {
+                value: null,
+                writable: true
+            },
+            _parentElement: {
+                value: null,
+                writable: true
+            },
+            _components: {
+                value: {},
+                writable: true
+            },
+            _processing: {
+                value: [],
+                writable: true
+            },
+            _dynamicChildren: {
+                value: [],
+                writable: true
+            },
+            _unmounted: {
+                value: false,
+                writable: true
+            },
+            _unmountedParentNode: {
+                value: null,
+                writable: true
+            },
+            _configured: {
+                value: false,
+                writable: true
+            },
+            _props: {
+                value: {},
+                writable: true
+            },
+            _directiveProps: {
+                value: {},
+                writable: true
+            },
+            _computedCache: {
+                value: new Map()
+            },
+            _renderPause: {
+                value: false,
+                writable: true
+            },
+            _rawHTML: {
+                value: '',
+                writable: true
+            },
+            _hasSlots: {
+                value: false,
+                writable: true
+            },
+            _slots: {
+                value: {},
+                writable: true
+            },
+            _defaultSlot: {
+                value: null,
+                writable: true
+            },
+            _localComponentLastId: {
+                value: 0,
+                writable: true
+            },
+            _currentStyle: {
+                value: '',
+                writable: true
+            },
+            _componentsMap: {
+                value: new Map()
+            },
+            //Public
+            tag: {
+                value: opt.cmp.tag,
+                enumerable: true,
+                writable: true
+            },
+            app: {
+                value: opt.app,
+                enumerable: true
+            },
+            exposeAttributes: {
+                value: ['style', 'class'],
+                enumerable: true,
+                writable: true
+            },
+            parent: {
+                value: opt.parentCmp,
+                enumerable: true,
+                configurable: true
+            },
+            appRoot: {
+                value: opt.app._root,
+                enumerable: true
+            },
+            action: {
+                value: opt.app.action,
+                enumerable: true
+            },
+            shared: {
+                value: opt.app.shared,
+                writable: true,
+                enumerable: true
+            },
+            childrenToWalk: {
+                value: [],
+                enumerable: true
+            },
+            _childrenInc: {
+                value: 0,
+                writable: true,
+                enumerable: true
+            },
+            children: {
+                value: {},
+                enumerable: true
+            },
+            childrenByTag: {
+                value: {},
+                enumerable: true
+            },
+            rawChildren: {
+                value: [],
+                enumerable: true
+            },
+            rawChildrenVnode: {
+                value: [],
+                enumerable: true
+            },
+            autoCreateChildren: {
+                value: true,
+                enumerable: true,
+                writable: true
+            },
+            updateChildrenProps: {
+                value: true,
+                enumerable: true,
+                writable: true
+            },
+            mixin: {
+                value: [],
+                enumerable: true,
+                writable: true
+            },
+            propsConvertOnFly: {
+                value: false,
+                enumerable: true,
+                writable: true
+            },
+            propsComputedOnFly: {
+                value: false,
+                enumerable: true,
+                writable: true
+            },
+            delayUpdate: {
+                value: 0,
+                enumerable: true,
+                writable: true
+            },
+            propsData: {
+                value: {},
+                enumerable: true,
+                writable: true
+            },
+            lockRemoveInstanceByCallback: {
+                value: null,
+                enumerable: true,
+                writable: true
+            },
+            waitMount: {
+                value: false,
+                enumerable: true,
+                writable: true
+            }
+        });
+*/
+
+    }
 }
 
 function doCreateInstance(instance, $el) {

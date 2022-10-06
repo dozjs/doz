@@ -6,7 +6,7 @@ import { /*REGEX,*/ PROPS_ATTRIBUTES } from "../../constants.js";
 function callMethod(...args) {
     //return
     let method = args[0];
-
+    //console.log(method)
     let cmp = args[1];
     //let isDelayed = args[2] === 'delay';
     // Remove first argument event name

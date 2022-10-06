@@ -1,5 +1,4 @@
 import data from "./data.js";
-import Base from "./component/Base.js";
 /**
  * Register a component to global
  * @param cmp
@@ -49,7 +48,7 @@ function registerDirective(name, cfg = {}) {
     }
     if (name[0] === ':') {
         cfg._onlyDozComponent = true;
-        name = name.substr(1);
+        name = name.substring(1);
     }
     name = name.toLowerCase();
     let namePart = [];
@@ -65,6 +64,18 @@ function registerDirective(name, cfg = {}) {
     data.directives[name] = cfg;
     if (!data.directivesKeys.includes(name))
         data.directivesKeys.push(name);
+
+    for (let m in cfg) {
+        if (typeof cfg[m] === 'function' && m[0] === 'o' && m[1] === 'n' && m[2] === 'A' && m[3] === 'p' && m[4] === 'p') {
+            cfg[m].___this___ = cfg;
+            if (!data.directivesMethodsMap[m]) {
+                data.directivesMethodsMap[m] = [cfg[m]]
+            } else {
+                data.directivesMethodsMap[m].push(cfg[m])
+            }
+        }
+    }
+    //console.log(data.directivesMethodsMap)
 }
 export { registerComponent };
 export { registerPlugin };

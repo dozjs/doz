@@ -6,10 +6,12 @@ export const webComponents = {
 export const plugins = [];
 export const directives = {};
 export const directivesKeys = [];
+export const directivesMethodsMap = {};
 export default {
     components,
     webComponents,
     plugins,
     directives,
-    directivesKeys
+    directivesKeys,
+    directivesMethodsMap
 };
