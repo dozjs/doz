@@ -12,6 +12,7 @@ function callMethod(...args) {
     // Remove first argument event name
     args.shift();
     //console.warn(cmp.tag, method, cmp.props)
+    //per questioni di performance è necessario estrarre le direttive solo una volta
     let directivesKeyValue = cmp._directiveProps || extractDirectivesFromProps(cmp);
     if(!cmp._directiveKeys) {
         cmp._directiveKeys = Object.keys(directivesKeyValue)
