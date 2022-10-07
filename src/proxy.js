@@ -463,6 +463,7 @@ const ObservableSlim = (function () {
             (function iterate(proxy) {
                 let target = proxy.__getTarget;
                 let keys = Object.keys(target);
+                //console.log(keys, target)
                 for (let i = 0, l = keys.length; i < l; i++) {
                     let property = keys[i];
                     if (typeof iterateBeforeCreate === 'function') {

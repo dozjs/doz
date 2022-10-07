@@ -14,8 +14,6 @@ import makeSureAttach from "./makeSureAttach.js";
 const trash = [];
 
 function appendChildrenToParent(parent, newElement) {
-    //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
-    //return;
     if (parent.cmp) {
         let n =  parent.cmp._childrenInc++ //Object.keys(parent.cmp.children).length++;
         directive.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -28,28 +26,21 @@ function appendChildrenToParent(parent, newElement) {
             parent.cmp.childrenByTag[newElement.tag].push(newElement);
         }
     }
-    //console.log('diventano', Object.keys(parent.cmp.children).length)
 }
 
 function flushTrash() {
     trash.forEach($child => $child.remove());
 }
 
-function _runMount(newElement = null, cfg, parentCmp) {
-    //newElement = _newElement || newElement;
-
+function doMount(newElement = null, cfg, parentCmp) {
     if (newElement._isRendered)
         return;
+
     newElement._isRendered = true;
-    //console.log('runMount ->', newElement.tag)
     newElement.render(true);
-    //console.log('runMount -<', newElement)
-    /*if (!componentInstance) {
-        componentInstance = newElement;
-    }*/
-    //console.log(newElement._rootElement)
     newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
     newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
+
     // Replace first element child if defaultSlot exists with a slot comment
     if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
         let slotPlaceholder = document.createComment('slot');
@@ -194,7 +185,7 @@ function walk($child, parent = {}, cfg) {
                             newElement.app.emit('componentPropsInit', newElement);
                             if (loadingComponentElement)
                                 loadingComponentElement.destroy();
-                            _runMount(newElement, cfg, parentCmp);
+                            doMount(newElement, cfg, parentCmp);
                             //walk(newElement.getHTMLElement(), {cmp: newElement});
                             appendChildrenToParent(parent, newElement);
                         })
@@ -256,12 +247,12 @@ function walk($child, parent = {}, cfg) {
             //console.log(cfg.app._onAppComponentsMounted)
             if (!newElement.appReadyExcluded)
                 cfg.app._onAppComponentsMounted.set(newElement, false);
-            newElement.runMount = _runMount.bind(this, newElement, cfg, parentCmp);
+            newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
             hooks.callWaitMount(newElement);
         } else if (hooks.callBeforeMount(newElement) !== false) {
-            _runMount(newElement, cfg, parentCmp);
+            doMount(newElement, cfg, parentCmp);
         } else {
-            newElement.runMount = _runMount.bind(this, newElement, cfg, parentCmp);
+            newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
         }
         //console.log(newElement)
         //parentElement = newElement;
@@ -317,14 +308,9 @@ function createInstance(cfg = {}) {
         //hooks.callMountAsync(newElement);
         return newElement;
     } else {
-        //if (cfg.parent)
-        //console.log(cfg.parent.tag)
-        //console.log(cfg.template.outerHTML)
         let newElement = walk(cfg.template, {cmp: cfg.parent}, cfg);
         flushTrash();
-        //console.log(newElement)
-        //console.log('a', componentInstance.uId)
-        //console.log('b', cmp)
+
         return newElement;
     }
 }
