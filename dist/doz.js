@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 10, 2022 14:47:54 */
+/* Doz, version: 4.0.3 - October 10, 2022 14:58:33 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
