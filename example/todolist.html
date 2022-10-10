@@ -191,7 +191,7 @@
     Doz.component('doz-todo-buttons', {
         template(h) {
             return h`
-                <button onclick="this.action.add()" >Add</button> <button onclick="this.action.removeAll()" >Remove all</button>
+                <button onclick="${() => this.action.add()}" >Add</button> <button onclick="${() => this.action.removeAll()}" >Remove all</button>
             `;
         }
     });
@@ -203,7 +203,7 @@
             return h`
                 <div>
                     <div class="todo-input">
-                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">&nbsp;
+                        <input onkeypress="${(e) => this.action.enterPress(e)}" d-bind="todo" type="text" placeholder="Write a to-do">&nbsp;
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     <div>

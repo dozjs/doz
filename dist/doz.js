@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 7, 2022 00:04:54 */
+/* Doz, version: 4.0.3 - October 10, 2022 14:47:54 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -201,12 +201,6 @@ var collection = {
     removeAll,
     data
 };
-
-let d = window.setTimeout.bind(window);
-if (window.requestAnimationFrame) {
-    d = window.requestAnimationFrame.bind(window);
-}
-var delay = d;
 
 //import delay from "../../utils/delay.js";
 // All methods that starts with prefix callApp are considered extra of directives hooks
@@ -722,6 +716,7 @@ var directives = Object.assign({
     directive: directive$c
 }, app, component$1);
 
+//import delay from "../utils/delay.js";
 function callBeforeCreate(context) {
     directives.callAppComponentBeforeCreate(context);
     directives.callComponentBeforeCreate(context);
@@ -807,13 +802,13 @@ function callDrawByParent(context, newNode, oldNode) {
     }
     //context.app.emit('componentDrawByParent', context, changes);
 }
-function callAfterRender(context, changes) {
-    directives.callAppComponentAfterRender(context, changes);
-    directives.callComponentAfterRender(context, changes);
+/*function callAfterRender(context, changes) {
+    directive.callAppComponentAfterRender(context, changes);
+    directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
     }
-}
+}*/
 function callBeforeUnmount(context) {
     directives.callAppComponentBeforeUnmount(context);
     directives.callComponentBeforeUnmount(context);
@@ -881,7 +876,7 @@ var hooks$1 = {
     callBeforeUpdate,
     callUpdate,
     callDrawByParent,
-    callAfterRender,
+    //callAfterRender,
     callBeforeUnmount,
     callUnmount,
     callBeforeDestroy,
@@ -1177,6 +1172,12 @@ function hmr(instance, _module) {
         });
     });
 }
+
+let d = window.setTimeout.bind(window);
+if (window.requestAnimationFrame) {
+    d = window.requestAnimationFrame.bind(window);
+}
+var delay = d;
 
 function encode(str) {
     return typeof str === 'string'
@@ -1668,6 +1669,7 @@ const ObservableSlim = (function () {
             (function iterate(proxy) {
                 let target = proxy.__getTarget;
                 let keys = Object.keys(target);
+                //console.log(keys, target)
                 for (let i = 0, l = keys.length; i < l; i++) {
                     let property = keys[i];
                     if (typeof iterateBeforeCreate === 'function') {
@@ -2241,9 +2243,9 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             $target.addEventListener(extractEventName(name), value);
         }
     }
-    else {
+    /*else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
-        // I don't understand but with regex test sometimes it don't works fine so use match... boh!
+        // I don't understand but with regex test sometimes it doesn't work fine so use match... boh!
         //if (REGEX.IS_LISTENER_SCOPE.test(value) || value === 'scope') {
         if (value.match(REGEX.IS_LISTENER_SCOPE) || value === 'scope') {
             const _func = function () {
@@ -2259,7 +2261,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             };
             $target.addEventListener(extractEventName(name), _func.bind(cmp));
         }
-    }
+    }*/
 }
 function attach($target, nodeProps, cmp, cmpParent, isSVG) {
     let name;
@@ -2268,7 +2270,7 @@ function attach($target, nodeProps, cmp, cmpParent, isSVG) {
     for (let i = 0, len = propsKeys.length; i < len; i++) {
         name = propsKeys[i];
         //console.log(name, nodeProps[name])
-        addEventListener($target, name, nodeProps[name], cmp, cmpParent);
+        addEventListener($target, name, nodeProps[name], cmp);
         setAttribute($target, name, nodeProps[name], cmp, cmpParent, isSVG);
         if (cmp && cmp.app && cmp.app.emit) {
             cmp.app.emit('elementAttributesAttach', $target, name, nodeProps[name], cmp);
@@ -3000,7 +3002,7 @@ function placeholderIndex(str, values) {
             // if is a possible text node
             if (match[1][0] === '0' && match[1].length >= 2) {
                 // remove first fake 0 that identify a text node and cast to string every
-                return values[match[1].substr(1)] + '';
+                return values[match[1].substring(1)] + '';
             }
             else {
                 return values[match[1]];
@@ -3270,23 +3272,44 @@ function localMixin(instance) {
     instance.mixin = [];
 }
 
-function propsInit(instance) {
-    (function iterate(props) {
-        let keys = Object.keys(props);
-        for (let i = 0, l = keys.length; i < l; i++) {
-            let property = keys[i];
-            if (props[property] instanceof Object && props[property] !== null) {
-                iterate(props[property]);
-            }
-            else {
-                props[property] = manipulate(instance, props[property], property, false, true);
-            }
+function iterate(instance, props) {
+    let keys = Object.keys(props);
+    for (let i = 0, l = keys.length; i < l; i++) {
+        let property = keys[i];
+        if (props[property] instanceof Object && props[property] !== null) {
+            iterate(instance, props[property]);
         }
-    })(instance._rawProps);
+        else {
+            props[property] = manipulate(instance, props[property], property, false, true);
+        }
+    }
+}
+function propsInit(instance) {
+    iterate(instance, instance._rawProps);
 }
 
-class Base {
+//import createInstance from "./createInstance.js";
+//import directive from "../directives/index.js";
+
+function doCreateInstance(instance, $el) {
+    //console.log('creo instance', $el.outerHTML)
+    let dynamicInstance = instance.app.createInstance({
+        root: null,
+        template: $el,
+        app: instance.app,
+        parent: instance
+    });
+
+    if (dynamicInstance && dynamicInstance._rootElement) {
+        dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
+    }
+}
+
+//const mapCompiled = require('../vdom/map-compiled');
+
+class Component /*extends DOMManipulation */{
     constructor(opt = {}) {
+        //super(opt);
         opt.cmp = opt.cmp || {
             tag: opt.tag,
             cfg: {}
@@ -3294,7 +3317,8 @@ class Base {
         opt.app = opt.app || {};
         this._opt = opt;
         this._cfgRoot = opt.root;
-        this._publicProps = Object.assign({}, opt.props);
+        //this._publicProps = Object.assign({}, opt.props);
+        this._publicProps = opt.props;
         this._isRendered = false;
         this._prev = null;
         this._rootElement = null;
@@ -3309,12 +3333,12 @@ class Base {
         this._directiveProps = null;
         this._computedCache = new Map();
         this._renderPause = false;
-        this._rawHTML = '';
+        //this._rawHTML = '';
         this._hasSlots = false;
         this._slots = {};
         this._defaultSlot = null;
         this._localComponentLastId = 0;
-        this._currentStyle = '';
+        //this._currentStyle = '';
         this._componentsMap = new Map();
         this.tag = opt.cmp.tag;
         this.app = opt.app;
@@ -3323,7 +3347,7 @@ class Base {
         this.appRoot = opt.app._root;
         this.action = opt.app.action;
         this.shared = opt.app.shared;
-        this.childrenToWalk = [];
+        //this.childrenToWalk = [];
         this._childrenInc = 0;
         this.children = {};
         this.childrenByTag = {};
@@ -3335,362 +3359,13 @@ class Base {
         this.propsConvertOnFly = false;
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
-        this.propsData = {};
+        //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;
-/*
-        Object.defineProperties(this, {
-            //Private
-            _opt: {
-                value: opt
-            },
-            _cfgRoot: {
-                value: opt.root
-            },
-            _publicProps: {
-                value: Object.assign({}, opt.props)
-            },
-            _isRendered: {
-                value: false,
-                writable: true
-            },
-            _prev: {
-                value: null,
-                writable: true
-            },
-            _rootElement: {
-                value: null,
-                writable: true
-            },
-            _parentElement: {
-                value: null,
-                writable: true
-            },
-            _components: {
-                value: {},
-                writable: true
-            },
-            _processing: {
-                value: [],
-                writable: true
-            },
-            _dynamicChildren: {
-                value: [],
-                writable: true
-            },
-            _unmounted: {
-                value: false,
-                writable: true
-            },
-            _unmountedParentNode: {
-                value: null,
-                writable: true
-            },
-            _configured: {
-                value: false,
-                writable: true
-            },
-            _props: {
-                value: {},
-                writable: true
-            },
-            _directiveProps: {
-                value: {},
-                writable: true
-            },
-            _computedCache: {
-                value: new Map()
-            },
-            _renderPause: {
-                value: false,
-                writable: true
-            },
-            _rawHTML: {
-                value: '',
-                writable: true
-            },
-            _hasSlots: {
-                value: false,
-                writable: true
-            },
-            _slots: {
-                value: {},
-                writable: true
-            },
-            _defaultSlot: {
-                value: null,
-                writable: true
-            },
-            _localComponentLastId: {
-                value: 0,
-                writable: true
-            },
-            _currentStyle: {
-                value: '',
-                writable: true
-            },
-            _componentsMap: {
-                value: new Map()
-            },
-            //Public
-            tag: {
-                value: opt.cmp.tag,
-                enumerable: true,
-                writable: true
-            },
-            app: {
-                value: opt.app,
-                enumerable: true
-            },
-            exposeAttributes: {
-                value: ['style', 'class'],
-                enumerable: true,
-                writable: true
-            },
-            parent: {
-                value: opt.parentCmp,
-                enumerable: true,
-                configurable: true
-            },
-            appRoot: {
-                value: opt.app._root,
-                enumerable: true
-            },
-            action: {
-                value: opt.app.action,
-                enumerable: true
-            },
-            shared: {
-                value: opt.app.shared,
-                writable: true,
-                enumerable: true
-            },
-            childrenToWalk: {
-                value: [],
-                enumerable: true
-            },
-            _childrenInc: {
-                value: 0,
-                writable: true,
-                enumerable: true
-            },
-            children: {
-                value: {},
-                enumerable: true
-            },
-            childrenByTag: {
-                value: {},
-                enumerable: true
-            },
-            rawChildren: {
-                value: [],
-                enumerable: true
-            },
-            rawChildrenVnode: {
-                value: [],
-                enumerable: true
-            },
-            autoCreateChildren: {
-                value: true,
-                enumerable: true,
-                writable: true
-            },
-            updateChildrenProps: {
-                value: true,
-                enumerable: true,
-                writable: true
-            },
-            mixin: {
-                value: [],
-                enumerable: true,
-                writable: true
-            },
-            propsConvertOnFly: {
-                value: false,
-                enumerable: true,
-                writable: true
-            },
-            propsComputedOnFly: {
-                value: false,
-                enumerable: true,
-                writable: true
-            },
-            delayUpdate: {
-                value: 0,
-                enumerable: true,
-                writable: true
-            },
-            propsData: {
-                value: {},
-                enumerable: true,
-                writable: true
-            },
-            lockRemoveInstanceByCallback: {
-                value: null,
-                enumerable: true,
-                writable: true
-            },
-            waitMount: {
-                value: false,
-                enumerable: true,
-                writable: true
-            }
-        });
-*/
-
-    }
-}
-
-function doCreateInstance(instance, $el) {
-    //console.log('creo instance', $el.outerHTML)
-    let dynamicInstance = createInstance({
-        root: null,
-        template: $el,
-        app: instance.app,
-        parent: instance
-    });
-
-    if (dynamicInstance && dynamicInstance._rootElement) {
-        dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
-    }
-}
-
-class DOMManipulation extends Base {
-    constructor(opt) {
-        super(opt);
-    }
-    $$afterNodeElementCreate($el, node, initial, cmp) {
-        if ($el._dozAttach.hasDirective) {
-            directives.callAppDOMElementCreate(this, $el, node, initial);
-            directives.callComponentDOMElementCreate(this, $el, initial);
-        }
-        //console.log('element created', $el.outerHTML)
-        //this._canWalk = false;
-        //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
-        //console.log('......', $el.nodeName)
-        if (typeof $el.hasAttribute === 'function') {
-            if (node.type.indexOf('-') !== -1) {
-
-                //this.childrenToWalk.push($el)
-                //this._processing.push({ node: $el, action: 'create' });
-                //if (!initial) {
-                    //console.log('NODO PER COMPONENT', $el.nodeName, initial)
-                    doCreateInstance(this, $el);
-                //}
-            }
-
-            if ($el.nodeName === TAG.SLOT_UPPERCASE) {
-                let slotName = $el._dozAttach[PROPS_ATTRIBUTES] ? $el._dozAttach[PROPS_ATTRIBUTES].name : null;
-                if (!slotName) {
-                    this._defaultSlot = $el;
-                    slotName = DEFAULT_SLOT_KEY;
-                }
-                if (this._slots[slotName] === undefined) {
-                    this._slots[slotName] = [$el];
-                }
-                else {
-                    this._slots[slotName].push($el);
-                }
-                this._hasSlots = true;
-            }
-        }
-    }
-    // noinspection JSMethodCanBeStatic
-    $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
-        if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
-            if ($parent.nodeName === 'SCRIPT') {
-                // it could be heavy
-                if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
-                    document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
-                }
-            }
-            else {
-                $oldElement.textContent = canDecode(newNode);
-            }
-            return $oldElement;
-        }
-    }
-    // noinspection JSMethodCanBeStatic
-    $$afterNodeChange($newElement, $oldElement) {
-        makeSureAttach($oldElement);
-        makeSureAttach($newElement);
-        //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
-        if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
-            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
-            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
-            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
-        }
-    }
-    // noinspection JSMethodCanBeStatic
-    $$beforeNodeWalk($parent, index, attributesUpdated) {
-        if ($parent.childNodes[index]) {
-            makeSureAttach($parent.childNodes[index]);
-            const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
-            // Can update props of dynamic instances?
-            if (dynInstance && attributesUpdated.length) {
-                attributesUpdated.forEach(props => {
-                    Object.keys(props).forEach(name => {
-                        dynInstance.props[name] = props[name];
-                    });
-                });
-                return true;
-            }
-        }
-        return false;
-    }
-    // noinspection JSMethodCanBeStatic
-    /*$$afterAttributeCreate($target, name, value, nodeProps) {
-    }*/
-    // noinspection JSMethodCanBeStatic
-    /*$$afterAttributesCreate($target, bindValue) {
-    }*/
-    $$afterAttributeUpdate($target, name, value) {
-        let _isDirective = isDirective(name);
-        if (this.updateChildrenProps && $target) {
-            //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
-            name = _isDirective ? name : dashToCamel(name);
-            const firstChild = $target.firstChild;
-            makeSureAttach(firstChild);
-            if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
-                firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
-            }
-            else if ($target._dozAttach[COMPONENT_INSTANCE]) {
-                $target._dozAttach[COMPONENT_INSTANCE].props[name] = value;
-            }
-        }
-        directives.callComponentDOMElementUpdate(this, $target);
-        //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
-        if ($target && _isDirective) {
-            $target.removeAttribute(name);
-        }
-    }
-}
-
-function toLiteralString(str) {
-    return str
-        .replace(/{{/gm, '${')
-        .replace(/}}/gm, '}');
-}
-
-//const mapCompiled = require('../vdom/map-compiled');
-
-class Component extends DOMManipulation {
-    constructor(opt) {
-        super(opt);
         this._isSubclass = this.__proto__.constructor !== Component;
         this.uId = this.app.generateUId();
         this.h = h.bind(this);
-        /*Object.defineProperty(this, '_isSubclass', {
-            value: this.__proto__.constructor !== Component
-        });
-        Object.defineProperty(this, 'uId', {
-            value: this.app.generateUId(),
-            enumerable: true
-        });
-        Object.defineProperty(this, 'h', {
-            value: h.bind(this),
-            enumerable: false
-        });*/
+
         this._initRawProps(opt);
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -3791,11 +3466,12 @@ class Component extends DOMManipulation {
             return;
         this.beginSafeRender();
         //const propsKeys = Object.keys(this.props);
-        const templateArgs = [this.h];
+        //const templateArgs = [this.h];
         /*for (let i = 0; i < propsKeys.length; i++) {
             templateArgs.push(this.props[propsKeys[i]]);
         }*/
-        const template = this.template.apply(this, templateArgs);
+        //const template = this.template.apply(this, templateArgs);
+        let template = this.template(this.h);
         this.endSafeRender();
         let next = template && typeof template === 'object'
             ? template
@@ -3951,7 +3627,7 @@ class Component extends DOMManipulation {
     template() {
         return '';
     }
-    _initTemplate(opt) {
+    /*_initTemplate(opt) {
         if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
             let contentTpl = opt.cmp.cfg.template;
             if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
@@ -3967,14 +3643,14 @@ class Component extends DOMManipulation {
                 };
             }
         }
-    }
+    }*/
     _initRawProps(opt) {
         //console.log(this._isSubclass)
         if (!this._isSubclass) {
             this._rawProps = Object.assign({}, typeof opt.cmp.cfg.props === 'function'
                 ? opt.cmp.cfg.props()
                 : opt.cmp.cfg.props, opt.props);
-            this._initTemplate(opt);
+            //this._initTemplate(opt);
         }
         else {
             this._rawProps = Object.assign({}, opt.props);
@@ -4011,6 +3687,108 @@ class Component extends DOMManipulation {
     setPropsAsync(obj) {
         delay(() => this._setProps(obj));
     }
+    $$afterNodeElementCreate($el, node, initial, cmp) {
+        if ($el._dozAttach.hasDirective) {
+            directives.callAppDOMElementCreate(this, $el, node, initial);
+            directives.callComponentDOMElementCreate(this, $el, initial);
+        }
+        //console.log('element created', $el.outerHTML)
+        //this._canWalk = false;
+        //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
+        //console.log('......', $el.nodeName)
+        if (typeof $el.hasAttribute === 'function') {
+            if (node.type.indexOf('-') !== -1) {
+                doCreateInstance(this, $el);
+                //return;
+            }
+
+            //console.log(node.type, $el.nodeName)
+            //if ($el.nodeName === TAG.SLOT_UPPERCASE) {
+            if (node.type === TAG.SLOT) {
+                let slotName = $el._dozAttach[PROPS_ATTRIBUTES] ? $el._dozAttach[PROPS_ATTRIBUTES].name : null;
+                if (!slotName) {
+                    this._defaultSlot = $el;
+                    slotName = DEFAULT_SLOT_KEY;
+                }
+                if (this._slots[slotName] === undefined) {
+                    this._slots[slotName] = [$el];
+                }
+                else {
+                    this._slots[slotName].push($el);
+                }
+                this._hasSlots = true;
+            }
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
+        if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
+            if ($parent.nodeName === 'SCRIPT') {
+                // it could be heavy
+                if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
+                    document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
+                }
+            }
+            else {
+                $oldElement.textContent = canDecode(newNode);
+            }
+            return $oldElement;
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$afterNodeChange($newElement, $oldElement) {
+        makeSureAttach($oldElement);
+        makeSureAttach($newElement);
+        //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+        if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeWalk($parent, index, attributesUpdated) {
+        if ($parent.childNodes[index]) {
+            makeSureAttach($parent.childNodes[index]);
+            const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
+            // Can update props of dynamic instances?
+            if (dynInstance && attributesUpdated.length) {
+                attributesUpdated.forEach(props => {
+                    Object.keys(props).forEach(name => {
+                        dynInstance.props[name] = props[name];
+                    });
+                });
+                return true;
+            }
+        }
+        return false;
+    }
+    // noinspection JSMethodCanBeStatic
+    /*$$afterAttributeCreate($target, name, value, nodeProps) {
+    }*/
+    // noinspection JSMethodCanBeStatic
+    /*$$afterAttributesCreate($target, bindValue) {
+    }*/
+    $$afterAttributeUpdate($target, name, value) {
+        let _isDirective = isDirective(name);
+        if (this.updateChildrenProps && $target) {
+            //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            name = _isDirective ? name : dashToCamel(name);
+            const firstChild = $target.firstChild;
+            makeSureAttach(firstChild);
+            if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
+                firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
+            }
+            else if ($target._dozAttach[COMPONENT_INSTANCE]) {
+                $target._dozAttach[COMPONENT_INSTANCE].props[name] = value;
+            }
+        }
+        directives.callComponentDOMElementUpdate(this, $target);
+        //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        if ($target && _isDirective) {
+            $target.removeAttribute(name);
+        }
+    }
 }
 
 function getComponentName($child) {
@@ -4020,8 +3798,6 @@ function getComponentName($child) {
 const trash = [];
 
 function appendChildrenToParent(parent, newElement) {
-    //console.log('newElement',newElement.tag,'parent.cmp', parent.cmp.tag, 'che ha', Object.keys(parent.cmp.children).length)
-    //return;
     if (parent.cmp) {
         let n =  parent.cmp._childrenInc++; //Object.keys(parent.cmp.children).length++;
         directives.callAppComponentAssignIndex(newElement, n, (index) => {
@@ -4034,28 +3810,21 @@ function appendChildrenToParent(parent, newElement) {
             parent.cmp.childrenByTag[newElement.tag].push(newElement);
         }
     }
-    //console.log('diventano', Object.keys(parent.cmp.children).length)
 }
 
 function flushTrash() {
     trash.forEach($child => $child.remove());
 }
 
-function _runMount(newElement = null, cfg, parentCmp) {
-    //newElement = _newElement || newElement;
-
+function doMount(newElement = null, cfg, parentCmp) {
     if (newElement._isRendered)
         return;
+
     newElement._isRendered = true;
-    //console.log('runMount ->', newElement.tag)
     newElement.render(true);
-    //console.log('runMount -<', newElement)
-    /*if (!componentInstance) {
-        componentInstance = newElement;
-    }*/
-    //console.log(newElement._rootElement)
     newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
     newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
+
     // Replace first element child if defaultSlot exists with a slot comment
     if (newElement._defaultSlot && newElement.getHTMLElement().firstElementChild) {
         let slotPlaceholder = document.createComment('slot');
@@ -4199,7 +3968,7 @@ function walk($child, parent = {}, cfg) {
                             newElement.app.emit('componentPropsInit', newElement);
                             if (loadingComponentElement)
                                 loadingComponentElement.destroy();
-                            _runMount(newElement, cfg, parentCmp);
+                            doMount(newElement, cfg, parentCmp);
                             //walk(newElement.getHTMLElement(), {cmp: newElement});
                             appendChildrenToParent(parent, newElement);
                         })
@@ -4260,12 +4029,12 @@ function walk($child, parent = {}, cfg) {
             //console.log(cfg.app._onAppComponentsMounted)
             if (!newElement.appReadyExcluded)
                 cfg.app._onAppComponentsMounted.set(newElement, false);
-            newElement.runMount = _runMount.bind(this, newElement, cfg, parentCmp);
+            newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
             hooks$1.callWaitMount(newElement);
         } else if (hooks$1.callBeforeMount(newElement) !== false) {
-            _runMount(newElement, cfg, parentCmp);
+            doMount(newElement, cfg, parentCmp);
         } else {
-            newElement.runMount = _runMount.bind(this, newElement, cfg, parentCmp);
+            newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
         }
         //console.log(newElement)
         //parentElement = newElement;
@@ -4318,14 +4087,9 @@ function createInstance(cfg = {}) {
         //hooks.callMountAsync(newElement);
         return newElement;
     } else {
-        //if (cfg.parent)
-        //console.log(cfg.parent.tag)
-        //console.log(cfg.template.outerHTML)
         let newElement = walk(cfg.template, {cmp: cfg.parent}, cfg);
         flushTrash();
-        //console.log(newElement)
-        //console.log('a', componentInstance.uId)
-        //console.log('b', cmp)
+
         return newElement;
     }
 }
@@ -4501,6 +4265,9 @@ class Doz {
             enableExternalTemplate: false
         }, cfg);
         Object.defineProperties(this, {
+            createInstance: {
+                value: createInstance
+            },
             _lastUId: {
                 value: 0,
                 writable: true
@@ -4605,18 +4372,18 @@ class Doz {
                     if (!(root instanceof HTMLElement)) {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
-                    const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
+                    //const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     const autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template(h) {
                                 //return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
-                                return contentStr;
+                                return template;
                             }
                         }
                     };
-                    return createInstance({
+                    return this.createInstance({
                         root,
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
@@ -4646,7 +4413,7 @@ class Doz {
         plugin.load(this);
         directives.callAppInit(this);
         if (this.cfg.mainComponent) {
-            this._tree = createInstance({
+            this._tree = this.createInstance({
                 mountMainComponent: true,
                 root: this.cfg.root,
                 component: this.cfg.mainComponent,
@@ -4660,11 +4427,12 @@ class Doz {
                 tag: TAG.APP,
                 cfg: {
                     template: typeof cfg.template === 'function' ? cfg.template : function () {
-                        const contentStr = toLiteralString(cfg.template);
+                        return cfg.template;
+                        /*const contentStr = toLiteralString(cfg.template);
                         if (/\${.*?}/g.test(contentStr))
                             return eval('`' + contentStr + '`');
                         else
-                            return contentStr;
+                            return contentStr;*/
                     }
                 }
             };
@@ -4698,7 +4466,7 @@ class Doz {
     draw() {
         if (!this.cfg.autoDraw)
             this.cfg.root.innerHTML = '';
-        this._tree = createInstance({
+        this._tree = this.createInstance({
             root: this.cfg.root,
             template: this.baseTemplate,
             app: this

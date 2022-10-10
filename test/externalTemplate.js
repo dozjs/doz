@@ -1,7 +1,7 @@
 import Doz from "../src/index.js";
 import be from "bejs";
 
-describe('externalTemplate', function () {
+describe.skip('externalTemplate', function () {
 
     beforeEach(function () {
         document.body.innerHTML = '';

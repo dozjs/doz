@@ -98,13 +98,13 @@
         template(h) {
             return (
                h`<div>
-                    <button onclick="this.action.add(1000)" >Add 1000</button>
-                    <button onclick="this.action.add(10000)" >Add 10000</button>
-                    <button onclick="this.action.reverse()" >Reverse</button>
-                    <button onclick="this.action.sort()" >Sort</button>
-                    <button onclick="this.action.remove()" >Remove</button>
-                    <button onclick="this.action.swap()" >Swap</button>
-                    <button onclick="this.action.clear()" >Clear</button>
+                    <button onclick="${() => this.action.add(1000)}" >Add 1000</button>
+                    <button onclick="${() => this.action.add(10000)}" >Add 10000</button>
+                    <button onclick="${() => this.action.reverse()}" >Reverse</button>
+                    <button onclick="${() => this.action.sort()}" >Sort</button>
+                    <button onclick="${() => this.action.remove()}" >Remove</button>
+                    <button onclick="${() => this.action.swap()}" >Swap</button>
+                    <button onclick="${() => this.action.clear()}" >Clear</button>
                 </div>`
             );
         }

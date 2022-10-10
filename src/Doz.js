@@ -44,6 +44,9 @@ class Doz {
             enableExternalTemplate: false
         }, cfg);
         Object.defineProperties(this, {
+            createInstance: {
+                value: createInstance
+            },
             _lastUId: {
                 value: 0,
                 writable: true
@@ -148,18 +151,18 @@ class Doz {
                     if (!(root instanceof HTMLElement)) {
                         throw new TypeError('root must be an HTMLElement or an valid selector like #example-root');
                     }
-                    const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
+                    //const contentStr = this.cfg.enableExternalTemplate ? eval('`' + toLiteralString(template) + '`') : template;
                     const autoCmp = {
                         tag: TAG.MOUNT,
                         cfg: {
                             props: {},
                             template(h) {
                                 //return h`<${TAG.ROOT}>${contentStr}</${TAG.ROOT}>`;
-                                return contentStr;
+                                return template;
                             }
                         }
                     };
-                    return createInstance({
+                    return this.createInstance({
                         root,
                         template: `<${TAG.MOUNT}></${TAG.MOUNT}>`,
                         app: this,
@@ -189,7 +192,7 @@ class Doz {
         plugin.load(this);
         directive.callAppInit(this);
         if (this.cfg.mainComponent) {
-            this._tree = createInstance({
+            this._tree = this.createInstance({
                 mountMainComponent: true,
                 root: this.cfg.root,
                 component: this.cfg.mainComponent,
@@ -203,11 +206,12 @@ class Doz {
                 tag: TAG.APP,
                 cfg: {
                     template: typeof cfg.template === 'function' ? cfg.template : function () {
-                        const contentStr = toLiteralString(cfg.template);
+                        return cfg.template;
+                        /*const contentStr = toLiteralString(cfg.template);
                         if (/\${.*?}/g.test(contentStr))
                             return eval('`' + contentStr + '`');
                         else
-                            return contentStr;
+                            return contentStr;*/
                     }
                 }
             };
@@ -241,7 +245,7 @@ class Doz {
     draw() {
         if (!this.cfg.autoDraw)
             this.cfg.root.innerHTML = '';
-        this._tree = createInstance({
+        this._tree = this.createInstance({
             root: this.cfg.root,
             template: this.baseTemplate,
             app: this

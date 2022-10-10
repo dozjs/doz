@@ -1,4 +1,11 @@
-import { REGEX } from "../constants.js";
+import {
+    COMPONENT_DYNAMIC_INSTANCE, COMPONENT_INSTANCE,
+    COMPONENT_ROOT_INSTANCE,
+    DEFAULT_SLOT_KEY,
+    PROPS_ATTRIBUTES,
+    REGEX,
+    TAG
+} from "../constants.js";
 import observer from "./observer.js";
 import hooks from "./hooks.js";
 import { updateElement } from "../vdom/index.js";
@@ -14,7 +21,7 @@ import loadLocal from "./helpers/loadLocal.js";
 import localMixin from "./helpers/localMixin.js";
 import { compile } from "../vdom/parser.js";
 import propsInit from "./helpers/propsInit.js";
-import DOMManipulation from "./DOMManipulation.js";
+//import DOMManipulation from "./DOMManipulation.js";
 import directive from "../directives/index.js";
 //import cloneObject from "../utils/cloneObject.js";
 import deepCopy from "../utils/deepCopy.js";
@@ -22,25 +29,72 @@ import toLiteralString from "../utils/toLiteralString.js";
 import delay from "../utils/delay.js";
 import makeSureAttach from "./makeSureAttach.js";
 import data from "../data.js";
+import doCreateInstance from "./doCreateInstance.js";
+import composeStyleInner from "../utils/composeStyleInner.js";
+import canDecode from "../utils/canDecode.js";
+import {isDirective} from "../directives/helpers.js";
+import dashToCamel from "../utils/dashToCamel.js";
 //const mapCompiled = require('../vdom/map-compiled');
 
-class Component extends DOMManipulation {
-    constructor(opt) {
-        super(opt);
+class Component /*extends DOMManipulation */{
+    constructor(opt = {}) {
+        //super(opt);
+        opt.cmp = opt.cmp || {
+            tag: opt.tag,
+            cfg: {}
+        };
+        opt.app = opt.app || {};
+        this._opt = opt;
+        this._cfgRoot = opt.root;
+        //this._publicProps = Object.assign({}, opt.props);
+        this._publicProps = opt.props;
+        this._isRendered = false;
+        this._prev = null;
+        this._rootElement = null;
+        this._parentElement = null;
+        this._components = {};
+        this._processing = [];
+        this._dynamicChildren = [];
+        this._unmounted = false;
+        this._unmountedParentNode = null;
+        this._configured = false;
+        this._props = {};
+        this._directiveProps = null;
+        this._computedCache = new Map();
+        this._renderPause = false;
+        //this._rawHTML = '';
+        this._hasSlots = false;
+        this._slots = {};
+        this._defaultSlot = null;
+        this._localComponentLastId = 0;
+        //this._currentStyle = '';
+        this._componentsMap = new Map();
+        this.tag = opt.cmp.tag;
+        this.app = opt.app;
+        this.exposeAttributes = ['style', 'class'];
+        this.parent = opt.parentCmp;
+        this.appRoot = opt.app._root;
+        this.action = opt.app.action;
+        this.shared = opt.app.shared;
+        //this.childrenToWalk = [];
+        this._childrenInc = 0;
+        this.children = {};
+        this.childrenByTag = {};
+        this.rawChildren = [];
+        this.rawChildrenVnode = [];
+        this.autoCreateChildren = true;
+        this.updateChildrenProps = true;
+        this.mixin = [];
+        this.propsConvertOnFly = false;
+        this.propsComputedOnFly = false;
+        this.delayUpdate = 0;
+        //this.propsData = {};
+        this.lockRemoveInstanceByCallback = null;
+        this.waitMount = false;
         this._isSubclass = this.__proto__.constructor !== Component;
         this.uId = this.app.generateUId();
         this.h = h.bind(this);
-        /*Object.defineProperty(this, '_isSubclass', {
-            value: this.__proto__.constructor !== Component
-        });
-        Object.defineProperty(this, 'uId', {
-            value: this.app.generateUId(),
-            enumerable: true
-        });
-        Object.defineProperty(this, 'h', {
-            value: h.bind(this),
-            enumerable: false
-        });*/
+
         this._initRawProps(opt);
         // Assign cfg to instance
         extendInstance(this, opt.cmp.cfg);
@@ -141,11 +195,12 @@ class Component extends DOMManipulation {
             return;
         this.beginSafeRender();
         //const propsKeys = Object.keys(this.props);
-        const templateArgs = [this.h];
+        //const templateArgs = [this.h];
         /*for (let i = 0; i < propsKeys.length; i++) {
             templateArgs.push(this.props[propsKeys[i]]);
         }*/
-        const template = this.template.apply(this, templateArgs);
+        //const template = this.template.apply(this, templateArgs);
+        let template = this.template(this.h);
         this.endSafeRender();
         let next = template && typeof template === 'object'
             ? template
@@ -301,7 +356,7 @@ class Component extends DOMManipulation {
     template() {
         return '';
     }
-    _initTemplate(opt) {
+    /*_initTemplate(opt) {
         if (typeof opt.cmp.cfg.template === 'string' && opt.app.cfg.enableExternalTemplate) {
             let contentTpl = opt.cmp.cfg.template;
             if (REGEX.IS_ID_SELECTOR.test(contentTpl)) {
@@ -317,14 +372,14 @@ class Component extends DOMManipulation {
                 };
             }
         }
-    }
+    }*/
     _initRawProps(opt) {
         //console.log(this._isSubclass)
         if (!this._isSubclass) {
             this._rawProps = Object.assign({}, typeof opt.cmp.cfg.props === 'function'
                 ? opt.cmp.cfg.props()
                 : opt.cmp.cfg.props, opt.props);
-            this._initTemplate(opt);
+            //this._initTemplate(opt);
         }
         else {
             this._rawProps = Object.assign({}, opt.props);
@@ -360,6 +415,108 @@ class Component extends DOMManipulation {
     }
     setPropsAsync(obj) {
         delay(() => this._setProps(obj));
+    }
+    $$afterNodeElementCreate($el, node, initial, cmp) {
+        if ($el._dozAttach.hasDirective) {
+            directive.callAppDOMElementCreate(this, $el, node, initial);
+            directive.callComponentDOMElementCreate(this, $el, initial);
+        }
+        //console.log('element created', $el.outerHTML)
+        //this._canWalk = false;
+        //console.log('NODO CREATO', $el.nodeName, 'da elaborare:', node.type.indexOf('-') !== -1,  'fa parte di:', this.tag);
+        //console.log('......', $el.nodeName)
+        if (typeof $el.hasAttribute === 'function') {
+            if (node.type.indexOf('-') !== -1) {
+                doCreateInstance(this, $el);
+                //return;
+            }
+
+            //console.log(node.type, $el.nodeName)
+            //if ($el.nodeName === TAG.SLOT_UPPERCASE) {
+            if (node.type === TAG.SLOT) {
+                let slotName = $el._dozAttach[PROPS_ATTRIBUTES] ? $el._dozAttach[PROPS_ATTRIBUTES].name : null;
+                if (!slotName) {
+                    this._defaultSlot = $el;
+                    slotName = DEFAULT_SLOT_KEY;
+                }
+                if (this._slots[slotName] === undefined) {
+                    this._slots[slotName] = [$el];
+                }
+                else {
+                    this._slots[slotName].push($el);
+                }
+                this._hasSlots = true;
+            }
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeChange($parent, $oldElement, newNode, oldNode) {
+        if (typeof newNode === 'string' && typeof oldNode === 'string' && $oldElement) {
+            if ($parent.nodeName === 'SCRIPT') {
+                // it could be heavy
+                if ($parent.type === 'text/style' && $parent._dozAttach.styleData.id && $parent._dozAttach.styleData.owner && document.getElementById($parent._dozAttach.styleData.id)) {
+                    document.getElementById($parent._dozAttach.styleData.id).textContent = composeStyleInner(newNode, $parent._dozAttach.styleData.ownerByData);
+                }
+            }
+            else {
+                $oldElement.textContent = canDecode(newNode);
+            }
+            return $oldElement;
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$afterNodeChange($newElement, $oldElement) {
+        makeSureAttach($oldElement);
+        makeSureAttach($newElement);
+        //Re-assign CMP COMPONENT_DYNAMIC_INSTANCE to new element
+        if ($oldElement._dozAttach[COMPONENT_ROOT_INSTANCE]) {
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE] = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE];
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement = $newElement;
+            $newElement._dozAttach[COMPONENT_ROOT_INSTANCE]._rootElement.parentNode.dataset.uid = $oldElement._dozAttach[COMPONENT_ROOT_INSTANCE].uId;
+        }
+    }
+    // noinspection JSMethodCanBeStatic
+    $$beforeNodeWalk($parent, index, attributesUpdated) {
+        if ($parent.childNodes[index]) {
+            makeSureAttach($parent.childNodes[index]);
+            const dynInstance = $parent.childNodes[index]._dozAttach[COMPONENT_DYNAMIC_INSTANCE];
+            // Can update props of dynamic instances?
+            if (dynInstance && attributesUpdated.length) {
+                attributesUpdated.forEach(props => {
+                    Object.keys(props).forEach(name => {
+                        dynInstance.props[name] = props[name];
+                    });
+                });
+                return true;
+            }
+        }
+        return false;
+    }
+    // noinspection JSMethodCanBeStatic
+    /*$$afterAttributeCreate($target, name, value, nodeProps) {
+    }*/
+    // noinspection JSMethodCanBeStatic
+    /*$$afterAttributesCreate($target, bindValue) {
+    }*/
+    $$afterAttributeUpdate($target, name, value) {
+        let _isDirective = isDirective(name);
+        if (this.updateChildrenProps && $target) {
+            //name = REGEX.IS_DIRECTIVE.test(name) ? name : dashToCamel(name);
+            name = _isDirective ? name : dashToCamel(name);
+            const firstChild = $target.firstChild;
+            makeSureAttach(firstChild);
+            if (firstChild && firstChild._dozAttach[COMPONENT_ROOT_INSTANCE] && Object.prototype.hasOwnProperty.call(firstChild._dozAttach[COMPONENT_ROOT_INSTANCE]._publicProps, name)) {
+                firstChild._dozAttach[COMPONENT_ROOT_INSTANCE].props[name] = value;
+            }
+            else if ($target._dozAttach[COMPONENT_INSTANCE]) {
+                $target._dozAttach[COMPONENT_INSTANCE].props[name] = value;
+            }
+        }
+        directive.callComponentDOMElementUpdate(this, $target);
+        //if ($target && REGEX.IS_DIRECTIVE.test(name)) {
+        if ($target && _isDirective) {
+            $target.removeAttribute(name);
+        }
     }
 }
 export default Component;

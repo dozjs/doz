@@ -187,9 +187,9 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             $target.addEventListener(extractEventName(name), value);
         }
     }
-    else {
+    /*else {
         value = value.replace(REGEX.THIS_TARGET, '$target');
-        // I don't understand but with regex test sometimes it don't works fine so use match... boh!
+        // I don't understand but with regex test sometimes it doesn't work fine so use match... boh!
         //if (REGEX.IS_LISTENER_SCOPE.test(value) || value === 'scope') {
         if (value.match(REGEX.IS_LISTENER_SCOPE) || value === 'scope') {
             const _func = function () {
@@ -205,7 +205,7 @@ function addEventListener($target, name, value, cmp, cmpParent) {
             };
             $target.addEventListener(extractEventName(name), _func.bind(cmp));
         }
-    }
+    }*/
 }
 function attach($target, nodeProps, cmp, cmpParent, isSVG) {
     let name;

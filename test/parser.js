@@ -1,7 +1,7 @@
 import {compile} from '../src/index.js';
 import {updateElement} from '../src/vdom/index.js';
 import html from "../src/utils/html.js";
-import DOM from "../src/component/DOMManipulation.js";
+import Component from "../src/component/Component.js";
 
 describe('parser', function () {
 
@@ -12,7 +12,12 @@ describe('parser', function () {
     describe('create', function () {
         it('should be return nodes', function () {
             document.body.innerHTML = `<div id="app"></div>`;
-            const fakeCmp = new DOM();
+            const fakeCmp = new Component({
+                app: {
+                    emit() {},
+                    generateUId() {}
+                }
+            });
             const appRoot = document.getElementById('app');
             const initial = compile(`
                 <div>hello

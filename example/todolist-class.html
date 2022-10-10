@@ -159,13 +159,13 @@
                     }
                 </style>
                 <div class="todo-item ${this.props.done ? 'done' : ''} ">
-                    <button onclick="this.action.remove(${this.props.id})" title="Delete">&cross;</button>
-                    <button onclick="this.action.done(${this.props.id})" title="Done">&check;</button>
-                    <span ondblclick="this.action.showInput()" style="${this.props.done ? 'text-decoration: line-through' : ''}">
+                    <button onclick="${() => this.action.remove(this.props.id)}" title="Delete">&cross;</button>
+                    <button onclick="${() => this.action.done(this.props.id)}" title="Done">&check;</button>
+                    <span ondblclick="${(e) => this.action.showInput(e)}" style="${this.props.done ? 'text-decoration: line-through' : ''}">
                         <strong>${this.props.title}</strong>
                         <input
-                            onblur="this.action.hideInput(${this.props.id})"
-                            onkeypress="this.action.inputEnterPress(${this.props.id})"
+                            onblur="${() => this.action.hideInput(this.props.id)}"
+                            onkeypress="${() => this.action.inputEnterPress(this.props.id)}"
                             style="display: none"
                             type="text"
                         >
@@ -181,8 +181,8 @@
     Doz.define('doz-todo-buttons', class extends Doz.Component {
         template(h) {
             return h`
-                <button onclick="this.action.add()" >Add</button>
-                <button onclick="this.action.removeAll()" >Remove all</button>
+                <button onclick="${() => this.action.add()}" >Add</button>
+                <button onclick="${() => this.action.removeAll()}" >Remove all</button>
             `;
         }
     });
@@ -209,7 +209,7 @@
             return h`
                 <div>
                     <div class="todo-input">
-                        <input onkeypress="this.action.enterPress()" d-bind="todo" type="text" placeholder="Write a to-do">
+                        <input onkeypress="${(e) => this.action.enterPress(e)}" d-bind="todo" type="text" placeholder="Write a to-do">
                         <doz-todo-buttons></doz-todo-buttons>
                     </div>
                     <div>

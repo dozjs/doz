@@ -19,7 +19,7 @@ function placeholderIndex(str, values) {
             // if is a possible text node
             if (match[1][0] === '0' && match[1].length >= 2) {
                 // remove first fake 0 that identify a text node and cast to string every
-                return values[match[1].substr(1)] + '';
+                return values[match[1].substring(1)] + '';
             }
             else {
                 return values[match[1]];

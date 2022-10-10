@@ -1,4 +1,4 @@
-import delay from "../utils/delay.js";
+//import delay from "../utils/delay.js";
 import directive from "../directives/index.js";
 function callBeforeCreate(context) {
     directive.callAppComponentBeforeCreate(context);
@@ -85,13 +85,13 @@ function callDrawByParent(context, newNode, oldNode) {
     }
     //context.app.emit('componentDrawByParent', context, changes);
 }
-function callAfterRender(context, changes) {
+/*function callAfterRender(context, changes) {
     directive.callAppComponentAfterRender(context, changes);
     directive.callComponentAfterRender(context, changes);
     if (typeof context.onAfterRender === 'function') {
         return context.onAfterRender.call(context, changes);
     }
-}
+}*/
 function callBeforeUnmount(context) {
     directive.callAppComponentBeforeUnmount(context);
     directive.callComponentBeforeUnmount(context);
@@ -158,7 +158,7 @@ export { callMountAsync };
 export { callBeforeUpdate };
 export { callUpdate };
 export { callDrawByParent };
-export { callAfterRender };
+//export { callAfterRender };
 export { callBeforeUnmount };
 export { callUnmount };
 export { callBeforeDestroy };
@@ -175,7 +175,7 @@ export default {
     callBeforeUpdate,
     callUpdate,
     callDrawByParent,
-    callAfterRender,
+    //callAfterRender,
     callBeforeUnmount,
     callUnmount,
     callBeforeDestroy,

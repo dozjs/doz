@@ -31,14 +31,11 @@ describe('onDrawByParent', function () {
                 onDrawByParent(newNode) {
                     if(newNode.type === 'h1') {
                         newNode.children.push(Doz.compile(`
-                            <button id="button-scope" onclick="scope.completeTest()">Click</button>
+                            <button id="button-scope">Click</button>
                         `));
                     }
                 },
 
-                completeTest() {
-                    done()
-                }
             });
 
             new Doz({
@@ -57,9 +54,9 @@ describe('onDrawByParent', function () {
             });
 
             setTimeout(()=>{
-                const html = document.body.innerHTML;
-                console.log(html);
-                document.getElementById('button-scope').click();
+                //const html = document.body.innerHTML;
+                if (document.getElementById('button-scope'))
+                    done()
             },200);
         });
     });
