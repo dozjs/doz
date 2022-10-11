@@ -4,7 +4,6 @@
     "description": "A JavaScript framework for building UI, almost like writing in VanillaJS.",
     "main": "dist/doz.js",
     "type": "module",
-    "module": "src/index.js",
     "sideEffects": false,
     "typings": "types/index.d.ts",
     "scripts": {
