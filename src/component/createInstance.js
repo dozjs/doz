@@ -101,6 +101,7 @@ function walk($child, parent = {}, cfg) {
         if (parent.cmp && parent.cmp.mounted) {
             return;
         }
+        //console.log(cmp)
         if (parent.cmp && parent.cmp.autoCreateChildren === false) {
             trash.push($child);
             return;

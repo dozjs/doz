@@ -12,6 +12,7 @@ function doCreateInstance(instance, $el) {
     });
 
     if (dynamicInstance && dynamicInstance._rootElement) {
+        //console.log('dynamicInstance._rootElement.parentNode', dynamicInstance._rootElement.parentNode, $el)
         dynamicInstance._rootElement.parentNode._dozAttach[COMPONENT_DYNAMIC_INSTANCE] = dynamicInstance;
     }
 }

@@ -5,7 +5,6 @@
     <meta name="description" content="DOZ - ROUTER">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Doz - router</title>
-    <script src="../node_modules/doz-router/dist/bundle.js?508"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -48,6 +47,7 @@
 
 <script type="module">
     import Doz from '../src/index.js'
+    import DozRouter from '../node_modules/doz-router/src/index.js'
 
     const HomePage = class extends Doz.Component {
         template(h) {
@@ -220,7 +220,7 @@
                 <a data-router-link href="/section/4">Section 4</a>
             </nav>
             <div class="container">
-                <${DozRouter.default} d:id="router">
+                <${DozRouter} d:id="router" suspendcontent>
                     <${HomePage} route="/"/>
                     <${AboutPage} route="/about" />
                     <${ContactPage} route="/contact"/>
@@ -231,18 +231,18 @@
                     <${UserDetailsPage} route="/user/:id"></>
                     <${NotFoundPage} route="*"/>
                     <${SectionPage} route="/section/:id" preserve/>
-                </${DozRouter.default}>
+                </${DozRouter}>
             </div>
             <div style="color: white; padding: 40px">
                 <${DozSign}/>
             </div>
         `
-            console.log(_h)
+            //console.log(_h)
         return _h
         },
 
         onMount() {
-            console.log(this)
+            console.log(this.getCmp('router').getHTMLElement().outerHTML)
         }
     });
 

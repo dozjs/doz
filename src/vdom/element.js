@@ -17,6 +17,7 @@ function isChanged(nodeA, nodeB) {
 
 function create(node, cmp, initial, cmpParent) {
     //console.log(node)
+    //if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;
     let nodeStored;
@@ -45,7 +46,6 @@ function create(node, cmp, initial, cmpParent) {
             : document.createElement(node.type);
         storeElementNode[node.type] = $el.cloneNode(true);
     }
-    //console.log(node);
     attach($el, node.props, cmp, cmpParent, node.isSVG);
     // The children with keys will be created later
     if (!node.hasKeys) {
@@ -56,12 +56,13 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            for (let i = 0; i < node.children.length; i++) {
-                let $childEl = create(node.children[i], cmp, initial, cmpParent);
-                if ($childEl) {
-                    $el.appendChild($childEl);
+            if (node.props['suspendcontent'] === undefined)
+                for (let i = 0; i < node.children.length; i++) {
+                    let $childEl = create(node.children[i], cmp, initial, cmpParent);
+                    if ($childEl) {
+                        $el.appendChild($childEl);
+                    }
                 }
-            }
         }
     }
     makeSureAttach($el);

@@ -14,7 +14,7 @@ function extractDirectivesFromProps(cmp) {
     for (let key in props) {
         if (isDirective(key)) {
             let keyWithoutD = key.substring(2);
-            console.log(cmp.uId, keyWithoutD, props[key])
+            //console.log(cmp.uId, keyWithoutD, props[key])
             cmp._directiveProps[keyWithoutD] = props[key];
         }
     }/**/
