@@ -1,5 +1,5 @@
 import html from "../utils/html.js";
-import {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE, ALREADY_WALKED, REGEX} from "../constants.js";
+import {COMPONENT_ROOT_INSTANCE, COMPONENT_INSTANCE/*, ALREADY_WALKED, REGEX*/} from "../constants.js";
 import collection from "../collection.js";
 import hooks from "./hooks.js";
 import {serializeProps} from "../vdom/parser.js";

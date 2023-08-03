@@ -3,7 +3,7 @@ import {
     COMPONENT_ROOT_INSTANCE,
     DEFAULT_SLOT_KEY,
     PROPS_ATTRIBUTES,
-    REGEX,
+    //REGEX,
     TAG
 } from "../constants.js";
 import observer from "./observer.js";
@@ -25,7 +25,7 @@ import propsInit from "./helpers/propsInit.js";
 import directive from "../directives/index.js";
 //import cloneObject from "../utils/cloneObject.js";
 import deepCopy from "../utils/deepCopy.js";
-import toLiteralString from "../utils/toLiteralString.js";
+//import toLiteralString from "../utils/toLiteralString.js";
 import delay from "../utils/delay.js";
 import makeSureAttach from "./makeSureAttach.js";
 import data from "../data.js";
@@ -190,7 +190,7 @@ class Component /*extends DOMManipulation */{
     toStyle(obj, withStyle = true) {
         return toInlineStyle(obj, withStyle);
     }
-    render(initial, changes = [], silentAfterRenderEvent = false) {
+    render(initial/*, changes = [], silentAfterRenderEvent = false*/) {
         if (this._renderPause)
             return;
         this.beginSafeRender();
@@ -416,7 +416,7 @@ class Component /*extends DOMManipulation */{
     setPropsAsync(obj) {
         delay(() => this._setProps(obj));
     }
-    $$afterNodeElementCreate($el, node, initial, cmp) {
+    $$afterNodeElementCreate($el, node, initial/*, cmp*/) {
         if ($el._dozAttach.hasDirective) {
             directive.callAppDOMElementCreate(this, $el, node, initial);
             directive.callComponentDOMElementCreate(this, $el, initial);
