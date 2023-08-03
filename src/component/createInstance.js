@@ -102,10 +102,10 @@ function walk($child, parent = {}, cfg) {
             return;
         }
         //console.log(cmp)
-        if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-            trash.push($child);
-            return;
-        }
+        // if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+        //     trash.push($child);
+        //     return;
+        // }
         const props = serializeProps($child);
         const componentDirectives = {};
         const parentCmp = parent.cmp || cfg.parent

@@ -82,7 +82,7 @@ class Component /*extends DOMManipulation */{
         this.childrenByTag = {};
         this.rawChildren = [];
         this.rawChildrenVnode = [];
-        this.autoCreateChildren = true;
+        //this.autoCreateChildren = true;
         this.updateChildrenProps = true;
         this.mixin = [];
         this.propsConvertOnFly = false;
@@ -151,9 +151,9 @@ class Component /*extends DOMManipulation */{
             this.components = obj.components;
             loadLocal(this);
         }
-        if (typeof obj.autoCreateChildren === 'boolean') {
-            this.autoCreateChildren = obj.autoCreateChildren;
-        }
+        // if (typeof obj.autoCreateChildren === 'boolean') {
+        //     this.autoCreateChildren = obj.autoCreateChildren;
+        // }
         if (typeof obj.updateChildrenProps === 'boolean') {
             this.updateChildrenProps = obj.updateChildrenProps;
         }
