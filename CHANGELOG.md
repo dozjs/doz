@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.0.0] - 2023-08-
+- **Breaking changes**
+  - Removed property `autoCreateChildren` use instead `suspendcontent` prop in markup
+- **Added** spread operator props like `<my-component ...${myObject}/>`
+- **Improved** performance
+
 ## [4.0.3] - 2022-09-22
 - **Fixed** component data attributes do not work
 

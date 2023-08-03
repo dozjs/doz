@@ -1,6 +1,6 @@
 import dashToCamel from "../utils/dashToCamel.js";
 import { REGEX, ATTR, TAG, PROPS_ATTRIBUTES } from "../constants.js";
-import directive from "../directives/index.js";
+//import directive from "../directives/index.js";
 import { isDirective } from "../directives/helpers.js";
 import { tplCache } from "./stores.js";
 const regExcludeSpecial = new RegExp(`<\/?(${TAG.TEXT_NODE_PLACE}|${TAG.ITERATE_NODE_PLACE})?>$`);
@@ -83,6 +83,7 @@ function compile(tpl) {
     let props;
     //console.log(tpl)
     while (match = REGEX.HTML_MARKUP.exec(tpl)) {
+        //console.log(match)
         if (lastTextPos > -1) {
             if ( /*lastTextPos > -1 && */lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
@@ -134,6 +135,10 @@ function compile(tpl) {
         // exclude special text node
         if (regExcludeSpecial.test(match[0])) {
             continue;
+        }
+        //support to spread operator
+        if(match[3] && match[3].startsWith('...')) {
+            match[3] = match[3].replace('...','__spreadprops="') + '"';
         }
         // transform slot to dz-slot
         if (match[2] === 'slot')
@@ -222,7 +227,7 @@ function serializeProps($node) {
     }
     return props;
 }
-function propsFixer(nName, aName, aValue, props, $node) {
+function propsFixer(nName, aName, aValue, props/*, $node*/) {
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
     //let isDirective = REGEX.IS_DIRECTIVE.test(aName);

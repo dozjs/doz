@@ -29,6 +29,7 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 function isDirective(aName) {
+    //console.log(aName)
     //return REGEX.IS_DIRECTIVE.test(name);
     return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
 }
