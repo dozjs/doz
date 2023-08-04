@@ -1,4 +1,4 @@
-/* Doz, version: 4.0.3 - October 11, 2022 17:01:45 */
+/* Doz, version: 5.0.0 - August 4, 2023 09:40:35 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -472,6 +472,7 @@ function extractDirectivesFromProps(cmp) {
     return cmp._directiveProps;
 }
 function isDirective(aName) {
+    //console.log(aName)
     //return REGEX.IS_DIRECTIVE.test(name);
     return aName[0] === 'd' && (aName[1] === '-' || aName[1] === ':');
 }
@@ -980,6 +981,7 @@ function compile(tpl) {
     let props;
     //console.log(tpl)
     while (match = REGEX.HTML_MARKUP.exec(tpl)) {
+        //console.log(match)
         if (lastTextPos > -1) {
             if ( /*lastTextPos > -1 && */lastTextPos + match[0].length < REGEX.HTML_MARKUP.lastIndex) {
                 // remove new line space
@@ -1031,6 +1033,10 @@ function compile(tpl) {
         // exclude special text node
         if (regExcludeSpecial.test(match[0])) {
             continue;
+        }
+        //support to spread operator
+        if(match[3] && match[3].startsWith('...')) {
+            match[3] = match[3].replace('...','__spreadprops="') + '"';
         }
         // transform slot to dz-slot
         if (match[2] === 'slot')
@@ -1119,7 +1125,7 @@ function serializeProps($node) {
     }
     return props;
 }
-function propsFixer(nName, aName, aValue, props, $node) {
+function propsFixer(nName, aName, aValue, props/*, $node*/) {
     if (typeof aValue === 'string' && REGEX.IS_STRING_QUOTED.test(aValue))
         aValue = aValue.replace(REGEX.REPLACE_QUOT, '&quot;');
     //let isDirective = REGEX.IS_DIRECTIVE.test(aName);
@@ -3035,6 +3041,13 @@ function generateItemKey(values) {
 }
 function fillCompiled(obj, values, parent, _this) {
     let keys = Object.keys(obj);
+    if (obj.__spreadprops) {
+        for (let o in values[0]) {
+            obj[o] = values[0][o];
+        }
+
+        delete obj.__spreadprops;
+    }
     for (let i = 0; i < keys.length; i++) {
         //for (let k in obj) {
         if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
@@ -3355,7 +3368,7 @@ class Component /*extends DOMManipulation */{
         this.childrenByTag = {};
         this.rawChildren = [];
         this.rawChildrenVnode = [];
-        this.autoCreateChildren = true;
+        //this.autoCreateChildren = true;
         this.updateChildrenProps = true;
         this.mixin = [];
         this.propsConvertOnFly = false;
@@ -3424,9 +3437,9 @@ class Component /*extends DOMManipulation */{
             this.components = obj.components;
             loadLocal(this);
         }
-        if (typeof obj.autoCreateChildren === 'boolean') {
-            this.autoCreateChildren = obj.autoCreateChildren;
-        }
+        // if (typeof obj.autoCreateChildren === 'boolean') {
+        //     this.autoCreateChildren = obj.autoCreateChildren;
+        // }
         if (typeof obj.updateChildrenProps === 'boolean') {
             this.updateChildrenProps = obj.updateChildrenProps;
         }
@@ -3463,7 +3476,7 @@ class Component /*extends DOMManipulation */{
     toStyle(obj, withStyle = true) {
         return toInlineStyle(obj, withStyle);
     }
-    render(initial, changes = [], silentAfterRenderEvent = false) {
+    render(initial/*, changes = [], silentAfterRenderEvent = false*/) {
         if (this._renderPause)
             return;
         this.beginSafeRender();
@@ -3689,7 +3702,7 @@ class Component /*extends DOMManipulation */{
     setPropsAsync(obj) {
         delay(() => this._setProps(obj));
     }
-    $$afterNodeElementCreate($el, node, initial, cmp) {
+    $$afterNodeElementCreate($el, node, initial/*, cmp*/) {
         if ($el._dozAttach.hasDirective) {
             directives.callAppDOMElementCreate(this, $el, node, initial);
             directives.callComponentDOMElementCreate(this, $el, initial);
@@ -3888,10 +3901,10 @@ function walk($child, parent = {}, cfg) {
             return;
         }
         //console.log(cmp)
-        if (parent.cmp && parent.cmp.autoCreateChildren === false) {
-            trash.push($child);
-            return;
-        }
+        // if (parent.cmp && parent.cmp.autoCreateChildren === false) {
+        //     trash.push($child);
+        //     return;
+        // }
         const props = serializeProps($child);
         const componentDirectives = {};
         const parentCmp = parent.cmp || cfg.parent;
@@ -5688,7 +5701,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '4.0.3',
+        value: '5.0.0',
         enumerable: true
     },
     tag: {
