@@ -1590,7 +1590,6 @@ A listener can be associated with these directives:
 - `d:oncreate`
 - `d:onconfigcreate`
 - `d:onmount`
-- `d:onmountasync`
 - `d:onupdate`
 - `d:onunmount`
 - `d:ondestroy`

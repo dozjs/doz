@@ -54,13 +54,6 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Default**: ''
 - **Description**: A name that identify the child component. More info on [directives](https://github.com/dozjs/doz/blob/master/documentation/index.md#directives).
 
-### autoCreateChildren
-
-- **Since**: 1.0.0
-- **Type**: `boolean`
-- **Default**: true
-- **Description**: If true, create the child components.
-
 ### children
 - **Since**: 1.0.0
 - **Type**: `object`
@@ -375,12 +368,6 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 
 ## Lifecycle Hooks
 
-### onAfterRender
-
-- **Since**: 1.7.0
-- **Type**: `function`
-- **Description**: This method is called every time after that `render()` method has been called.
-
 ### onAppReady
 
 - **Since**: 0.1.0
@@ -446,12 +433,6 @@ instance will be created. See [how define a component](https://github.com/dozjs/
 - **Since**: 1.0.0
 - **Type**: `function`
 - **Description**: This method is called after that component instance is mounted.
-
-### onMountAsync
-
-- **Since**: 1.3.0
-- **Type**: `function`
-- **Description**: This method is called after that component instance is mounted but in async way.
 
 ### onRender
 

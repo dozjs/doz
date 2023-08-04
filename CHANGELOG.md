@@ -1,9 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [5.0.0] - 2023-08-
+## [5.0.0] - 2023-08-04
 - **Breaking changes**
+  - Removed hook `onMountAsync` use instead `onMount`
   - Removed property `autoCreateChildren` use instead `suspendcontent` prop in markup
+- **Added** prop `suspendcontent`
 - **Added** spread operator props like `<my-component ...${myObject}/>`
 - **Improved** performance
 
