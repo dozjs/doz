@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DOZ - Clock">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Doz - clock class</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        div {
+            font-size: 35px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button></div></child1-child1></div></div>
+<script type="module">
+    import Doz from '../../src/index.js'
+
+    class Child1 extends Doz.Component {
+        constructor(o) {
+            super(o);
+            this.props = {
+                buttonText: 'click'
+            }
+        }
+
+        template(h) {
+            return h`
+                <div title="child1">Child1
+                <button onclick="${this.myClick}">${this.props.buttonText}</button>
+                </div>
+            `
+        }
+
+        myClick() {
+            //alert('click!')
+            this.props.buttonText = 'clicked ' + new Date().getTime();
+        }
+    }
+
+    class Main extends Doz.Component{
+        constructor(o) {
+            super(o);
+        }
+
+        template(h) {
+            return h`
+                <div title="hello">
+                    Hello
+                    <${Child1}/>
+                </div>
+            `
+        }
+    }
+
+    Doz.appCreate('#app', Main);
+
+</script>
+</body>
+</html>

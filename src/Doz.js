@@ -24,13 +24,38 @@ class Doz {
         if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
+        // if (cfg.root.hasChildNodes) {
+        //     const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
+        //     // This fix double app rendering in SSR
+        //     makeSureAttach(appNode);
+        //     if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
+        //         appNode.parentNode.removeChild(appNode);
+        //     }
+        // }
+        this.ssrIdCounter = 0;
         if (cfg.root.hasChildNodes) {
-            const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
-            // This fix double app rendering in SSR
-            makeSureAttach(appNode);
-            if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
-                appNode.parentNode.removeChild(appNode);
+            let ssrIdCounter = 0; // Initialize the counter
+
+            function readDom(element) {
+                // Check if the node is an element (not a text node)
+                if (element.nodeType === 1) {
+                    // Add a data-ssr-id attribute with an incremental value
+                    element.setAttribute('data-ssr-id', ssrIdCounter++);
+
+                    // Perform an action on the element, e.g., log its tag name
+                    // console.log(element.tagName);
+
+                    // Traverse the element's children
+                    const children = element.children;
+                    for (let i = 0; i < children.length; i++) {
+                        readDom(children[i]);
+                    }
+                }
             }
+
+            readDom(cfg.root.firstElementChild);
+            this.ssrIdCounter = ssrIdCounter;
+            // console.log(this, this.ssrIdCounter)
         }
         this.cfg = Object.assign({}, {
             components: [],

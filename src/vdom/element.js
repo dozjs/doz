@@ -14,37 +14,48 @@ function isChanged(nodeA, nodeB) {
         nodeA.type !== nodeB.type ||
         nodeA.props && nodeA.props.forceupdate;
 }
-
+let ssrId = 0;
 function create(node, cmp, initial, cmpParent) {
-    //console.log(node)
-    //if (node.type === 'dz-suspend') return ;
+    // console.log(node)
+    if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;
     let nodeStored;
     let $el;
+    let $ssrEl;
     //let originalTagName;
     if (typeof node !== 'object') {
         return document.createTextNode(
         // use decode only if necessary
         canDecode(node));
     }
-    if (!node || node.type == null || node.type[0] === '#') {
-        node = { type: TAG.EMPTY, props: {}, children: [] };
-    }
-    if (node.props && node.props.slot && !node.isNewSlotEl) {
-        return document.createComment(`slot(${node.props.slot})`);
-    }
-    //console.log(node.type, node.props, cmp.tag)
-    nodeStored = storeElementNode[node.type];
-    if (nodeStored) {
-        $el = nodeStored.cloneNode();
-    }
-    else {
-        //originalTagName = node.props['data-attributeoriginaletagname'];
-        $el = node.isSVG
-            ? document.createElementNS(NS.SVG, node.type)
-            : document.createElement(node.type);
-        storeElementNode[node.type] = $el.cloneNode(true);
+
+    if (ssrId < cmp.app.ssrIdCounter)
+        $ssrEl = document.querySelector('[data-ssr-id="' + (ssrId++) + '"]');
+    // console.log(ssrId, cmp.app.ssrIdCounter)
+    //console.log('sss', $ssrEl)
+
+    if ($ssrEl) {
+        $ssrEl.removeAttribute('data-ssr-id')
+        $el = $ssrEl;
+    } else {
+        if (!node || node.type == null || node.type[0] === '#') {
+            node = {type: TAG.EMPTY, props: {}, children: []};
+        }
+        if (node.props && node.props.slot && !node.isNewSlotEl) {
+            return document.createComment(`slot(${node.props.slot})`);
+        }
+        //console.log(node.type, node.props, cmp.tag)
+        nodeStored = storeElementNode[node.type];
+        if (nodeStored) {
+            $el = nodeStored.cloneNode();
+        } else {
+            //originalTagName = node.props['data-attributeoriginaletagname'];
+            $el = node.isSVG
+                ? document.createElementNS(NS.SVG, node.type)
+                : document.createElement(node.type);
+            storeElementNode[node.type] = $el.cloneNode(true);
+        }
     }
     attach($el, node.props, cmp, cmpParent, node.isSVG);
     // The children with keys will be created later
@@ -58,6 +69,7 @@ function create(node, cmp, initial, cmpParent) {
         else {
             if (node.props['suspendcontent'] === undefined)
                 for (let i = 0; i < node.children.length; i++) {
+                    if ($ssrEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
                     if ($childEl) {
                         $el.appendChild($childEl);
@@ -87,7 +99,10 @@ function setHeadStyle(node, cmp) {
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
     //console.log('a')
-    //console.log(newNode)
+    // console.log('oldNode',oldNode)
+    // console.log('newNode',newNode)
+    // console.log('index',index)
+    // console.log('$parent',$parent)
     /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
         //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
         console.log('uguali', newNode.type, cmpParent)
@@ -139,7 +154,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 }
                 else {
                     // Now I must update $slot.__newSlotEl using update function
-                    // I need to known the index of newSlotEl in child nodes list of his parent
+                    // I need to know the index of newSlotEl in child nodes list of his parent
                     let indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
                     update($slot.__newSlotEl.parentNode, newNode, oldNode, indexNewSlotEl, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 }
@@ -187,10 +202,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
     }
     else if (isChanged(newNode, oldNode)) {
-        //console.log('newNode changes', newNode);
-        //console.log('oldNode changes', oldNode);
+        // console.log('newNode changes', newNode);
+        // console.log('oldNode changes', oldNode);
         // node changes
         const $oldElement = $parent.childNodes[index];
+        // console.log($parent.childNodes, index)
         if (!$oldElement)
             return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
