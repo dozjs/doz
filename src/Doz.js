@@ -38,7 +38,7 @@ class Doz {
 
             function readDom(element) {
                 // Check if the node is an element (not a text node)
-                if (element.nodeType === 1) {
+                if (element && element.nodeType === 1) {
                     // Add a data-ssr-id attribute with an incremental value
                     element.setAttribute('data-ssr-id', ssrIdCounter++);
 
