@@ -55,7 +55,7 @@
             state: false
         },
         template: function (h) {
-            return h`<button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
+            return h`<button onclick="${this.toggle}"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>`;
         },
         toggle() {
             this.props.state = !this.props.state;

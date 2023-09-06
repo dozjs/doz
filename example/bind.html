@@ -29,7 +29,7 @@
                 <div>
                     <input type="text" d-bind="message" placeholder="${this.props.placeholder}"/>
                     <p>Value: ${this.props.message}</p>
-                    <button onclick="this.setNew()">Set to hello</button>
+                    <button onclick="${this.setNew}">Set to hello</button>
                 </div>
             `
         },
@@ -54,7 +54,7 @@
                     <input type="radio" d-bind="gender" name="gender" value="female"> Female
                     <input type="radio" d-bind="gender" name="gender" value="other"> Other
                     <p>Value: ${this.props.gender}</p>
-                    <button onclick="this.setNew()">Set to female</button>
+                    <button onclick="${this.setNew}">Set to female</button>
                 </div>
             `
         },
@@ -77,7 +77,7 @@
                         <option value="Chicken">Chicken</option>
                     </select>
                     <p>Value: ${this.props.item}</p>
-                    <button onclick="this.setNew()">Set to Chicken</button>
+                    <button onclick="${this.setNew}">Set to Chicken</button>
                 </div>
             `
         },
@@ -101,7 +101,7 @@
                         <option value="Fish">Fish</option>
                     </select>
                     <p>Value: ${this.props.item}</p>
-                    <button onclick="this.setNew()">Set to Chicken, Milk</button>
+                    <button onclick="${this.setNew}">Set to Chicken, Milk</button>
                 </div>
             `
         },
@@ -118,7 +118,7 @@
             return h`
                 <div>
                     <input type="checkbox" d-bind="done" name="done"> ${this.props.done} <br/><br/>
-                    <button onclick="this.setNew()">Set to true</button>
+                    <button onclick="${this.setNew}">Set to true</button>
                 </div>
             `
         },
@@ -139,7 +139,7 @@
                     <input type="checkbox" d-bind="sauce" name="sauce" value="Ketchup"> Ketchup
                     <input type="checkbox" d-bind="sauce" name="sauce" value="Pink Sauce"> Pink Sauce
                     <p>Value: ${this.props.sauce}</p>
-                    <button onclick="this.setNew()">Set to Mustard, Pink Sauce</button>
+                    <button onclick="${this.setNew}">Set to Mustard, Pink Sauce</button>
                 </div>
             `
         },

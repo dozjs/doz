@@ -31,7 +31,7 @@
         },
         template: function (h) {
             return h`
-                <button onclick="this.toggle()">SHOW/HIDE</button>
+                <button onclick="${this.toggle}">SHOW/HIDE</button>
                 <p>should be ${this.props.show}</p>
                 <h1 style="color: red;" d-animate="${{show: {name: 'flipInX', cb: this.onShowEnd}, hide: {name: 'flipOutX', cb: this.onHideEnd}}}" d-show="${this.props.show}">HELLO WORLD</h1>
             `;

@@ -75,6 +75,8 @@ function create(node, cmp, initial, cmpParent) {
         }
     }
     makeSureAttach($el);
+    // console.log(node)
+    $el._dozAttach.injected = node.injected;
     $el._dozAttach.elementChildren = node.children;
     $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
     cmp.$$afterNodeElementCreate($el, node, initial, cmp);
@@ -94,16 +96,19 @@ function setHeadStyle(node, cmp) {
 }
 //let xy = 0;
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
+    // console.log('b', newNode)
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
-    //console.log('a')
     // console.log('oldNode',oldNode)
     // console.log('newNode',newNode)
     // console.log('index',index)
     // console.log('$parent',$parent)
-    /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
-        //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
-        console.log('uguali', newNode.type, cmpParent)
-    }*/
+
+
+    // c'è un problema il genitore ha numero di figli diversi
+    // if (newNode && oldNode && newNode.children && oldNode.children && $parent.childNodes[index].childNodes.length < newNode.children.length) {
+    //     console.log(oldNode.children, newNode.children, $parent.childNodes[index].childNodes.length, newNode.children.length)
+    // }
+
     // For the moment I exclude the check on the comparison between newNode and oldNode
     // only if the component is DZ-MOUNT because the slots do not work
     if (!$parent || (newNode === oldNode && cmp.tag !== TAG.MOUNT))
@@ -199,13 +204,21 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
     }
     else if (isChanged(newNode, oldNode)) {
+        //console.log('b', 333)
         // console.log('newNode changes', newNode);
         // console.log('oldNode changes', oldNode);
         // node changes
-        const $oldElement = $parent.childNodes[index];
+        let $oldElement = $parent.childNodes[index];
+
         // console.log($parent.childNodes, index)
-        if (!$oldElement)
-            return;
+        if (!$oldElement) {
+            //provo a ricreare il nodo mancante...
+            $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+            $parent.appendChild($oldElement);
+            console.error('$oldElement not found. It was restored.')
+            // return;
+        }
+        // console.log('$oldElement', $oldElement)
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement)
             return canReuseElement;
@@ -372,7 +385,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log('----------------');
     }
     else if (newNode.type) {
-        //console.log('walk node', newNode.type)
+        //console.log('walk node', newNode)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:
@@ -398,6 +411,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
+
         for (let i = 0; i < newLength || i < oldLength; i++) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }

@@ -70,7 +70,7 @@
             mute: false
         },
         template: function (h) {
-            return h`<button onclick="this.action.mute()"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
+            return h`<button onclick="${this.action.mute}"><i class="fa fa-volume-${this.props.mute ? 'off' : 'up'}"></i></button>`;
         }
     });
 

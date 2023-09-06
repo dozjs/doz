@@ -29,7 +29,7 @@
         },
         template: function (h) {
             return h`
-                <button onclick="this.toggle()">SHOW/HIDE</button>
+                <button onclick="${this.toggle}">SHOW/HIDE</button>
                 <h1 style="color: red; display: flex" d-show="${this.props.show}">HELLO WORLD</h1>
             `;
         },

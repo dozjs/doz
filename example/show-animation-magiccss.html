@@ -30,7 +30,7 @@
         },
         template: function (h) {
             return h`
-                <button onclick="this.toggle()">SHOW/HIDE</button>
+                <button onclick="${this.toggle}">SHOW/HIDE</button>
                 <p>should be ${this.props.show}</p>
                 <h1 style="color: red; text-align: center; display: flex" d-animate="${{show: {name: 'vanishIn', duration: '500ms'}, hide: 'vanishOut', classLib: 'magictime'}}" d-show="${this.props.show}">HELLO WORLD</h1>
             `;

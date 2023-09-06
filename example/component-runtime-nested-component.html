@@ -27,8 +27,8 @@
     Doz.component('fist-component', {
         template(h) {
             return h`
-                <button forceupdate onclick="this.drawOther()">Mount</i></button>
-                <button forceupdate onclick="this.removeOther()">Destroy</i></button>
+                <button forceupdate onclick="${this.drawOther}">Mount</i></button>
+                <button forceupdate onclick="${this.removeOther}">Destroy</i></button>
             `;
         },
         drawOther() {
@@ -66,7 +66,7 @@
                         background: red;
                     }
                 </style>
-                <button onclick="this.toggle()"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>
+                <button onclick="${this.toggle}"><i class="fa fa-volume-${this.props.state ? 'off' : 'up'}"></i></button>
                 <label-component/>
             `;
         },

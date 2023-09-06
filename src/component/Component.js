@@ -78,11 +78,12 @@ class Component /*extends DOMManipulation */{
         this.shared = opt.app.shared;
         //this.childrenToWalk = [];
         this._childrenInc = 0;
+        this._injectCount = 0;
         this.children = {};
         this.childrenByTag = {};
         this.rawChildren = [];
         this.rawChildrenVnode = [];
-        this.injectTemplates = [];
+        this.injectTemplates = new Map();
         //this.autoCreateChildren = true;
         this.updateChildrenProps = true;
         this.mixin = [];
@@ -193,7 +194,21 @@ class Component /*extends DOMManipulation */{
     }
 
     inject(template) {
-        this.injectTemplates.push(template);
+        let id = Symbol('inject' + (this._injectCount++));
+        template.injected = id;
+        this.injectTemplates.set(id, {cmp: null, node: template});
+        this.render();
+        let {cmp} = this.injectTemplates.get(id);
+        return {
+            id,
+            cmp
+        };
+    }
+
+    eject(id) {
+        if (typeof id === 'object')
+            id = id.id;
+        this.injectTemplates.delete(id);
         this.render();
     }
 
@@ -208,7 +223,7 @@ class Component /*extends DOMManipulation */{
         }*/
         //const template = this.template.apply(this, templateArgs);
         let template = this.template(this.h);
-        this.injectTemplates.forEach(injected => template.children.push(injected));
+        this.injectTemplates.forEach(injected => template.children.push(injected.node));
 
         this.endSafeRender();
         let next = template && typeof template === 'object'

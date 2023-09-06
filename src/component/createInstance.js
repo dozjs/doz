@@ -38,6 +38,16 @@ function doMount(newElement = null, cfg, parentCmp) {
 
     newElement._isRendered = true;
     newElement.render(true);
+    let injectedSys = newElement.getHTMLElement()._dozAttach.injected;
+
+    if (injectedSys && newElement.parent) {
+        let currentObj = newElement.parent.injectTemplates.get(injectedSys);
+        if (currentObj) {
+            currentObj.cmp = newElement;
+        }
+        newElement.parent.injectTemplates.set(injectedSys, currentObj);
+    }
+
     newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
     newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
 

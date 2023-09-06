@@ -19,7 +19,7 @@
 </head>
 <body>
 <div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2">time -</div></child2-child2></div></child1-child1></div></div>
-<div id="app2"></div>
+<div id="appy"></div>
 <script type="module">
     import Doz from '../../src/index.js'
 
@@ -45,7 +45,12 @@
         }
 
         onMount() {
-            this.inject(this.h`<${Child2}/>`)
+            let myRef = this.inject(this.h`<${Child2}/>`);
+
+            console.log(myRef)
+            setTimeout(() => {
+                //this.eject(myRef)
+            }, 5000);
         }
     }
 
@@ -64,12 +69,15 @@
         }
 
         onMount() {
-            console.log('mount')
+            console.log('mount', this)
             setInterval(() => {
                 this.props.time = new Date().toLocaleTimeString()
             }, 1000)
         }
         onUnmount() {
+            console.log('onUnmount')
+        }
+        onDestroy() {
             console.log('onDestroy')
         }
     }
