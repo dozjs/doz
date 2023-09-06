@@ -194,7 +194,6 @@ class Doz {
                 // Check if the node is an element (not a text node)
                 if (element && element.nodeType === 1) {
                     this.hydMap.set(this.hydIdCounter++, element);
-
                     // Traverse the element's children
                     const children = element.children;
                     for (let i = 0; i < children.length; i++) {

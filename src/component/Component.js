@@ -82,6 +82,7 @@ class Component /*extends DOMManipulation */{
         this.childrenByTag = {};
         this.rawChildren = [];
         this.rawChildrenVnode = [];
+        this.injectTemplates = [];
         //this.autoCreateChildren = true;
         this.updateChildrenProps = true;
         this.mixin = [];
@@ -190,6 +191,12 @@ class Component /*extends DOMManipulation */{
     toStyle(obj, withStyle = true) {
         return toInlineStyle(obj, withStyle);
     }
+
+    inject(template) {
+        this.injectTemplates.push(template);
+        this.render();
+    }
+
     render(initial/*, changes = [], silentAfterRenderEvent = false*/) {
         if (this._renderPause)
             return;
@@ -201,6 +208,8 @@ class Component /*extends DOMManipulation */{
         }*/
         //const template = this.template.apply(this, templateArgs);
         let template = this.template(this.h);
+        this.injectTemplates.forEach(injected => template.children.push(injected));
+
         this.endSafeRender();
         let next = template && typeof template === 'object'
             ? template

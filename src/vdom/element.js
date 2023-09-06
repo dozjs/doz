@@ -16,7 +16,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-    // console.log(node)
+    //console.log(node)
     if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;

@@ -18,7 +18,8 @@
     </style>
 </head>
 <body>
-<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button></div></child1-child1></div></div>
+<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2">time -</div></child2-child2></div></child1-child1></div></div>
+<div id="app2"></div>
 <script type="module">
     import Doz from '../../src/index.js'
 
@@ -41,6 +42,35 @@
         myClick() {
             //alert('click!')
             this.props.buttonText = 'clicked ' + new Date().getTime();
+        }
+
+        onMount() {
+            this.inject(this.h`<${Child2}/>`)
+        }
+    }
+
+    class Child2 extends Doz.Component {
+        constructor(o) {
+            super(o);
+            this.props = {
+                time: '-'
+            }
+        }
+
+        template(h) {
+            return h`
+                <div title="child2">time ${this.props.time}</div>
+            `
+        }
+
+        onMount() {
+            console.log('mount')
+            setInterval(() => {
+                this.props.time = new Date().toLocaleTimeString()
+            }, 1000)
+        }
+        onUnmount() {
+            console.log('onDestroy')
         }
     }
 

@@ -1,4 +1,4 @@
-/* Doz, version: 5.0.0 - August 4, 2023 09:40:35 */
+/* Doz, version: 5.0.0 - September 6, 2023 09:39:40 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -54,7 +54,6 @@ const COMPONENT_DYNAMIC_INSTANCE = 'componentDynamicInstance';
 const COMPONENT_INSTANCE = 'componentInstance';
 const COMPONENT_ROOT_INSTANCE = 'componentRootInstance';
 const PROPS_ATTRIBUTES = 'props';
-const ALREADY_WALKED = 'walked';
 const DEFAULT_SLOT_KEY = '__default__';
 const NS = {
     SVG: 'http://www.w3.org/2000/svg'
@@ -2524,35 +2523,43 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-    //console.log(node)
-    //if (node.type === 'dz-suspend') return ;
+    // console.log(node)
+    if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;
     let nodeStored;
     let $el;
+    let $hydEl;
     //let originalTagName;
     if (typeof node !== 'object') {
         return document.createTextNode(
         // use decode only if necessary
         canDecode(node));
     }
-    if (!node || node.type == null || node.type[0] === '#') {
-        node = { type: TAG.EMPTY, props: {}, children: [] };
+
+    if (cmp.app.hydIdUsedCounter < cmp.app.hydIdCounter) {
+        $hydEl = cmp.app.hydMap.get(cmp.app.hydIdUsedCounter++);
     }
-    if (node.props && node.props.slot && !node.isNewSlotEl) {
-        return document.createComment(`slot(${node.props.slot})`);
-    }
-    //console.log(node.type, node.props, cmp.tag)
-    nodeStored = storeElementNode[node.type];
-    if (nodeStored) {
-        $el = nodeStored.cloneNode();
-    }
-    else {
-        //originalTagName = node.props['data-attributeoriginaletagname'];
-        $el = node.isSVG
-            ? document.createElementNS(NS.SVG, node.type)
-            : document.createElement(node.type);
-        storeElementNode[node.type] = $el.cloneNode(true);
+
+    if ($hydEl) {
+        $el = $hydEl;
+    } else {
+        if (!node || node.type == null || node.type[0] === '#') {
+            node = {type: TAG.EMPTY, props: {}, children: []};
+        }
+        if (node.props && node.props.slot && !node.isNewSlotEl) {
+            return document.createComment(`slot(${node.props.slot})`);
+        }
+        //console.log(node.type, node.props, cmp.tag)
+        nodeStored = storeElementNode[node.type];
+        if (nodeStored) {
+            $el = nodeStored.cloneNode();
+        } else {
+            $el = node.isSVG
+                ? document.createElementNS(NS.SVG, node.type)
+                : document.createElement(node.type);
+            storeElementNode[node.type] = $el.cloneNode(true);
+        }
     }
     attach($el, node.props, cmp, cmpParent, node.isSVG);
     // The children with keys will be created later
@@ -2565,6 +2572,7 @@ function create(node, cmp, initial, cmpParent) {
         else {
             if (node.props['suspendcontent'] === undefined)
                 for (let i = 0; i < node.children.length; i++) {
+                    if ($hydEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
                     if ($childEl) {
                         $el.appendChild($childEl);
@@ -2594,7 +2602,10 @@ function setHeadStyle(node, cmp) {
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
     //directive.callComponentVNodeTick(cmp, newNode, oldNode);
     //console.log('a')
-    //console.log(newNode)
+    // console.log('oldNode',oldNode)
+    // console.log('newNode',newNode)
+    // console.log('index',index)
+    // console.log('$parent',$parent)
     /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
         //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
         console.log('uguali', newNode.type, cmpParent)
@@ -2646,7 +2657,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
                 }
                 else {
                     // Now I must update $slot.__newSlotEl using update function
-                    // I need to known the index of newSlotEl in child nodes list of his parent
+                    // I need to know the index of newSlotEl in child nodes list of his parent
                     let indexNewSlotEl = Array.from($slot.__newSlotEl.parentNode.children).indexOf($slot.__newSlotEl);
                     update($slot.__newSlotEl.parentNode, newNode, oldNode, indexNewSlotEl, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
                 }
@@ -2694,10 +2705,11 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
     }
     else if (isChanged(newNode, oldNode)) {
-        //console.log('newNode changes', newNode);
-        //console.log('oldNode changes', oldNode);
+        // console.log('newNode changes', newNode);
+        // console.log('oldNode changes', oldNode);
         // node changes
         const $oldElement = $parent.childNodes[index];
+        // console.log($parent.childNodes, index)
         if (!$oldElement)
             return;
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
@@ -4261,14 +4273,15 @@ class Doz {
         if (!cfg.mainComponent && !(cfg.template instanceof HTMLElement || typeof cfg.template === 'string' || typeof cfg.template === 'function')) {
             throw new TypeError('template must be a string or an HTMLElement or a function or an valid ID selector like #example-template');
         }
-        if (cfg.root.hasChildNodes) {
-            const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
-            // This fix double app rendering in SSR
-            makeSureAttach(appNode);
-            if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
-                appNode.parentNode.removeChild(appNode);
-            }
-        }
+        // if (cfg.root.hasChildNodes) {
+        //     const appNode = cfg.root.firstElementChild; // document.querySelector(TAG.APP);
+        //     // This fix double app rendering in SSR
+        //     makeSureAttach(appNode);
+        //     if (appNode && !appNode._dozAttach[ALREADY_WALKED]) {
+        //         appNode.parentNode.removeChild(appNode);
+        //     }
+        // }
+
         this.cfg = Object.assign({}, {
             components: [],
             shared: {},
@@ -4280,9 +4293,22 @@ class Doz {
             autoDraw: true,
             enableExternalTemplate: false
         }, cfg);
+
         Object.defineProperties(this, {
             createInstance: {
                 value: createInstance
+            },
+            hydIdCounter: {
+                value: 0,
+                writable: true
+            },
+            hydIdUsedCounter: {
+                value: 0,
+                writable: true
+            },
+            hydMap: {
+                value: new Map(),
+                writable: true
             },
             _lastUId: {
                 value: 0,
@@ -4411,6 +4437,23 @@ class Doz {
                 enumerable: true
             }
         });
+
+        if (cfg.root.hasChildNodes) {
+            let  readDom = (element) => {
+                // Check if the node is an element (not a text node)
+                if (element && element.nodeType === 1) {
+                    this.hydMap.set(this.hydIdCounter++, element);
+
+                    // Traverse the element's children
+                    const children = element.children;
+                    for (let i = 0; i < children.length; i++) {
+                        readDom(children[i]);
+                    }
+                }
+            };
+            readDom(cfg.root.firstElementChild);
+        }
+
         if (Array.isArray(this.cfg.components)) {
             this.cfg.components.forEach(cmp => {
                 if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
