@@ -1,4 +1,4 @@
-/* Doz, version: 5.0.0 - September 6, 2023 09:39:40 */
+/* Doz, version: 5.0.0 - September 6, 2023 18:10:45 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2523,7 +2523,7 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-    // console.log(node)
+    //console.log(node)
     if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;
@@ -2581,6 +2581,8 @@ function create(node, cmp, initial, cmpParent) {
         }
     }
     makeSureAttach($el);
+    // console.log(node)
+    $el._dozAttach.injected = node.injected;
     $el._dozAttach.elementChildren = node.children;
     $el._dozAttach.originalTagName = node.props['data-attributeoriginaletagname'];
     cmp.$$afterNodeElementCreate($el, node, initial, cmp);
@@ -2600,16 +2602,36 @@ function setHeadStyle(node, cmp) {
 }
 //let xy = 0;
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
-    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
-    //console.log('a')
+    // console.log(newNode)
+    // console.log('b', newNode)
+    // directive.callComponentVNodeTick(cmp, newNode, oldNode);
     // console.log('oldNode',oldNode)
     // console.log('newNode',newNode)
     // console.log('index',index)
     // console.log('$parent',$parent)
-    /*if (newNode === oldNode && $parent._dozAttach && $parent._dozAttach.componentRootInstance) {
-        //console.log('uguali', newNode.type, $parent._dozAttach.componentRootInstance)
-        console.log('uguali', newNode.type, cmpParent)
-    }*/
+    // c'è un problema il genitore ha numero di figli diversi
+    if (
+        cmp.app.hydration
+        && !cmp.hydrationRestored
+        && newNode
+        && oldNode
+        && newNode.children
+        && oldNode.children
+        && $parent.childNodes[index]
+        && $parent.childNodes[index].childNodes.length < newNode.children.length) {
+        console.error('There is not match between virtual nodes and child nodes for element ', $parent.childNodes[index]);
+        console.error($parent.childNodes[index].childNodes, newNode.children);
+        console.error('I\'m trying to restore it');
+        $parent.childNodes[index].innerHTML = '';
+        newNode.children.forEach(node => {
+            let $newElement = create(node, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+            //console.log('append to', $parent, cmp.uid);
+            $parent.childNodes[index].appendChild($newElement);
+        });
+
+        cmp.hydrationRestored = true;
+        return ;
+    }
     // For the moment I exclude the check on the comparison between newNode and oldNode
     // only if the component is DZ-MOUNT because the slots do not work
     if (!$parent || (newNode === oldNode && cmp.tag !== TAG.MOUNT))
@@ -2705,13 +2727,21 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         }
     }
     else if (isChanged(newNode, oldNode)) {
+        //console.log('b', 333)
         // console.log('newNode changes', newNode);
         // console.log('oldNode changes', oldNode);
         // node changes
-        const $oldElement = $parent.childNodes[index];
+        let $oldElement = $parent.childNodes[index];
+
         // console.log($parent.childNodes, index)
-        if (!$oldElement)
-            return;
+        if (!$oldElement) {
+            //provo a ricreare il nodo mancante...
+            $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+            $parent.appendChild($oldElement);
+            console.error('$oldElement not found. It was restored.');
+            // return;
+        }
+        // console.log('$oldElement', $oldElement)
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
         if (canReuseElement)
             return canReuseElement;
@@ -2878,7 +2908,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log('----------------');
     }
     else if (newNode.type) {
-        //console.log('walk node', newNode.type)
+
+        //console.log('walk node', newNode)
         // walk node
         /*
         Adjust index so it's possible update props in nested component like:
@@ -2904,6 +2935,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             return;
         const newLength = newNode.children.length;
         const oldLength = oldNode.children.length;
+
         for (let i = 0; i < newLength || i < oldLength; i++) {
             update($parent.childNodes[index], newNode.children[i], oldNode.children[i], i, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
         }
@@ -3376,10 +3408,12 @@ class Component /*extends DOMManipulation */{
         this.shared = opt.app.shared;
         //this.childrenToWalk = [];
         this._childrenInc = 0;
+        this._injectCount = 0;
         this.children = {};
         this.childrenByTag = {};
         this.rawChildren = [];
         this.rawChildrenVnode = [];
+        this.injectTemplates = new Map();
         //this.autoCreateChildren = true;
         this.updateChildrenProps = true;
         this.mixin = [];
@@ -3488,6 +3522,26 @@ class Component /*extends DOMManipulation */{
     toStyle(obj, withStyle = true) {
         return toInlineStyle(obj, withStyle);
     }
+
+    inject(template) {
+        let id = Symbol('inject' + (this._injectCount++));
+        template.injected = id;
+        this.injectTemplates.set(id, {cmp: null, node: template});
+        this.render();
+        let {cmp} = this.injectTemplates.get(id);
+        return {
+            id,
+            cmp
+        };
+    }
+
+    eject(id) {
+        if (typeof id === 'object')
+            id = id.id;
+        this.injectTemplates.delete(id);
+        this.render();
+    }
+
     render(initial/*, changes = [], silentAfterRenderEvent = false*/) {
         if (this._renderPause)
             return;
@@ -3499,6 +3553,8 @@ class Component /*extends DOMManipulation */{
         }*/
         //const template = this.template.apply(this, templateArgs);
         let template = this.template(this.h);
+        this.injectTemplates.forEach(injected => template.children.push(injected.node));
+
         this.endSafeRender();
         let next = template && typeof template === 'object'
             ? template
@@ -3849,6 +3905,16 @@ function doMount(newElement = null, cfg, parentCmp) {
 
     newElement._isRendered = true;
     newElement.render(true);
+    let injectedSys = newElement.getHTMLElement()._dozAttach.injected;
+
+    if (injectedSys && newElement.parent) {
+        let currentObj = newElement.parent.injectTemplates.get(injectedSys);
+        if (currentObj) {
+            currentObj.cmp = newElement;
+        }
+        newElement.parent.injectTemplates.set(injectedSys, currentObj);
+    }
+
     newElement._rootElement._dozAttach[COMPONENT_ROOT_INSTANCE] = newElement;
     newElement.getHTMLElement()._dozAttach[COMPONENT_INSTANCE] = newElement;
 
@@ -4351,6 +4417,10 @@ class Doz {
                 value: {},
                 writable: true
             },
+            hydration: {
+                value: false,
+                writable: true
+            },
             isWebComponent: {
                 value: this.cfg.isWebComponent
             },
@@ -4443,7 +4513,7 @@ class Doz {
                 // Check if the node is an element (not a text node)
                 if (element && element.nodeType === 1) {
                     this.hydMap.set(this.hydIdCounter++, element);
-
+                    // element.setAttribute('data-hyd', this.hydIdCounter);
                     // Traverse the element's children
                     const children = element.children;
                     for (let i = 0; i < children.length; i++) {
@@ -4452,6 +4522,8 @@ class Doz {
                 }
             };
             readDom(cfg.root.firstElementChild);
+            if (this.hydIdCounter)
+                this.hydration = true;
         }
 
         if (Array.isArray(this.cfg.components)) {

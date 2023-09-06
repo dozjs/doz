@@ -96,19 +96,36 @@ function setHeadStyle(node, cmp) {
 }
 //let xy = 0;
 function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
+    // console.log(newNode)
     // console.log('b', newNode)
-    //directive.callComponentVNodeTick(cmp, newNode, oldNode);
+    // directive.callComponentVNodeTick(cmp, newNode, oldNode);
     // console.log('oldNode',oldNode)
     // console.log('newNode',newNode)
     // console.log('index',index)
     // console.log('$parent',$parent)
-
-
     // c'è un problema il genitore ha numero di figli diversi
-    // if (newNode && oldNode && newNode.children && oldNode.children && $parent.childNodes[index].childNodes.length < newNode.children.length) {
-    //     console.log(oldNode.children, newNode.children, $parent.childNodes[index].childNodes.length, newNode.children.length)
-    // }
+    if (
+        cmp.app.hydration
+        && !cmp.hydrationRestored
+        && newNode
+        && oldNode
+        && newNode.children
+        && oldNode.children
+        && $parent.childNodes[index]
+        && $parent.childNodes[index].childNodes.length < newNode.children.length) {
+        console.error('There is not match between virtual nodes and child nodes for element ', $parent.childNodes[index])
+        console.error($parent.childNodes[index].childNodes, newNode.children)
+        console.error('I\'m trying to restore it')
+        $parent.childNodes[index].innerHTML = '';
+        newNode.children.forEach(node => {
+            let $newElement = create(node, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+            //console.log('append to', $parent, cmp.uid);
+            $parent.childNodes[index].appendChild($newElement);
+        });
 
+        cmp.hydrationRestored = true;
+        return ;
+    }
     // For the moment I exclude the check on the comparison between newNode and oldNode
     // only if the component is DZ-MOUNT because the slots do not work
     if (!$parent || (newNode === oldNode && cmp.tag !== TAG.MOUNT))
@@ -385,6 +402,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         //console.log('----------------');
     }
     else if (newNode.type) {
+
         //console.log('walk node', newNode)
         // walk node
         /*

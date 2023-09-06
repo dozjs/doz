@@ -102,6 +102,10 @@ class Doz {
                 value: {},
                 writable: true
             },
+            hydration: {
+                value: false,
+                writable: true
+            },
             isWebComponent: {
                 value: this.cfg.isWebComponent
             },
@@ -194,6 +198,7 @@ class Doz {
                 // Check if the node is an element (not a text node)
                 if (element && element.nodeType === 1) {
                     this.hydMap.set(this.hydIdCounter++, element);
+                    // element.setAttribute('data-hyd', this.hydIdCounter);
                     // Traverse the element's children
                     const children = element.children;
                     for (let i = 0; i < children.length; i++) {
@@ -202,6 +207,8 @@ class Doz {
                 }
             }
             readDom(cfg.root.firstElementChild);
+            if (this.hydIdCounter)
+                this.hydration = true;
         }
 
         if (Array.isArray(this.cfg.components)) {

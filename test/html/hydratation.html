@@ -18,8 +18,8 @@
     </style>
 </head>
 <body>
-<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2">time -</div></child2-child2></div></child1-child1></div></div>
-<div id="appy"></div>
+<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2">- -</div></child2-child2></div></child1-child1></div></div>
+<div id="app8"></div>
 <script type="module">
     import Doz from '../../src/index.js'
 
@@ -49,6 +49,10 @@
 
             console.log(myRef)
             setTimeout(() => {
+                myRef.cmp.unmount()
+                setTimeout(() => {
+                    myRef.cmp.mount()
+                }, 5000)
                 //this.eject(myRef)
             }, 5000);
         }
@@ -64,7 +68,7 @@
 
         template(h) {
             return h`
-                <div title="child2">time ${this.props.time}</div>
+                <div title="child2">${this.props.time} ${this.props.time}</div>
             `
         }
 

@@ -223,7 +223,12 @@ class Component /*extends DOMManipulation */{
         }*/
         //const template = this.template.apply(this, templateArgs);
         let template = this.template(this.h);
-        this.injectTemplates.forEach(injected => template.children.push(injected.node));
+
+        if (template) {
+            this.injectTemplates.forEach(injected => template.children.push(injected.node));
+        } else if (this.injectTemplates.size) {
+            template = Array.from(this.injectTemplates.values())[0].node;
+        }
 
         this.endSafeRender();
         let next = template && typeof template === 'object'
