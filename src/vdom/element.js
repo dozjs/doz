@@ -14,7 +14,7 @@ function isChanged(nodeA, nodeB) {
         nodeA.type !== nodeB.type ||
         nodeA.props && nodeA.props.forceupdate;
 }
-let ssrId = 0;
+
 function create(node, cmp, initial, cmpParent) {
     // console.log(node)
     if (node.type === 'dz-suspend') return ;
@@ -22,7 +22,7 @@ function create(node, cmp, initial, cmpParent) {
         return;
     let nodeStored;
     let $el;
-    let $ssrEl;
+    let $hydEl;
     //let originalTagName;
     if (typeof node !== 'object') {
         return document.createTextNode(
@@ -30,14 +30,12 @@ function create(node, cmp, initial, cmpParent) {
         canDecode(node));
     }
 
-    if (ssrId < cmp.app.ssrIdCounter)
-        $ssrEl = document.querySelector('[data-ssr-id="' + (ssrId++) + '"]');
-    // console.log(ssrId, cmp.app.ssrIdCounter)
-    //console.log('sss', $ssrEl)
+    if (cmp.app.hydIdUsedCounter < cmp.app.hydIdCounter) {
+        $hydEl = cmp.app.hydMap.get(cmp.app.hydIdUsedCounter++);
+    }
 
-    if ($ssrEl) {
-        $ssrEl.removeAttribute('data-ssr-id')
-        $el = $ssrEl;
+    if ($hydEl) {
+        $el = $hydEl;
     } else {
         if (!node || node.type == null || node.type[0] === '#') {
             node = {type: TAG.EMPTY, props: {}, children: []};
@@ -50,7 +48,6 @@ function create(node, cmp, initial, cmpParent) {
         if (nodeStored) {
             $el = nodeStored.cloneNode();
         } else {
-            //originalTagName = node.props['data-attributeoriginaletagname'];
             $el = node.isSVG
                 ? document.createElementNS(NS.SVG, node.type)
                 : document.createElement(node.type);
@@ -69,7 +66,7 @@ function create(node, cmp, initial, cmpParent) {
         else {
             if (node.props['suspendcontent'] === undefined)
                 for (let i = 0; i < node.children.length; i++) {
-                    if ($ssrEl && typeof node.children[i] !== 'object') continue;
+                    if ($hydEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
                     if ($childEl) {
                         $el.appendChild($childEl);

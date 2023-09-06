@@ -32,31 +32,7 @@ class Doz {
         //         appNode.parentNode.removeChild(appNode);
         //     }
         // }
-        this.ssrIdCounter = 0;
-        if (cfg.root.hasChildNodes) {
-            let ssrIdCounter = 0; // Initialize the counter
 
-            function readDom(element) {
-                // Check if the node is an element (not a text node)
-                if (element && element.nodeType === 1) {
-                    // Add a data-ssr-id attribute with an incremental value
-                    element.setAttribute('data-ssr-id', ssrIdCounter++);
-
-                    // Perform an action on the element, e.g., log its tag name
-                    // console.log(element.tagName);
-
-                    // Traverse the element's children
-                    const children = element.children;
-                    for (let i = 0; i < children.length; i++) {
-                        readDom(children[i]);
-                    }
-                }
-            }
-
-            readDom(cfg.root.firstElementChild);
-            this.ssrIdCounter = ssrIdCounter;
-            // console.log(this, this.ssrIdCounter)
-        }
         this.cfg = Object.assign({}, {
             components: [],
             shared: {},
@@ -68,9 +44,22 @@ class Doz {
             autoDraw: true,
             enableExternalTemplate: false
         }, cfg);
+
         Object.defineProperties(this, {
             createInstance: {
                 value: createInstance
+            },
+            hydIdCounter: {
+                value: 0,
+                writable: true
+            },
+            hydIdUsedCounter: {
+                value: 0,
+                writable: true
+            },
+            hydMap: {
+                value: new Map(),
+                writable: true
             },
             _lastUId: {
                 value: 0,
@@ -199,6 +188,23 @@ class Doz {
                 enumerable: true
             }
         });
+
+        if (cfg.root.hasChildNodes) {
+            let  readDom = (element) => {
+                // Check if the node is an element (not a text node)
+                if (element && element.nodeType === 1) {
+                    this.hydMap.set(this.hydIdCounter++, element);
+
+                    // Traverse the element's children
+                    const children = element.children;
+                    for (let i = 0; i < children.length; i++) {
+                        readDom(children[i]);
+                    }
+                }
+            }
+            readDom(cfg.root.firstElementChild);
+        }
+
         if (Array.isArray(this.cfg.components)) {
             this.cfg.components.forEach(cmp => {
                 if (typeof cmp === 'object' && typeof cmp.tag === 'string' && typeof cmp.cfg === 'object') {
