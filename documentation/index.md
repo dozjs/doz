@@ -1027,7 +1027,7 @@ new Doz({
 ---
 
 ### Inject
-Doz component instance provide a method called `inject` a better alternative to `mount` (below),
+Doz component instance provides a method called `inject` a better alternative to `mount` (below),
 this method allows you to "append" a new component inside another.
 Why is it better than `mount`?
 Because the component or html will be added directly inside the virtual dom object of the parent component.
@@ -1081,7 +1081,7 @@ new Doz({
 ### Mount
 Use `inject` instead of `mount`.
 
-Doz component instance provide a method called `mount`,
+Doz component instance provides a method called `mount`,
 this method allows you to "append" a new component inside another.
 
 ```javascript
@@ -2117,7 +2117,7 @@ class MyComponent2 extends Doz.Component {
 
 **Since 1.3.4**
 
-Doz provide a method called `toStyle` that allows you to transform an object to inline style string.
+Doz provides a method called `toStyle` that allows you to transform an object to inline style string.
 
 ```javascript
 
@@ -2194,7 +2194,7 @@ new Doz({
 
 **Since 1.5.0**
 
-Doz provide you two way for add reusable functions to components:
+Doz provides to you two-way for add reusable functions to components:
 
 #### Global mixin
 The functions are available for every component.
@@ -2269,7 +2269,7 @@ Ps: Mixins **don't overwrite** existing functions, since 1.7.0 a warning message
 
 Sometimes it's useful to have methods at global level that extend
 new functionality to framework, for this, Doz since 1.6.x version
-provide you "Doz.use". Write a plugin is very easy:
+provides to you "Doz.use". Write a plugin is very easy:
 
 ```javascript
 const myPlugin = function(Doz, app, options) {
