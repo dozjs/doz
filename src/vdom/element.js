@@ -231,10 +231,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // console.log($parent.childNodes, index)
         if (!$oldElement) {
             //provo a ricreare il nodo mancante...
-            $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-            $parent.appendChild($oldElement);
-            console.error('$oldElement not found. It was restored.')
-            // return;
+            if (cmp.app.hydration
+                && !cmp.hydrationRestored) {
+                $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+                $parent.appendChild($oldElement);
+                console.error('$oldElement not found. It was restored.');
+                cmp.hydrationRestored = true;
+            } else {
+                return;
+            }
         }
         // console.log('$oldElement', $oldElement)
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);
