@@ -1,4 +1,4 @@
-/* Doz, version: 5.0.0 - September 6, 2023 18:10:45 */
+/* Doz, version: 5.0.0 - September 7, 2023 10:14:20 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -3553,7 +3553,15 @@ class Component /*extends DOMManipulation */{
         }*/
         //const template = this.template.apply(this, templateArgs);
         let template = this.template(this.h);
-        this.injectTemplates.forEach(injected => template.children.push(injected.node));
+
+        if (template) {
+            this.injectTemplates.forEach(injected => template.children.push(injected.node));
+        } else if (this.injectTemplates.size) {
+            let templates = Array.from(this.injectTemplates.values());
+            if (templates.length) {
+                template = templates[templates.length - 1].node;
+            }
+        }
 
         this.endSafeRender();
         let next = template && typeof template === 'object'

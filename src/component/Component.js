@@ -227,7 +227,10 @@ class Component /*extends DOMManipulation */{
         if (template) {
             this.injectTemplates.forEach(injected => template.children.push(injected.node));
         } else if (this.injectTemplates.size) {
-            template = Array.from(this.injectTemplates.values())[0].node;
+            let templates = Array.from(this.injectTemplates.values());
+            if (templates.length) {
+                template = templates[templates.length - 1].node;
+            }
         }
 
         this.endSafeRender();

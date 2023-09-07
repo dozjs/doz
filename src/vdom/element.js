@@ -112,7 +112,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         && newNode.children
         && oldNode.children
         && $parent.childNodes[index]
-        && $parent.childNodes[index].childNodes.length < newNode.children.length) {
+        && $parent.childNodes[index].childNodes.length < newNode.children.length
+    ) {
         console.error('There is not match between virtual nodes and child nodes for element ', $parent.childNodes[index])
         console.error($parent.childNodes[index].childNodes, newNode.children)
         console.error('I\'m trying to restore it')
