@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.1.0] - 2023-07-09
+- **Added** support to hydration
+- **Added** component method: `this.inject('<${MyComponent}>...</>')`, a better alternative to `this.mount('<${MyComponent}>...</>')` 
+- **Added** component method: `this.enject(..)`, to remove injected template with this.inject  
+
 ## [5.0.0] - 2023-08-04
 - **Breaking changes**
   - Removed hook `onMountAsync` use instead `onMount`

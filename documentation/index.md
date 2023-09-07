@@ -30,6 +30,7 @@ Below some basic concepts:
     - [Lifecycle Hooks](#lifecycle-hooks)
     - [Drawing Hooks](#drawing-hooks)
     - [Local component](#local-component)
+    - [Inject](#inject)
     - [Mount](#mount)
     - [Deferred Mount](#deferred-mount)
     - [Empty attributes in HTML element](#empty-attributes-in-html-element)
@@ -1025,7 +1026,61 @@ new Doz({
 
 ---
 
+### Inject
+Doz component instance provide a method called `inject` a better alternative to `mount` (below),
+this method allows you to "append" a new component inside another.
+Why is it better than `mount`?
+Because the component or html will be added directly inside the virtual dom object of the parent component.
+In this way it will not insert other parents tag like "dz-mount".
+
+```javascript
+Doz.component('hello-world', {
+    template(h) {
+        return h`
+            <h2>Hello World</h2>
+        `
+    }
+});
+
+Doz.component('my-wrapper', {
+    template(h) {
+        return h`
+            <div>
+                <button onclick="this.showHello()">Mount</button>
+            </div>
+        `
+    },
+    
+    showHello() {
+    	let result = this.inject('<hello-world/>');
+        // inject returns an object with 2 properties
+        // {cmp, id}
+        // cmp is the component instance injected and the id is the symbol to identify the injection
+        // You can use the id or the entire object to remove the injection.
+        
+        // For example
+        // destroy after 5s with eject method
+        setTimeout(() => {
+            this.eject(result)
+        }, 5000);
+    }
+});
+
+new Doz({
+    root: '#app',
+    template(h) {
+        return h`
+            <h1>Welcome to my app:</h1>
+            <my-wrapper></my-wrapper>
+        `
+    }
+});
+
+```
+
 ### Mount
+Use `inject` instead of `mount`.
+
 Doz component instance provide a method called `mount`,
 this method allows you to "append" a new component inside another.
 

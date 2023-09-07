@@ -214,4 +214,16 @@ export class Component {
      * This method allows you to mount the component after that onWaitMount is called, this method is available only id waitMount is set to true.
      */
     runMount(): void
+
+    /**
+     * This method can inject a new component as child.
+     * @param {string} template
+     * @returns {cmp, id}
+     */
+    inject(template: string): {cmp, id}
+
+    /**
+     * This method eject component inserted with inject method from DOM.
+     */
+    eject(obj: object | Symbol): void
 }
