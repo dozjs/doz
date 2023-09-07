@@ -1,4 +1,4 @@
-/* Doz, version: 5.0.0 - September 7, 2023 10:14:20 */
+/* Doz, version: 5.0.0 - September 7, 2023 10:51:11 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2618,7 +2618,8 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         && newNode.children
         && oldNode.children
         && $parent.childNodes[index]
-        && $parent.childNodes[index].childNodes.length < newNode.children.length) {
+        && $parent.childNodes[index].childNodes.length < newNode.children.length
+    ) {
         console.error('There is not match between virtual nodes and child nodes for element ', $parent.childNodes[index]);
         console.error($parent.childNodes[index].childNodes, newNode.children);
         console.error('I\'m trying to restore it');
