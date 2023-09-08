@@ -1,4 +1,4 @@
-/* Doz, version: 5.1.1 - September 8, 2023 18:17:55 */
+/* Doz, version: 5.1.2 - September 8, 2023 18:21:18 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -5875,7 +5875,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '5.1.1',
+        value: '5.1.2',
         enumerable: true
     },
     tag: {
