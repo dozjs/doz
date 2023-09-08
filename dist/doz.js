@@ -1,4 +1,4 @@
-/* Doz, version: 5.1.1 - September 8, 2023 12:42:18 */
+/* Doz, version: 5.1.1 - September 8, 2023 16:21:35 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -3408,6 +3408,7 @@ class Component /*extends DOMManipulation */{
         //this._currentStyle = '';
         this._componentsMap = new Map();
         this.tag = opt.cmp.tag;
+        this.cmpName = opt.cmpName;
         this.app = opt.app;
         this.exposeAttributes = ['style', 'class'];
         this.parent = opt.parentCmp;
@@ -3456,6 +3457,12 @@ class Component /*extends DOMManipulation */{
         queueDraw.add(this);
         // Call create
         hooks$1.callCreate(this);
+
+        if (this.app._components[this.cmpName]) {
+            this.app._components[this.cmpName].instance = this;
+        } else {
+            this.app._components[this.cmpName] = {instance: this};
+        }
     }
     set props(props) {
         if (typeof props === 'function')
@@ -4019,7 +4026,8 @@ function walk($child, parent = {}, cfg) {
                 app: cfg.app,
                 props,
                 componentDirectives,
-                parentCmp
+                parentCmp,
+                cmpName
                 //parentCmp: parent.cmp || cfg.parent
             });
         } else {
@@ -4073,7 +4081,8 @@ function walk($child, parent = {}, cfg) {
                                 app: cfg.app,
                                 props,
                                 componentDirectives,
-                                parentCmp
+                                parentCmp,
+                                cmpName
                                 //parentCmp: parent.cmp || cfg.parent
                             });
                             propsInit(newElement);
@@ -4099,7 +4108,8 @@ function walk($child, parent = {}, cfg) {
                                     app: cfg.app,
                                     props: __props,
                                     componentDirectives: __componentDirectives,
-                                    parentCmp
+                                    parentCmp,
+                                    cmpName
                                     //parentCmp: parent.cmp || cfg.parent
                                 });
                             }
@@ -4115,7 +4125,8 @@ function walk($child, parent = {}, cfg) {
                     app: cfg.app,
                     props,
                     componentDirectives,
-                    parentCmp
+                    parentCmp,
+                    cmpName
                     //parentCmp: parent.cmp || cfg.parent
                 });
             }
@@ -4133,7 +4144,6 @@ function walk($child, parent = {}, cfg) {
         if (typeof newElement.module === 'object') {
             hmr(newElement, newElement.module);
         }
-
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);
 
@@ -4156,6 +4166,7 @@ function walk($child, parent = {}, cfg) {
         //parentElement = newElement;
         appendChildrenToParent(parent, newElement);
         cfg.autoCmp = null;
+
         return newElement;
     }
 
@@ -4185,6 +4196,7 @@ function createInstance(cfg = {}) {
             props: cfg.props || {},
             componentDirectives: {},
             parentCmp: null,
+            cmpName: '$main-component'
         });
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);
@@ -4316,8 +4328,11 @@ const globalStoreObjectName = 'DOZ_STORES';
 var serverSideLoadProps = (function (Doz, app) {
     app.on('componentPropsInit', component => {
         let dozStores = window[globalStoreObjectName];
-        if (dozStores && component.store && dozStores[component.store]) {
-            component.props = dozStores[component.store];
+        // if (dozStores && component.store && dozStores[component.store]) {
+        //     component.props = dozStores[component.store];
+        // }
+        if (dozStores && component.cmpName && dozStores[component.cmpName]) {
+            component.props = dozStores[component.cmpName];
         }
     });
 });
@@ -4371,6 +4386,7 @@ class Doz {
         // }
 
         this.cfg = Object.assign({}, {
+            appId: '',
             components: [],
             shared: {},
             useShadowRoot: false,
@@ -4381,6 +4397,11 @@ class Doz {
             autoDraw: true,
             enableExternalTemplate: false
         }, cfg);
+
+        let _appId = window.DOZ_APP_ID || this.cfg.appId || Math.random().toString(36).substring(2, 15);
+
+        window.dozApps = window.dozApps || {};
+        window.dozApps[_appId] = this;
 
         Object.defineProperties(this, {
             createInstance: {
@@ -4458,7 +4479,7 @@ class Doz {
                 value: this.cfg.root
             },
             appId: {
-                value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
+                value: _appId,
                 enumerable: true
             },
             appIntId: {
@@ -4494,6 +4515,17 @@ class Doz {
                     kCache: new Map(),
                     //tplCache: Object.create(null),
                     hCache: new Map()
+                },
+                enumerable: true
+            },
+            getComponentsProps: {
+                value: function () {
+                    let out = {};
+                    for (let i in this._components) {
+                        if (this._components[i].instance)
+                            out[i] = this._components[i].instance.props;
+                    }
+                    return out;
                 },
                 enumerable: true
             },

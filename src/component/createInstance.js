@@ -134,7 +134,8 @@ function walk($child, parent = {}, cfg) {
                 app: cfg.app,
                 props,
                 componentDirectives,
-                parentCmp
+                parentCmp,
+                cmpName
                 //parentCmp: parent.cmp || cfg.parent
             });
         } else {
@@ -189,7 +190,8 @@ function walk($child, parent = {}, cfg) {
                                 app: cfg.app,
                                 props,
                                 componentDirectives,
-                                parentCmp
+                                parentCmp,
+                                cmpName
                                 //parentCmp: parent.cmp || cfg.parent
                             });
                             propsInit(newElement);
@@ -215,7 +217,8 @@ function walk($child, parent = {}, cfg) {
                                     app: cfg.app,
                                     props: __props,
                                     componentDirectives: __componentDirectives,
-                                    parentCmp
+                                    parentCmp,
+                                    cmpName
                                     //parentCmp: parent.cmp || cfg.parent
                                 });
                                 errorComponentElement = newElement;
@@ -232,7 +235,8 @@ function walk($child, parent = {}, cfg) {
                     app: cfg.app,
                     props,
                     componentDirectives,
-                    parentCmp
+                    parentCmp,
+                    cmpName
                     //parentCmp: parent.cmp || cfg.parent
                 });
             }
@@ -250,7 +254,6 @@ function walk($child, parent = {}, cfg) {
         if (typeof newElement.module === 'object') {
             hmr(newElement, newElement.module);
         }
-
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);
 
@@ -273,6 +276,7 @@ function walk($child, parent = {}, cfg) {
         //parentElement = newElement;
         appendChildrenToParent(parent, newElement);
         cfg.autoCmp = null;
+
         return newElement;
     }
 
@@ -305,6 +309,7 @@ function createInstance(cfg = {}) {
             props: cfg.props || {},
             componentDirectives: {},
             parentCmp: null,
+            cmpName: '$main-component'
         });
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);

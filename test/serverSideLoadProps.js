@@ -13,7 +13,7 @@ describe('serverSideLoadProps', function () {
         it('should be ok', function (done) {
 
             window.DOZ_STORES = {
-                'myStore': {
+                'my-cmp-name-1': {
                     title: 'boom'
                 }
             }
@@ -22,10 +22,10 @@ describe('serverSideLoadProps', function () {
 
 
             Doz.component('salutation-card', {
+                cmpName: 'my-cmp-name-1',
                 props: {
                     title: 'yeah'
                 },
-                store: 'myStore',
                 template(h) {
                     return h`
                         <div>Hello ${this.props.title}</div>
@@ -42,7 +42,7 @@ describe('serverSideLoadProps', function () {
             });
 
             setTimeout(() => {
-                //console.log(document.body.innerHTML);
+                console.log(document.body.innerHTML);
                 be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello boom</div></salutation-card></dz-app></div>')
             }, 100);
         });

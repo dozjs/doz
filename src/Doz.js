@@ -34,6 +34,7 @@ class Doz {
         // }
 
         this.cfg = Object.assign({}, {
+            appId: '',
             components: [],
             shared: {},
             useShadowRoot: false,
@@ -44,6 +45,11 @@ class Doz {
             autoDraw: true,
             enableExternalTemplate: false
         }, cfg);
+
+        let _appId = window.DOZ_APP_ID || this.cfg.appId || Math.random().toString(36).substring(2, 15);
+
+        window.dozApps = window.dozApps || {};
+        window.dozApps[_appId] = this;
 
         Object.defineProperties(this, {
             createInstance: {
@@ -121,7 +127,7 @@ class Doz {
                 value: this.cfg.root
             },
             appId: {
-                value: window.DOZ_APP_ID || Math.random().toString(36).substring(2, 15),
+                value: _appId,
                 enumerable: true
             },
             appIntId: {
@@ -157,6 +163,17 @@ class Doz {
                     kCache: new Map(),
                     //tplCache: Object.create(null),
                     hCache: new Map()
+                },
+                enumerable: true
+            },
+            getComponentsProps: {
+                value: function () {
+                    let out = {}
+                    for (let i in this._components) {
+                        if (this._components[i].instance)
+                            out[i] = this._components[i].instance.props;
+                    }
+                    return out;
                 },
                 enumerable: true
             },

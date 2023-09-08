@@ -22,6 +22,8 @@
 <div id="app8"></div>
 <script type="module">
     import Doz from '../../src/index.js'
+    window.DOZ_APP_ID = 'podcast-xdevel';
+    window._dozAppProps = {"$main-component":{},"child1-child1-podcast-xdevel-1-0":{"buttonText":"click"},"child2-child2-podcast-xdevel-2-0":{"time":"UUUUU"}}
 
     class Child1 extends Doz.Component {
         constructor(o) {
@@ -98,6 +100,12 @@
                     <${Child1}/>
                 </div>
             `
+        }
+
+        onMount() {
+            console.log('rrr')
+            console.log(JSON.stringify(this.app.getComponentsProps()))
+
         }
     }
 

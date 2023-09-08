@@ -70,6 +70,7 @@ class Component /*extends DOMManipulation */{
         //this._currentStyle = '';
         this._componentsMap = new Map();
         this.tag = opt.cmp.tag;
+        this.cmpName = opt.cmpName;
         this.app = opt.app;
         this.exposeAttributes = ['style', 'class'];
         this.parent = opt.parentCmp;
@@ -118,6 +119,12 @@ class Component /*extends DOMManipulation */{
         queueDraw.add(this);
         // Call create
         hooks.callCreate(this);
+
+        if (this.app._components[this.cmpName]) {
+            this.app._components[this.cmpName].instance = this;
+        } else {
+            this.app._components[this.cmpName] = {instance: this}
+        }
     }
     set props(props) {
         if (typeof props === 'function')
