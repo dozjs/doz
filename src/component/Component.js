@@ -90,6 +90,7 @@ class Component /*extends DOMManipulation */{
         this.propsConvertOnFly = false;
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
+        this.hydrated = false;
         //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;
@@ -239,6 +240,7 @@ class Component /*extends DOMManipulation */{
             : compile(template, this);
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
+
         //console.log(next)
         //console.log(this._prev)
         const rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial);

@@ -259,6 +259,10 @@ function walk($child, parent = {}, cfg) {
             if (!newElement.appReadyExcluded)
                 cfg.app._onAppComponentsMounted.set(newElement, false);
             newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
+            if (newElement.$domEl._canBeHydrated) {
+                newElement.$domEl._canBeHydrated = false;
+                newElement.hydrated = true;
+            }
             hooks.callWaitMount(newElement);
         } else if (hooks.callBeforeMount(newElement) !== false) {
             doMount(newElement, cfg, parentCmp);

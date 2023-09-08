@@ -36,6 +36,7 @@ function create(node, cmp, initial, cmpParent) {
 
     if ($hydEl) {
         $el = $hydEl;
+        cmp.hydrated = true;
     } else {
         if (!node || node.type == null || node.type[0] === '#') {
             node = {type: TAG.EMPTY, props: {}, children: []};
@@ -423,6 +424,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             </child-component>
         </parent-component>
         */
+
         if ($parent._dozAttach[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
