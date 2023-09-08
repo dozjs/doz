@@ -8,12 +8,16 @@ describe('serverSideLoadProps', function () {
         Doz.collection.removeAll();
     });
 
+    afterEach(function () {
+        window.DOZ_STORES = null;
+    });
+
     describe('create app', function () {
 
         it('should be ok', function (done) {
 
             window.DOZ_STORES = {
-                'my-cmp-name-1': {
+                'myapp-2': {
                     title: 'boom'
                 }
             }
@@ -21,30 +25,33 @@ describe('serverSideLoadProps', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
 
-            Doz.component('salutation-card', {
-                cmpName: 'my-cmp-name-1',
-                props: {
-                    title: 'yeah'
-                },
+            const SalutationCard = class SalutationCard extends Doz.Component {
+                constructor(o) {
+                    super(o);
+                    this.props = {
+                        title: 'yeah'
+                    }
+                }
                 template(h) {
                     return h`
                         <div>Hello ${this.props.title}</div>
                     `
                 }
-            });
+            }
+
             new Doz({
+                appId: 'myapp',
                 root: '#app',
                 template(h) {
                     return h`
-                        <salutation-card />
+                        <${SalutationCard} />
                     `
+                },
+                onMount() {
+                    console.log(window.DOZ_STORES)
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello boom</div></salutation-card></dz-app></div>')
                 }
             });
-
-            setTimeout(() => {
-                console.log(document.body.innerHTML);
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>Hello boom</div></salutation-card></dz-app></div>')
-            }, 100);
         });
     });
 });

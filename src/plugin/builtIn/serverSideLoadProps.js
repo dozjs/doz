@@ -5,8 +5,9 @@ export default (function (Doz, app) {
         // if (dozStores && component.store && dozStores[component.store]) {
         //     component.props = dozStores[component.store];
         // }
-        if (dozStores && component.cmpName && dozStores[component.cmpName]) {
-            component.props = dozStores[component.cmpName];
+        //console.log('component.uId', component.uId)
+        if (dozStores && component.uId && dozStores[component.uId]) {
+            component.props = dozStores[component.uId];
         }
     });
 });

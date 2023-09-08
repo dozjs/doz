@@ -119,12 +119,10 @@ class Component /*extends DOMManipulation */{
         queueDraw.add(this);
         // Call create
         hooks.callCreate(this);
-
-        if (this.app._components[this.cmpName]) {
-            this.app._components[this.cmpName].instance = this;
-        } else {
-            this.app._components[this.cmpName] = {instance: this}
+        if (this.app.componentsById && !this.app.componentsById[this.uId]) {
+            this.app.componentsById[this.uId] = {instance: this};
         }
+
     }
     set props(props) {
         if (typeof props === 'function')

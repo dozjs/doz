@@ -1,4 +1,4 @@
-/* Doz, version: 5.1.1 - September 8, 2023 16:21:35 */
+/* Doz, version: 5.1.1 - September 8, 2023 18:17:55 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -3457,12 +3457,10 @@ class Component /*extends DOMManipulation */{
         queueDraw.add(this);
         // Call create
         hooks$1.callCreate(this);
-
-        if (this.app._components[this.cmpName]) {
-            this.app._components[this.cmpName].instance = this;
-        } else {
-            this.app._components[this.cmpName] = {instance: this};
+        if (this.app.componentsById && !this.app.componentsById[this.uId]) {
+            this.app.componentsById[this.uId] = {instance: this};
         }
+
     }
     set props(props) {
         if (typeof props === 'function')
@@ -4027,10 +4025,11 @@ function walk($child, parent = {}, cfg) {
                 props,
                 componentDirectives,
                 parentCmp,
-                cmpName
+                //cmpName
                 //parentCmp: parent.cmp || cfg.parent
             });
         } else {
+            //console.log(cmp)
             if (cmp.cfg.then) {
                 let loadingComponent = null;
                 let errorComponent = null;
@@ -4082,7 +4081,7 @@ function walk($child, parent = {}, cfg) {
                                 props,
                                 componentDirectives,
                                 parentCmp,
-                                cmpName
+                                //cmpName
                                 //parentCmp: parent.cmp || cfg.parent
                             });
                             propsInit(newElement);
@@ -4109,7 +4108,7 @@ function walk($child, parent = {}, cfg) {
                                     props: __props,
                                     componentDirectives: __componentDirectives,
                                     parentCmp,
-                                    cmpName
+                                    //cmpName
                                     //parentCmp: parent.cmp || cfg.parent
                                 });
                             }
@@ -4126,7 +4125,7 @@ function walk($child, parent = {}, cfg) {
                     props,
                     componentDirectives,
                     parentCmp,
-                    cmpName
+                    //cmpName
                     //parentCmp: parent.cmp || cfg.parent
                 });
             }
@@ -4196,7 +4195,7 @@ function createInstance(cfg = {}) {
             props: cfg.props || {},
             componentDirectives: {},
             parentCmp: null,
-            cmpName: '$main-component'
+            //cmpName: '$main-component'
         });
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);
@@ -4331,8 +4330,9 @@ var serverSideLoadProps = (function (Doz, app) {
         // if (dozStores && component.store && dozStores[component.store]) {
         //     component.props = dozStores[component.store];
         // }
-        if (dozStores && component.cmpName && dozStores[component.cmpName]) {
-            component.props = dozStores[component.cmpName];
+        //console.log('component.uId', component.uId)
+        if (dozStores && component.uId && dozStores[component.uId]) {
+            component.props = dozStores[component.uId];
         }
     });
 });
@@ -4424,6 +4424,10 @@ class Doz {
                 writable: true
             },
             _components: {
+                value: {},
+                writable: true
+            },
+            componentsById: {
                 value: {},
                 writable: true
             },
@@ -4521,9 +4525,9 @@ class Doz {
             getComponentsProps: {
                 value: function () {
                     let out = {};
-                    for (let i in this._components) {
-                        if (this._components[i].instance)
-                            out[i] = this._components[i].instance.props;
+                    for (let i in this.componentsById) {
+                        if (this.componentsById[i].instance)
+                            out[i] = this.componentsById[i].instance.props;
                     }
                     return out;
                 },

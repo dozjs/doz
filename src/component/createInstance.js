@@ -135,10 +135,11 @@ function walk($child, parent = {}, cfg) {
                 props,
                 componentDirectives,
                 parentCmp,
-                cmpName
+                //cmpName
                 //parentCmp: parent.cmp || cfg.parent
             });
         } else {
+            //console.log(cmp)
             if (cmp.cfg.then) {
                 let loadingComponent = null;
                 let errorComponent = null;
@@ -191,7 +192,7 @@ function walk($child, parent = {}, cfg) {
                                 props,
                                 componentDirectives,
                                 parentCmp,
-                                cmpName
+                                //cmpName
                                 //parentCmp: parent.cmp || cfg.parent
                             });
                             propsInit(newElement);
@@ -218,7 +219,7 @@ function walk($child, parent = {}, cfg) {
                                     props: __props,
                                     componentDirectives: __componentDirectives,
                                     parentCmp,
-                                    cmpName
+                                    //cmpName
                                     //parentCmp: parent.cmp || cfg.parent
                                 });
                                 errorComponentElement = newElement;
@@ -236,7 +237,7 @@ function walk($child, parent = {}, cfg) {
                     props,
                     componentDirectives,
                     parentCmp,
-                    cmpName
+                    //cmpName
                     //parentCmp: parent.cmp || cfg.parent
                 });
             }
@@ -309,7 +310,7 @@ function createInstance(cfg = {}) {
             props: cfg.props || {},
             componentDirectives: {},
             parentCmp: null,
-            cmpName: '$main-component'
+            //cmpName: '$main-component'
         });
         propsInit(newElement);
         newElement.app.emit('componentPropsInit', newElement);

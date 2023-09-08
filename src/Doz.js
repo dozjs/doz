@@ -75,6 +75,10 @@ class Doz {
                 value: {},
                 writable: true
             },
+            componentsById: {
+                value: {},
+                writable: true
+            },
             _usedComponents: {
                 value: {},
                 writable: true
@@ -169,9 +173,9 @@ class Doz {
             getComponentsProps: {
                 value: function () {
                     let out = {}
-                    for (let i in this._components) {
-                        if (this._components[i].instance)
-                            out[i] = this._components[i].instance.props;
+                    for (let i in this.componentsById) {
+                        if (this.componentsById[i].instance)
+                            out[i] = this.componentsById[i].instance.props;
                     }
                     return out;
                 },

@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [5.1.0] - 2023-07-09
+## [5.1.2] - 2023-09-08
+- **Improved** hydration system
+
+## [5.1.0] - 2023-09-07
 - **Added** support to hydration
 - **Added** component method: `this.inject('<${MyComponent}>...</>')`, a better alternative to `this.mount('<${MyComponent}>...</>')` 
 - **Added** component method: `this.enject(..)`, to remove injected template with this.inject  
