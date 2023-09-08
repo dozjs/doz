@@ -1,4 +1,4 @@
-/* Doz, version: 5.1.0 - September 7, 2023 14:39:03 */
+/* Doz, version: 5.1.1 - September 8, 2023 12:42:18 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2543,6 +2543,7 @@ function create(node, cmp, initial, cmpParent) {
 
     if ($hydEl) {
         $el = $hydEl;
+        cmp.hydrated = true;
     } else {
         if (!node || node.type == null || node.type[0] === '#') {
             node = {type: TAG.EMPTY, props: {}, children: []};
@@ -2929,6 +2930,7 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
             </child-component>
         </parent-component>
         */
+
         if ($parent._dozAttach[COMPONENT_INSTANCE] === cmp && $parent.childNodes.length) {
             // subtract 1 (should be dz-root) to child nodes length
             // check if last child node is a root of the component
@@ -3426,6 +3428,7 @@ class Component /*extends DOMManipulation */{
         this.propsConvertOnFly = false;
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
+        this.hydrated = false;
         //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;
@@ -3575,6 +3578,7 @@ class Component /*extends DOMManipulation */{
             : compile(template);
         this.app.emit('draw', next, this._prev, this);
         queueDraw.emit(this, next, this._prev);
+
         //console.log(next)
         //console.log(this._prev)
         const rootElement = updateElement(this._cfgRoot, next, this._prev, 0, this, initial);
@@ -4138,6 +4142,10 @@ function walk($child, parent = {}, cfg) {
             if (!newElement.appReadyExcluded)
                 cfg.app._onAppComponentsMounted.set(newElement, false);
             newElement.runMount = doMount.bind(this, newElement, cfg, parentCmp);
+            if (newElement.$domEl._canBeHydrated) {
+                newElement.$domEl._canBeHydrated = false;
+                newElement.hydrated = true;
+            }
             hooks$1.callWaitMount(newElement);
         } else if (hooks$1.callBeforeMount(newElement) !== false) {
             doMount(newElement, cfg, parentCmp);
@@ -4527,6 +4535,7 @@ class Doz {
                 // Check if the node is an element (not a text node)
                 if (element && element.nodeType === 1) {
                     this.hydMap.set(this.hydIdCounter++, element);
+                    element._canBeHydrated = true;
                     // element.setAttribute('data-hyd', this.hydIdCounter);
                     // Traverse the element's children
                     const children = element.children;
@@ -5830,7 +5839,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '5.1.0',
+        value: '5.1.1',
         enumerable: true
     },
     tag: {
