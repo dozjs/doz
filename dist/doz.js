@@ -1,4 +1,4 @@
-/* Doz, version: 5.2.0 - September 9, 2023 15:36:39 */
+/* Doz, version: 5.2.1 - September 9, 2023 15:51:02 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2570,7 +2570,7 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            if (node.props['suspendcontent'] === undefined && cmp.props['suspendcontent'] === undefined && !cmp.suspendcontent) {
+            if (node.props['suspendcontent'] === undefined && cmp.props['suspendcontent'] === undefined && !cmp.suspendContent) {
                 for (let i = 0; i < node.children.length; i++) {
                     if ($hydEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
@@ -3433,7 +3433,7 @@ class Component /*extends DOMManipulation */{
         this._injectCount = 0;
         this.children = {};
         this.childrenByTag = {};
-        this.suspendedNodes = [];
+
         this.rawChildren = [];
         this.rawChildrenVnode = [];
         this.injectTemplates = new Map();
@@ -3444,7 +3444,8 @@ class Component /*extends DOMManipulation */{
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
         this.hydrated = false;
-        this.suspendcontent = false;
+        this.suspendContent = false;
+        this.suspendedNodes = [];
         //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;
@@ -5890,7 +5891,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '5.2.0',
+        value: '5.2.1',
         enumerable: true
     },
     tag: {
