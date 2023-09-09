@@ -82,6 +82,7 @@ class Component /*extends DOMManipulation */{
         this._injectCount = 0;
         this.children = {};
         this.childrenByTag = {};
+        this.suspendedNodes = [];
         this.rawChildren = [];
         this.rawChildrenVnode = [];
         this.injectTemplates = new Map();

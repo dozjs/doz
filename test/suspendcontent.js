@@ -1,6 +1,16 @@
 import Doz from '../src/index.js'
 import be from "bejs";
 
+const MyComponent = {
+    tag: 'my-component',
+    props: {
+        text: ''
+    },
+    template(h) {
+        return h`<div>${this.props.text}</div>`;
+    }
+}
+
 describe('suspendcontent', function () {
 
     beforeEach(function () {
@@ -20,10 +30,16 @@ describe('suspendcontent', function () {
                 template(h) {
                     return h`
                         <div>
-                            <div>hello</div>
-                            <div>world</div>
+                            <${MyComponent} text="hello"/>
+                            <${MyComponent} text="world"/>
                         </div>
                     `
+                }
+                onMount() {
+                    // console.log('suspendedNodes', this.suspendedNodes)
+                    if (this.suspendedNodes.length !== 1) {
+                        throw new Error('suspendedNodes length should be  1')
+                    }
                 }
             }
 
@@ -33,13 +49,11 @@ describe('suspendcontent', function () {
                     return h`
                         <${SalutationCard} />
                     `
+                },
+                onMount() {
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
                 }
             });
-
-            setTimeout(() => {
-                //console.log(document.body.innerHTML);
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
-            }, 1000);
         });
 
         it('should be ok with property defined inside constructor class', function (done) {
@@ -56,13 +70,16 @@ describe('suspendcontent', function () {
                 template(h) {
                     return h`
                         <div>
-                            <div>hello</div>
-                            <div>world</div>
+                            <${MyComponent} text="hello"/>
+                            <${MyComponent} text="world"/>
                         </div>
                     `
                 }
                 onMount() {
-                    console.log(this)
+                    // console.log('suspendedNodes', this.suspendedNodes)
+                    if (this.suspendedNodes.length !== 1) {
+                        throw new Error('suspendedNodes length should be  1')
+                    }
                 }
             }
 
@@ -72,13 +89,11 @@ describe('suspendcontent', function () {
                     return h`
                         <${SalutationCard} />
                     `
+                },
+                onMount() {
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
                 }
             });
-
-            setTimeout(() => {
-                //console.log(document.body.innerHTML);
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
-            }, 1000);
         });
 
         it('should be ok with property defined inside object', function (done) {
@@ -92,10 +107,16 @@ describe('suspendcontent', function () {
                 template(h) {
                     return h`
                         <div>
-                            <div>hello</div>
-                            <div>world</div>
+                            <${MyComponent} text="hello"/>
+                            <${MyComponent} text="world"/>
                         </div>
                     `
+                },
+                onMount() {
+                    // console.log('suspendedNodes', this.suspendedNodes)
+                    if (this.suspendedNodes.length !== 1) {
+                        throw new Error('suspendedNodes length should be  1')
+                    }
                 }
             }
 
@@ -105,13 +126,11 @@ describe('suspendcontent', function () {
                     return h`
                         <${SalutationCard} />
                     `
+                },
+                onMount() {
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
                 }
             });
-
-            setTimeout(() => {
-                //console.log(document.body.innerHTML);
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
-            }, 1000);
         });
 
         it('should be ok with property via prop', function (done) {
@@ -123,10 +142,16 @@ describe('suspendcontent', function () {
                 template(h) {
                     return h`
                         <div>
-                            <div>hello</div>
-                            <div>world</div>
+                            <${MyComponent} text="hello"/>
+                            <${MyComponent} text="world"/>
                         </div>
                     `
+                }
+                onMount() {
+                    // console.log('suspendedNodes', this.suspendedNodes)
+                    if (this.suspendedNodes.length !== 1) {
+                        throw new Error('suspendedNodes length should be  1')
+                    }
                 }
             }
 
@@ -136,13 +161,11 @@ describe('suspendcontent', function () {
                     return h`
                         <${SalutationCard} suspendcontent/>
                     `
+                },
+                onMount() {
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
                 }
             });
-
-            setTimeout(() => {
-                //console.log(document.body.innerHTML);
-                be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div></div></salutation-card></dz-app></div>')
-            }, 1000);
         });
     });
 });

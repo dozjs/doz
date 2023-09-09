@@ -64,7 +64,7 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            if (node.props['suspendcontent'] === undefined && cmp.props['suspendcontent'] === undefined && !cmp.suspendcontent)
+            if (node.props['suspendcontent'] === undefined && cmp.props['suspendcontent'] === undefined && !cmp.suspendcontent) {
                 for (let i = 0; i < node.children.length; i++) {
                     if ($hydEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
@@ -72,6 +72,9 @@ function create(node, cmp, initial, cmpParent) {
                         $el.appendChild($childEl);
                     }
                 }
+            } else {
+                cmp.suspendedNodes.push(node)
+            }
         }
     }
     makeSureAttach($el);

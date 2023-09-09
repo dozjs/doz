@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.2.0] - 2023-09-09
+- **Added** `suspendcontent` a mechanism that suspends the creation of children nodes and saves them in a component property called `suspendNodes`. It is possible to use it via:
+  - special prop `<${MyComponent} suspendcontent/>`
+  - class property `...suspendcontent = true...`
+
 ## [5.1.2] - 2023-09-08
 - **Improved** hydration system
 
