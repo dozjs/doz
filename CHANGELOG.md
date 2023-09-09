@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.2.2] - 2023-09-09
+- **Improved** suspendContent  
+
 ## [5.2.1] - 2023-09-09
 - **Added** `suspendContent` a mechanism that suspends the creation of children nodes and saves them in a component property called `suspendNodes`. It is possible to use it via:
   - special prop `<${MyComponent} suspendcontent/>`
