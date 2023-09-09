@@ -16,7 +16,6 @@ function isChanged(nodeA, nodeB) {
 }
 
 function create(node, cmp, initial, cmpParent) {
-    //console.log(node)
     if (node.type === 'dz-suspend') return ;
     if (typeof node === 'undefined' || Array.isArray(node) && node.length === 0)
         return;
@@ -65,7 +64,7 @@ function create(node, cmp, initial, cmpParent) {
             $el.textContent = canDecode(node.children[0]);
         }
         else {
-            if (node.props['suspendcontent'] === undefined)
+            if (node.props['suspendcontent'] === undefined && cmp.props['suspendcontent'] === undefined && !cmp.suspendcontent)
                 for (let i = 0; i < node.children.length; i++) {
                     if ($hydEl && typeof node.children[i] !== 'object') continue;
                     let $childEl = create(node.children[i], cmp, initial, cmpParent);
@@ -444,17 +443,17 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         clearDead();
     }
 }
-function getChildByKey(key, children) {
-    //console.log(key, children)
-    let res = {};
-    for (let i = 0; i < children.length; i++) {
-        if (key === children[i].key) {
-            res = children[i];
-            break;
-        }
-    }
-    return res;
-}
+// function getChildByKey(key, children) {
+//     //console.log(key, children)
+//     let res = {};
+//     for (let i = 0; i < children.length; i++) {
+//         if (key === children[i].key) {
+//             res = children[i];
+//             break;
+//         }
+//     }
+//     return res;
+// }
 function clearDead() {
     let dl = deadChildren.length;
     while (dl--) {

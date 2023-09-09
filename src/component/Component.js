@@ -92,6 +92,7 @@ class Component /*extends DOMManipulation */{
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
         this.hydrated = false;
+        this.suspendcontent = false;
         //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;
