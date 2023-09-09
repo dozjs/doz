@@ -82,7 +82,7 @@ class Component /*extends DOMManipulation */{
         this._injectCount = 0;
         this.children = {};
         this.childrenByTag = {};
-        this.suspendedNodes = [];
+
         this.rawChildren = [];
         this.rawChildrenVnode = [];
         this.injectTemplates = new Map();
@@ -93,7 +93,8 @@ class Component /*extends DOMManipulation */{
         this.propsComputedOnFly = false;
         this.delayUpdate = 0;
         this.hydrated = false;
-        this.suspendcontent = false;
+        this.suspendContent = false;
+        this.suspendedNodes = [];
         //this.propsData = {};
         this.lockRemoveInstanceByCallback = null;
         this.waitMount = false;

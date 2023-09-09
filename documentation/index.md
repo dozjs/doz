@@ -30,7 +30,7 @@ Below some basic concepts:
     - [Lifecycle Hooks](#lifecycle-hooks)
     - [Drawing Hooks](#drawing-hooks)
     - [Local component](#local-component)
-    - [Suspendcontent](#suspendcontent)
+    - [SuspendContent](#suspendContent)
     - [Inject](#inject)
     - [Mount](#mount)
     - [Deferred Mount](#deferred-mount)
@@ -1026,11 +1026,11 @@ new Doz({
 
 ---
 
-### Suspendcontent
-`suspendcontent` a mechanism that suspends the creation of children nodes and saves them in a component property called `suspendNodes`.
+### SuspendContent
+`suspendContent` a mechanism that suspends the creation of children nodes and saves them in a component property called `suspendNodes`.
 It is possible to use it via:
 - special prop `<${MyComponent} suspendcontent/>`
-- class property `...suspendcontent = true...`
+- class property `...suspendContent = true...`
 
 ---
 

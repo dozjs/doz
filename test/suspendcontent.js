@@ -25,7 +25,7 @@ describe('suspendcontent', function () {
             document.body.innerHTML = `<div id="app"></div>`;
 
             class SalutationCard extends Doz.Component {
-                suspendcontent = true;
+                suspendContent = true;
                 //language=html
                 template(h) {
                     return h`
@@ -63,7 +63,7 @@ describe('suspendcontent', function () {
             class SalutationCard extends Doz.Component {
                 constructor(o) {
                     super(o);
-                    this.suspendcontent = true;
+                    this.suspendContent = true;
                 }
 
                 //language=html
@@ -102,7 +102,7 @@ describe('suspendcontent', function () {
 
             const SalutationCard = {
                 tag: 'salutation-card',
-                suspendcontent: true,
+                suspendContent: true,
                 //language=html
                 template(h) {
                     return h`
