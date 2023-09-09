@@ -167,5 +167,38 @@ describe('suspendcontent', function () {
                 }
             });
         });
+
+        it('should be ok with nested components', function (done) {
+
+            document.body.innerHTML = `<div id="app"></div>`;
+
+            class SalutationCard extends Doz.Component {
+                static suspendContent = true;
+                //language=html
+                template(h) {
+                    return h`
+                        <div>ciao</div>
+                    `
+                }
+            }
+
+            new Doz({
+                root: '#app',
+                template(h) {
+                    return h`
+                        <${SalutationCard}>
+                            <div>hello</div>
+                            <div>world</div>
+                        </>
+                    `
+                },
+                onMount() {
+                    if (this.suspendedNodes.length !== 1) {
+                        throw new Error('suspendedNodes length should be  1')
+                    }
+                    be.err(done).equal(document.body.innerHTML, '<div id="app"><dz-app><salutation-card><div>ciao</div></salutation-card></dz-app></div>')
+                }
+            });
+        });
     });
 });

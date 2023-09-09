@@ -1,4 +1,4 @@
-/* Doz, version: 5.2.1 - September 9, 2023 15:51:02 */
+/* Doz, version: 5.2.1 - September 9, 2023 20:45:34 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2579,7 +2579,10 @@ function create(node, cmp, initial, cmpParent) {
                     }
                 }
             } else {
-                cmp.suspendedNodes.push(node);
+                // console.log(node.props['suspendcontent_by_parent'] )
+                // console.log(cmp.children)
+                // if (!node.props['suspendcontent_by_parent'])
+                    cmp.suspendedNodes.push(node);
             }
         }
     }
@@ -3154,6 +3157,10 @@ function fillCompiled(obj, values, parent, _this) {
                 }
                 value = tagName;
                 obj.props['data-attributeoriginaletagname'] = tagCmp;
+                if (cmp.suspendContent) {
+                    obj.props['suspendcontent'] = true;
+                    obj.props['suspendcontent_by_parent'] = true;
+                }
             }
             if (Array.isArray(value) && keys[i] === '0') {
                 parent.children = value;

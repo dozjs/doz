@@ -73,7 +73,10 @@ function create(node, cmp, initial, cmpParent) {
                     }
                 }
             } else {
-                cmp.suspendedNodes.push(node)
+                // console.log(node.props['suspendcontent_by_parent'] )
+                // console.log(cmp.children)
+                // if (!node.props['suspendcontent_by_parent'])
+                    cmp.suspendedNodes.push(node)
             }
         }
     }

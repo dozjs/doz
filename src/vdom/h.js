@@ -99,6 +99,10 @@ function fillCompiled(obj, values, parent, _this) {
                 }
                 value = tagName;
                 obj.props['data-attributeoriginaletagname'] = tagCmp;
+                if (cmp.suspendContent) {
+                    obj.props['suspendcontent'] = true;
+                    obj.props['suspendcontent_by_parent'] = true;
+                }
             }
             if (Array.isArray(value) && keys[i] === '0') {
                 parent.children = value;
