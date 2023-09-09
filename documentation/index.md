@@ -727,7 +727,6 @@ In order all hooks:
 - `onBeforeMount`: called before that instance is mounted on DOM.
 - `onAfterRender`: called every time after that `render()` method has been called.
 - `onMount`: called after that instance is mounted on DOM.
-- `onMountAsync`: called after that instance is mounted on DOM.
 - `onBeforeUpdate`: called before that instance is updated.
 - `onUpdate`: called after that instance is updated.
 - `onBeforeUnmount`: called before that instance is unmounted.
