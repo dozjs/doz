@@ -1,4 +1,4 @@
-/* Doz, version: 5.2.5 - September 11, 2023 16:17:16 */
+/* Doz, version: 5.2.6 - September 11, 2023 16:24:58 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -3378,6 +3378,7 @@ function iterate(instance, props) {
 }
 function propsInit(instance) {
     // I don't know if it is a good idea this assignment
+    // I did this for props defined outside class... so they are not defined in the constructor...
     Object.assign(instance.props, instance._rawProps);
     iterate(instance, instance._rawProps);
 }
@@ -5908,7 +5909,7 @@ Object.defineProperties(Doz, {
         enumerable: true
     },
     version: {
-        value: '5.2.5',
+        value: '5.2.6',
         enumerable: true
     },
     tag: {
