@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.2.3] - 2023-09-09
+- **Fixed** a problem with spread props when a component is created by loop the props are undefined  
+
 ## [5.2.2] - 2023-09-09
 - **Improved** suspendContent  
 

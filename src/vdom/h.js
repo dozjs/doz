@@ -52,10 +52,16 @@ function generateItemKey(values) {
 function fillCompiled(obj, values, parent, _this) {
     let keys = Object.keys(obj);
     if (obj.__spreadprops) {
-        for (let o in values[0]) {
-            obj[o] = values[0][o]
+        let indexOfSpreadPropsObj = 0;
+        for (let i = 0; i < values.length; i++) {
+            if (typeof values[i] === 'object') {
+                indexOfSpreadPropsObj = i;
+                break;
+            }
         }
-
+        for (let o in values[indexOfSpreadPropsObj]) {
+            obj[o] = values[indexOfSpreadPropsObj][o];
+        }
         delete obj.__spreadprops;
     }
     for (let i = 0; i < keys.length; i++) {
