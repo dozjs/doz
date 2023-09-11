@@ -1,4 +1,4 @@
-/* Doz, version: 5.2.4 - September 11, 2023 14:25:45 */
+/* Doz, version: 5.2.4 - September 11, 2023 14:41:46 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -2743,15 +2743,15 @@ function update($parent, newNode, oldNode, index = 0, cmp, initial, cmpParent) {
         // console.log($parent.childNodes, index)
         if (!$oldElement) {
             //provo a ricreare il nodo mancante...
-            if (cmp.app.hydration
-                && !cmp.hydrationRestored) {
-                $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
-                $parent.appendChild($oldElement);
-                console.error('$oldElement not found. It was restored.');
-                cmp.hydrationRestored = true;
-            } else {
+            // if (cmp.app.hydration
+            //     && !cmp.hydrationRestored) {
+            //     $oldElement = create(oldNode, cmp, initial, $parent._dozAttach[COMPONENT_INSTANCE] || cmpParent);
+            //     $parent.appendChild($oldElement);
+            //     console.error('$oldElement not found. It was restored.');
+            //     cmp.hydrationRestored = true;
+            // } else {
                 return;
-            }
+            // }
         }
         // console.log('$oldElement', $oldElement)
         const canReuseElement = cmp.$$beforeNodeChange($parent, $oldElement, newNode, oldNode);

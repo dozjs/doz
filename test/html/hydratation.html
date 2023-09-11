@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2">- -</div></child2-child2></div></child1-child1></div></div>
+<div id="app"><div title="hello">Hello<child1-child1><div title="child1">Child1<button>click</button><child2-child2><div title="child2"><span>-</span><span> </span><span>-</span></div></child2-child2></div></child1-child1></div></div>
 <div id="app8"></div>
 <script type="module">
     import Doz from '../../src/index.js'
@@ -70,7 +70,11 @@
 
         template(h) {
             return h`
-                <div title="child2">${this.props.time} ${this.props.time}</div>
+                <div title="child2">
+                    <span>${this.props.time}</span>
+                    <span> </span>
+                    <span>${this.props.time}</span>
+                </div>
             `
         }
 
