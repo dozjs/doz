@@ -1,4 +1,4 @@
-/* Doz, version: 5.2.5 - September 11, 2023 14:46:12 */
+/* Doz, version: 5.2.5 - September 11, 2023 16:17:16 */
 function bind$1(obj, context) {
     if (typeof obj !== 'object' || obj == null) {
         throw new TypeError('expected an object!');
@@ -3377,6 +3377,8 @@ function iterate(instance, props) {
     }
 }
 function propsInit(instance) {
+    // I don't know if it is a good idea this assignment
+    Object.assign(instance.props, instance._rawProps);
     iterate(instance, instance._rawProps);
 }
 

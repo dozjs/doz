@@ -12,6 +12,9 @@ function iterate(instance, props) {
     }
 }
 function propsInit(instance) {
+    // I don't know if it is a good idea this assignment
+    // I did this for props defined outside class... so they are not defined in the constructor...
+    Object.assign(instance.props, instance._rawProps);
     iterate(instance, instance._rawProps);
 }
 

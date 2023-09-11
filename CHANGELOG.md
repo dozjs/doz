@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [5.2.6] - 2023-09-10
+- **Fixed** props defined outside class constructor should work now
+
 ## [5.2.5] - 2023-09-10
 - **Fixed** a problem with hydration system and injected component
 
