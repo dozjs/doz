@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.6] - 2025-02-26
+- **Fixed** Cannot call a class as a function, the check IS_CLASS has been removed, now we check directly the Component instance 
+
 ## [2.5.5] - 2020-05-17
 - **Fixed** style update doesn't work fine
 
