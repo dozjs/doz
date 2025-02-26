@@ -1,4 +1,4 @@
-// [DOZ]  Build version: 3.5.2  
+// [DOZ]  Build version: 3.5.3  
  (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1841,7 +1841,8 @@ function createInstance() {
 
           if (typeof cmp.cfg === 'function') {
             // This implements single function component
-            if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+            // if (!REGEX.IS_CLASS.test(Function.prototype.toString.call(cmp.cfg))) {
+            if (!(cmp.cfg.prototype instanceof Component)) {
               var func = cmp.cfg;
 
               cmp.cfg = /*#__PURE__*/function (_Component) {
@@ -3848,7 +3849,7 @@ Object.defineProperties(Doz, {
       value: mapper
   },*/
   version: {
-    value: '3.5.2',
+    value: '3.5.3',
     enumerable: true
   },
   tag: {

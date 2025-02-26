@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.5.3] - 2025-02-26
+- **Fixed** Cannot call a class as a function, the check IS_CLASS has been removed, now we check directly the Component instance
+
 ## [3.5.2] - 2021-01-23
 - **Improved** `mount` method
 
